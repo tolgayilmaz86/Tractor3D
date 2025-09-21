@@ -1,0 +1,901 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{c4d4da1c-81e2-4944-901c-200e1c4d80e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res">
+      <UniqueIdentifier>{4a30ac71-e135-47d3-9f56-baac7cffe64c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\shaders">
+      <UniqueIdentifier>{be0b36f1-49ed-4a06-9f1f-57c654a554fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\materials">
+      <UniqueIdentifier>{b5f23c37-1023-4796-ba7b-b45aa30d67b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\ui">
+      <UniqueIdentifier>{eb377577-593a-469f-9361-b6950a99e431}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ai">
+      <UniqueIdentifier>{85e68d8a-8f4b-4b22-89b9-baff7207befd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\animation">
+      <UniqueIdentifier>{ff35fc00-9b37-470e-98ac-d958b8c3e1ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\audio">
+      <UniqueIdentifier>{c705443d-7f4c-45ec-a7c6-3fff234cbab2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\framework">
+      <UniqueIdentifier>{d469c9ac-f9c3-4ca1-b38f-1e64dc428fb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\graphics">
+      <UniqueIdentifier>{4418d829-6568-4f6b-a8a4-d8fb4c8fe40b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\input">
+      <UniqueIdentifier>{f635b70a-e451-4016-b3a8-ef119af01c59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\math">
+      <UniqueIdentifier>{38d7fe3a-c792-4976-83cd-dc10fd64a250}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\physics">
+      <UniqueIdentifier>{defb8622-8f75-4332-9339-0b11b4b641c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\scene">
+      <UniqueIdentifier>{c1913b2b-e7a8-4836-8935-4c2f4317dbb0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ui">
+      <UniqueIdentifier>{ae7e835e-0937-4695-a4fa-8dec95d97add}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\utils">
+      <UniqueIdentifier>{1293cde2-635c-4fc4-bb51-b819189a2773}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\scripting">
+      <UniqueIdentifier>{9271f307-eecb-48a5-8716-fa59a13448fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\renderer">
+      <UniqueIdentifier>{a3d36c38-3849-42c5-afd1-c00f8c94725e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{8f9d97d4-34f9-4ad4-9a75-1a8315006380}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\ai">
+      <UniqueIdentifier>{e386f379-1e1b-4d92-a363-3b26a710a539}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\animation">
+      <UniqueIdentifier>{4a93ee14-fd8e-42eb-82e9-effd44d65794}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\audio">
+      <UniqueIdentifier>{df6ad1ce-9625-4b58-a2a5-b8ea32821558}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\framework">
+      <UniqueIdentifier>{29320c6b-1843-40e9-b64d-04cb3c478e69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\graphics">
+      <UniqueIdentifier>{724d1580-3781-4072-8289-9806dfb11891}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\input">
+      <UniqueIdentifier>{10e16684-2527-48e5-a49e-1b6bb0e30614}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\math">
+      <UniqueIdentifier>{bb353a7e-ee0e-4726-9ce1-db0bbc7569b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\physics">
+      <UniqueIdentifier>{ecee4274-43d7-43be-8add-29d056f3e5b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\renderer">
+      <UniqueIdentifier>{41033cd9-a1ab-4aaa-aadc-5d610e92e314}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\scene">
+      <UniqueIdentifier>{3af44f6b-ae35-48a1-a580-fad21c0e7790}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\scripting">
+      <UniqueIdentifier>{bdf500f4-b165-4638-9695-34ad6141d099}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\ui">
+      <UniqueIdentifier>{ecb34c06-8a3b-4c58-bdea-905965490837}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\utils">
+      <UniqueIdentifier>{3757325f-ef77-4c47-a8e7-37e44d2e28c0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\shaders\colored.frag">
+      <Filter>res\shaders</Filter>
+    </None>
+    <None Include="res\shaders\colored.vert">
+      <Filter>res\shaders</Filter>
+    </None>
+    <None Include="res\shaders\font.frag">
+      <Filter>res\shaders</Filter>
+    </None>
+    <None Include="res\shaders\font.vert">
+      <Filter>res\shaders</Filter>
+    </None>
+    <None Include="res\shaders\form.frag">
+      <Filter>res\shaders</Filter>
+    </None>
+    <None Include="res\shaders\form.vert">
+      <Filter>res\shaders</Filter>
+    </None>
+    <None Include="res\shaders\lighting.frag">
+      <Filter>res\shaders</Filter>
+    </None>
+    <None Include="res\shaders\lighting.vert">
+      <Filter>res\shaders</Filter>
+    </None>
+    <None Include="res\shaders\sprite.frag">
+      <Filter>res\shaders</Filter>
+    </None>
+    <None Include="res\shaders\sprite.vert">
+      <Filter>res\shaders</Filter>
+    </None>
+    <None Include="res\shaders\terrain.frag">
+      <Filter>res\shaders</Filter>
+    </None>
+    <None Include="res\shaders\terrain.vert">
+      <Filter>res\shaders</Filter>
+    </None>
+    <None Include="res\shaders\textured.frag">
+      <Filter>res\shaders</Filter>
+    </None>
+    <None Include="res\shaders\textured.vert">
+      <Filter>res\shaders</Filter>
+    </None>
+    <None Include="res\shaders\skinning.vert">
+      <Filter>res\shaders</Filter>
+    </None>
+    <None Include="res\shaders\skinning-none.vert">
+      <Filter>res\shaders</Filter>
+    </None>
+    <None Include="res\materials\terrain.material">
+      <Filter>res\materials</Filter>
+    </None>
+    <None Include="res\ui\default.theme">
+      <Filter>res\ui</Filter>
+    </None>
+    <None Include="include\framework\Game.inl">
+      <Filter>include\framework</Filter>
+    </None>
+    <None Include="include\graphics\BoundingBox.inl">
+      <Filter>include\graphics</Filter>
+    </None>
+    <None Include="include\graphics\BoundingSphere.inl">
+      <Filter>include\graphics</Filter>
+    </None>
+    <None Include="include\graphics\MeshBatch.inl">
+      <Filter>include\graphics</Filter>
+    </None>
+    <None Include="include\graphics\Plane.inl">
+      <Filter>include\graphics</Filter>
+    </None>
+    <None Include="include\graphics\Ray.inl">
+      <Filter>include\graphics</Filter>
+    </None>
+    <None Include="include\math\MathUtil.inl">
+      <Filter>include\math</Filter>
+    </None>
+    <None Include="include\math\MathUtilNeon.inl">
+      <Filter>include\math</Filter>
+    </None>
+    <None Include="include\math\Matrix.inl">
+      <Filter>include\math</Filter>
+    </None>
+    <None Include="include\math\Quaternion.inl">
+      <Filter>include\math</Filter>
+    </None>
+    <None Include="include\math\Vector2.inl">
+      <Filter>include\math</Filter>
+    </None>
+    <None Include="include\math\Vector3.inl">
+      <Filter>include\math</Filter>
+    </None>
+    <None Include="include\math\Vector4.inl">
+      <Filter>include\math</Filter>
+    </None>
+    <None Include="include\ui\Image.inl">
+      <Filter>include\ui</Filter>
+    </None>
+    <None Include="include\scripting\ScriptController.inl">
+      <Filter>include\scripting</Filter>
+    </None>
+    <None Include="include\physics\PhysicsConstraint.inl">
+      <Filter>include\physics</Filter>
+    </None>
+    <None Include="include\physics\PhysicsFixedConstraint.inl">
+      <Filter>include\physics</Filter>
+    </None>
+    <None Include="include\physics\PhysicsGenericConstraint.inl">
+      <Filter>include\physics</Filter>
+    </None>
+    <None Include="include\physics\PhysicsRigidBody.inl">
+      <Filter>include\physics</Filter>
+    </None>
+    <None Include="include\physics\PhysicsSpringConstraint.inl">
+      <Filter>include\physics</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\ui\default-theme.png">
+      <Filter>res\ui</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\ai\AIAgent.cpp">
+      <Filter>src\ai</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ai\AIController.cpp">
+      <Filter>src\ai</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ai\AIMessage.cpp">
+      <Filter>src\ai</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ai\AIState.cpp">
+      <Filter>src\ai</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ai\AIStateMachine.cpp">
+      <Filter>src\ai</Filter>
+    </ClCompile>
+    <ClCompile Include="src\animation\Animation.cpp">
+      <Filter>src\animation</Filter>
+    </ClCompile>
+    <ClCompile Include="src\animation\AnimationClip.cpp">
+      <Filter>src\animation</Filter>
+    </ClCompile>
+    <ClCompile Include="src\animation\AnimationController.cpp">
+      <Filter>src\animation</Filter>
+    </ClCompile>
+    <ClCompile Include="src\animation\AnimationTarget.cpp">
+      <Filter>src\animation</Filter>
+    </ClCompile>
+    <ClCompile Include="src\animation\AnimationValue.cpp">
+      <Filter>src\animation</Filter>
+    </ClCompile>
+    <ClCompile Include="src\animation\Joint.cpp">
+      <Filter>src\animation</Filter>
+    </ClCompile>
+    <ClCompile Include="src\audio\AudioBuffer.cpp">
+      <Filter>src\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="src\audio\AudioController.cpp">
+      <Filter>src\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="src\audio\AudioListener.cpp">
+      <Filter>src\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="src\audio\AudioSource.cpp">
+      <Filter>src\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="src\framework\FileSystem.cpp">
+      <Filter>src\framework</Filter>
+    </ClCompile>
+    <ClCompile Include="src\framework\Game.cpp">
+      <Filter>src\framework</Filter>
+    </ClCompile>
+    <ClCompile Include="src\framework\tractor-main-windows.cpp">
+      <Filter>src\framework</Filter>
+    </ClCompile>
+    <ClCompile Include="src\framework\Platform.cpp">
+      <Filter>src\framework</Filter>
+    </ClCompile>
+    <ClCompile Include="src\framework\PlatformWindows.cpp">
+      <Filter>src\framework</Filter>
+    </ClCompile>
+    <ClCompile Include="src\framework\ScreenDisplayer.cpp">
+      <Filter>src\framework</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\BoundingBox.cpp">
+      <Filter>src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\BoundingSphere.cpp">
+      <Filter>src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\Curve.cpp">
+      <Filter>src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\Drawable.cpp">
+      <Filter>src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\Effect.cpp">
+      <Filter>src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\Frustum.cpp">
+      <Filter>src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\HeightField.cpp">
+      <Filter>src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\Light.cpp">
+      <Filter>src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\Mesh.cpp">
+      <Filter>src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\MeshBatch.cpp">
+      <Filter>src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\MeshPart.cpp">
+      <Filter>src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\MeshSkin.cpp">
+      <Filter>src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\Model.cpp">
+      <Filter>src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\ParticleEmitter.cpp">
+      <Filter>src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\Plane.cpp">
+      <Filter>src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\Ray.cpp">
+      <Filter>src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\Rectangle.cpp">
+      <Filter>src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\SpriteBatch.cpp">
+      <Filter>src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\Terrain.cpp">
+      <Filter>src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\TerrainPatch.cpp">
+      <Filter>src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\TileSet.cpp">
+      <Filter>src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\input\Gamepad.cpp">
+      <Filter>src\input</Filter>
+    </ClCompile>
+    <ClCompile Include="src\input\ImageControl.cpp">
+      <Filter>src\input</Filter>
+    </ClCompile>
+    <ClCompile Include="src\input\JoystickControl.cpp">
+      <Filter>src\input</Filter>
+    </ClCompile>
+    <ClCompile Include="src\math\MathUtil.cpp">
+      <Filter>src\math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\math\Matrix.cpp">
+      <Filter>src\math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\math\Quaternion.cpp">
+      <Filter>src\math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\math\Transform.cpp">
+      <Filter>src\math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\math\Vector2.cpp">
+      <Filter>src\math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\math\Vector3.cpp">
+      <Filter>src\math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\math\Vector4.cpp">
+      <Filter>src\math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utils\DebugNew.cpp">
+      <Filter>src\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utils\Logger.cpp">
+      <Filter>src\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utils\Ref.cpp">
+      <Filter>src\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\AbsoluteLayout.cpp">
+      <Filter>src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\Button.cpp">
+      <Filter>src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\CheckBox.cpp">
+      <Filter>src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\Container.cpp">
+      <Filter>src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\Control.cpp">
+      <Filter>src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\ControlFactory.cpp">
+      <Filter>src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\FlowLayout.cpp">
+      <Filter>src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\Form.cpp">
+      <Filter>src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\Image.cpp">
+      <Filter>src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\Label.cpp">
+      <Filter>src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\Layout.cpp">
+      <Filter>src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\RadioButton.cpp">
+      <Filter>src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\Slider.cpp">
+      <Filter>src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\Sprite.cpp">
+      <Filter>src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\TextBox.cpp">
+      <Filter>src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\Theme.cpp">
+      <Filter>src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\ThemeStyle.cpp">
+      <Filter>src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\VerticalLayout.cpp">
+      <Filter>src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\Bundle.cpp">
+      <Filter>src\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\Node.cpp">
+      <Filter>src\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\Properties.cpp">
+      <Filter>src\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\Scene.cpp">
+      <Filter>src\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\SceneLoader.cpp">
+      <Filter>src\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\PhysicsCharacter.cpp">
+      <Filter>src\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\PhysicsCollisionObject.cpp">
+      <Filter>src\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\PhysicsCollisionShape.cpp">
+      <Filter>src\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\PhysicsConstraint.cpp">
+      <Filter>src\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\PhysicsController.cpp">
+      <Filter>src\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\PhysicsFixedConstraint.cpp">
+      <Filter>src\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\PhysicsGenericConstraint.cpp">
+      <Filter>src\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\PhysicsGhostObject.cpp">
+      <Filter>src\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\PhysicsHingeConstraint.cpp">
+      <Filter>src\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\PhysicsRigidBody.cpp">
+      <Filter>src\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\PhysicsSocketConstraint.cpp">
+      <Filter>src\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\PhysicsSpringConstraint.cpp">
+      <Filter>src\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\PhysicsVehicle.cpp">
+      <Filter>src\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\PhysicsVehicleWheel.cpp">
+      <Filter>src\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scripting\Script.cpp">
+      <Filter>src\scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scripting\ScriptController.cpp">
+      <Filter>src\scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scripting\ScriptTarget.cpp">
+      <Filter>src\scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\Camera.cpp">
+      <Filter>src\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\DepthStencilTarget.cpp">
+      <Filter>src\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\FrameBuffer.cpp">
+      <Filter>src\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\Material.cpp">
+      <Filter>src\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\MaterialParameter.cpp">
+      <Filter>src\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\Pass.cpp">
+      <Filter>src\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\Technique.cpp">
+      <Filter>src\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\Text.cpp">
+      <Filter>src\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\Texture.cpp">
+      <Filter>src\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\VertexAttributeBinding.cpp">
+      <Filter>src\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\VertexFormat.cpp">
+      <Filter>src\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\RenderState.cpp">
+      <Filter>src\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\RenderTarget.cpp">
+      <Filter>src\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\Font.cpp">
+      <Filter>src\renderer</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\ai\AIAgent.h">
+      <Filter>include\ai</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ai\AIController.h">
+      <Filter>include\ai</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ai\AIMessage.h">
+      <Filter>include\ai</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ai\AIState.h">
+      <Filter>include\ai</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ai\AIStateMachine.h">
+      <Filter>include\ai</Filter>
+    </ClInclude>
+    <ClInclude Include="include\animation\Animation.h">
+      <Filter>include\animation</Filter>
+    </ClInclude>
+    <ClInclude Include="include\animation\AnimationClip.h">
+      <Filter>include\animation</Filter>
+    </ClInclude>
+    <ClInclude Include="include\animation\AnimationController.h">
+      <Filter>include\animation</Filter>
+    </ClInclude>
+    <ClInclude Include="include\animation\AnimationTarget.h">
+      <Filter>include\animation</Filter>
+    </ClInclude>
+    <ClInclude Include="include\animation\AnimationValue.h">
+      <Filter>include\animation</Filter>
+    </ClInclude>
+    <ClInclude Include="include\animation\Joint.h">
+      <Filter>include\animation</Filter>
+    </ClInclude>
+    <ClInclude Include="include\audio\AudioBuffer.h">
+      <Filter>include\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="include\audio\AudioController.h">
+      <Filter>include\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="include\audio\AudioListener.h">
+      <Filter>include\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="include\audio\AudioSource.h">
+      <Filter>include\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="include\framework\Base.h">
+      <Filter>include\framework</Filter>
+    </ClInclude>
+    <ClInclude Include="include\framework\FileSystem.h">
+      <Filter>include\framework</Filter>
+    </ClInclude>
+    <ClInclude Include="include\framework\Game.h">
+      <Filter>include\framework</Filter>
+    </ClInclude>
+    <ClInclude Include="include\framework\Platform.h">
+      <Filter>include\framework</Filter>
+    </ClInclude>
+    <ClInclude Include="include\framework\ScreenDisplayer.h">
+      <Filter>include\framework</Filter>
+    </ClInclude>
+    <ClInclude Include="include\framework\Stream.h">
+      <Filter>include\framework</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graphics\BoundingBox.h">
+      <Filter>include\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graphics\BoundingSphere.h">
+      <Filter>include\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graphics\Curve.h">
+      <Filter>include\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graphics\Drawable.h">
+      <Filter>include\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graphics\Effect.h">
+      <Filter>include\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graphics\Frustum.h">
+      <Filter>include\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graphics\HeightField.h">
+      <Filter>include\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graphics\Light.h">
+      <Filter>include\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graphics\Mesh.h">
+      <Filter>include\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graphics\MeshBatch.h">
+      <Filter>include\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graphics\MeshPart.h">
+      <Filter>include\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graphics\MeshSkin.h">
+      <Filter>include\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graphics\Model.h">
+      <Filter>include\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graphics\ParticleEmitter.h">
+      <Filter>include\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graphics\Plane.h">
+      <Filter>include\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graphics\Ray.h">
+      <Filter>include\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graphics\Rectangle.h">
+      <Filter>include\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graphics\Sprite.h">
+      <Filter>include\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graphics\SpriteBatch.h">
+      <Filter>include\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graphics\Terrain.h">
+      <Filter>include\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graphics\TerrainPatch.h">
+      <Filter>include\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graphics\TileSet.h">
+      <Filter>include\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\input\Gamepad.h">
+      <Filter>include\input</Filter>
+    </ClInclude>
+    <ClInclude Include="include\input\Gesture.h">
+      <Filter>include\input</Filter>
+    </ClInclude>
+    <ClInclude Include="include\input\ImageControl.h">
+      <Filter>include\input</Filter>
+    </ClInclude>
+    <ClInclude Include="include\input\JoystickControl.h">
+      <Filter>include\input</Filter>
+    </ClInclude>
+    <ClInclude Include="include\input\Keyboard.h">
+      <Filter>include\input</Filter>
+    </ClInclude>
+    <ClInclude Include="include\input\Mouse.h">
+      <Filter>include\input</Filter>
+    </ClInclude>
+    <ClInclude Include="include\input\Touch.h">
+      <Filter>include\input</Filter>
+    </ClInclude>
+    <ClInclude Include="include\math\MathUtil.h">
+      <Filter>include\math</Filter>
+    </ClInclude>
+    <ClInclude Include="include\math\Matrix.h">
+      <Filter>include\math</Filter>
+    </ClInclude>
+    <ClInclude Include="include\math\Quaternion.h">
+      <Filter>include\math</Filter>
+    </ClInclude>
+    <ClInclude Include="include\math\Transform.h">
+      <Filter>include\math</Filter>
+    </ClInclude>
+    <ClInclude Include="include\math\Vector2.h">
+      <Filter>include\math</Filter>
+    </ClInclude>
+    <ClInclude Include="include\math\Vector3.h">
+      <Filter>include\math</Filter>
+    </ClInclude>
+    <ClInclude Include="include\math\Vector4.h">
+      <Filter>include\math</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils\DebugNew.h">
+      <Filter>include\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils\Logger.h">
+      <Filter>include\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils\Profiler.h">
+      <Filter>include\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils\Ref.h">
+      <Filter>include\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils\TimeListener.h">
+      <Filter>include\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ui\AbsoluteLayout.h">
+      <Filter>include\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ui\Button.h">
+      <Filter>include\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ui\CheckBox.h">
+      <Filter>include\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ui\Container.h">
+      <Filter>include\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ui\Control.h">
+      <Filter>include\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ui\ControlFactory.h">
+      <Filter>include\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ui\FlowLayout.h">
+      <Filter>include\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ui\Form.h">
+      <Filter>include\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ui\Image.h">
+      <Filter>include\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ui\Label.h">
+      <Filter>include\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ui\Layout.h">
+      <Filter>include\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ui\RadioButton.h">
+      <Filter>include\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ui\Slider.h">
+      <Filter>include\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ui\TextBox.h">
+      <Filter>include\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ui\Theme.h">
+      <Filter>include\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ui\ThemeStyle.h">
+      <Filter>include\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ui\VerticalLayout.h">
+      <Filter>include\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\scripting\Script.h">
+      <Filter>include\scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="include\scripting\ScriptController.h">
+      <Filter>include\scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="include\scripting\ScriptTarget.h">
+      <Filter>include\scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="include\scene\Bundle.h">
+      <Filter>include\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="include\scene\Node.h">
+      <Filter>include\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="include\scene\Properties.h">
+      <Filter>include\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="include\scene\Scene.h">
+      <Filter>include\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="include\scene\SceneLoader.h">
+      <Filter>include\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="include\renderer\Camera.h">
+      <Filter>include\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\renderer\DepthStencilTarget.h">
+      <Filter>include\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\renderer\Font.h">
+      <Filter>include\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\renderer\FrameBuffer.h">
+      <Filter>include\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\renderer\Material.h">
+      <Filter>include\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\renderer\MaterialParameter.h">
+      <Filter>include\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\renderer\Pass.h">
+      <Filter>include\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\renderer\RenderState.h">
+      <Filter>include\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\renderer\RenderTarget.h">
+      <Filter>include\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\renderer\Technique.h">
+      <Filter>include\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\renderer\Text.h">
+      <Filter>include\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\renderer\Texture.h">
+      <Filter>include\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\renderer\VertexAttributeBinding.h">
+      <Filter>include\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\renderer\VertexFormat.h">
+      <Filter>include\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\PhysicsCharacter.h">
+      <Filter>include\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\PhysicsCollisionObject.h">
+      <Filter>include\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\PhysicsCollisionShape.h">
+      <Filter>include\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\PhysicsConstraint.h">
+      <Filter>include\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\PhysicsController.h">
+      <Filter>include\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\PhysicsFixedConstraint.h">
+      <Filter>include\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\PhysicsGenericConstraint.h">
+      <Filter>include\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\PhysicsGhostObject.h">
+      <Filter>include\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\PhysicsHingeConstraint.h">
+      <Filter>include\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\PhysicsRigidBody.h">
+      <Filter>include\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\PhysicsSocketConstraint.h">
+      <Filter>include\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\PhysicsSpringConstraint.h">
+      <Filter>include\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\PhysicsVehicle.h">
+      <Filter>include\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\PhysicsVehicleWheel.h">
+      <Filter>include\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tractor.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -58,7 +58,7 @@ namespace tractor
     /**
      * Destructor.
      */
-    virtual ~Joint();
+    virtual ~Joint() = default;
 
     /**
      * Creates a new joint with the given id.

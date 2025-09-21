@@ -4,7 +4,7 @@
  * Much of the collision detection code for this implementation is based off the
  * btbtKinematicCharacterController class from Bullet Physics 2.7.6.
  */
-#include "framework/Base.h"
+#include "pch.h"
 #include "physics/PhysicsCharacter.h"
 #include "scene/Scene.h"
 #include "framework/Game.h"

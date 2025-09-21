@@ -1,5 +1,5 @@
 // Implementation of base platform-agnostic platform functionality.
-#include "framework/Base.h"
+#include "pch.h"
 #include "framework/Platform.h"
 #include "framework/Game.h"
 #include "scripting/ScriptController.h"

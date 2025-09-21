@@ -50,35 +50,21 @@ using std::max;
 using std::modf;
 using std::atoi;
 
-// Common
-#ifndef nullptr
-#define nullptr     0
-#endif
-
 namespace tractor
 {
-  /**
-   * Print logging (implemented per platform).
-   * @script{ignore}
-   */
-  extern void print(const char* format, ...);
+    /**
+     * Print logging (implemented per platform).
+     * @script{ignore}
+     */
+    extern void print(const char* format, ...);
 
-  // Define a platform-independent case-insensitive ASCII string comparison function.
-  extern int strcmpnocase(const char* s1, const char* s2);
+    // Define a platform-independent case-insensitive ASCII string comparison function.
+    extern int strcmpnocase(const char* s1, const char* s2);
 }
 
 // Current function macro.
-#ifdef WIN32
 #define __current__func__ __FUNCTION__
-#else
-#define __current__func__ __func__
-#endif
-
-#if defined(WIN32) && defined(_MSC_VER)
 #define DEBUG_BREAK() __debugbreak()
-#else
-#define DEBUG_BREAK()
-#endif
 
 // Error macro.
 #ifdef GP_ERRORS_AS_WARNINGS
@@ -103,7 +89,6 @@ namespace tractor
         tractor::Logger::log(tractor::Logger::LEVEL_WARN, "\n"); \
     } while (0)
 
-#if defined(WIN32)
 #pragma warning( disable : 4005 )
 #pragma warning( disable : 4172 )
 #pragma warning( disable : 4244 )
@@ -113,7 +98,6 @@ namespace tractor
 #pragma warning( disable : 4390 )
 #pragma warning( disable : 4800 )
 #pragma warning( disable : 4996 )
-#endif
 
 // Bullet Physics
 #include <btBulletDynamicsCommon.h>
@@ -124,6 +108,7 @@ namespace tractor
 
 // Debug new for memory leak detection
 #include "utils/DebugNew.h"
+#include "utils/Ref.h"
 
 // Object deletion macro
 #define SAFE_DELETE(x) \
@@ -168,9 +153,7 @@ namespace tractor
 #endif
 
 // NOMINMAX makes sure that windef.h doesn't add macros min and max
-#ifdef WIN32
 #define NOMINMAX
-#endif
 
 #define AL_LIBTYPE_STATIC
 #include <AL/al.h>
@@ -206,25 +189,20 @@ using std::va_list;
 // Hardware buffer
 namespace tractor
 {
-  /** Vertex attribute. */
-  typedef GLint VertexAttribute;
-  /** Vertex buffer handle. */
-  typedef GLuint VertexBufferHandle;
-  /** Index buffer handle. */
-  typedef GLuint IndexBufferHandle;
-  /** Texture handle. */
-  typedef GLuint TextureHandle;
-  /** Frame buffer handle. */
-  typedef GLuint FrameBufferHandle;
-  /** Render buffer handle. */
-  typedef GLuint RenderBufferHandle;
-
-  /** Gamepad handle */
-#ifdef __ANDROID__
-  typedef unsigned int GamepadHandle;
-#else
-  typedef unsigned long GamepadHandle;
-#endif
+    /** Vertex attribute. */
+    typedef GLint VertexAttribute;
+    /** Vertex buffer handle. */
+    typedef GLuint VertexBufferHandle;
+    /** Index buffer handle. */
+    typedef GLuint IndexBufferHandle;
+    /** Texture handle. */
+    typedef GLuint TextureHandle;
+    /** Frame buffer handle. */
+    typedef GLuint FrameBufferHandle;
+    /** Render buffer handle. */
+    typedef GLuint RenderBufferHandle;
+    /** Gamepad handle */
+    typedef unsigned long GamepadHandle;
 }
 
 /**

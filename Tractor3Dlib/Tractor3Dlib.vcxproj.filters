@@ -547,6 +547,9 @@
     <ClCompile Include="src\renderer\Font.cpp">
       <Filter>src\renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\pch.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ai\AIAgent.h">
@@ -593,9 +596,6 @@
     </ClInclude>
     <ClInclude Include="include\audio\AudioSource.h">
       <Filter>include\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="include\framework\Base.h">
-      <Filter>include\framework</Filter>
     </ClInclude>
     <ClInclude Include="include\framework\FileSystem.h">
       <Filter>include\framework</Filter>
@@ -895,6 +895,9 @@
       <Filter>include\physics</Filter>
     </ClInclude>
     <ClInclude Include="include\tractor.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\pch.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

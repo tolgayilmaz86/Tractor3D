@@ -1,4 +1,4 @@
-#include "framework/Base.h"
+#include "pch.h"
 #include "graphics/Model.h"
 #include "graphics/MeshPart.h"
 #include "renderer/Technique.h"

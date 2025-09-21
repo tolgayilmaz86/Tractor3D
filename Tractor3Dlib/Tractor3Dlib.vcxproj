@@ -110,6 +110,9 @@
     <ClCompile Include="src\math\Vector2.cpp" />
     <ClCompile Include="src\math\Vector3.cpp" />
     <ClCompile Include="src\math\Vector4.cpp" />
+    <ClCompile Include="src\pch.cpp">
+      <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MultiProcessorCompilation>
+    </ClCompile>
     <ClCompile Include="src\physics\PhysicsCharacter.cpp" />
     <ClCompile Include="src\physics\PhysicsCollisionObject.cpp" />
     <ClCompile Include="src\physics\PhysicsCollisionShape.cpp" />
@@ -184,7 +187,6 @@
     <ClInclude Include="include\audio\AudioController.h" />
     <ClInclude Include="include\audio\AudioListener.h" />
     <ClInclude Include="include\audio\AudioSource.h" />
-    <ClInclude Include="include\framework\Base.h" />
     <ClInclude Include="include\framework\FileSystem.h" />
     <ClInclude Include="include\framework\Game.h" />
     <ClInclude Include="include\framework\Platform.h" />
@@ -226,6 +228,7 @@
     <ClInclude Include="include\math\Vector2.h" />
     <ClInclude Include="include\math\Vector3.h" />
     <ClInclude Include="include\math\Vector4.h" />
+    <ClInclude Include="include\pch.h" />
     <ClInclude Include="include\physics\PhysicsCharacter.h" />
     <ClInclude Include="include\physics\PhysicsCollisionObject.h" />
     <ClInclude Include="include\physics\PhysicsCollisionShape.h" />
@@ -349,7 +352,10 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpp23</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

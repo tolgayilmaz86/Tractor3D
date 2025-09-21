@@ -1,4 +1,4 @@
-#include "framework/Base.h"
+#include "pch.h"
 #include "animation/AnimationController.h"
 #include "framework/Game.h"
 #include "graphics/Curve.h"
@@ -6,130 +6,130 @@
 namespace tractor
 {
 
-  AnimationController::AnimationController()
-    : _state(STOPPED)
-  {
-  }
+	AnimationController::AnimationController()
+		: _state(STOPPED)
+	{
+	}
 
-  AnimationController::~AnimationController()
-  {
-  }
+	AnimationController::~AnimationController()
+	{
+	}
 
-  void AnimationController::stopAllAnimations()
-  {
-    std::list<AnimationClip*>::iterator clipIter = _runningClips.begin();
-    while (clipIter != _runningClips.end())
-    {
-      AnimationClip* clip = *clipIter;
-      assert(clip);
-      clip->stop();
-      clipIter++;
-    }
-  }
+	void AnimationController::stopAllAnimations()
+	{
+		std::list<AnimationClip*>::iterator clipIter = _runningClips.begin();
+		while (clipIter != _runningClips.end())
+		{
+			AnimationClip* clip = *clipIter;
+			assert(clip);
+			clip->stop();
+			clipIter++;
+		}
+	}
 
-  AnimationController::State AnimationController::getState() const
-  {
-    return _state;
-  }
+	AnimationController::State AnimationController::getState() const
+	{
+		return _state;
+	}
 
-  void AnimationController::initialize()
-  {
-    _state = IDLE;
-  }
+	void AnimationController::initialize()
+	{
+		_state = IDLE;
+	}
 
-  void AnimationController::finalize()
-  {
-    std::list<AnimationClip*>::iterator itr = _runningClips.begin();
-    for (auto& clip : _runningClips)
-    {
-      SAFE_RELEASE(clip);
-    }
-    _runningClips.clear();
-    _state = STOPPED;
-  }
+	void AnimationController::finalize()
+	{
+		std::list<AnimationClip*>::iterator itr = _runningClips.begin();
+		for (auto& clip : _runningClips)
+		{
+			SAFE_RELEASE(clip);
+		}
+		_runningClips.clear();
+		_state = STOPPED;
+	}
 
-  void AnimationController::resume()
-  {
-    if (_runningClips.empty())
-      _state = IDLE;
-    else
-      _state = RUNNING;
-  }
+	void AnimationController::resume()
+	{
+		if (_runningClips.empty())
+			_state = IDLE;
+		else
+			_state = RUNNING;
+	}
 
-  void AnimationController::pause()
-  {
-    _state = PAUSED;
-  }
+	void AnimationController::pause()
+	{
+		_state = PAUSED;
+	}
 
-  void AnimationController::schedule(AnimationClip* clip)
-  {
-    if (_runningClips.empty())
-    {
-      _state = RUNNING;
-    }
+	void AnimationController::schedule(AnimationClip* clip)
+	{
+		if (_runningClips.empty())
+		{
+			_state = RUNNING;
+		}
 
-    assert(clip);
-    clip->addRef();
-    _runningClips.push_back(clip);
-  }
+		assert(clip);
+		clip->addRef();
+		_runningClips.push_back(clip);
+	}
 
-  void AnimationController::unschedule(AnimationClip* clip)
-  {
-    std::list<AnimationClip*>::iterator clipItr = _runningClips.begin();
-    while (clipItr != _runningClips.end())
-    {
-      AnimationClip* rClip = (*clipItr);
-      if (rClip == clip)
-      {
-        _runningClips.erase(clipItr);
-        SAFE_RELEASE(clip);
-        break;
-      }
-      clipItr++;
-    }
+	void AnimationController::unschedule(AnimationClip* clip)
+	{
+		std::list<AnimationClip*>::iterator clipItr = _runningClips.begin();
+		while (clipItr != _runningClips.end())
+		{
+			AnimationClip* rClip = (*clipItr);
+			if (rClip == clip)
+			{
+				_runningClips.erase(clipItr);
+				SAFE_RELEASE(clip);
+				break;
+			}
+			clipItr++;
+		}
 
-    if (_runningClips.empty())
-      _state = IDLE;
-  }
+		if (_runningClips.empty())
+			_state = IDLE;
+	}
 
-  void AnimationController::update(float elapsedTime)
-  {
-    if (_state != RUNNING)
-      return;
+	void AnimationController::update(float elapsedTime)
+	{
+		if (_state != RUNNING)
+			return;
 
-    Transform::suspendTransformChanged();
+		Transform::suspendTransformChanged();
 
-    // Loop through running clips and call update() on them.
-    std::list<AnimationClip*>::iterator clipIter = _runningClips.begin();
-    while (clipIter != _runningClips.end())
-    {
-      AnimationClip* clip = (*clipIter);
-      assert(clip);
-      clip->addRef();
-      if (clip->isClipStateBitSet(AnimationClip::CLIP_IS_RESTARTED_BIT))
-      {   // If the CLIP_IS_RESTARTED_BIT is set, we should end the clip and 
-          // move it from where it is in the running clips list to the back.
-        clip->onEnd();
-        clip->setClipStateBit(AnimationClip::CLIP_IS_PLAYING_BIT);
-        _runningClips.push_back(clip);
-        clipIter = _runningClips.erase(clipIter);
-      }
-      else if (clip->update(elapsedTime))
-      {
-        clip->release();
-        clipIter = _runningClips.erase(clipIter);
-      }
-      else
-      {
-        clipIter++;
-      }
-      clip->release();
-    }
+		// Loop through running clips and call update() on them.
+		std::list<AnimationClip*>::iterator clipIter = _runningClips.begin();
+		while (clipIter != _runningClips.end())
+		{
+			AnimationClip* clip = (*clipIter);
+			assert(clip);
+			clip->addRef();
+			if (clip->isClipStateBitSet(AnimationClip::CLIP_IS_RESTARTED_BIT))
+			{   // If the CLIP_IS_RESTARTED_BIT is set, we should end the clip and 
+				// move it from where it is in the running clips list to the back.
+				clip->onEnd();
+				clip->setClipStateBit(AnimationClip::CLIP_IS_PLAYING_BIT);
+				_runningClips.push_back(clip);
+				clipIter = _runningClips.erase(clipIter);
+			}
+			else if (clip->update(elapsedTime))
+			{
+				clip->release();
+				clipIter = _runningClips.erase(clipIter);
+			}
+			else
+			{
+				clipIter++;
+			}
+			clip->release();
+		}
 
-    Transform::resumeTransformChanged();
+		Transform::resumeTransformChanged();
 
-    if (_runningClips.empty())
-      _state = IDLE;
-  }
+		if (_runningClips.empty())
+			_state = IDLE;
+	}
 
 }

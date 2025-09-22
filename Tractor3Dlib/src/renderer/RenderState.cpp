@@ -30,11 +30,6 @@ namespace tractor
 	RenderState::StateBlock* RenderState::StateBlock::_defaultState = nullptr;
 	std::vector<RenderState::AutoBindingResolver*> RenderState::_customAutoBindingResolvers;
 
-	RenderState::RenderState()
-		: _nodeBinding(nullptr), _state(nullptr), _parent(nullptr)
-	{
-	}
-
 	RenderState::~RenderState()
 	{
 		SAFE_RELEASE(_state);
@@ -49,9 +44,7 @@ namespace tractor
 	void RenderState::initialize()
 	{
 		if (StateBlock::_defaultState == nullptr)
-		{
 			StateBlock::_defaultState = StateBlock::create();
-		}
 	}
 
 	void RenderState::finalize()
@@ -64,16 +57,12 @@ namespace tractor
 		assert(name);
 
 		// Search for an existing parameter with this name.
-		MaterialParameter* param;
-		for (size_t i = 0, count = _parameters.size(); i < count; ++i)
-		{
-			param = _parameters[i];
-			assert(param);
-			if (strcmp(param->getName(), name) == 0)
-			{
-				return param;
-			}
-		}
+		auto param = std::ranges::find_if(_parameters, [name](const auto& param) {
+			return strcmp(param->getName(), name) == 0;
+			});
+
+		if (param != _parameters.end())
+			return *param;
 
 		// Create a new parameter and store it in our list.
 		return _parameters.emplace_back(new MaterialParameter(name));
@@ -97,15 +86,11 @@ namespace tractor
 
 	void RenderState::removeParameter(const char* name)
 	{
-		for (size_t i = 0, count = _parameters.size(); i < count; ++i)
+		auto it = std::ranges::find(_parameters, name, &MaterialParameter::_name);
+		if (it != _parameters.end())
 		{
-			MaterialParameter* p = _parameters[i];
-			if (p->_name == name)
-			{
-				_parameters.erase(_parameters.begin() + i);
-				SAFE_RELEASE(p);
-				break;
-			}
+			SAFE_RELEASE(*it);
+			_parameters.erase(it);
 		}
 	}
 
@@ -183,9 +168,7 @@ namespace tractor
 
 		// If we already have a node binding set, pass it to our handler now
 		if (_nodeBinding)
-		{
 			applyAutoBinding(name, autoBinding);
-		}
 	}
 
 	void RenderState::setStateBlock(StateBlock* state)
@@ -195,20 +178,15 @@ namespace tractor
 			SAFE_RELEASE(_state);
 
 			_state = state;
-
 			if (_state)
-			{
 				_state->addRef();
-			}
 		}
 	}
 
 	RenderState::StateBlock* RenderState::getStateBlock() const
 	{
-		if (_state == nullptr)
-		{
+		if (not _state)
 			_state = StateBlock::create();
-		}
 
 		return _state;
 	}
@@ -220,12 +198,9 @@ namespace tractor
 			_nodeBinding = node;
 
 			if (_nodeBinding)
-			{
-				// Apply all existing auto-bindings using this node.
+			{   // Apply all existing auto-bindings using this node.
 				for (const auto& [key, value] : _autoBindings)
-				{
 					applyAutoBinding(key.c_str(), value.c_str());
-				}
 
 				// Alternatives
 				//std::ranges::for_each(_autoBindings, [this](const auto& binding) {
@@ -249,6 +224,23 @@ namespace tractor
 		MaterialParameter* param = getParameter(uniformName);
 		assert(param);
 
+		// Use a map to associate autoBinding strings with their corresponding bindValue calls
+		static const std::unordered_map<std::string, std::function<void(MaterialParameter*, RenderState*)>> autoBindingMap =
+		{
+			{"WORLD_MATRIX", [](MaterialParameter* param, RenderState* rs) { param->bindValue(rs, &RenderState::autoBindingGetWorldMatrix); }},
+			{"VIEW_MATRIX", [](MaterialParameter* param, RenderState* rs) { param->bindValue(rs, &RenderState::autoBindingGetViewMatrix); }},
+			{"PROJECTION_MATRIX", [](MaterialParameter* param, RenderState* rs) { param->bindValue(rs, &RenderState::autoBindingGetProjectionMatrix); }},
+			{"WORLD_VIEW_MATRIX", [](MaterialParameter* param, RenderState* rs) { param->bindValue(rs, &RenderState::autoBindingGetWorldViewMatrix); }},
+			{"VIEW_PROJECTION_MATRIX", [](MaterialParameter* param, RenderState* rs) { param->bindValue(rs, &RenderState::autoBindingGetViewProjectionMatrix); }},
+			{"WORLD_VIEW_PROJECTION_MATRIX", [](MaterialParameter* param, RenderState* rs) { param->bindValue(rs, &RenderState::autoBindingGetWorldViewProjectionMatrix); }},
+			{"INVERSE_TRANSPOSE_WORLD_MATRIX", [](MaterialParameter* param, RenderState* rs) { param->bindValue(rs, &RenderState::autoBindingGetInverseTransposeWorldMatrix); }},
+			{"INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX", [](MaterialParameter* param, RenderState* rs) { param->bindValue(rs, &RenderState::autoBindingGetInverseTransposeWorldViewMatrix); }},
+			{"CAMERA_WORLD_POSITION", [](MaterialParameter* param, RenderState* rs) { param->bindValue(rs, &RenderState::autoBindingGetCameraWorldPosition); }},
+			{"CAMERA_VIEW_POSITION", [](MaterialParameter* param, RenderState* rs) { param->bindValue(rs, &RenderState::autoBindingGetCameraViewPosition); }},
+			{"MATRIX_PALETTE", [](MaterialParameter* param, RenderState* rs) { param->bindValue(rs, &RenderState::autoBindingGetMatrixPalette, &RenderState::autoBindingGetMatrixPaletteSize); }},
+			{"SCENE_AMBIENT_COLOR", [](MaterialParameter* param, RenderState* rs) { param->bindValue(rs, &RenderState::autoBindingGetAmbientColor); }}
+		};
+
 		bool bound = false;
 
 		// First attempt to resolve the binding using custom registered resolvers.
@@ -267,67 +259,19 @@ namespace tractor
 		{
 			bound = true;
 
-			if (strcmp(autoBinding, "WORLD_MATRIX") == 0)
-			{
-				param->bindValue(this, &RenderState::autoBindingGetWorldMatrix);
-			}
-			else if (strcmp(autoBinding, "VIEW_MATRIX") == 0)
-			{
-				param->bindValue(this, &RenderState::autoBindingGetViewMatrix);
-			}
-			else if (strcmp(autoBinding, "PROJECTION_MATRIX") == 0)
-			{
-				param->bindValue(this, &RenderState::autoBindingGetProjectionMatrix);
-			}
-			else if (strcmp(autoBinding, "WORLD_VIEW_MATRIX") == 0)
-			{
-				param->bindValue(this, &RenderState::autoBindingGetWorldViewMatrix);
-			}
-			else if (strcmp(autoBinding, "VIEW_PROJECTION_MATRIX") == 0)
-			{
-				param->bindValue(this, &RenderState::autoBindingGetViewProjectionMatrix);
-			}
-			else if (strcmp(autoBinding, "WORLD_VIEW_PROJECTION_MATRIX") == 0)
-			{
-				param->bindValue(this, &RenderState::autoBindingGetWorldViewProjectionMatrix);
-			}
-			else if (strcmp(autoBinding, "INVERSE_TRANSPOSE_WORLD_MATRIX") == 0)
-			{
-				param->bindValue(this, &RenderState::autoBindingGetInverseTransposeWorldMatrix);
-			}
-			else if (strcmp(autoBinding, "INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX") == 0)
-			{
-				param->bindValue(this, &RenderState::autoBindingGetInverseTransposeWorldViewMatrix);
-			}
-			else if (strcmp(autoBinding, "CAMERA_WORLD_POSITION") == 0)
-			{
-				param->bindValue(this, &RenderState::autoBindingGetCameraWorldPosition);
-			}
-			else if (strcmp(autoBinding, "CAMERA_VIEW_POSITION") == 0)
-			{
-				param->bindValue(this, &RenderState::autoBindingGetCameraViewPosition);
-			}
-			else if (strcmp(autoBinding, "MATRIX_PALETTE") == 0)
-			{
-				param->bindValue(this, &RenderState::autoBindingGetMatrixPalette, &RenderState::autoBindingGetMatrixPaletteSize);
-			}
-			else if (strcmp(autoBinding, "SCENE_AMBIENT_COLOR") == 0)
-			{
-				param->bindValue(this, &RenderState::autoBindingGetAmbientColor);
-			}
+			if (auto it = autoBindingMap.find(autoBinding); it != autoBindingMap.end())
+				it->second(param, this);
 			else
 			{
 				bound = false;
 				GP_WARN("Unsupported auto binding type (%s).", autoBinding);
 			}
+
 		}
 
-		if (bound)
-		{
-			// Mark parameter as an auto binding
-			if (param->_type == MaterialParameter::METHOD && param->_value.method)
-				param->_value.method->_autoBinding = true;
-		}
+		// Mark parameter as an auto binding
+		if (bound && param->_type == MaterialParameter::METHOD && param->_value.method)
+			param->_value.method->_autoBinding = true;
 	}
 
 	const Matrix& RenderState::autoBindingGetWorldMatrix() const
@@ -420,9 +364,7 @@ namespace tractor
 		while (rs)
 		{
 			if (rs->_state)
-			{
 				stateOverrideBits |= rs->_state->_bits;
-			}
 			rs = rs->_parent;
 		}
 
@@ -441,28 +383,22 @@ namespace tractor
 			}
 
 			if (rs->_state)
-			{
 				rs->_state->bindNoRestore();
-			}
 		}
 	}
 
-	RenderState* RenderState::getTopmost(RenderState* below)
+	RenderState* RenderState::getTopmost(RenderState* below) noexcept
 	{
 		RenderState* rs = this;
+		// Nothing below ourself.
 		if (rs == below)
-		{
-			// Nothing below ourself.
 			return nullptr;
-		}
 
 		while (rs)
 		{
+			// Stop traversing up here.
 			if (rs->_parent == below || rs->_parent == nullptr)
-			{
-				// Stop traversing up here.
 				return rs;
-			}
 			rs = rs->_parent;
 		}
 
@@ -475,9 +411,7 @@ namespace tractor
 
 		// Clone parameters
 		for (const auto& [parameter, binder] : _autoBindings)
-		{
 			renderState->setParameterAutoBinding(parameter.c_str(), binder.c_str());
-		}
 
 		for (auto& param : _parameters | std::views::filter([](const auto& param) {
 			// If this parameter is a method binding auto binding, don't clone it - it will get setup automatically
@@ -1063,149 +997,105 @@ namespace tractor
 	{
 		_blendEnabled = enabled;
 		if (!enabled)
-		{
 			_bits &= ~RS_BLEND;
-		}
 		else
-		{
 			_bits |= RS_BLEND;
-		}
 	}
 
 	void RenderState::StateBlock::setBlendSrc(Blend blend)
 	{
 		_blendSrc = blend;
 		if (_blendSrc == BLEND_ONE && _blendDst == BLEND_ZERO)
-		{
 			// Default blend func
 			_bits &= ~RS_BLEND_FUNC;
-		}
 		else
-		{
 			_bits |= RS_BLEND_FUNC;
-		}
 	}
 
 	void RenderState::StateBlock::setBlendDst(Blend blend)
 	{
 		_blendDst = blend;
 		if (_blendSrc == BLEND_ONE && _blendDst == BLEND_ZERO)
-		{
 			// Default blend func
 			_bits &= ~RS_BLEND_FUNC;
-		}
 		else
-		{
 			_bits |= RS_BLEND_FUNC;
-		}
 	}
 
 	void RenderState::StateBlock::setCullFace(bool enabled)
 	{
 		_cullFaceEnabled = enabled;
 		if (!enabled)
-		{
 			_bits &= ~RS_CULL_FACE;
-		}
 		else
-		{
 			_bits |= RS_CULL_FACE;
-		}
 	}
 
 	void RenderState::StateBlock::setCullFaceSide(CullFaceSide side)
 	{
 		_cullFaceSide = side;
 		if (_cullFaceSide == CULL_FACE_SIDE_BACK)
-		{
 			// Default cull side
 			_bits &= ~RS_CULL_FACE_SIDE;
-		}
 		else
-		{
 			_bits |= RS_CULL_FACE_SIDE;
-		}
 	}
 
 	void RenderState::StateBlock::setFrontFace(FrontFace winding)
 	{
 		_frontFace = winding;
 		if (_frontFace == FRONT_FACE_CCW)
-		{
 			// Default front face
 			_bits &= ~RS_FRONT_FACE;
-		}
 		else
-		{
 			_bits |= RS_FRONT_FACE;
-		}
 	}
 
 	void RenderState::StateBlock::setDepthTest(bool enabled)
 	{
 		_depthTestEnabled = enabled;
 		if (!enabled)
-		{
 			_bits &= ~RS_DEPTH_TEST;
-		}
 		else
-		{
 			_bits |= RS_DEPTH_TEST;
-		}
 	}
 
 	void RenderState::StateBlock::setDepthWrite(bool enabled)
 	{
 		_depthWriteEnabled = enabled;
 		if (enabled)
-		{
 			_bits &= ~RS_DEPTH_WRITE;
-		}
 		else
-		{
 			_bits |= RS_DEPTH_WRITE;
-		}
 	}
 
 	void RenderState::StateBlock::setDepthFunction(DepthFunction func)
 	{
 		_depthFunction = func;
 		if (_depthFunction == DEPTH_LESS)
-		{
 			// Default depth function
 			_bits &= ~RS_DEPTH_FUNC;
-		}
 		else
-		{
 			_bits |= RS_DEPTH_FUNC;
-		}
 	}
 
 	void RenderState::StateBlock::setStencilTest(bool enabled)
 	{
 		_stencilTestEnabled = enabled;
 		if (!enabled)
-		{
 			_bits &= ~RS_STENCIL_TEST;
-		}
 		else
-		{
 			_bits |= RS_STENCIL_TEST;
-		}
 	}
 
 	void RenderState::StateBlock::setStencilWrite(unsigned int mask)
 	{
 		_stencilWrite = mask;
 		if (mask == RS_ALL_ONES)
-		{
 			// Default stencil write
 			_bits &= ~RS_STENCIL_WRITE;
-		}
 		else
-		{
 			_bits |= RS_STENCIL_WRITE;
-		}
 	}
 
 	void RenderState::StateBlock::setStencilFunction(StencilFunction func, int ref, unsigned int mask)
@@ -1214,14 +1104,10 @@ namespace tractor
 		_stencilFunctionRef = ref;
 		_stencilFunctionMask = mask;
 		if (func == STENCIL_ALWAYS && ref == 0 && mask == RS_ALL_ONES)
-		{
 			// Default stencil function
 			_bits &= ~RS_STENCIL_FUNC;
-		}
 		else
-		{
 			_bits |= RS_STENCIL_FUNC;
-		}
 	}
 
 	void RenderState::StateBlock::setStencilOperation(StencilOperation sfail, StencilOperation dpfail, StencilOperation dppass)
@@ -1230,14 +1116,10 @@ namespace tractor
 		_stencilOpDpfail = dpfail;
 		_stencilOpDppass = dppass;
 		if (sfail == STENCIL_OP_KEEP && dpfail == STENCIL_OP_KEEP && dppass == STENCIL_OP_KEEP)
-		{
 			// Default stencil operation
 			_bits &= ~RS_STENCIL_OP;
-		}
 		else
-		{
 			_bits |= RS_STENCIL_OP;
-		}
 	}
 
 	RenderState::AutoBindingResolver::AutoBindingResolver()

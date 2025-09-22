@@ -454,7 +454,7 @@ namespace tractor
     std::string _materialPath;
     unsigned int _referenceCount;
     Reference* _references;
-    Stream* _stream;
+    std::unique_ptr<Stream> _stream{nullptr};
 
     std::vector<MeshSkinData*> _meshSkins;
     std::map<std::string, Node*>* _trackedNodes;

@@ -413,10 +413,9 @@ void ParticlesSample::saveFile()
     "}\n";
 
   std::string text = s.str();
-  Stream* stream = FileSystem::open(filename.c_str(), FileSystem::WRITE);
+  auto stream = FileSystem::open(filename.c_str(), FileSystem::WRITE);
   stream->write(text.c_str(), 1, text.length());
   stream->close();
-  SAFE_DELETE(stream);
 }
 
 void ParticlesSample::controlEvent(Control* control, EventType evt)

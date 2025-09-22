@@ -36,7 +36,7 @@ namespace tractor
 	static std::vector<Bundle*> __bundleCache;
 
 	Bundle::Bundle(const char* path) :
-		_path(path), _referenceCount(0), _references(nullptr), _stream(nullptr), _trackedNodes(nullptr)
+		_path(path), _referenceCount(0), _references(nullptr), _trackedNodes(nullptr)
 	{
 	}
 
@@ -52,11 +52,6 @@ namespace tractor
 		}
 
 		SAFE_DELETE_ARRAY(_references);
-
-		if (_stream)
-		{
-			SAFE_DELETE(_stream);
-		}
 	}
 
 	unsigned int Bundle::getVersionMajor() const
@@ -186,7 +181,7 @@ namespace tractor
 		}
 
 		// Open the bundle.
-		Stream* stream = FileSystem::open(path);
+		auto stream = FileSystem::open(path);
 		if (!stream)
 		{
 			GP_WARN("Failed to open file '%s'.", path);
@@ -197,7 +192,6 @@ namespace tractor
 		char sig[9];
 		if (stream->read(sig, 1, 9) != 9 || memcmp(sig, "\xABGPB\xBB\r\n\x1A\n", 9) != 0)
 		{
-			SAFE_DELETE(stream);
 			GP_WARN("Invalid GPB header for bundle '%s'.", path);
 			return nullptr;
 		}
@@ -206,14 +200,12 @@ namespace tractor
 		unsigned char version[2];
 		if (stream->read(version, 1, 2) != 2)
 		{
-			SAFE_DELETE(stream);
 			GP_WARN("Failed to read GPB version for bundle '%s'.", path);
 			return nullptr;
 		}
 		// Check for the minimal 
 		if (version[0] != BUNDLE_VERSION_MAJOR_REQUIRED || version[1] < BUNDLE_VERSION_MINOR_REQUIRED)
 		{
-			SAFE_DELETE(stream);
 			GP_WARN("Unsupported version (%d.%d) for bundle '%s' (expected %d.%d).", (int)version[0], (int)version[1], path, BUNDLE_VERSION_MAJOR_REQUIRED, BUNDLE_VERSION_MINOR_REQUIRED);
 			return nullptr;
 		}
@@ -222,7 +214,6 @@ namespace tractor
 		unsigned int refCount;
 		if (stream->read(&refCount, 4, 1) != 1)
 		{
-			SAFE_DELETE(stream);
 			GP_WARN("Failed to read ref table for bundle '%s'.", path);
 			return nullptr;
 		}
@@ -231,11 +222,10 @@ namespace tractor
 		Reference* refs = new Reference[refCount];
 		for (unsigned int i = 0; i < refCount; ++i)
 		{
-			if ((refs[i].id = readString(stream)).empty() ||
+			if ((refs[i].id = readString(stream.get())).empty() ||
 				stream->read(&refs[i].type, 4, 1) != 1 ||
 				stream->read(&refs[i].offset, 4, 1) != 1)
 			{
-				SAFE_DELETE(stream);
 				GP_WARN("Failed to read ref number %d for bundle '%s'.", i, path);
 				SAFE_DELETE_ARRAY(refs);
 				return nullptr;
@@ -248,7 +238,7 @@ namespace tractor
 		bundle->_version[1] = version[1];
 		bundle->_referenceCount = refCount;
 		bundle->_references = refs;
-		bundle->_stream = stream;
+		bundle->_stream = std::move(stream);
 
 		return bundle;
 	}
@@ -437,7 +427,7 @@ namespace tractor
 			}
 		}
 		// Read active camera.
-		std::string xref = readString(_stream);
+		std::string xref = readString(_stream.get());
 		if (xref.length() > 1 && xref[0] == '#') // TODO: Handle full xrefs
 		{
 			Node* node = scene->findNode(xref.c_str() + 1, true);
@@ -535,7 +525,7 @@ namespace tractor
 
 				for (unsigned int j = 0; j < animationCount; j++)
 				{
-					const std::string id = readString(_stream);
+					const std::string id = readString(_stream.get());
 
 					// Read the number of animation channels in this animation.
 					unsigned int animationChannelCount;
@@ -550,7 +540,7 @@ namespace tractor
 					for (unsigned int k = 0; k < animationChannelCount; k++)
 					{
 						// Read target id.
-						std::string targetId = readString(_stream);
+						std::string targetId = readString(_stream.get());
 						if (targetId.empty())
 						{
 							GP_ERROR("Failed to read target id for animation '%s'.", id.c_str());
@@ -661,7 +651,7 @@ namespace tractor
 			GP_ERROR("Failed to skip over node transform for node '%s'.", id);
 			return false;
 		}
-		readString(_stream);
+		readString(_stream.get());
 
 		// Skip over the node's children.
 		unsigned int childrenCount;
@@ -755,7 +745,7 @@ namespace tractor
 		setTransform(*transform, node);
 
 		// Skip the parent ID.
-		readString(_stream);
+		readString(_stream.get());
 
 		// Read children.
 		unsigned int childrenCount;
@@ -972,7 +962,7 @@ namespace tractor
 
 	Model* Bundle::readModel(const char* nodeId)
 	{
-		std::string xref = readString(_stream);
+		std::string xref = readString(_stream.get());
 		if (xref.length() > 1 && xref[0] == '#') // TODO: Handle full xrefs
 		{
 			auto mesh = loadMesh(xref.c_str() + 1, nodeId);
@@ -1007,7 +997,7 @@ namespace tractor
 				{
 					for (unsigned int i = 0; i < materialCount; ++i)
 					{
-						std::string materialName = readString(_stream);
+						std::string materialName = readString(_stream.get());
 						std::string materialPath = getMaterialPath();
 						if (materialPath.length() > 0)
 						{
@@ -1069,7 +1059,7 @@ namespace tractor
 		// Read joint xref strings for all joints in the list.
 		for (unsigned int i = 0; i < jointCount; i++)
 		{
-			skinData->joints.push_back(readString(_stream));
+			skinData->joints.push_back(readString(_stream.get()));
 		}
 
 		// Read bind poses.
@@ -1180,7 +1170,7 @@ namespace tractor
 								GP_ERROR("Failed to skip over node type and transform for node '%s' in bundle '%s'.", nodeId.c_str(), _path.c_str());
 								return;
 							}
-							std::string parentID = readString(_stream);
+							std::string parentID = readString(_stream.get());
 
 							if (!parentID.empty())
 								nodeId = parentID;
@@ -1216,7 +1206,7 @@ namespace tractor
 
 	void Bundle::readAnimation(Scene* scene)
 	{
-		const std::string animationId = readString(_stream);
+		const std::string animationId = readString(_stream.get());
 
 		// Read the number of animation channels in this animation.
 		unsigned int animationChannelCount;
@@ -1254,7 +1244,7 @@ namespace tractor
 		assert(animationId);
 
 		// Read target id.
-		std::string targetId = readString(_stream);
+		std::string targetId = readString(_stream.get());
 		if (targetId.empty())
 		{
 			GP_ERROR("Failed to read target id for animation '%s'.", animationId);
@@ -1647,7 +1637,7 @@ namespace tractor
 		}
 
 		// Read font family.
-		std::string family = readString(_stream);
+		std::string family = readString(_stream.get());
 		if (family.empty())
 		{
 			GP_ERROR("Failed to read font family for font '%s'.", id);
@@ -1686,7 +1676,7 @@ namespace tractor
 			}
 
 			// Read character set.
-			std::string charset = readString(_stream);
+			std::string charset = readString(_stream.get());
 
 			// Read font glyphs.
 			unsigned int glyphCount;

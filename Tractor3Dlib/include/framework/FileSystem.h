@@ -159,7 +159,7 @@ namespace tractor
      *
      * @script{ignore}
      */
-    static Stream* open(const char* path, size_t streamMode = READ);
+    static std::unique_ptr<Stream> open(const char* path, size_t streamMode = READ);
 
     /**
      * Opens the specified file.

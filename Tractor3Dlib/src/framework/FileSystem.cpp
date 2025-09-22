@@ -54,7 +54,7 @@ namespace tractor
 	public:
 		friend class FileSystem;
 
-		~FileStream();
+		~FileStream() = default; // Default destructor, no explicit close call needed
 		virtual bool canRead();
 		virtual bool canWrite();
 		virtual bool canSeek();
@@ -68,13 +68,24 @@ namespace tractor
 		virtual bool seek(long int offset, int origin);
 		virtual bool rewind();
 
-		static FileStream* create(const char* filePath, const char* mode);
+		static std::unique_ptr<FileStream> create(const char* filePath, const char* mode);
 
 	private:
 		FileStream(FILE* file);
 
 	private:
-		FILE* _file;
+		struct FileCloser
+		{
+			void operator()(FILE* file) const
+			{
+				if (file)
+				{
+					fclose(file);
+				}
+			}
+		};
+
+		std::unique_ptr<FILE, FileCloser> _file;
 		bool _canRead;
 		bool _canWrite;
 	};
@@ -194,7 +205,7 @@ namespace tractor
 
 	}
 
-	Stream* FileSystem::open(const char* path, size_t streamMode)
+	std::unique_ptr<Stream> FileSystem::open(const char* path, size_t streamMode)
 	{
 		char modeStr[] = "rb";
 		if ((streamMode & WRITE) != 0)
@@ -202,8 +213,8 @@ namespace tractor
 
 		std::string fullPath;
 		getFullPath(path, fullPath);
-		FileStream* stream = FileStream::create(fullPath.c_str(), modeStr);
-		return stream;
+		auto stream = FileStream::create(fullPath.c_str(), modeStr);
+		return std::move(stream);
 	}
 
 	FILE* FileSystem::openFile(const char* filePath, const char* mode)
@@ -330,20 +341,12 @@ namespace tractor
 
 	}
 
-	FileStream::~FileStream()
-	{
-		if (_file)
-		{
-			close();
-		}
-	}
-
-	FileStream* FileStream::create(const char* filePath, const char* mode)
+	std::unique_ptr<FileStream> FileStream::create(const char* filePath, const char* mode)
 	{
 		FILE* file = fopen(filePath, mode);
 		if (file)
 		{
-			FileStream* stream = new FileStream(file);
+			auto stream = std::unique_ptr<FileStream>(new FileStream(file));
 			const char* s = mode;
 			while (s != nullptr && *s != '\0')
 			{
@@ -376,35 +379,33 @@ namespace tractor
 
 	void FileStream::close()
 	{
-		if (_file)
-			fclose(_file);
-		_file = nullptr;
+		_file.reset(); // Explicitly reset the unique_ptr to close the file
 	}
 
 	size_t FileStream::read(void* ptr, size_t size, size_t count)
 	{
 		if (!_file)
 			return 0;
-		return fread(ptr, size, count, _file);
+		return fread(ptr, size, count, _file.get());
 	}
 
 	char* FileStream::readLine(char* str, int num)
 	{
 		if (!_file)
 			return 0;
-		return fgets(str, num, _file);
+		return fgets(str, num, _file.get());
 	}
 
 	size_t FileStream::write(const void* ptr, size_t size, size_t count)
 	{
 		if (!_file)
 			return 0;
-		return fwrite(ptr, size, count, _file);
+		return fwrite(ptr, size, count, _file.get());
 	}
 
 	bool FileStream::eof()
 	{
-		if (!_file || feof(_file))
+		if (!_file || feof(_file.get()))
 			return true;
 		return ((size_t)position()) >= length();
 	}
@@ -428,21 +429,21 @@ namespace tractor
 	{
 		if (!_file)
 			return -1;
-		return ftell(_file);
+		return ftell(_file.get());
 	}
 
 	bool FileStream::seek(long int offset, int origin)
 	{
 		if (!_file)
 			return false;
-		return fseek(_file, offset, origin) == 0;
+		return fseek(_file.get(), offset, origin) == 0;
 	}
 
 	bool FileStream::rewind()
 	{
 		if (canSeek())
 		{
-			::rewind(_file);
+			::rewind(_file.get());
 			return true;
 		}
 		return false;

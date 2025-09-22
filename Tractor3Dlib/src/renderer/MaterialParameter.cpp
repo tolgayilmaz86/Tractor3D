@@ -6,7 +6,7 @@ namespace tractor
 {
 
 	MaterialParameter::MaterialParameter(const char* name) :
-		_type(MaterialParameter::NONE), _count(1), _dynamic(false), _name(name ? name : ""), _uniform(nullptr), _loggerDirtyBits(0)
+		_type(MaterialParameter::NONE), _name(name)
 	{
 		clearValue();
 	}
@@ -239,9 +239,8 @@ namespace tractor
 		clearValue();
 
 		for (unsigned int i = 0; i < count; ++i)
-		{
 			const_cast<Texture::Sampler*>(samplers[i])->addRef();
-		}
+
 		_value.samplerArrayValue = samplers;
 		_count = count;
 		_type = MaterialParameter::SAMPLER_ARRAY;
@@ -278,9 +277,7 @@ namespace tractor
 			_dynamic = true;
 		}
 		else
-		{
 			_value.floatPtrValue = const_cast<float*> (values);
-		}
 
 		_count = count;
 		_type = MaterialParameter::FLOAT_ARRAY;
@@ -303,9 +300,7 @@ namespace tractor
 			_dynamic = true;
 		}
 		else
-		{
 			_value.intPtrValue = const_cast<int*> (values);
-		}
 
 		_count = count;
 		_type = MaterialParameter::INT_ARRAY;
@@ -328,9 +323,7 @@ namespace tractor
 			_dynamic = true;
 		}
 		else
-		{
 			_value.floatPtrValue = const_cast<float*> (&values[0].x);
-		}
 
 		_count = count;
 		_type = MaterialParameter::VECTOR2;
@@ -353,9 +346,7 @@ namespace tractor
 			_dynamic = true;
 		}
 		else
-		{
 			_value.floatPtrValue = const_cast<float*> (&values[0].x);
-		}
 
 		_count = count;
 		_type = MaterialParameter::VECTOR3;
@@ -378,9 +369,7 @@ namespace tractor
 			_dynamic = true;
 		}
 		else
-		{
 			_value.floatPtrValue = const_cast<float*> (&values[0].x);
-		}
 
 		_count = count;
 		_type = MaterialParameter::VECTOR4;
@@ -403,9 +392,7 @@ namespace tractor
 			_dynamic = true;
 		}
 		else
-		{
 			_value.floatPtrValue = const_cast<Matrix&> (values[0]).m;
-		}
 
 		_count = count;
 		_type = MaterialParameter::MATRIX;
@@ -433,14 +420,10 @@ namespace tractor
 			_dynamic = true;
 		}
 		else
-		{
 			_value.samplerArrayValue = values;
-		}
 
 		for (unsigned int i = 0; i < count; ++i)
-		{
 			const_cast<Texture::Sampler*>(_value.samplerArrayValue[i])->addRef();
-		}
 
 		_count = count;
 		_type = MaterialParameter::SAMPLER_ARRAY;
@@ -781,56 +764,36 @@ namespace tractor
 		{
 			Vector2* value = reinterpret_cast<Vector2*>(_value.floatPtrValue);
 			if (_count == 1)
-			{
-				assert(value);
 				materialParameter->setValue(*value);
-			}
 			else
-			{
 				materialParameter->setValue(value, _count);
-			}
 			break;
 		}
 		case VECTOR3:
 		{
 			Vector3* value = reinterpret_cast<Vector3*>(_value.floatPtrValue);
 			if (_count == 1)
-			{
-				assert(value);
 				materialParameter->setValue(*value);
-			}
 			else
-			{
 				materialParameter->setValue(value, _count);
-			}
 			break;
 		}
 		case VECTOR4:
 		{
 			Vector4* value = reinterpret_cast<Vector4*>(_value.floatPtrValue);
 			if (_count == 1)
-			{
-				assert(value);
 				materialParameter->setValue(*value);
-			}
 			else
-			{
 				materialParameter->setValue(value, _count);
-			}
 			break;
 		}
 		case MATRIX:
 		{
 			Matrix* value = reinterpret_cast<Matrix*>(_value.floatPtrValue);
 			if (_count == 1)
-			{
-				assert(value);
 				materialParameter->setValue(*value);
-			}
 			else
-			{
 				materialParameter->setValue(value, _count);
-			}
 			break;
 		}
 		case SAMPLER:

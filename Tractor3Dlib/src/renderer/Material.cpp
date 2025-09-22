@@ -9,12 +9,6 @@
 
 namespace tractor
 {
-
-	Material::Material() :
-		_currentTechnique(nullptr)
-	{
-	}
-
 	Material::~Material()
 	{
 		// Destroy all the techniques.
@@ -86,9 +80,7 @@ namespace tractor
 		{
 			Technique* t = material->getTechniqueByIndex(0);
 			if (t)
-			{
 				material->_currentTechnique = t;
-			}
 		}
 		return material;
 	}
@@ -154,10 +146,7 @@ namespace tractor
 		{
 			Technique* t = _techniques[i];
 			assert(t);
-			if (strcmp(t->getId(), id) == 0)
-			{
-				return t;
-			}
+			if (strcmp(t->getId(), id) == 0) return t;
 		}
 
 		return nullptr;
@@ -171,10 +160,7 @@ namespace tractor
 	void Material::setTechnique(const char* id)
 	{
 		Technique* t = getTechnique(id);
-		if (t)
-		{
-			_currentTechnique = t;
-		}
+		if (t) _currentTechnique = t;
 	}
 
 	void Material::setNodeBinding(Node* node)
@@ -182,9 +168,7 @@ namespace tractor
 		RenderState::setNodeBinding(node);
 
 		for (size_t i = 0, count = _techniques.size(); i < count; ++i)
-		{
 			_techniques[i]->setNodeBinding(node);
-		}
 	}
 
 	Material* Material::clone(NodeCloneContext& context) const

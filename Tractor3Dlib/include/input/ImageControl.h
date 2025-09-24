@@ -42,14 +42,14 @@ namespace tractor
      * @return The type name of this class: "ImageControl"
      * @see ScriptTarget::getTypeName()
      */
-    const char* getTypeName() const;
+    const std::string& getTypeName() const;
 
     /**
      * Set the path of the image for this ImageControl to display.
      *
      * @param path The path to the image.
      */
-    void setImage(const char* path);
+    void setImage(const std::string& path);
 
     /**
      * Set the source region of this ImageControl.  This is the region of the file,
@@ -121,7 +121,7 @@ namespace tractor
       */
     static Control* create(Theme::Style* style, Properties* properties = nullptr);
 
-    void initialize(const char* typeName, Theme::Style* style, Properties* properties);
+    void initialize(const std::string& typeName, Theme::Style* style, Properties* properties);
 
     /**
      * @see Control::drawImages

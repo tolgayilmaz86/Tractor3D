@@ -40,7 +40,7 @@ namespace tractor
 		}
 	}
 
-	const char* TextBox::getTypeName() const
+	const std::string& TextBox::getTypeName() const
 	{
 		return "TextBox";
 	}
@@ -74,7 +74,8 @@ namespace tractor
 
 	bool TextBox::touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex)
 	{
-		if (getState() == ACTIVE) {
+		if (getState() == ACTIVE)
+		{
 			switch (evt)
 			{
 			case Touch::TOUCH_PRESS:
@@ -397,7 +398,7 @@ namespace tractor
 		return 0;
 	}
 
-	void TextBox::setText(char const* text)
+	void TextBox::setText(const std::string& text)
 	{
 		Label::setText(text);
 		if (_caretLocation > _text.length())
@@ -500,18 +501,18 @@ namespace tractor
 		return _inputMode;
 	}
 
-	TextBox::InputMode TextBox::getInputMode(const char* inputMode)
+	TextBox::InputMode TextBox::getInputMode(const std::string& inputMode)
 	{
-		if (!inputMode)
+		if (inputMode.empty())
 		{
 			return TextBox::TEXT;
 		}
 
-		if (strcmp(inputMode, "TEXT") == 0)
+		if (inputMode == "TEXT")
 		{
 			return TextBox::TEXT;
 		}
-		else if (strcmp(inputMode, "PASSWORD") == 0)
+		else if (inputMode == "PASSWORD")
 		{
 			return TextBox::PASSWORD;
 		}
@@ -527,7 +528,8 @@ namespace tractor
 	std::string TextBox::getDisplayedText() const
 	{
 		std::string displayedText;
-		switch (_inputMode) {
+		switch (_inputMode)
+		{
 		case PASSWORD:
 			displayedText.insert((size_t)0, _text.length(), _passwordChar);
 			break;

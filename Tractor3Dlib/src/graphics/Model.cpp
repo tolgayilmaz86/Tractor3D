@@ -7,14 +7,8 @@
 
 namespace tractor
 {
-
-  Model::Model() : Drawable(),
-    _material(nullptr), _partCount(0), _partMaterials(nullptr), _skin(nullptr)
-  {
-  }
-
   Model::Model(std::shared_ptr<Mesh> mesh) : Drawable(),
-    _mesh(mesh), _material(nullptr), _partCount(0), _partMaterials(nullptr), _skin(nullptr)
+    _mesh(mesh)
   {
     assert(_mesh);
     _partCount = _mesh->getPartCount();
@@ -162,7 +156,7 @@ namespace tractor
     }
   }
 
-  Material* Model::setMaterial(const char* vshPath, const char* fshPath, const char* defines, int partIndex)
+  Material* Model::setMaterial(const std::string& vshPath, const std::string& fshPath, const std::string& defines, int partIndex)
   {
     // Try to create a Material with the given parameters.
     Material* material = Material::create(vshPath, fshPath, defines);
@@ -181,7 +175,7 @@ namespace tractor
     return material;
   }
 
-  Material* Model::setMaterial(const char* materialPath, int partIndex)
+  Material* Model::setMaterial(const std::string& materialPath, int partIndex)
   {
     // Try to create a Material from the specified material file.
     Material* material = Material::create(materialPath);

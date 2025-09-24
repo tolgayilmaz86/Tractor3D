@@ -158,7 +158,7 @@ namespace tractor
       /**
        * Gets the ID of the ThemeImage.
        */
-      const char* getId() const;
+      const std::string& getId() const;
 
       /**
        * Gets the UV coordinates for the ThemeImage.
@@ -197,7 +197,7 @@ namespace tractor
      * @param url The URL pointing to the Properties object defining the theme.
      * @script{create}
      */
-    static Theme* create(const char* url);
+    static Theme* create(const std::string& url);
 
     /**
      * Returns the default theme.
@@ -213,7 +213,7 @@ namespace tractor
      *
      * @return The style with the specified ID, or nullptr if it does not exist.
      */
-    Theme::Style* getStyle(const char* id) const;
+    Theme::Style* getStyle(const std::string& id) const;
 
     /**
      * Get the empty style.  Used when a control does not specify a style.
@@ -247,9 +247,9 @@ namespace tractor
 
     public:
 
-      const char* getId() const;
+      const std::string& getId() const;
 
-      ThemeImage* getImage(const char* imageId) const;
+      ThemeImage* getImage(const std::string& imageId) const;
 
     private:
 
@@ -292,7 +292,7 @@ namespace tractor
        *
        * @return This skin's ID.
        */
-      const char* getId() const;
+      const std::string& getId() const;
 
       /**
        * Gets this skin's border.
@@ -333,7 +333,7 @@ namespace tractor
        */
       Skin& operator=(const Skin&);
 
-      static Skin* create(const char* id, float tw, float th, const Rectangle& region, const Theme::Border& border, const Vector4& color);
+      static Skin* create(const std::string& id, float tw, float th, const Rectangle& region, const Theme::Border& border, const Vector4& color);
 
       void setRegion(const Rectangle& region, float tw, float th);
 

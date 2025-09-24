@@ -283,7 +283,7 @@ namespace tractor
 			 *
 			 * @return The ScriptListener, or nullptr if the function could not be loaded.
 			 */
-			static ScriptListener* create(const char* url);
+			static ScriptListener* create(const std::string& url);
 
 			/**
 			 * @see PhysicsCollisionObject::CollisionListener

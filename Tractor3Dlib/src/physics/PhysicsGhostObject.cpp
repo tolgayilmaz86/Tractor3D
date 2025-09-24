@@ -49,20 +49,20 @@ namespace tractor
 	PhysicsGhostObject* PhysicsGhostObject::create(Node* node, Properties* properties)
 	{
 		// Check if the properties is valid and has a valid namespace.
-		if (!properties || !(strcmp(properties->getNamespace(), "collisionObject") == 0))
+		if (!properties || properties->getNamespace() != "collisionObject")
 		{
 			GP_ERROR("Failed to load ghost object from properties object: must be non-null object and have namespace equal to 'collisionObject'.");
 			return nullptr;
 		}
 
 		// Check that the type is specified and correct.
-		const char* type = properties->getString("type");
-		if (!type)
+		auto type = properties->getString("type");
+		if (type.empty())
 		{
 			GP_ERROR("Failed to load ghost object from properties object; required attribute 'type' is missing.");
 			return nullptr;
 		}
-		if (strcmp(type, "GHOST_OBJECT") != 0)
+		if (type == "GHOST_OBJECT")
 		{
 			GP_ERROR("Failed to load ghost object from properties object; attribute 'type' must be equal to 'GHOST_OBJECT'.");
 			return nullptr;

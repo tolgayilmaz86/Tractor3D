@@ -14,10 +14,8 @@ namespace tractor
     }
   }
 
-  Image* Image::create(const char* path)
+  Image* Image::create(const std::string& path)
   {
-    assert(path);
-
     // Open the file.
     std::unique_ptr<Stream> stream(FileSystem::open(path));
     if (stream.get() == nullptr || !stream->canRead())

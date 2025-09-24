@@ -40,16 +40,14 @@ namespace tractor
 		_sizes.clear();
 	}
 
-	Font* Font::create(const char* path, const char* id)
+	Font* Font::create(const std::string& path, const std::string& id)
 	{
-		assert(path);
-
 		// Search the font cache for a font with the given path and ID.
 		for (size_t i = 0, count = __fontCache.size(); i < count; ++i)
 		{
 			Font* f = __fontCache[i];
 			assert(f);
-			if (f->_path == path && (id == nullptr || f->_id == id))
+			if (f->_path == path && (id.empty() || f->_id == id))
 			{
 				// Found a match.
 				f->addRef();
@@ -66,11 +64,11 @@ namespace tractor
 		}
 
 		Font* font = nullptr;
-		if (id == nullptr)
+		if (id.empty())
 		{
 			// Get the ID of the first object in the bundle (assume it's a Font).
-			const char* id;
-			if ((id = bundle->getObjectId(0)) == nullptr)
+			std::string id;
+			if ((id = bundle->getObjectId(0)) == EMPTY_STRING)
 			{
 				GP_WARN("Failed to load font without explicit id; the first object in the font bundle has a null id.");
 				return nullptr;
@@ -96,16 +94,15 @@ namespace tractor
 		return font;
 	}
 
-	Font* Font::create(const char* family, Style style, unsigned int size, Glyph* glyphs, int glyphCount, Texture* texture, Font::Format format)
+	Font* Font::create(const std::string& family, Style style, unsigned int size, Glyph* glyphs, int glyphCount, Texture* texture, Font::Format format)
 	{
-		assert(family);
 		assert(glyphs);
 		assert(texture);
 
 		// Create the effect for the font's sprite batch.
 		if (__fontEffect == nullptr)
 		{
-			const char* defines = nullptr;
+			std::string defines;
 			if (format == DISTANCE_FIELD)
 				defines = "DISTANCE_FIELD";
 			__fontEffect = std::move(Effect::createFromFile(FONT_VSH, FONT_FSH, defines));
@@ -607,10 +604,9 @@ namespace tractor
 		}
 	}
 
-	void Font::measureText(const char* text, unsigned int size, unsigned int* width, unsigned int* height)
+	void Font::measureText(const std::string& text, unsigned int size, unsigned int* width, unsigned int* height)
 	{
 		assert(_size);
-		assert(text);
 		assert(width);
 		assert(height);
 
@@ -629,7 +625,7 @@ namespace tractor
 			}
 		}
 
-		const size_t length = strlen(text);
+		const size_t length = text.length();
 		if (length == 0)
 		{
 			*width = 0;
@@ -638,7 +634,7 @@ namespace tractor
 		}
 
 		float scale = (float)size / _size;
-		const char* token = text;
+		const char* token = text.c_str();
 
 		*width = 0;
 		*height = size;
@@ -1640,79 +1636,46 @@ namespace tractor
 		return const_cast<Font*>(this)->findClosestSize(size)->_batch;
 	}
 
-	Font::Justify Font::getJustify(const char* justify)
+	Font::Justify Font::getJustify(const std::string& justify)
 	{
-		if (!justify)
+		if (justify.empty())
 		{
 			return Font::ALIGN_TOP_LEFT;
 		}
 
-		if (strcmpnocase(justify, "ALIGN_LEFT") == 0)
+		// Static lookup table for case-insensitive string to enum mapping
+		static const std::unordered_map<std::string, Font::Justify> justifyMap = {
+			{"align_left", Font::ALIGN_LEFT},
+			{"align_hcenter", Font::ALIGN_HCENTER},
+			{"align_right", Font::ALIGN_RIGHT},
+			{"align_top", Font::ALIGN_TOP},
+			{"align_vcenter", Font::ALIGN_VCENTER},
+			{"align_bottom", Font::ALIGN_BOTTOM},
+			{"align_top_left", Font::ALIGN_TOP_LEFT},
+			{"align_vcenter_left", Font::ALIGN_VCENTER_LEFT},
+			{"align_bottom_left", Font::ALIGN_BOTTOM_LEFT},
+			{"align_top_hcenter", Font::ALIGN_TOP_HCENTER},
+			{"align_vcenter_hcenter", Font::ALIGN_VCENTER_HCENTER},
+			{"align_bottom_hcenter", Font::ALIGN_BOTTOM_HCENTER},
+			{"align_top_right", Font::ALIGN_TOP_RIGHT},
+			{"align_vcenter_right", Font::ALIGN_VCENTER_RIGHT},
+			{"align_bottom_right", Font::ALIGN_BOTTOM_RIGHT}
+		};
+
+		// Convert input to lowercase for case-insensitive comparison
+		std::string lowerJustify = justify;
+		std::transform(lowerJustify.begin(), lowerJustify.end(), lowerJustify.begin(),
+			[](auto c) { return std::tolower(c); });
+
+		// Look up the value in the map
+		auto it = justifyMap.find(lowerJustify);
+		if (it != justifyMap.end())
 		{
-			return Font::ALIGN_LEFT;
-		}
-		else if (strcmpnocase(justify, "ALIGN_HCENTER") == 0)
-		{
-			return Font::ALIGN_HCENTER;
-		}
-		else if (strcmpnocase(justify, "ALIGN_RIGHT") == 0)
-		{
-			return Font::ALIGN_RIGHT;
-		}
-		else if (strcmpnocase(justify, "ALIGN_TOP") == 0)
-		{
-			return Font::ALIGN_TOP;
-		}
-		else if (strcmpnocase(justify, "ALIGN_VCENTER") == 0)
-		{
-			return Font::ALIGN_VCENTER;
-		}
-		else if (strcmpnocase(justify, "ALIGN_BOTTOM") == 0)
-		{
-			return Font::ALIGN_BOTTOM;
-		}
-		else if (strcmpnocase(justify, "ALIGN_TOP_LEFT") == 0)
-		{
-			return Font::ALIGN_TOP_LEFT;
-		}
-		else if (strcmpnocase(justify, "ALIGN_VCENTER_LEFT") == 0)
-		{
-			return Font::ALIGN_VCENTER_LEFT;
-		}
-		else if (strcmpnocase(justify, "ALIGN_BOTTOM_LEFT") == 0)
-		{
-			return Font::ALIGN_BOTTOM_LEFT;
-		}
-		else if (strcmpnocase(justify, "ALIGN_TOP_HCENTER") == 0)
-		{
-			return Font::ALIGN_TOP_HCENTER;
-		}
-		else if (strcmpnocase(justify, "ALIGN_VCENTER_HCENTER") == 0)
-		{
-			return Font::ALIGN_VCENTER_HCENTER;
-		}
-		else if (strcmpnocase(justify, "ALIGN_BOTTOM_HCENTER") == 0)
-		{
-			return Font::ALIGN_BOTTOM_HCENTER;
-		}
-		else if (strcmpnocase(justify, "ALIGN_TOP_RIGHT") == 0)
-		{
-			return Font::ALIGN_TOP_RIGHT;
-		}
-		else if (strcmpnocase(justify, "ALIGN_VCENTER_RIGHT") == 0)
-		{
-			return Font::ALIGN_VCENTER_RIGHT;
-		}
-		else if (strcmpnocase(justify, "ALIGN_BOTTOM_RIGHT") == 0)
-		{
-			return Font::ALIGN_BOTTOM_RIGHT;
-		}
-		else
-		{
-			GP_WARN("Invalid alignment string: '%s'. Defaulting to ALIGN_TOP_LEFT.", justify);
+			return it->second;
 		}
 
-		// Default.
+		// Default case - log warning and return default value
+		GP_WARN("Invalid alignment string: '%s'. Defaulting to ALIGN_TOP_LEFT.", justify.c_str());
 		return Font::ALIGN_TOP_LEFT;
 	}
 

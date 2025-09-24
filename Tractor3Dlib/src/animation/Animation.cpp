@@ -119,12 +119,12 @@ namespace tractor
 		return _duration;
 	}
 
-	void Animation::createClips(const char* url)
+	void Animation::createClips(const std::string& url)
 	{
 		Properties* properties = Properties::create(url);
 		assert(properties);
 
-		Properties* pAnimation = (strlen(properties->getNamespace()) > 0) ? properties : properties->getNextNamespace();
+		Properties* pAnimation = properties->getNamespace().length() > 0 ? properties : properties->getNextNamespace();
 		assert(pAnimation);
 
 		int frameCount = pAnimation->getInt("frameCount");
@@ -136,17 +136,17 @@ namespace tractor
 		SAFE_DELETE(properties);
 	}
 
-	AnimationClip* Animation::createClip(const char* id, unsigned long begin, unsigned long end)
+	AnimationClip* Animation::createClip(const std::string& id, unsigned long begin, unsigned long end)
 	{
 		AnimationClip* clip = new AnimationClip(id, this, begin, end);
 		addClip(clip);
 		return clip;
 	}
 
-	AnimationClip* Animation::getClip(const char* id)
+	AnimationClip* Animation::getClip(const std::string& id)
 	{
 		// If id is nullptr return the default clip.
-		if (id == nullptr)
+		if (id.empty())
 		{
 			if (_defaultClip == nullptr)
 				createDefaultClip();
@@ -172,10 +172,10 @@ namespace tractor
 		return _clips ? (unsigned int)_clips->size() : 0;
 	}
 
-	void Animation::play(const char* clipId)
+	void Animation::play(const std::string& clipId)
 	{
 		// If id is nullptr, play the default clip.
-		if (clipId == nullptr)
+		if (clipId.empty())
 		{
 			if (_defaultClip == nullptr)
 				createDefaultClip();
@@ -191,10 +191,10 @@ namespace tractor
 		}
 	}
 
-	void Animation::stop(const char* clipId)
+	void Animation::stop(const std::string& clipId)
 	{
 		// If id is nullptr, play the default clip.
-		if (clipId == nullptr)
+		if (clipId.empty())
 		{
 			if (_defaultClip)
 				_defaultClip->stop();
@@ -208,9 +208,9 @@ namespace tractor
 		}
 	}
 
-	void Animation::pause(const char* clipId)
+	void Animation::pause(const std::string& clipId)
 	{
-		if (clipId == nullptr)
+		if (clipId.empty())
 		{
 			if (_defaultClip)
 				_defaultClip->pause();
@@ -246,33 +246,33 @@ namespace tractor
 
 		Properties* pClip = animationProperties->getNextNamespace();
 
-		while (pClip != nullptr && std::strcmp(pClip->getNamespace(), "clip") == 0)
+		while (pClip != nullptr && pClip->getNamespace() == "clip")
 		{
 			int begin = pClip->getInt("begin");
 			int end = pClip->getInt("end");
 
-			AnimationClip* clip = createClip(pClip->getId(), ((float)begin / frameCount) * _duration, ((float)end / frameCount) * _duration);
+			AnimationClip* clip = createClip(pClip->getId().c_str(), ((float)begin / frameCount) * _duration, ((float)end / frameCount) * _duration);
 
-			const char* repeat = pClip->getString("repeatCount");
-			if (repeat)
+			auto repeat = pClip->getString("repeatCount");
+			if (!repeat.empty())
 			{
-				if (strcmp(repeat, ANIMATION_INDEFINITE_STR) == 0)
+				if (repeat == ANIMATION_INDEFINITE_STR)
 				{
 					clip->setRepeatCount(AnimationClip::REPEAT_INDEFINITE);
 				}
 				else
 				{
 					float value;
-					sscanf(repeat, "%f", &value);
+					sscanf(repeat.c_str(), "%f", &value);
 					clip->setRepeatCount(value);
 				}
 			}
 
-			const char* speed = pClip->getString("speed");
-			if (speed)
+			auto speed = pClip->getString("speed");
+			if (!speed.empty())
 			{
 				float value;
-				sscanf(speed, "%f", &value);
+				sscanf(speed.c_str(), "%f", &value);
 				clip->setSpeed(value);
 			}
 
@@ -291,7 +291,7 @@ namespace tractor
 		_clips->push_back(clip);
 	}
 
-	AnimationClip* Animation::findClip(const char* id) const
+	AnimationClip* Animation::findClip(const std::string& id) const
 	{
 		if (_clips)
 		{

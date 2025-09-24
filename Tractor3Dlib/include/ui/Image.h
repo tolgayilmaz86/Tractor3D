@@ -30,7 +30,7 @@ namespace tractor
      * @return The newly created image.
      * @script{create}
      */
-    static Image* create(const char* path);
+    static Image* create(const std::string& path);
 
     /**
      * Creates an image from the data provided

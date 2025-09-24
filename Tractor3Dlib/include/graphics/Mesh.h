@@ -149,7 +149,7 @@ namespace tractor
 		 * to the file and ID of the mesh within the bundle. For
 		 * all other meshes, an empty string will be returned.
 		 */
-		const char* getUrl() const;
+		const std::string& getUrl() const;
 
 		/**
 		 * Gets the vertex format for the mesh.

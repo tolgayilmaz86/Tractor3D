@@ -605,7 +605,7 @@ void CharacterGame::clone()
   Animation* cloneAnimation = clone->getAnimation();
 
   // Find the current clip and have the clone play that clip repeatedly.
-  const char* clipId = _currentClip->getId();
+  auto clipId = _currentClip->getId();
   if (_jumpClip->isPlaying())
     clipId = _jumpClip->getId();
   AnimationClip* clip = cloneAnimation->getClip(clipId);

@@ -6,12 +6,12 @@
 namespace tractor
 {
 
-	Joint::Joint(const char* id)
+	Joint::Joint(const std::string& id)
 		: Node(id), _jointMatrixDirty(true)
 	{
 	}
 
-	Joint* Joint::create(const char* id)
+	Joint* Joint::create(const std::string& id)
 	{
 		return new Joint(id);
 	}
@@ -31,7 +31,7 @@ namespace tractor
 		return Node::JOINT;
 	}
 
-	const char* Joint::getTypeName() const
+	const std::string& Joint::getTypeName() const
 	{
 		return "Joint";
 	}

@@ -131,7 +131,7 @@ namespace tractor
      * @return A new Terrain.
      * @script{create}
      */
-    static Terrain* create(const char* path);
+    static Terrain* create(const std::string& path);
 
     /**
      * Creates a new terrain definition from the configuration in the specified Properties object.
@@ -305,12 +305,12 @@ namespace tractor
      */
     static Terrain* create(HeightField* heightfield, const Vector3& scale,
       unsigned int patchSize, unsigned int detailLevels, float skirtScale,
-      const char* normalMapPath, const char* materialPath, Properties* properties);
+      const std::string& normalMapPath, const std::string& materialPath, Properties* properties);
 
     /**
      * Internal method for creating terrain.
      */
-    static Terrain* create(const char* path, Properties* properties);
+    static Terrain* create(const std::string& path, Properties* properties);
 
     /**
      * @see Transform::Listener::transformChanged.

@@ -821,12 +821,12 @@ namespace tractor
 			if (config)
 			{
 				// Read window title.
-				const char* title = config->getString("title");
-				if (title)
+				auto title = config->getString("title");
+				if (!title.empty())
 				{
-					int len = MultiByteToWideChar(CP_ACP, 0, title, -1, nullptr, 0);
+					int len = MultiByteToWideChar(CP_ACP, 0, title.c_str(), -1, nullptr, 0);
 					wchar_t* wtitle = new wchar_t[len];
-					MultiByteToWideChar(CP_ACP, 0, title, -1, wtitle, len);
+					MultiByteToWideChar(CP_ACP, 0, title.c_str(), -1, wtitle, len);
 					params.windowName = wtitle;
 					SAFE_DELETE_ARRAY(wtitle);
 				}
@@ -1368,7 +1368,7 @@ namespace tractor
 		return (r > 32);
 	}
 
-	std::string Platform::displayFileDialog(size_t mode, const char* title, const char* filterDescription, const char* filterExtensions, const char* initialDirectory)
+	std::string Platform::displayFileDialog(size_t mode, const std::string& title, const std::string& filterDescription, const std::string& filterExtensions, const std::string& initialDirectory)
 	{
 		std::string filename;
 		OPENFILENAMEA ofn;
@@ -1377,14 +1377,14 @@ namespace tractor
 		char currentDir[1024];
 		char absPath[1024];
 		std::string initialDirectoryStr;
-		if (initialDirectory == nullptr)
+		if (initialDirectory.empty())
 		{
 			GetCurrentDirectoryA(1024, currentDir);
 			initialDirectoryStr = currentDir;
 		}
 		else
 		{
-			GetFullPathNameA(initialDirectory, 1024, absPath, 0);
+			GetFullPathNameA(initialDirectory.c_str(), 1024, absPath, 0);
 			initialDirectoryStr = absPath;
 		}
 
@@ -1414,7 +1414,7 @@ namespace tractor
 		ofn.lpstrFile = szFileName;
 		ofn.lStructSize = sizeof(ofn);
 		ofn.hwndOwner = GetForegroundWindow();
-		ofn.lpstrTitle = title;
+		ofn.lpstrTitle = title.c_str();
 		ofn.lpstrFilter = filter;
 		ofn.lpstrInitialDir = initialDirectoryStr.c_str();
 		ofn.nMaxFile = 1024;

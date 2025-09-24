@@ -48,7 +48,7 @@ namespace tractor
         _selected = true;
       }
 
-      const char* groupId = properties->getString("group");
+      const char* groupId = properties->getString("group").c_str();
       if (groupId)
       {
         _groupId = groupId;
@@ -56,7 +56,7 @@ namespace tractor
     }
   }
 
-  const char* RadioButton::getTypeName() const
+  const std::string& RadioButton::getTypeName() const
   {
     return "RadioButton";
   }

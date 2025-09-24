@@ -16,8 +16,6 @@ namespace tractor
 	 * object. This class facilitates loading of techniques using specified shaders or
 	 * material files (.material). When multiple techniques are loaded using a material file,
 	 * the current technique for an object can be set at runtime.
-	 *
-	 * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-Materials
 	 */
 	class Material : public RenderState
 	{
@@ -44,7 +42,7 @@ namespace tractor
 		 * @return A new Material or nullptr if there was an error.
 		 * @script{create}
 		 */
-		static Material* create(const char* url);
+		static Material* create(const std::string& url);
 
 		/**
 		 * Creates a material from a Properties file.
@@ -63,7 +61,7 @@ namespace tractor
 		 * @return A new Material or nullptr if there was an error.
 		 * @script{ignore}
 		 */
-		static Material* create(const char* url, PassCallback callback, void* cookie = nullptr);
+		static Material* create(const std::string& url, PassCallback callback, void* cookie = nullptr);
 
 		/**
 		 * Creates a material from the specified properties object.
@@ -101,7 +99,7 @@ namespace tractor
 		 * @return A new Material.
 		 * @script{create}
 		 */
-		static Material* create(const char* vshPath, const char* fshPath, const char* defines = nullptr);
+		static Material* create(const std::string& vshPath, const std::string& fshPath, const std::string& defines = EMPTY_STRING);
 
 		/**
 		 * Returns the number of techniques in the material.
@@ -126,7 +124,7 @@ namespace tractor
 		 *
 		 * @return The specified technique.
 		 */
-		Technique* getTechnique(const char* id) const;
+		Technique* getTechnique(const std::string& id) const;
 
 		/**
 		 * Returns this material's current technique.
@@ -140,7 +138,7 @@ namespace tractor
 		 *
 		 * @param id ID of the technique to set.
 		 */
-		void setTechnique(const char* id);
+		void setTechnique(const std::string& id);
 
 		/**
 		 * @see RenderState::setNodeBinding

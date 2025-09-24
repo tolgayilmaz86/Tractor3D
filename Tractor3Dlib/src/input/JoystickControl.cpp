@@ -36,7 +36,7 @@ namespace tractor
     return joystickControl;
   }
 
-  const char* JoystickControl::getTypeName() const
+  const std::string& JoystickControl::getTypeName() const
   {
     return "JoystickControl";
   }
@@ -171,7 +171,7 @@ namespace tractor
     }
     else
     {
-      const char* radiusStr = properties->getString(radiusId);
+      auto radiusStr = properties->getString(radiusId);
       bool isPercentage = false;
       _radiusCoord = parseCoord(radiusStr, &isPercentage);
       setBoundsBit(isPercentage, _boundsBits, BOUNDS_RADIUS_PERCENTAGE_BIT);
@@ -217,7 +217,7 @@ namespace tractor
     setBoundsBit(isHeightPercentage, regionBoundsBitsOut, BOUNDS_HEIGHT_PERCENTAGE_BIT);
   }
 
-  void JoystickControl::getRegion(Vector2& regionOut, int& regionBoundsBitsOut, const char* regionPropertyId)
+  void JoystickControl::getRegion(Vector2& regionOut, int& regionBoundsBitsOut, const std::string& regionPropertyId)
   {
     bool isWidthPercent = false;
     bool isHeightPercent = false;
@@ -245,7 +245,7 @@ namespace tractor
   Theme::ThemeImage* JoystickControl::getNonEmptyImage(const char* id, Control::State state)
   {
     Theme::ThemeImage* image = getImage(id, state);
-    return strcmp(image->getId(), id) == 0 ? image : nullptr;
+    return image->getId() == id ? image : nullptr;
   }
 
   void JoystickControl::updateAbsoluteSizes()

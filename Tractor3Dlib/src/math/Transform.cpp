@@ -92,7 +92,7 @@ namespace tractor
     return (_suspendTransformChanged > 0);
   }
 
-  const char* Transform::getTypeName() const
+  const std::string& Transform::getTypeName() const
   {
     return "Transform";
   }

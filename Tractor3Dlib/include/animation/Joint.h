@@ -39,7 +39,7 @@ namespace tractor
      * @return The type name of this class: "Joint"
      * @see ScriptTarget::getTypeName()
      */
-    const char* getTypeName() const;
+    const std::string& getTypeName() const;
 
     /**
      * Returns the inverse bind pose matrix for this joint.
@@ -53,7 +53,7 @@ namespace tractor
     /**
      * Constructor.
      */
-    Joint(const char* id);
+    Joint(const std::string& id);
 
     /**
      * Destructor.
@@ -67,7 +67,7 @@ namespace tractor
      *
      * @return Newly created joint.
      */
-    static Joint* create(const char* id);
+    static Joint* create(const std::string& id);
 
     /**
      * Clones a single node and its data but not its children.

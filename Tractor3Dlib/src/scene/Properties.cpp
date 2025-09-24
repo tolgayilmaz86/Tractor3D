@@ -1,15 +1,27 @@
 #include "pch.h"
+
 #include "scene/Properties.h"
+
 #include "framework/FileSystem.h"
 #include "math/Quaternion.h"
 
-namespace tractor
+namespace
 {
+	using namespace tractor;
+
+	struct NamespaceInfo
+	{
+		std::string name;
+		std::string id;
+		std::string parentID;
+		bool hasOpenBrace;
+		bool hasCloseBrace;
+	};
 
 	/**
 	 * Reads the next character from the stream. Returns EOF if the end of the stream is reached.
 	 */
-	static signed char readChar(Stream* stream)
+	signed char readChar(Stream* stream)
 	{
 		if (stream->eof())
 			return EOF;
@@ -17,21 +29,401 @@ namespace tractor
 		if (stream->read(&c, 1, 1) != 1)
 			return EOF;
 		return c;
+	};
+
+	//-----------------------------------------------------------------------------------------------------------------
+	bool isCommentLine(const std::string& line)
+	{
+		return line.size() >= 2 && line.substr(0, 2) == "//";
+	};
+
+
+	//-----------------------------------------------------------------------------------------------------------------
+	static bool isVariable(const std::string& str, std::string& outName, size_t outSize)
+	{
+		// Check if the string matches the variable pattern "${...}"
+		if (str.size() > 3 && str.front() == '$' && str[1] == '{' && str.back() == '}')
+		{
+			// Extract the variable name (excluding "${" and "}")
+			outName = std::string(str.substr(2, str.size() - 3));
+			return true;
+		}
+
+		return false;
+	};
+
+	//-----------------------------------------------------------------------------------------------------------------
+	bool containsEquals(const std::string& line)
+	{
+		return line.find('=') != std::string::npos;
+	};
+
+	//-----------------------------------------------------------------------------------------------------------------
+	std::string& trimWhiteSpace(std::string& str)
+	{
+		auto start = str.find_first_not_of(" \t\n\r");
+		auto end = str.find_last_not_of(" \t\n\r");
+		return str = (start == std::string::npos) ? "" : str.substr(start, end - start + 1);
+	};
+
+	//-----------------------------------------------------------------------------------------------------------------
+	bool isVariableAssignment(const std::string& name)
+	{
+		std::string dummy;
+		return isVariable(name, dummy, 256);
 	}
 
+	//-----------------------------------------------------------------------------------------------------------------
+	std::string extractVariableName(const std::string& name)
+	{
+		std::string variable;
+		isVariable(name, variable, 256);
+		return variable;
+	}
+
+	//-----------------------------------------------------------------------------------------------------------------
+	std::optional<NamespaceInfo> parseNamespaceTokens(
+		std::string& line, const std::string& trimmedLine)
+	{
+		NamespaceInfo info;
+		info.hasOpenBrace = line.find('{') != std::string::npos;
+		info.hasCloseBrace = line.find('}') != std::string::npos;
+		const bool hasInheritance = line.find(':') != std::string::npos;
+
+		// Create a copy of the line to work with since we need to preserve the original
+		std::string workingLine = line;
+
+		// Helper lambda to split string by delimiters and return the next token
+		auto getNextToken = [](std::string& str, const std::string& delimiters) -> std::string {
+			if (str.empty()) return "";
+
+			size_t start = str.find_first_not_of(delimiters);
+			if (start == std::string::npos)
+			{
+				str.clear();
+				return "";
+			}
+
+			size_t end = str.find_first_of(delimiters, start);
+			std::string token = str.substr(start, end - start);
+
+			if (end == std::string::npos)
+			{
+				str.clear();
+			}
+			else
+			{
+				str = str.substr(end);
+			}
+
+			return token;
+			};
+
+		// Parse name - split by whitespace and '{'
+		std::string nameToken = getNextToken(workingLine, " \t\n{");
+		if (nameToken.empty())
+		{
+			GP_ERROR("Error parsing properties file: failed to determine a valid token for line '%s'.", line.c_str());
+			return std::nullopt;
+		}
+		info.name = trimWhiteSpace(nameToken);
+
+		// Parse ID - split by ':' and '{'
+		std::string idToken = getNextToken(workingLine, ":{");
+		if (!idToken.empty())
+			info.id = trimWhiteSpace(idToken);
+
+		// Parse parent ID if inheritance is specified
+		if (hasInheritance)
+		{
+			std::string parentToken = getNextToken(workingLine, "{");
+			if (!parentToken.empty())
+				info.parentID = trimWhiteSpace(parentToken);
+		}
+
+		return info;
+	}
+
+	//-----------------------------------------------------------------------------------------------------------------
+	std::optional<std::pair<std::string, std::string>> parsePropertyTokens(std::string& line)
+	{
+		// Find the first '=' character
+		size_t equalsPos = line.find('=');
+		if (equalsPos == std::string::npos)
+		{
+			GP_ERROR("Error parsing properties file: attribute without name.");
+			return std::nullopt;
+		}
+
+		// Extract name (everything before '=')
+		std::string name = line.substr(0, equalsPos);
+
+		// Extract value (everything after '=')
+		std::string value;
+		if (equalsPos + 1 < line.length())
+		{
+			value = line.substr(equalsPos + 1);
+		}
+		else
+		{
+			// No value after '=' - this is an error
+			GP_ERROR("Error parsing properties file: attribute with name ('%s') but no value.", name.c_str());
+			return std::nullopt;
+		}
+
+		return std::make_pair(
+			trimWhiteSpace(name),
+			trimWhiteSpace(value)
+		);
+	}
+
+	/// @brief Class responsible for parsing properties from a stream into a Properties object.
+	class PropertiesParser
+	{
+	public:
+		PropertiesParser(Stream* stream, Properties* properties, int nestingDepth = 0)
+			: m_stream(stream), m_properties(properties), m_nestingDepth(nestingDepth) {
+		}
+
+		void parse()
+		{
+			char line[LINE_BUFFER_SIZE];
+
+			while (!m_stream->eof())
+			{
+				skipWhiteSpace(m_stream);
+
+				if (m_stream->eof())
+					break;
+
+				const auto lineResult = m_stream->readLine(line, LINE_BUFFER_SIZE);
+				if (!lineResult)
+				{
+					GP_ERROR("Error reading line from file.");
+					return;
+				}
+
+				// If we're parsing a sub-namespace and we encounter a closing brace at depth 0,
+				// we should exit this parsing context
+				if (m_nestingDepth > 0 && shouldExitNamespace(line))
+				{
+					return;
+				}
+
+				processLine(line);
+			}
+		}
+
+	private:
+
+		//-----------------------------------------------------------------------------------------------------------------
+		void processLine(const std::string& line)
+		{
+			std::string lineStr(line);
+			std::string trimmedLine = trimWhiteSpace(lineStr);
+
+			if (handleComments(line, trimmedLine))
+				return;
+
+			if (isCommentLine(line))
+				return;
+
+			if (containsEquals(line))
+				processPropertyLine(lineStr);
+			else
+				processNamespaceLine(lineStr, trimmedLine);
+		}
+
+		//-----------------------------------------------------------------------------------------------------------------
+		bool handleComments(const std::string& line, const std::string& trimmedLine)
+		{
+			if (m_inComment)
+			{
+				// Check if the line starts with "*/" or the trimmed line ends with "*/"
+				if (line.size() >= 2 && line.substr(0, 2) == "*/" ||
+					(trimmedLine.size() >= 2 && trimmedLine.substr(trimmedLine.size() - 2) == "*/"))
+				{
+					m_inComment = false;
+				}
+				return true;
+			}
+
+			// Check if the line starts with "/*"
+			if (line.size() >= 2 && line.substr(0, 2) == "/*")
+			{
+				m_inComment = true;
+				return true;
+			}
+
+			return false;
+		}
+
+		//-----------------------------------------------------------------------------------------------------------------
+		void processPropertyLine(std::string& line)
+		{
+			const auto tokens = parsePropertyTokens(line);
+			if (!tokens)
+				return;
+
+			const auto [name, value] = *tokens;
+
+			if (isVariableAssignment(name))
+			{
+				const auto variable = extractVariableName(name);
+				m_properties->setVariable(variable, value);
+			}
+			else
+			{
+				m_properties->addProperty(name, value);
+			}
+		}
+
+		//-----------------------------------------------------------------------------------------------------------------
+		void skipWhiteSpace(Stream* stream)
+		{
+			signed char c;
+			do
+			{
+				c = readChar(stream);
+			} while (isspace(c) && c != EOF);
+
+			// If we are not at the end of the file, then since we found a
+			// non-whitespace character, we put the cursor back in front of it.
+			if (c != EOF)
+			{
+				if (stream->seek(-1, SEEK_CUR) == false)
+				{
+					GP_ERROR("Failed to seek backwards one character after skipping whitespace.");
+				}
+			}
+		}
+
+		//-----------------------------------------------------------------------------------------------------------------
+		void processNamespaceLine(std::string& line, const std::string& trimmedLine)
+		{
+			const auto namespaceInfo = parseNamespaceTokens(line, trimmedLine);
+			if (!namespaceInfo)
+				return;
+
+			const auto [name, id, parentID, hasOpenBrace, hasCloseBrace] = *namespaceInfo;
+
+			if (name[0] == '}')
+			{
+				return; // End of namespace
+			}
+
+			const bool isInlineNamespace = hasOpenBrace && hasCloseBrace;
+
+			if (isInlineNamespace)
+				handleInlineNamespace(name, id, parentID);
+			else if (hasOpenBrace)
+				handleOpenNamespace(name, id, parentID);
+			else
+				handleDeferredNamespace(line, name, id, parentID);
+		}
+
+		//-----------------------------------------------------------------------------------------------------------------
+		void handleInlineNamespace(const std::string& name, const std::string& id, const std::string& parentID)
+		{
+			seekBeforeClosingBrace();
+			createNamespace(name, id, parentID);
+			seekAfterClosingBrace();
+		}
+
+		//-----------------------------------------------------------------------------------------------------------------
+		void handleOpenNamespace(const std::string& name, const std::string& id, const std::string& parentID)
+		{
+			createNamespace(name, id, parentID);
+		}
+
+		//-----------------------------------------------------------------------------------------------------------------
+		void handleDeferredNamespace(std::string& line, const std::string& name, const std::string& id, const std::string& parentID)
+		{
+			skipWhiteSpace(m_stream);
+			const int nextChar = readChar(m_stream);
+
+			if (nextChar == '{')
+			{
+				createNamespace(name, id, parentID);
+			}
+			else
+			{
+				// Back up and treat as property
+				if (m_stream->seek(-1, SEEK_CUR) == false)
+					GP_ERROR("Failed to seek backwards a single character after testing if the next line starts with '{'.");
+
+				const std::string value = id.empty() ? "" : id;
+				m_properties->addProperty(name, value);
+			}
+		}
+
+		bool shouldExitNamespace(const std::string& line)
+		{
+			std::string trimmedLine = line;
+			trimWhiteSpace(trimmedLine);
+
+			// Check if this line is just a closing brace
+			return trimmedLine == "}";
+		}
+
+		//-----------------------------------------------------------------------------------------------------------------
+		void createNamespace(const std::string& name, const std::string& id, const std::string& parentID)
+		{
+			m_properties->addNamespace(m_stream, name, id, parentID, m_properties, m_nestingDepth + 1);
+		}
+
+		//-----------------------------------------------------------------------------------------------------------------
+		void seekBeforeClosingBrace()
+		{
+			if (m_stream->seek(-1, SEEK_CUR) == false)
+			{
+				GP_ERROR("Failed to seek back to before a '}' character in properties file.");
+				return;
+			}
+
+			while (readChar(m_stream) != '}')
+			{
+				if (m_stream->seek(-2, SEEK_CUR) == false)
+				{
+					GP_ERROR("Failed to seek back to before a '}' character in properties file.");
+					return;
+				}
+			}
+
+			if (m_stream->seek(-1, SEEK_CUR) == false)
+			{
+				GP_ERROR("Failed to seek back to before a '}' character in properties file.");
+			}
+		}
+
+		void seekAfterClosingBrace()
+		{
+			if (m_stream->seek(1, SEEK_CUR) == false)
+			{
+				GP_ERROR("Failed to seek to immediately after a '}' character in properties file.");
+			}
+		}
+
+	private:
+		Stream* m_stream{ nullptr };
+		Properties* m_properties{ nullptr };
+		bool m_inComment{ false };
+		int m_nestingDepth{ 0 };           // tracks brace depth
+		static constexpr size_t LINE_BUFFER_SIZE = 2048;
+	};
+}
+
+namespace tractor
+{
 	// Utility functions (shared with SceneLoader).
 	/** @script{ignore} */
 	void calculateNamespacePath(const std::string& urlString, std::string& fileString, std::vector<std::string>& namespacePath);
 	/** @script{ignore} */
 	Properties* getPropertiesFromNamespacePath(Properties* properties, const std::vector<std::string>& namespacePath);
 
-	Properties::Properties()
-		: _variables(nullptr), _dirPath(nullptr), _visited(false), _parent(nullptr)
-	{
-	}
-
+	//-----------------------------------------------------------------------------------------------------------------
 	Properties::Properties(const Properties& copy)
-		: _namespace(copy._namespace), _id(copy._id), _parentID(copy._parentID), _properties(copy._properties), _variables(nullptr), _dirPath(nullptr), _visited(false), _parent(copy._parent)
+		: _namespace(copy._namespace), _id(copy._id), _parentID(copy._parentID), _properties(copy._properties), _parent(copy._parent)
 	{
 		setDirectoryPath(copy._dirPath);
 		_namespaces = std::vector<Properties*>();
@@ -44,31 +436,39 @@ namespace tractor
 		rewind();
 	}
 
+	//-----------------------------------------------------------------------------------------------------------------
 	Properties::Properties(Stream* stream)
-		: _variables(nullptr), _dirPath(nullptr), _visited(false), _parent(nullptr)
 	{
-		readProperties(stream);
+		// Start with nesting depth 0 for root level
+		PropertiesParser parser(stream, this, 0);
+		parser.parse();
+
 		rewind();
 	}
 
-	Properties::Properties(Stream* stream, const char* name, const char* id, const char* parentID, Properties* parent)
-		: _namespace(name), _variables(nullptr), _dirPath(nullptr), _visited(false), _parent(parent)
+	//-----------------------------------------------------------------------------------------------------------------
+	Properties::Properties(Stream* stream, const std::string& name, const std::string& id, const std::string& parentID, Properties* parent, int nestingDepth)
+		: _namespace(name), _parent(parent)
 	{
-		if (id)
+		if (!id.empty())
 		{
 			_id = id;
 		}
-		if (parentID)
+
+		if (!parentID.empty())
 		{
 			_parentID = parentID;
 		}
-		readProperties(stream);
+
+		PropertiesParser parser(stream, this, nestingDepth);
+		parser.parse();
 		rewind();
 	}
 
-	Properties* Properties::create(const char* url)
+	//-----------------------------------------------------------------------------------------------------------------
+	Properties* Properties::create(const std::string& url)
 	{
-		if (!url || strlen(url) == 0)
+		if (url.empty())
 		{
 			GP_ERROR("Attempting to create a Properties object from an empty URL!");
 			return nullptr;
@@ -91,6 +491,8 @@ namespace tractor
 		properties->resolveInheritance();
 		stream->close();
 
+		properties->rewind();
+
 		// Get the specified properties object.
 		Properties* p = getPropertiesFromNamespacePath(properties, namespacePath);
 		if (!p)
@@ -108,273 +510,21 @@ namespace tractor
 			p = p->clone();
 			SAFE_DELETE(properties);
 		}
-		p->setDirectoryPath(FileSystem::getDirectoryName(fileString.c_str()));
+		p->setDirectoryPath(FileSystem::getDirectoryName(fileString));
 		return p;
 	}
 
-	static bool isVariable(const char* str, char* outName, size_t outSize)
-	{
-		size_t len = strlen(str);
-		if (len > 3 && str[0] == '$' && str[1] == '{' && str[len - 1] == '}')
-		{
-			size_t size = len - 3;
-			if (size > (outSize - 1))
-				size = outSize - 1;
-			strncpy(outName, str + 2, len - 3);
-			outName[len - 3] = 0;
-			return true;
-		}
-
-		return false;
-	}
-
+	//-----------------------------------------------------------------------------------------------------------------
 	void Properties::readProperties(Stream* stream)
 	{
 		assert(stream);
 
-		char line[2048];
-		char variable[256];
-		int c;
-		char* name;
-		char* value;
-		char* parentID;
-		char* rc;
-		char* rcc;
-		char* rccc;
-		bool comment = false;
-
-		while (true)
-		{
-			// Skip whitespace at the start of lines
-			skipWhiteSpace(stream);
-
-			// Stop when we have reached the end of the file.
-			if (stream->eof())
-				break;
-
-			// Read the next line.
-			rc = stream->readLine(line, 2048);
-			if (rc == nullptr)
-			{
-				GP_ERROR("Error reading line from file.");
-				return;
-			}
-
-			// Ignore comments
-			if (comment)
-			{
-				// Check for end of multi-line comment at either start or end of line
-				if (strncmp(line, "*/", 2) == 0)
-					comment = false;
-				else
-				{
-					trimWhiteSpace(line);
-					const int len = strlen(line);
-					if (len >= 2 && strncmp(line + (len - 2), "*/", 2) == 0)
-						comment = false;
-				}
-			}
-			else if (strncmp(line, "/*", 2) == 0)
-			{
-				// Start of multi-line comment (must be at start of line)
-				comment = true;
-			}
-			else if (strncmp(line, "//", 2) != 0)
-			{
-				// If an '=' appears on this line, parse it as a name/value pair.
-				// Note: strchr() has to be called before strtok(), or a backup of line has to be kept.
-				rc = strchr(line, '=');
-				if (rc != nullptr)
-				{
-					// First token should be the property name.
-					name = strtok(line, "=");
-					if (name == nullptr)
-					{
-						GP_ERROR("Error parsing properties file: attribute without name.");
-						return;
-					}
-
-					// Remove white-space from name.
-					name = trimWhiteSpace(name);
-
-					// Scan for next token, the property's value.
-					value = strtok(nullptr, "");
-					if (value == nullptr)
-					{
-						GP_ERROR("Error parsing properties file: attribute with name ('%s') but no value.", name);
-						return;
-					}
-
-					// Remove white-space from value.
-					value = trimWhiteSpace(value);
-
-					// Is this a variable assignment?
-					if (isVariable(name, variable, 256))
-					{
-						setVariable(variable, value);
-					}
-					else
-					{
-						// Normal name/value pair
-						_properties.emplace_back(Property(name, value));
-					}
-				}
-				else
-				{
-					parentID = nullptr;
-
-					// Get the last character on the line (ignoring whitespace).
-					const char* lineEnd = trimWhiteSpace(line) + (strlen(trimWhiteSpace(line)) - 1);
-
-					// This line might begin or end a namespace,
-					// or it might be a key/value pair without '='.
-
-					// Check for '{' on same line.
-					rc = strchr(line, '{');
-
-					// Check for inheritance: ':'
-					rcc = strchr(line, ':');
-
-					// Check for '}' on same line.
-					rccc = strchr(line, '}');
-
-					// Get the name of the namespace.
-					name = strtok(line, " \t\n{");
-					name = trimWhiteSpace(name);
-					if (name == nullptr)
-					{
-						GP_ERROR("Error parsing properties file: failed to determine a valid token for line '%s'.", line);
-						return;
-					}
-					else if (name[0] == '}')
-					{
-						// End of namespace.
-						return;
-					}
-
-					// Get its ID if it has one.
-					value = strtok(nullptr, ":{");
-					value = trimWhiteSpace(value);
-
-					// Get its parent ID if it has one.
-					if (rcc != nullptr)
-					{
-						parentID = strtok(nullptr, "{");
-						parentID = trimWhiteSpace(parentID);
-					}
-
-					if (value != nullptr && value[0] == '{')
-					{
-						// If the namespace ends on this line, seek back to right before the '}' character.
-						if (rccc && rccc == lineEnd)
-						{
-							if (stream->seek(-1, SEEK_CUR) == false)
-							{
-								GP_ERROR("Failed to seek back to before a '}' character in properties file.");
-								return;
-							}
-							while (readChar(stream) != '}')
-							{
-								if (stream->seek(-2, SEEK_CUR) == false)
-								{
-									GP_ERROR("Failed to seek back to before a '}' character in properties file.");
-									return;
-								}
-							}
-							if (stream->seek(-1, SEEK_CUR) == false)
-							{
-								GP_ERROR("Failed to seek back to before a '}' character in properties file.");
-								return;
-							}
-						}
-
-						// New namespace without an ID.
-						_namespaces.emplace_back(new Properties(stream, name, nullptr, parentID, this));
-
-						// If the namespace ends on this line, seek to right after the '}' character.
-						if (rccc && rccc == lineEnd)
-						{
-							if (stream->seek(1, SEEK_CUR) == false)
-							{
-								GP_ERROR("Failed to seek to immediately after a '}' character in properties file.");
-								return;
-							}
-						}
-					}
-					else
-					{
-						// If '{' appears on the same line.
-						if (rc != nullptr)
-						{
-							// If the namespace ends on this line, seek back to right before the '}' character.
-							if (rccc && rccc == lineEnd)
-							{
-								if (stream->seek(-1, SEEK_CUR) == false)
-								{
-									GP_ERROR("Failed to seek back to before a '}' character in properties file.");
-									return;
-								}
-								while (readChar(stream) != '}')
-								{
-									if (stream->seek(-2, SEEK_CUR) == false)
-									{
-										GP_ERROR("Failed to seek back to before a '}' character in properties file.");
-										return;
-									}
-								}
-								if (stream->seek(-1, SEEK_CUR) == false)
-								{
-									GP_ERROR("Failed to seek back to before a '}' character in properties file.");
-									return;
-								}
-							}
-
-							// Create and add new namespace.
-							_namespaces.emplace_back(new Properties(stream, name, value, parentID, this));
-
-							// If the namespace ends on this line, seek to right after the '}' character.
-							if (rccc && rccc == lineEnd)
-							{
-								if (stream->seek(1, SEEK_CUR) == false)
-								{
-									GP_ERROR("Failed to seek to immediately after a '}' character in properties file.");
-									return;
-								}
-							}
-						}
-						else
-						{
-							// Find out if the next line starts with "{"
-							skipWhiteSpace(stream);
-							c = readChar(stream);
-							if (c == '{')
-							{
-								// Create and add new namespace.
-								_namespaces.emplace_back(new Properties(stream, name, value, parentID, this));
-							}
-							else
-							{
-								// Back up from fgetc()
-								if (stream->seek(-1, SEEK_CUR) == false)
-									GP_ERROR("Failed to seek backwards a single character after testing if the next line starts with '{'.");
-
-								// Store "name value" as a name/value pair, or even just "name".
-								if (value != nullptr)
-								{
-									_properties.emplace_back(Property(name, value));
-								}
-								else
-								{
-									_properties.emplace_back(Property(name, ""));
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+		bool isSubNamespace = (_parent != nullptr);
+		PropertiesParser parser(stream, this, isSubNamespace);
+		parser.parse();
 	}
 
+	//-----------------------------------------------------------------------------------------------------------------
 	Properties::~Properties()
 	{
 		SAFE_DELETE(_dirPath);
@@ -386,56 +536,8 @@ namespace tractor
 		SAFE_DELETE(_variables);
 	}
 
-	void Properties::skipWhiteSpace(Stream* stream)
-	{
-		signed char c;
-		do
-		{
-			c = readChar(stream);
-		} while (isspace(c) && c != EOF);
-
-		// If we are not at the end of the file, then since we found a
-		// non-whitespace character, we put the cursor back in front of it.
-		if (c != EOF)
-		{
-			if (stream->seek(-1, SEEK_CUR) == false)
-			{
-				GP_ERROR("Failed to seek backwards one character after skipping whitespace.");
-			}
-		}
-	}
-
-	char* Properties::trimWhiteSpace(char* str)
-	{
-		if (str == nullptr)
-		{
-			return str;
-		}
-
-		char* end;
-
-		// Trim leading space.
-		while (isspace(*str))
-			str++;
-
-		// All spaces?
-		if (*str == 0)
-		{
-			return str;
-		}
-
-		// Trim trailing space.
-		end = str + strlen(str) - 1;
-		while (end > str && isspace(*end))
-			end--;
-
-		// Write new null terminator.
-		*(end + 1) = 0;
-
-		return str;
-	}
-
-	void Properties::resolveInheritance(const char* id)
+	//-----------------------------------------------------------------------------------------------------------------
+	void Properties::resolveInheritance(const std::string& id)
 	{
 		// Namespaces can be defined like so:
 		// "name id : parentID { }"
@@ -443,7 +545,7 @@ namespace tractor
 
 		// Get a top-level namespace.
 		Properties* derived;
-		if (id)
+		if (!id.empty())
 		{
 			derived = getNamespace(id);
 		}
@@ -497,7 +599,7 @@ namespace tractor
 			derived->resolveInheritance();
 
 			// Get the next top-level namespace and check again.
-			if (!id)
+			if (!id.empty())
 			{
 				derived = getNextNamespace();
 			}
@@ -508,17 +610,18 @@ namespace tractor
 		}
 	}
 
+	//-----------------------------------------------------------------------------------------------------------------
 	void Properties::mergeWith(Properties* overrides)
 	{
 		assert(overrides);
 
 		// Overwrite or add each property found in child.
 		overrides->rewind();
-		const char* name = overrides->getNextProperty();
-		while (name)
+		auto property = overrides->getNextProperty();
+		while (property)
 		{
-			this->setString(name, overrides->getString());
-			name = overrides->getNextProperty();
+			this->setString(property->name, overrides->getString());
+			property = overrides->getNextProperty();
 		}
 		this->_propertiesItr = this->_properties.end();
 
@@ -532,8 +635,8 @@ namespace tractor
 			Properties* derivedNamespace = getNextNamespace();
 			while (derivedNamespace)
 			{
-				if (strcmp(derivedNamespace->getNamespace(), overridesNamespace->getNamespace()) == 0 &&
-					strcmp(derivedNamespace->getId(), overridesNamespace->getId()) == 0)
+				if (derivedNamespace->getNamespace() == overridesNamespace->getNamespace() &&
+					derivedNamespace->getId() == overridesNamespace->getId())
 				{
 					derivedNamespace->mergeWith(overridesNamespace);
 					merged = true;
@@ -553,7 +656,8 @@ namespace tractor
 		}
 	}
 
-	const char* Properties::getNextProperty()
+	//-----------------------------------------------------------------------------------------------------------------
+	Property* Properties::getNextProperty()
 	{
 		if (_propertiesItr == _properties.end())
 		{
@@ -562,75 +666,82 @@ namespace tractor
 		}
 		else
 		{
-			// Move to the next property
+			// Move to the next
 			++_propertiesItr;
 		}
 
-		return _propertiesItr == _properties.end() ? nullptr : _propertiesItr->name.c_str();
+		return _propertiesItr == _properties.end() ? nullptr : &(*_propertiesItr);
 	}
 
+	//-----------------------------------------------------------------------------------------------------------------
 	Properties* Properties::getNextNamespace()
 	{
 		if (_namespacesItr == _namespaces.end())
 		{
 			// Restart from the beginning
 			_namespacesItr = _namespaces.begin();
-		}
-		else
-		{
-			++_namespacesItr;
+
+			// indicate finished
+			return nullptr;
 		}
 
-		if (_namespacesItr != _namespaces.end())
-		{
-			Properties* ns = *_namespacesItr;
-			return ns;
-		}
+		// Get current namespace and advance iterator
+		Properties* ns = *_namespacesItr;
 
-		return nullptr;
+		// Move to the next
+		++_namespacesItr;
+
+		return ns;
 	}
 
+	//-----------------------------------------------------------------------------------------------------------------
 	void Properties::rewind()
 	{
 		_propertiesItr = _properties.end();
-		_namespacesItr = _namespaces.end();
+		_namespacesItr = _namespaces.begin();
 	}
 
-	Properties* Properties::getNamespace(const char* id, bool searchNames, bool recurse) const
+	//-----------------------------------------------------------------------------------------------------------------
+	Properties* Properties::getNamespace(const std::string& id, bool searchNames, bool recurse) const
 	{
-		assert(id);
-
-		for (std::vector<Properties*>::const_iterator it = _namespaces.begin(); it < _namespaces.end(); ++it)
+		for (auto* p : _namespaces)
 		{
-			Properties* p = *it;
-			if (strcmp(searchNames ? p->_namespace.c_str() : p->_id.c_str(), id) == 0)
+			const std::string& compareStr = searchNames ? p->_namespace : p->_id;
+			if (compareStr == id)
+			{
 				return p;
+			}
 
 			if (recurse)
 			{
 				// Search recursively.
-				p = p->getNamespace(id, searchNames, true);
-				if (p)
-					return p;
+				Properties* childNamespace = p->getNamespace(id, searchNames, true);
+				if (childNamespace)
+				{
+					return childNamespace;
+				}
 			}
 		}
 
 		return nullptr;
 	}
 
-	const char* Properties::getNamespace() const
+	//-----------------------------------------------------------------------------------------------------------------
+	const std::string& Properties::getNamespace() const
 	{
-		return _namespace.c_str();
+		return _namespace;
 	}
 
-	const char* Properties::getId() const
+	//-----------------------------------------------------------------------------------------------------------------
+	const std::string& Properties::getId() const
 	{
-		return _id.c_str();
+		return _id;
 	}
 
-	bool Properties::exists(const char* name) const
+	//-----------------------------------------------------------------------------------------------------------------
+	bool Properties::exists(const std::string& name) const
 	{
-		if (name == nullptr)
+		if (name.empty())
 			return false;
 
 		for (std::list<Property>::const_iterator itr = _properties.begin(); itr != _properties.end(); ++itr)
@@ -642,56 +753,52 @@ namespace tractor
 		return false;
 	}
 
-	static const bool isStringNumeric(const char* str)
+	//-----------------------------------------------------------------------------------------------------------------
+	static const bool isStringNumeric(const std::string& str)
 	{
-		assert(str);
-
-		// The first character may be '-'
-		if (*str == '-')
-			str++;
-
-		// The first character after the sign must be a digit
-		if (!isdigit(*str))
+		if (str.empty())
 			return false;
-		str++;
 
-		// All remaining characters must be digits, with a single decimal (.) permitted
-		unsigned int decimalCount = 0;
-		while (*str)
+		auto it = str.begin();
+
+		// Check for optional leading '-' sign
+		if (*it == '-')
+			++it;
+
+		// Ensure there's at least one digit after the sign
+		if (it == str.end() || !std::isdigit(*it))
+			return false;
+
+		// Check the rest of the string
+		bool hasDecimalPoint = false;
+		for (; it != str.end(); ++it)
 		{
-			if (!isdigit(*str))
+			if (*it == '.')
 			{
-				if (*str == '.' && decimalCount == 0)
-				{
-					// Max of 1 decimal allowed
-					decimalCount++;
-				}
-				else
-				{
+				if (hasDecimalPoint) // Only one decimal point is allowed
 					return false;
-				}
+				hasDecimalPoint = true;
 			}
-			str++;
+			else if (!std::isdigit(*it))
+			{
+				return false;
+			}
 		}
+
 		return true;
 	}
 
-	Properties::Type Properties::getType(const char* name) const
+	//-----------------------------------------------------------------------------------------------------------------
+	Properties::Type Properties::getType(const std::string& name) const
 	{
-		const char* value = getString(name);
-		if (!value)
+		const std::string value = getString(name);
+		if (value.empty())
 		{
 			return Properties::NONE;
 		}
 
 		// Parse the value to determine the format
-		unsigned int commaCount = 0;
-		char* valuePtr = const_cast<char*>(value);
-		while ((valuePtr = strchr(valuePtr, ',')))
-		{
-			valuePtr++;
-			commaCount++;
-		}
+		size_t commaCount = std::count(value.begin(), value.end(), ',');
 
 		switch (commaCount)
 		{
@@ -710,156 +817,141 @@ namespace tractor
 		}
 	}
 
-	const char* Properties::getString(const char* name, const char* defaultValue) const
+	//-----------------------------------------------------------------------------------------------------------------
+	const std::string& Properties::getString(const std::string& name, const std::string& defaultValue) const
 	{
-		char variable[256];
-		const char* value = nullptr;
+		if (name.empty())
+		{
+			return _propertiesItr != _properties.end() ? _propertiesItr->value : defaultValue;
+		}
 
-		if (name)
+		std::string variable;
+
+		auto it = std::find_if(_properties.begin(), _properties.end(), [&name](const Property& prop) {
+			return prop.name == name;
+			});
+
+		if (it != _properties.end())
 		{
 			// If 'name' is a variable, return the variable value
-			if (isVariable(name, variable, 256))
+			if (isVariable(it->value, variable, 256))
 			{
 				return getVariable(variable, defaultValue);
 			}
-
-			for (std::list<Property>::const_iterator itr = _properties.begin(); itr != _properties.end(); ++itr)
-			{
-				if (itr->name == name)
-				{
-					value = itr->value.c_str();
-					break;
-				}
-			}
-		}
-		else
-		{
-			// No name provided - get the value at the current iterator position
-			if (_propertiesItr != _properties.end())
-			{
-				value = _propertiesItr->value.c_str();
-			}
-		}
-
-		if (value)
-		{
-			// If the value references a variable, return the variable value
-			if (isVariable(value, variable, 256))
-				return getVariable(variable, defaultValue);
-
-			return value;
+			return it->value;
 		}
 
 		return defaultValue;
 	}
 
-	bool Properties::setString(const char* name, const char* value)
+	//-----------------------------------------------------------------------------------------------------------------
+	bool Properties::setString(const std::string& name, const std::string& value)
 	{
-		if (name)
+		// If the name is empty, return false immediately
+		if (name.empty())
 		{
-			for (std::list<Property>::iterator itr = _properties.begin(); itr != _properties.end(); ++itr)
-			{
-				if (itr->name == name)
-				{
-					// Update the first property that matches this name
-					itr->value = value ? value : "";
-					return true;
-				}
-			}
-
-			// There is no property with this name, so add one
-			_properties.emplace_back(Property(name, value ? value : ""));
-		}
-		else
-		{
-			// If there's a current property, set its value
+			// If there's no current property, return false
 			if (_propertiesItr == _properties.end())
 				return false;
 
-			_propertiesItr->value = value ? value : "";
+			// Update the current property
+			_propertiesItr->value = value;
+
+			return true;
 		}
+
+		// Check if the property already exists and update it
+		auto it = std::find_if(_properties.begin(), _properties.end(), [&name](const Property& prop) {
+			return prop.name == name;
+			});
+
+		if (it != _properties.end())
+		{
+			it->value = value;
+			return true;
+		}
+
+		// Add a new property if no match is found
+		_properties.emplace_back(name, value);
 
 		return true;
 	}
 
-	bool Properties::getBool(const char* name, bool defaultValue) const
+	//-----------------------------------------------------------------------------------------------------------------
+	bool Properties::getBool(const std::string& name, bool defaultValue) const
 	{
-		const char* valueString = getString(name);
-		if (valueString)
+		const std::string& valueString = getString(name);
+		if (!valueString.empty())
 		{
-			return (strcmp(valueString, "true") == 0);
+			return valueString == "true";
 		}
 
 		return defaultValue;
 	}
 
-	int Properties::getInt(const char* name) const
+	//-----------------------------------------------------------------------------------------------------------------
+	int Properties::getInt(const std::string& name) const
 	{
-		const char* valueString = getString(name);
-		if (valueString)
+		const std::string& valueString = getString(name);
+
+		try
 		{
-			int value;
-			int scanned;
-			scanned = sscanf(valueString, "%d", &value);
-			if (scanned != 1)
+			if (!valueString.empty())
 			{
-				GP_ERROR("Error attempting to parse property '%s' as an integer.", name);
-				return 0;
+				return std::stoi(valueString);
 			}
-			return value;
+		}
+		catch (const std::exception&)
+		{
+			GP_ERROR("Error attempting to parse property '%s' as an integer: invalid argument.", name.c_str());
 		}
 
 		return 0;
 	}
 
-	float Properties::getFloat(const char* name) const
+	//-----------------------------------------------------------------------------------------------------------------
+	float Properties::getFloat(const std::string& name) const
 	{
-		const char* valueString = getString(name);
-		if (valueString)
+		const std::string& valueString = getString(name);
+		try
 		{
-			float value;
-			int scanned;
-			scanned = sscanf(valueString, "%f", &value);
-			if (scanned != 1)
-			{
-				GP_ERROR("Error attempting to parse property '%s' as a float.", name);
-				return 0.0f;
-			}
-			return value;
+			return std::stof(valueString);
+		}
+		catch (const std::exception&)
+		{
+			return 0.0f;
 		}
 
 		return 0.0f;
 	}
 
-	long Properties::getLong(const char* name) const
+	//-----------------------------------------------------------------------------------------------------------------
+	long Properties::getLong(const std::string& name) const
 	{
-		const char* valueString = getString(name);
-		if (valueString)
+		const std::string& valueString = getString(name);
+		try
 		{
-			long value;
-			int scanned;
-			scanned = sscanf(valueString, "%ld", &value);
-			if (scanned != 1)
-			{
-				GP_ERROR("Error attempting to parse property '%s' as a long integer.", name);
-				return 0L;
-			}
-			return value;
+			return std::stol(valueString);
+		}
+		catch (const std::exception&)
+		{
+			return 0L;
 		}
 
 		return 0L;
 	}
 
-	bool Properties::getMatrix(const char* name, Matrix* out) const
+	//-----------------------------------------------------------------------------------------------------------------
+	bool Properties::getMatrix(const std::string& name, Matrix* out) const
 	{
 		assert(out);
 
-		const char* valueString = getString(name);
-		if (valueString)
+		const std::string& valueString = getString(name);
+		if (!valueString.empty())
 		{
 			float m[16];
 			int scanned;
-			scanned = sscanf(valueString, "%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",
+			scanned = sscanf(valueString.c_str(), "%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",
 				&m[0], &m[1], &m[2], &m[3], &m[4], &m[5], &m[6], &m[7],
 				&m[8], &m[9], &m[10], &m[11], &m[12], &m[13], &m[14], &m[15]);
 
@@ -878,74 +970,82 @@ namespace tractor
 		return false;
 	}
 
-	bool Properties::getVector2(const char* name, Vector2* out) const
+	//-----------------------------------------------------------------------------------------------------------------
+	bool Properties::getVector2(const std::string& name, Vector2* out) const
 	{
 		return parseVector2(getString(name), out);
 	}
 
-	bool Properties::getVector3(const char* name, Vector3* out) const
+	//-----------------------------------------------------------------------------------------------------------------
+	bool Properties::getVector3(const std::string& name, Vector3* out) const
 	{
 		return parseVector3(getString(name), out);
 	}
 
-	bool Properties::getVector4(const char* name, Vector4* out) const
+	//-----------------------------------------------------------------------------------------------------------------
+	bool Properties::getVector4(const std::string& name, Vector4* out) const
 	{
 		return parseVector4(getString(name), out);
 	}
 
-	bool Properties::getQuaternionFromAxisAngle(const char* name, Quaternion* out) const
+	//-----------------------------------------------------------------------------------------------------------------
+	bool Properties::getQuaternionFromAxisAngle(const std::string& name, Quaternion* out) const
 	{
 		return parseAxisAngle(getString(name), out);
 	}
 
-	bool Properties::getColor(const char* name, Vector3* out) const
+	//-----------------------------------------------------------------------------------------------------------------
+	bool Properties::getColor(const std::string& name, Vector3* out) const
 	{
 		return parseColor(getString(name), out);
 	}
 
-	bool Properties::getColor(const char* name, Vector4* out) const
+	//-----------------------------------------------------------------------------------------------------------------
+	bool Properties::getColor(const std::string& name, Vector4* out) const
 	{
 		return parseColor(getString(name), out);
 	}
 
-	bool Properties::getPath(const char* name, std::string* path) const
+	//-----------------------------------------------------------------------------------------------------------------
+	bool Properties::getPath(const std::string& name, std::string* path) const
 	{
-		assert(name && path);
-		const char* valueString = getString(name);
-		if (valueString)
+		const auto& valueString = getString(name);
+
+		if (valueString.empty())
+			return false;
+
+		if (FileSystem::fileExists(valueString))
 		{
-			if (FileSystem::fileExists(valueString))
+			path->assign(valueString);
+			return true;
+		}
+
+		const Properties* prop = this;
+		while (prop != nullptr)
+		{
+			// Search for the file path relative to the bundle file
+			const std::string* dirPath = prop->_dirPath;
+			if (dirPath != nullptr && !dirPath->empty())
 			{
-				path->assign(valueString);
-				return true;
-			}
-			else
-			{
-				const Properties* prop = this;
-				while (prop != nullptr)
+				std::string relativePath = *dirPath;
+				relativePath.append(valueString);
+				if (FileSystem::fileExists(relativePath.c_str()))
 				{
-					// Search for the file path relative to the bundle file
-					const std::string* dirPath = prop->_dirPath;
-					if (dirPath != nullptr && !dirPath->empty())
-					{
-						std::string relativePath = *dirPath;
-						relativePath.append(valueString);
-						if (FileSystem::fileExists(relativePath.c_str()))
-						{
-							path->assign(relativePath);
-							return true;
-						}
-					}
-					prop = prop->_parent;
+					path->assign(relativePath);
+					return true;
 				}
 			}
+			prop = prop->_parent;
 		}
+
+		// File not found
 		return false;
 	}
 
-	const char* Properties::getVariable(const char* name, const char* defaultValue) const
+	//-----------------------------------------------------------------------------------------------------------------
+	const std::string& Properties::getVariable(const std::string& name, const std::string& defaultValue) const
 	{
-		if (name == nullptr)
+		if (name.empty())
 			return defaultValue;
 
 		// Search for variable in this Properties object
@@ -957,7 +1057,7 @@ namespace tractor
 
 			if (it != _variables->end())
 			{
-				return it->value.c_str();
+				return it->value;
 			}
 		}
 
@@ -965,10 +1065,9 @@ namespace tractor
 		return _parent ? _parent->getVariable(name, defaultValue) : defaultValue;
 	}
 
-	void Properties::setVariable(const char* name, const char* value)
+	//-----------------------------------------------------------------------------------------------------------------
+	void Properties::setVariable(const std::string& name, const std::string& value)
 	{
-		assert(name);
-
 		Property* prop = nullptr;
 
 		// Search for variable in this Properties object and parents
@@ -993,17 +1092,18 @@ namespace tractor
 		if (prop)
 		{
 			// Found an existing property, set it
-			prop->value = value ? value : "";
+			prop->value = !value.empty() ? value : "";
 		}
 		else
 		{
 			// Add a new variable with this name
 			if (!_variables)
 				_variables = new std::vector<Property>();
-			_variables->emplace_back(Property(name, value ? value : ""));
+			_variables->emplace_back(Property(name, value));
 		}
 	}
 
+	//-----------------------------------------------------------------------------------------------------------------
 	Properties* Properties::clone()
 	{
 		Properties* p = new Properties();
@@ -1027,6 +1127,7 @@ namespace tractor
 		return p;
 	}
 
+	//-----------------------------------------------------------------------------------------------------------------
 	void Properties::setDirectoryPath(const std::string* path)
 	{
 		if (path)
@@ -1039,6 +1140,7 @@ namespace tractor
 		}
 	}
 
+	//-----------------------------------------------------------------------------------------------------------------
 	void Properties::setDirectoryPath(const std::string& path)
 	{
 		if (_dirPath == nullptr)
@@ -1051,6 +1153,7 @@ namespace tractor
 		}
 	}
 
+	//-----------------------------------------------------------------------------------------------------------------
 	void calculateNamespacePath(const std::string& urlString, std::string& fileString, std::vector<std::string>& namespacePath)
 	{
 		// If the url references a specific namespace within the file,
@@ -1073,6 +1176,7 @@ namespace tractor
 		}
 	}
 
+	//-----------------------------------------------------------------------------------------------------------------
 	Properties* getPropertiesFromNamespacePath(Properties* properties, const std::vector<std::string>& namespacePath)
 	{
 		// If the url references a specific namespace within the file,
@@ -1092,7 +1196,7 @@ namespace tractor
 						return nullptr;
 					}
 
-					if (strcmp(iter->getId(), namespacePath[i].c_str()) == 0)
+					if (iter->getId() == namespacePath[i])
 					{
 						if (i != size - 1)
 						{
@@ -1116,156 +1220,178 @@ namespace tractor
 			return properties;
 	}
 
-	bool Properties::parseVector2(const char* str, Vector2* out)
+	//-----------------------------------------------------------------------------------------------------------------
+	bool Properties::parseVector2(const std::string& str, Vector2* out)
 	{
-		if (str)
+		if (str.empty())
+			return false;
+
+		float x, y;
+		if (sscanf(str.c_str(), "%f,%f", &x, &y) == 2)
 		{
-			float x, y;
-			if (sscanf(str, "%f,%f", &x, &y) == 2)
-			{
-				if (out)
-					out->set(x, y);
-				return true;
-			}
-			else
-			{
-				GP_WARN("Error attempting to parse property as a two-dimensional vector: %s", str);
-			}
+			if (out)
+				out->set(x, y);
+			return true;
+		}
+		else
+		{
+			GP_WARN("Error attempting to parse property as a two-dimensional vector: %s", str);
 		}
 
 		if (out)
 			out->set(0.0f, 0.0f);
+
 		return false;
 	}
 
-	bool Properties::parseVector3(const char* str, Vector3* out)
+	//-----------------------------------------------------------------------------------------------------------------
+	bool Properties::parseVector3(const std::string& str, Vector3* out)
 	{
-		if (str)
+		if (str.empty())
+			return false;
+
+		float x, y, z;
+		if (sscanf(str.c_str(), "%f,%f,%f", &x, &y, &z) == 3)
 		{
-			float x, y, z;
-			if (sscanf(str, "%f,%f,%f", &x, &y, &z) == 3)
-			{
-				if (out)
-					out->set(x, y, z);
-				return true;
-			}
-			else
-			{
-				GP_WARN("Error attempting to parse property as a three-dimensional vector: %s", str);
-			}
+			if (out)
+				out->set(x, y, z);
+			return true;
+		}
+		else
+		{
+			GP_WARN("Error attempting to parse property as a three-dimensional vector: %s", str);
 		}
 
 		if (out)
 			out->set(0.0f, 0.0f, 0.0f);
+
 		return false;
 	}
 
-	bool Properties::parseVector4(const char* str, Vector4* out)
+	//-----------------------------------------------------------------------------------------------------------------
+	bool Properties::parseVector4(const std::string& str, Vector4* out)
 	{
-		if (str)
+		if (str.empty())
+			return false;
+
+		float x, y, z, w;
+		if (sscanf(str.c_str(), "%f,%f,%f,%f", &x, &y, &z, &w) == 4)
 		{
-			float x, y, z, w;
-			if (sscanf(str, "%f,%f,%f,%f", &x, &y, &z, &w) == 4)
-			{
-				if (out)
-					out->set(x, y, z, w);
-				return true;
-			}
-			else
-			{
-				GP_WARN("Error attempting to parse property as a four-dimensional vector: %s", str);
-			}
+			if (out)
+				out->set(x, y, z, w);
+			return true;
+		}
+		else
+		{
+			GP_WARN("Error attempting to parse property as a four-dimensional vector: %s", str);
 		}
 
 		if (out)
 			out->set(0.0f, 0.0f, 0.0f, 0.0f);
+
 		return false;
 	}
 
-	bool Properties::parseAxisAngle(const char* str, Quaternion* out)
+	//-----------------------------------------------------------------------------------------------------------------
+	bool Properties::parseAxisAngle(const std::string& str, Quaternion* out)
 	{
-		if (str)
+		if (str.empty())
+			return false;
+
+		float x, y, z, theta;
+		if (sscanf(str.c_str(), "%f,%f,%f,%f", &x, &y, &z, &theta) == 4)
 		{
-			float x, y, z, theta;
-			if (sscanf(str, "%f,%f,%f,%f", &x, &y, &z, &theta) == 4)
-			{
-				if (out)
-					out->set(Vector3(x, y, z), MATH_DEG_TO_RAD(theta));
-				return true;
-			}
-			else
-			{
-				GP_WARN("Error attempting to parse property as an axis-angle rotation: %s", str);
-			}
+			if (out)
+				out->set(Vector3(x, y, z), MATH_DEG_TO_RAD(theta));
+			return true;
+		}
+		else
+		{
+			GP_WARN("Error attempting to parse property as an axis-angle rotation: %s", str);
 		}
 
 		if (out)
 			out->set(0.0f, 0.0f, 0.0f, 1.0f);
+
 		return false;
 	}
 
-	bool Properties::parseColor(const char* str, Vector3* out)
+	//-----------------------------------------------------------------------------------------------------------------
+	bool Properties::parseColor(const std::string& str, Vector3* out)
 	{
-		if (str)
+		if (str.empty())
+			return false;
+
+		if (str.length() == 7 && str[0] == '#')
 		{
-			if (strlen(str) == 7 && str[0] == '#')
+			// Read the string into an int as hex.
+			unsigned int color;
+			if (sscanf(str.c_str() + 1, "%x", &color) == 1)
 			{
-				// Read the string into an int as hex.
-				unsigned int color;
-				if (sscanf(str + 1, "%x", &color) == 1)
-				{
-					if (out)
-						out->set(Vector3::fromColor(color));
-					return true;
-				}
-				else
-				{
-					// Invalid format
-					GP_WARN("Error attempting to parse property as an RGB color: %s", str);
-				}
+				if (out)
+					out->set(Vector3::fromColor(color));
+				return true;
 			}
 			else
 			{
-				// Not a color string.
-				GP_WARN("Error attempting to parse property as an RGB color (not specified as a color string): %s", str);
+				// Invalid format
+				GP_WARN("Error attempting to parse property as an RGB color: %s", str);
 			}
+		}
+		else
+		{
+			// Not a color string.
+			GP_WARN("Error attempting to parse property as an RGB color (not specified as a color string): %s", str);
 		}
 
 		if (out)
 			out->set(0.0f, 0.0f, 0.0f);
+
 		return false;
 	}
 
-	bool Properties::parseColor(const char* str, Vector4* out)
+	//-----------------------------------------------------------------------------------------------------------------
+	bool Properties::parseColor(const std::string& str, Vector4* out)
 	{
-		if (str)
+		if (str.empty())
+			return false;
+
+		if (str.length() == 9 && str[0] == '#')
 		{
-			if (strlen(str) == 9 && str[0] == '#')
+			// Read the string into an int as hex.
+			unsigned int color;
+			if (sscanf(str.c_str() + 1, "%x", &color) == 1)
 			{
-				// Read the string into an int as hex.
-				unsigned int color;
-				if (sscanf(str + 1, "%x", &color) == 1)
-				{
-					if (out)
-						out->set(Vector4::fromColor(color));
-					return true;
-				}
-				else
-				{
-					// Invalid format
-					GP_WARN("Error attempting to parse property as an RGBA color: %s", str);
-				}
+				if (out)
+					out->set(Vector4::fromColor(color));
+				return true;
 			}
 			else
 			{
-				// Not a color string.
-				GP_WARN("Error attempting to parse property as an RGBA color (not specified as a color string): %s", str);
+				// Invalid format
+				GP_WARN("Error attempting to parse property as an RGBA color: %s", str);
 			}
+		}
+		else
+		{
+			// Not a color string.
+			GP_WARN("Error attempting to parse property as an RGBA color (not specified as a color string): %s", str);
 		}
 
 		if (out)
 			out->set(0.0f, 0.0f, 0.0f, 0.0f);
+
 		return false;
+	}
+
+	void Properties::addProperty(const std::string& name, const std::string& value)
+	{
+		_properties.emplace_back(Property(name, value));
+	}
+
+	void Properties::addNamespace(Stream* stream, const std::string& name, const std::string& id, const std::string& parentID, Properties* parent, int nestingDepth)
+	{
+		_namespaces.emplace_back(new Properties(stream, name, id, parentID, parent, nestingDepth));
 	}
 
 }

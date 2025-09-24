@@ -350,7 +350,7 @@ namespace tractor
 		/**
 		 * Constructor.
 		 */
-		MaterialParameter(const char* name);
+		MaterialParameter(const std::string& name);
 
 		/**
 		 * Destructor.

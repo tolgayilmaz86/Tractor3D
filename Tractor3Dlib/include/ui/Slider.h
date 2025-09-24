@@ -42,7 +42,7 @@ namespace tractor
      * @return The type name of this class: "Slider"
      * @see ScriptTarget::getTypeName()
      */
-    const char* getTypeName() const;
+    const std::string& getTypeName() const;
 
     /**
      * Set the minimum value that can be set on this slider.

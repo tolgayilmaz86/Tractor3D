@@ -148,7 +148,7 @@ namespace tractor
      * @return The type name of this class: "PhysicsController"
      * @see ScriptTarget::getTypeName()
      */
-    const char* getTypeName() const;
+    const std::string& getTypeName() const;
 
     /**
      * Adds a listener to the physics controller.

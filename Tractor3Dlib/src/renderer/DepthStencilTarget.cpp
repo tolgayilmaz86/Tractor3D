@@ -13,8 +13,8 @@ namespace tractor
 
 	static std::vector<DepthStencilTarget*> __depthStencilTargets;
 
-	DepthStencilTarget::DepthStencilTarget(const char* id, Format format, unsigned int width, unsigned int height)
-		: _id(id ? id : ""), _format(format), _depthBuffer(0), _stencilBuffer(0), _width(width), _height(height), _packed(false)
+	DepthStencilTarget::DepthStencilTarget(const std::string& id, Format format, unsigned int width, unsigned int height)
+		: _id(id), _format(format), _depthBuffer(0), _stencilBuffer(0), _width(width), _height(height), _packed(false)
 	{
 	}
 
@@ -34,7 +34,7 @@ namespace tractor
 		}
 	}
 
-	DepthStencilTarget* DepthStencilTarget::create(const char* id, Format format, unsigned int width, unsigned int height)
+	DepthStencilTarget* DepthStencilTarget::create(const std::string& id, Format format, unsigned int width, unsigned int height)
 	{
 		// Create and add the depth stencil target in place.
 		const auto& depthStencilTarget = __depthStencilTargets.emplace_back(new DepthStencilTarget(id, format, width, height));
@@ -84,14 +84,12 @@ namespace tractor
 		return depthStencilTarget;
 	}
 
-	DepthStencilTarget* DepthStencilTarget::getDepthStencilTarget(const char* id)
+	DepthStencilTarget* DepthStencilTarget::getDepthStencilTarget(const std::string& id)
 	{
-		assert(id);
-
 		if (auto target = std::ranges::find_if(__depthStencilTargets,
 			[id](const DepthStencilTarget* dst) {
 				assert(dst);
-				return std::strcmp(id, dst->getId()) == 0;
+				return id == dst->getId();
 			}); target != __depthStencilTargets.end())
 		{
 			return *target;
@@ -100,9 +98,9 @@ namespace tractor
 		return nullptr;
 	}
 
-	const char* DepthStencilTarget::getId() const
+	const std::string& DepthStencilTarget::getId() const
 	{
-		return _id.c_str();
+		return _id;
 	}
 
 	DepthStencilTarget::Format DepthStencilTarget::getFormat() const

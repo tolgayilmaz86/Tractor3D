@@ -6,8 +6,8 @@ namespace tractor
 
 	static std::vector<RenderTarget*> __renderTargets;
 
-	RenderTarget::RenderTarget(const char* id)
-		: _id(id ? id : ""), _texture(nullptr)
+	RenderTarget::RenderTarget(const std::string& id)
+		: _id(id), _texture(nullptr)
 	{
 	}
 
@@ -23,7 +23,7 @@ namespace tractor
 		}
 	}
 
-	RenderTarget* RenderTarget::create(const char* id, unsigned int width, unsigned int height, Texture::Format format)
+	RenderTarget* RenderTarget::create(const std::string& id, unsigned int width, unsigned int height, Texture::Format format)
 	{
 		// Create a new texture with the given width.
 		Texture* texture = Texture::create(format, width, height, nullptr, false);
@@ -39,7 +39,7 @@ namespace tractor
 		return rt;
 	}
 
-	RenderTarget* RenderTarget::create(const char* id, Texture* texture)
+	RenderTarget* RenderTarget::create(const std::string& id, Texture* texture)
 	{
 		const auto& renderTarget = __renderTargets.emplace_back(new RenderTarget(id));
 
@@ -49,15 +49,13 @@ namespace tractor
 		return renderTarget;
 	}
 
-	RenderTarget* RenderTarget::getRenderTarget(const char* id)
+	RenderTarget* RenderTarget::getRenderTarget(const std::string& id)
 	{
-		assert(id);
-
 		// Search the vector for a matching ID.
 		for (const auto& dst : __renderTargets)
 		{
 			assert(dst);
-			if (strcmp(id, dst->getId()) == 0)
+			if (id == dst->getId())
 			{
 				return dst;
 			}
@@ -66,9 +64,9 @@ namespace tractor
 		return nullptr;
 	}
 
-	const char* RenderTarget::getId() const
+	const std::string& RenderTarget::getId() const
 	{
-		return _id.c_str();
+		return _id;
 	}
 
 	Texture* RenderTarget::getTexture() const

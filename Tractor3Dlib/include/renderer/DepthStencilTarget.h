@@ -42,7 +42,7 @@ namespace tractor
      * @return A newly created DepthStencilTarget.
      * @script{create}
      */
-    static DepthStencilTarget* create(const char* id, Format format, unsigned int width, unsigned int height);
+    static DepthStencilTarget* create(const std::string& id, Format format, unsigned int width, unsigned int height);
 
     /**
      * Get a named DepthStencilTarget from its ID.
@@ -51,14 +51,14 @@ namespace tractor
      *
      * @return The DepthStencilTarget with the specified ID, or nullptr if one was not found.
      */
-    static DepthStencilTarget* getDepthStencilTarget(const char* id);
+    static DepthStencilTarget* getDepthStencilTarget(const std::string& id);
 
     /**
      * Get the ID of this DepthStencilTarget.
      *
      * @return The ID of this DepthStencilTarget.
      */
-    const char* getId() const;
+    const std::string& getId() const;
 
     /**
      * Returns the format of the DepthStencilTarget.
@@ -93,7 +93,7 @@ namespace tractor
     /**
      * Constructor.
      */
-    DepthStencilTarget(const char* id, Format format, unsigned int width, unsigned int height);
+    DepthStencilTarget(const std::string& id, Format format, unsigned int width, unsigned int height);
 
     /**
      * Destructor.

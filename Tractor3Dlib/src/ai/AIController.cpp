@@ -172,7 +172,7 @@ namespace tractor
 		AIAgent* agent = _firstAgent;
 		while (agent)
 		{
-			if (strcmp(id, agent->getId()) == 0)
+			if (id == agent->getId())
 				return agent;
 
 			agent = agent->_next;

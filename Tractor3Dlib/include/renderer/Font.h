@@ -74,7 +74,7 @@ namespace tractor
      * @return The specified Font or nullptr if there was an error.
      * @script{create}
      */
-    static Font* create(const char* path, const char* id = nullptr);
+    static Font* create(const std::string& path, const std::string& id = EMPTY_STRING);
 
     /**
      * Gets the font size (max height of glyphs) in pixels, at the specified index.
@@ -169,7 +169,7 @@ namespace tractor
      * @param widthOut Destination for the text's width.
      * @param heightOut Destination for the text's height.
      */
-    void measureText(const char* text, unsigned int size, unsigned int* widthOut, unsigned int* heightOut);
+    void measureText(const std::string& text, unsigned int size, unsigned int* widthOut, unsigned int* heightOut);
 
     /**
      * Measures a string's bounding box after alignment, wrapping and clipping within a viewport.
@@ -237,7 +237,7 @@ namespace tractor
      *
      * @return The Justify value.
      */
-    static Justify getJustify(const char* justify);
+    static Justify getJustify(const std::string& justify);
 
   private:
 
@@ -309,7 +309,7 @@ namespace tractor
      *
      * @return The new Font or nullptr if there was an error.
      */
-    static Font* create(const char* family, Style style, unsigned int size, Glyph* glyphs, int glyphCount, Texture* texture, Font::Format format);
+    static Font* create(const std::string& family, Style style, unsigned int size, Glyph* glyphs, int glyphCount, Texture* texture, Font::Format format);
 
     void getMeasurementInfo(const char* text, const Rectangle& area, unsigned int size, Justify justify, bool wrap, bool rightToLeft,
       std::vector<int>* xPositions, int* yPosition, std::vector<unsigned int>* lineLengths);

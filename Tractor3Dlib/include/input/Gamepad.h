@@ -111,7 +111,7 @@ namespace tractor
      *
      * @return This gamepad's device/product name.
      */
-    const char* getName() const;
+    const std::string& getName() const;
 
     /**
      * Returns whether the gamepad is currently represented with a UI form or not.
@@ -150,7 +150,7 @@ namespace tractor
      *
      * @param formPath The path the the .form file.
      */
-    Gamepad(const char* formPath);
+    Gamepad(const std::string& formPath);
 
     /**
      * Constructs a physical gamepad.
@@ -177,7 +177,7 @@ namespace tractor
 
     static Gamepad* add(GamepadHandle handle, unsigned int buttonCount, unsigned int joystickCount, unsigned int triggerCount, const char* name);
 
-    static Gamepad* add(const char* formPath);
+    static Gamepad* add(const std::string& formPath);
 
     static void remove(GamepadHandle handle);
 
@@ -189,7 +189,7 @@ namespace tractor
 
     static Gamepad* getGamepad(GamepadHandle handle);
 
-    static ButtonMapping getButtonMappingFromString(const char* string);
+    static ButtonMapping getButtonMappingFromString(const std::string& string);
 
     void setButtons(unsigned int buttons);
 

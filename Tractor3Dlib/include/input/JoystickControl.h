@@ -39,7 +39,7 @@ namespace tractor
      * @return The type name of this class: "JoystickControl"
      * @see ScriptTarget::getTypeName()
      */
-    const char* getTypeName() const;
+    const std::string& getTypeName() const;
 
     /**
      * Add a listener to be notified of specific events affecting
@@ -206,7 +206,7 @@ namespace tractor
 
     void setRegion(const Vector2& regionSizeIn, Vector2& regionSizeOut, int& regionBoundsBitsOut, bool isWidthPercentage, bool isHeightPercentage);
 
-    void getRegion(Vector2& regionOut, int& regionBoundsBitsOut, const char* regionPropertyId);
+    void getRegion(Vector2& regionOut, int& regionBoundsBitsOut, const std::string& regionPropertyId);
 
     Vector2 getPixelSize(const Vector2& region, const int regionBoundsBits) const;
 

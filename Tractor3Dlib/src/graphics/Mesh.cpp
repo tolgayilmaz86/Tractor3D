@@ -218,9 +218,9 @@ namespace tractor
 		return mesh;
 	}
 
-	const char* Mesh::getUrl() const
+	const std::string& Mesh::getUrl() const
 	{
-		return _url.c_str();
+		return _url;
 	}
 
 	const VertexFormat& Mesh::getVertexFormat() const

@@ -14,10 +14,9 @@ namespace tractor
 
   }
 
-  CheckBox* CheckBox::create(const char* id, Theme::Style* style)
+  CheckBox* CheckBox::create(const std::string& id, Theme::Style* style)
   {
     CheckBox* cb = new CheckBox();
-    cb->_id = id ? id : "";
     cb->initialize("CheckBox", style, nullptr);
     return cb;
   }
@@ -29,7 +28,7 @@ namespace tractor
     return cb;
   }
 
-  void CheckBox::initialize(const char* typeName, Theme::Style* style, Properties* properties)
+  void CheckBox::initialize(const std::string& typeName, Theme::Style* style, Properties* properties)
   {
     Button::initialize(typeName, style, properties);
 
@@ -39,7 +38,7 @@ namespace tractor
     }
   }
 
-  const char* CheckBox::getTypeName() const
+  const std::string& CheckBox::getTypeName() const
   {
     return "CheckBox";
   }

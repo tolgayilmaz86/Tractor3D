@@ -82,7 +82,7 @@ namespace tractor
 			* @return True if the auto binding is handled and the associated parmeter is
 			*      bound, false otherwise.
 			*/
-			virtual bool resolveAutoBinding(const char* autoBinding, Node* node, MaterialParameter* parameter) = 0;
+			virtual bool resolveAutoBinding(const std::string& autoBinding, Node* node, MaterialParameter* parameter) = 0;
 
 		protected:
 
@@ -414,7 +414,7 @@ namespace tractor
 			 * @param name Name of the render state to set.
 			 * @param value Value of the specified render state.
 			 */
-			void setState(const char* name, const char* value);
+			void setState(const std::string& name, const std::string& value);
 
 		private:
 
@@ -477,7 +477,7 @@ namespace tractor
 		 *
 		 * @return A MaterialParameter for the specified name.
 		 */
-		MaterialParameter* getParameter(const char* name) const;
+		MaterialParameter* getParameter(const std::string& name) const;
 
 		/**
 		 * Gets the number of material parameters.
@@ -508,7 +508,7 @@ namespace tractor
 		 *
 		 * @param name Material parameter (uniform) name.
 		 */
-		void removeParameter(const char* name);
+		void removeParameter(const std::string& name);
 
 		/**
 		 * Sets a material parameter auto-binding.
@@ -516,7 +516,7 @@ namespace tractor
 		 * @param name The name of the material parameter to store an auto-binding for.
 		 * @param autoBinding A valid AutoBinding value.
 		 */
-		void setParameterAutoBinding(const char* name, AutoBinding autoBinding);
+		void setParameterAutoBinding(const std::string& name, AutoBinding autoBinding);
 
 		/**
 		 * Sets a material parameter auto-binding.
@@ -527,7 +527,7 @@ namespace tractor
 		 * @param name The name of the material parameter to store an auto-binding for.
 		 * @param autoBinding A string matching one of the built-in AutoBinding enum constants.
 		 */
-		void setParameterAutoBinding(const char* name, const char* autoBinding);
+		void setParameterAutoBinding(const std::string& name, const std::string& autoBinding);
 
 		/**
 		 * Sets the fixed-function render state of this object to the state contained
@@ -598,7 +598,7 @@ namespace tractor
 		 * @param uniformName Name of the shader uniform.
 		 * @param autoBinding Name of the auto binding.s
 		 */
-		void applyAutoBinding(const char* uniformName, const char* autoBinding);
+		void applyAutoBinding(const std::string& uniformName, const std::string& autoBinding);
 
 		/**
 		 * Binds the render state for this RenderState and any of its parents, top-down,

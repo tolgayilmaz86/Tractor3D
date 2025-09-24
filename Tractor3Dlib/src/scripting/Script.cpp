@@ -15,9 +15,9 @@ namespace tractor
 		Game::getInstance()->getScriptController()->unloadScript(this);
 	}
 
-	const char* Script::getPath() const
+	const std::string& Script::getPath() const
 	{
-		return _path.c_str();
+		return _path;
 	}
 
 	Script::Scope Script::getScope() const

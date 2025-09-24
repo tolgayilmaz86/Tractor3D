@@ -71,7 +71,7 @@ namespace tractor
      *
      * @return The identifier for the agent.
      */
-    const char* getId() const;
+    const std::string& getId() const;
 
     /**
      * Returns the Node this AIAgent is assigned to.

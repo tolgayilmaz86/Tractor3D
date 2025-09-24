@@ -7,8 +7,8 @@
 namespace tractor
 {
 
-	Technique::Technique(const char* id, Material* material)
-		: _id(id ? id : ""), _material(material)
+	Technique::Technique(const std::string& id, Material* material)
+		: _id(id), _material(material)
 	{
 		RenderState::_parent = material;
 	}
@@ -22,9 +22,9 @@ namespace tractor
 		}
 	}
 
-	const char* Technique::getId() const
+	const std::string& Technique::getId() const
 	{
-		return _id.c_str();
+		return _id;
 	}
 
 	unsigned int Technique::getPassCount() const
@@ -38,15 +38,13 @@ namespace tractor
 		return _passes[index];
 	}
 
-	Pass* Technique::getPass(const char* id) const
+	Pass* Technique::getPass(const std::string& id) const
 	{
-		assert(id);
-
 		for (size_t i = 0, count = _passes.size(); i < count; ++i)
 		{
 			Pass* pass = _passes[i];
 			assert(pass);
-			if (strcmp(pass->getId(), id) == 0)
+			if (pass->getId() == id)
 			{
 				return pass;
 			}

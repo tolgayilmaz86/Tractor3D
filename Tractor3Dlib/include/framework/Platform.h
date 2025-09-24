@@ -429,7 +429,7 @@ namespace tractor
      *
      * @script{ignore}
      */
-    static std::string displayFileDialog(size_t mode, const char* title, const char* filterDescription, const char* filterExtensions, const char* initialDirectory);
+    static std::string displayFileDialog(size_t mode, const std::string& title, const std::string& filterDescription, const std::string& filterExtensions, const std::string& initialDirectory);
 
     /**
      * Internal method used only from static code in various platform implementation.

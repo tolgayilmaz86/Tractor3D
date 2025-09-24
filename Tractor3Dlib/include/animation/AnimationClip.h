@@ -87,14 +87,14 @@ namespace tractor
      * @return The type name of this class: "AnimationClip"
      * @see ScriptTarget::getTypeName()
      */
-    const char* getTypeName() const;
+    const std::string& getTypeName() const;
 
     /**
      * Gets the AnimationClip's ID.
      *
      * @return The AnimationClip's ID.
      */
-    const char* getId() const;
+    const std::string& getId() const;
 
     /**
      * Gets the Animation that this AnimationClip was created from.
@@ -325,7 +325,7 @@ namespace tractor
     /**
      * Constructor.
      */
-    AnimationClip(const char* id, Animation* animation, unsigned long startTime, unsigned long endTime);
+    AnimationClip(const std::string& id, Animation* animation, unsigned long startTime, unsigned long endTime);
 
     /**
      * Constructor.

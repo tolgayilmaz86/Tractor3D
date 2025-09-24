@@ -116,7 +116,7 @@ namespace tractor
        * @return The new sampler.
        * @script{create}
        */
-      static Sampler* create(const char* path, bool generateMipmaps = false);
+      static Sampler* create(const std::string& path, bool generateMipmaps = false);
 
       /**
        * Sets the wrap mode for this sampler.
@@ -179,7 +179,7 @@ namespace tractor
      * @return The new texture, or nullptr if the texture could not be loaded/created.
      * @script{create}
      */
-    static Texture* create(const char* path, bool generateMipmaps = false);
+    static Texture* create(const std::string& path, bool generateMipmaps = false);
 
     /**
      * Creates a texture from the given image.
@@ -321,13 +321,13 @@ namespace tractor
      */
     Texture& operator=(const Texture&);
 
-    static Texture* createCompressedPVRTC(const char* path);
+    static Texture* createCompressedPVRTC(const std::string& path);
 
-    static Texture* createCompressedDDS(const char* path);
+    static Texture* createCompressedDDS(const std::string& path);
 
-    static GLubyte* readCompressedPVRTC(const char* path, Stream* stream, GLsizei* width, GLsizei* height, GLenum* format, unsigned int* mipMapCount, unsigned int* faceCount, GLenum faces[6]);
+    static GLubyte* readCompressedPVRTC(const std::string& path, Stream* stream, GLsizei* width, GLsizei* height, GLenum* format, unsigned int* mipMapCount, unsigned int* faceCount, GLenum faces[6]);
 
-    static GLubyte* readCompressedPVRTCLegacy(const char* path, Stream* stream, GLsizei* width, GLsizei* height, GLenum* format, unsigned int* mipMapCount, unsigned int* faceCount, GLenum faces[6]);
+    static GLubyte* readCompressedPVRTCLegacy(const std::string& path, Stream* stream, GLsizei* width, GLsizei* height, GLenum* format, unsigned int* mipMapCount, unsigned int* faceCount, GLenum faces[6]);
 
     static int getMaskByteIndex(unsigned int mask);
     static GLint getFormatInternal(Format format);

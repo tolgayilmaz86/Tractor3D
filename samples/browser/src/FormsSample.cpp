@@ -38,8 +38,8 @@ void FormsSample::finalize()
 void printProperties(Properties* properties, unsigned int tabCount)
 {
   // Print the name and ID of the current namespace.
-  const char* spacename = properties->getNamespace();
-  const char* id = properties->getId();
+  auto spacename = properties->getNamespace();
+  auto id = properties->getId();
   std::string tabs;
   for (unsigned int i = 0; i < tabCount; i++)
   {
@@ -48,13 +48,11 @@ void printProperties(Properties* properties, unsigned int tabCount)
   GP_WARN("\n%s%s %s\n%s{", tabs.c_str(), spacename, id, tabs.c_str());
 
   // Print all properties in this namespace.
-  const char* name = properties->getNextProperty();
-  const char* value = nullptr;
-  while (name != nullptr)
+  std::string value;
+  while (auto property = properties->getNextProperty())
   {
-    value = properties->getString(name);
-    GP_WARN("%s\t%s = %s", tabs.c_str(), name, value);
-    name = properties->getNextProperty();
+    value = properties->getString(property->name);
+    GP_WARN("%s\t%s = %s", tabs.c_str(), property->name, value);
   }
 
   // Print the properties of every namespace within this one.

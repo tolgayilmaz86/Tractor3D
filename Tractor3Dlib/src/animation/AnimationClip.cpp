@@ -11,7 +11,7 @@ namespace tractor
 
 	extern void splitURL(const std::string& url, std::string* file, std::string* id);
 
-	AnimationClip::AnimationClip(const char* id, Animation* animation, unsigned long startTime, unsigned long endTime)
+	AnimationClip::AnimationClip(const std::string& id, Animation* animation, unsigned long startTime, unsigned long endTime)
 		: _id(id), _animation(animation), _startTime(startTime), _endTime(endTime), _duration(_endTime - _startTime),
 		_stateBits(0x00), _repeatCount(1.0f), _loopBlendTime(0), _activeDuration(_duration* _repeatCount), _speed(1.0f), _timeStarted(0),
 		_elapsedTime(0), _crossFadeToClip(nullptr), _crossFadeOutElapsed(0), _crossFadeOutDuration(0), _blendWeight(1.0f),
@@ -68,14 +68,14 @@ namespace tractor
 	{
 	}
 
-	const char* AnimationClip::getTypeName() const
+	const std::string& AnimationClip::getTypeName() const
 	{
 		return "AnimationClip";
 	}
 
-	const char* AnimationClip::getId() const
+	const std::string& AnimationClip::getId() const
 	{
-		return _id.c_str();
+		return _id;
 	}
 
 	Animation* AnimationClip::getAnimation() const

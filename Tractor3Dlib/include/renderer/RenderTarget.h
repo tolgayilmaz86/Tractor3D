@@ -28,7 +28,7 @@ namespace tractor
      * @return A newly created RenderTarget.
      * @script{create}
      */
-    static RenderTarget* create(const char* id, unsigned int width, unsigned int height, Texture::Format format = Texture::RGBA);
+    static RenderTarget* create(const std::string& id, unsigned int width, unsigned int height, Texture::Format format = Texture::RGBA);
 
     /**
      * Create a RenderTarget from the given Texture and add it to the list of
@@ -43,7 +43,7 @@ namespace tractor
      * @return A newly created RenderTarget.
      * @script{create}
      */
-    static RenderTarget* create(const char* id, Texture* texture);
+    static RenderTarget* create(const std::string& id, Texture* texture);
 
     /**
      * Get a named RenderTarget from its ID.
@@ -52,14 +52,14 @@ namespace tractor
      *
      * @return The RenderTarget with the specified ID, or nullptr if one was not found.
      */
-    static RenderTarget* getRenderTarget(const char* id);
+    static RenderTarget* getRenderTarget(const std::string& id);
 
     /**
      * Get the ID of this RenderTarget.
      *
      * @return The ID of this RenderTarget.
      */
-    const char* getId() const;
+    const std::string& getId() const;
 
     /**
      * Get the backing texture of this RenderTarget.
@@ -87,7 +87,7 @@ namespace tractor
     /**
      * Constructor.
      */
-    RenderTarget(const char* id);
+    RenderTarget(const std::string& id);
 
     /**
      * Destructor.

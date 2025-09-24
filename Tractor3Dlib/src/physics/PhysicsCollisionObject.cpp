@@ -291,7 +291,7 @@ namespace tractor
     SAFE_RELEASE(script);
   }
 
-  PhysicsCollisionObject::ScriptListener* PhysicsCollisionObject::ScriptListener::create(const char* url)
+  PhysicsCollisionObject::ScriptListener* PhysicsCollisionObject::ScriptListener::create(const std::string& url)
   {
     std::string scriptPath, func;
     splitURL(url, &scriptPath, &func);
@@ -305,7 +305,7 @@ namespace tractor
     Script* script = nullptr;
     if (!scriptPath.empty())
     {
-      script = Game::getInstance()->getScriptController()->loadScript(scriptPath.c_str(), Script::GLOBAL);
+      script = Game::getInstance()->getScriptController()->loadScript(scriptPath, Script::GLOBAL);
       if (!script)
       {
         // Failed to load script

@@ -25,11 +25,8 @@ namespace tractor
 		return *this;
 	}
 
-	Text* Text::create(const char* fontPath, const char* str, const Vector4& color, unsigned int size)
+	Text* Text::create(const std::string& fontPath, const std::string& str, const Vector4& color, unsigned int size)
 	{
-		assert(fontPath);
-		assert(str);
-
 		Font* font = Font::create(fontPath);
 		Font* drawFont;
 
@@ -61,23 +58,23 @@ namespace tractor
 	Text* Text::create(Properties* properties)
 	{
 		// Check if the Properties is valid and has a valid namespace.
-		if (!properties || strcmp(properties->getNamespace(), "text") != 0)
+		if (!properties || properties->getNamespace() != "text")
 		{
 			GP_ERROR("Properties object must be non-null and have namespace equal to 'text'.");
 			return nullptr;
 		}
 
 		// Get font path.
-		const char* fontPath = properties->getString("font");
-		if (fontPath == nullptr || strlen(fontPath) == 0)
+		auto fontPath = properties->getString("font");
+		if (fontPath.empty())
 		{
 			GP_ERROR("Text is missing required font file path.");
 			return nullptr;
 		}
 
 		// Get text
-		const char* text = properties->getString("text");
-		if (text == nullptr || strlen(text) == 0)
+		auto text = properties->getString("text");
+		if (text.empty())
 		{
 			GP_ERROR("Text is missing required 'text' value.");
 			return nullptr;

@@ -181,7 +181,7 @@ namespace tractor
      * @return The type name of this class: "Transform"
      * @see ScriptTarget::getTypeName()
      */
-    const char* getTypeName() const;
+    const std::string& getTypeName() const;
 
     /**
      * Gets the matrix corresponding to this transform.

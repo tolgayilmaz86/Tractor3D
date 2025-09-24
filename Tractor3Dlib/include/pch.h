@@ -17,6 +17,7 @@
 #include <string>
 #include <cstring>
 #include <vector>
+#include <ranges>
 #include <list>
 #include <set>
 #include <stack>
@@ -49,6 +50,8 @@ using std::min;
 using std::max;
 using std::modf;
 using std::atoi;
+
+constexpr auto EMPTY_STRING{ "" };
 
 namespace tractor
 {

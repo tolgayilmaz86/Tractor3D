@@ -50,7 +50,7 @@ public:
      *
      * @param url The URL pointing to the Properties object containing the clip definitions.
      */
-    void createClips(const char* url);
+    void createClips(const std::string& url);
 
     /**
      * Creates an AnimationClip from the Animation.
@@ -62,7 +62,7 @@ public:
      * @return The newly created AnimationClip; nullptr if an AnimationClip already exists with the same ID.
      * @script{create}
      */
-    AnimationClip* createClip(const char* id, unsigned long begin, unsigned long end);
+    AnimationClip* createClip(const std::string& id, unsigned long begin, unsigned long end);
 
     /**
      * Finds the AnimationClip with the specified name. If nullptr, gets the default clip.
@@ -71,7 +71,7 @@ public:
      *
      * @return The AnimationClip with the specified ID; nullptr if an AnimationClip with the given ID is not found.
      */
-    AnimationClip* getClip(const char* clipId = nullptr);
+    AnimationClip* getClip(const std::string& clipId = EMPTY_STRING);
 
     /**
      * Returns the AnimationClip at the given index.
@@ -90,21 +90,21 @@ public:
      *
      * @param clipId The ID of the AnimationClip to play. If nullptr, plays the default clip.
      */
-    void play(const char* clipId = nullptr);
+    void play(const std::string& clipId = EMPTY_STRING);
 
     /**
      * Stops the AnimationClip with the specified name.
      *
      * @param clipId The ID of the AnimationClip to stop. If nullptr, stops the default clip.
      */
-    void stop(const char* clipId = nullptr);
+    void stop(const std::string& clipId = EMPTY_STRING);
 
     /**
      * Pauses the AnimationClip with the specified name.
      *
      * @param clipId The ID of the AnimationClip to pause. If nullptr, pauses the default clip.
      */
-    void pause(const char* clipId = nullptr);
+    void pause(const std::string& clipId = EMPTY_STRING);
 
     /**
      * Returns true if this animation targets the given AnimationTarget.
@@ -189,7 +189,7 @@ private:
     /**
      * Finds the clip with the given ID.
      */
-    AnimationClip* findClip(const char* id) const;
+    AnimationClip* findClip(const std::string& id) const;
 
     /**
      * Creates a channel within this animation.

@@ -58,7 +58,7 @@ namespace tractor
      *
      * @return The script's path.
      */
-    const char* getPath() const;
+    const std::string& getPath() const;
 
     /**
      * Returns the scope of this script.

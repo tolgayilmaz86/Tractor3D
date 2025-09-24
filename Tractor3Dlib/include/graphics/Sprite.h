@@ -99,7 +99,7 @@ namespace tractor
      * @param effect The custom effect to render with.
      * @return The new sprite.
      */
-    static Sprite* create(const char* imagePath, float width = -1, float height = -1,
+    static Sprite* create(const std::string& imagePath, float width = -1, float height = -1,
       Effect* = nullptr);
 
     /**
@@ -116,7 +116,7 @@ namespace tractor
      * @param effect The custom effect to render with.
      * @return The new sprite.
      */
-    static Sprite* create(const char* imagePath, float width, float height,
+    static Sprite* create(const std::string& imagePath, float width, float height,
       const Rectangle& source, unsigned int frameCount = 1,
       Effect* = nullptr);
 

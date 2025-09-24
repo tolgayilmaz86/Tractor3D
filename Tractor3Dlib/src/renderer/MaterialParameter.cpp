@@ -5,7 +5,7 @@
 namespace tractor
 {
 
-	MaterialParameter::MaterialParameter(const char* name) :
+	MaterialParameter::MaterialParameter(const std::string& name) :
 		_type(MaterialParameter::NONE), _name(name)
 	{
 		clearValue();

@@ -14,7 +14,7 @@ AIMessage::~AIMessage()
     SAFE_DELETE_ARRAY(_parameters);
 }
 
-AIMessage* AIMessage::create(unsigned int id, const char* sender, const char* receiver, unsigned int parameterCount)
+AIMessage* AIMessage::create(unsigned int id, const std::string& sender, const std::string& receiver, unsigned int parameterCount)
 {
     AIMessage* message = new AIMessage();
     message->_id = id;

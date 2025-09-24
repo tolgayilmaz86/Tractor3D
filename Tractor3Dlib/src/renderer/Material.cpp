@@ -19,12 +19,12 @@ namespace tractor
 
 	}
 
-	Material* Material::create(const char* url)
+	Material* Material::create(const std::string& url)
 	{
 		return create(url, (PassCallback)nullptr, nullptr);
 	}
 
-	Material* Material::create(const char* url, PassCallback callback, void* cookie)
+	Material* Material::create(const std::string& url, PassCallback callback, void* cookie)
 	{
 		// Load the material properties from file.
 		Properties* properties = Properties::create(url);
@@ -34,7 +34,7 @@ namespace tractor
 			return nullptr;
 		}
 
-		Material* material = create((strlen(properties->getNamespace()) > 0) ? properties : properties->getNextNamespace(), callback, cookie);
+		Material* material = create(properties->getNamespace().length() > 0 ? properties : properties->getNextNamespace(), callback, cookie);
 		SAFE_DELETE(properties);
 
 		return material;
@@ -48,7 +48,7 @@ namespace tractor
 	Material* Material::create(Properties* materialProperties, PassCallback callback, void* cookie)
 	{
 		// Check if the Properties is valid and has a valid namespace.
-		if (!materialProperties || !(strcmp(materialProperties->getNamespace(), "material") == 0))
+		if (!materialProperties || materialProperties->getNamespace() != "material")
 		{
 			GP_ERROR("Properties object must be non-null and have namespace equal to 'material'.");
 			return nullptr;
@@ -60,11 +60,12 @@ namespace tractor
 		// Load uniform value parameters for this material.
 		loadRenderState(material, materialProperties);
 
+		materialProperties->rewind();
 		// Go through all the material properties and create techniques under this material.
 		Properties* techniqueProperties = nullptr;
 		while ((techniqueProperties = materialProperties->getNextNamespace()))
 		{
-			if (strcmp(techniqueProperties->getNamespace(), "technique") == 0)
+			if (techniqueProperties->getNamespace() == "technique")
 			{
 				if (!loadTechnique(material, techniqueProperties, callback, cookie))
 				{
@@ -92,9 +93,9 @@ namespace tractor
 		// Create a new material with a single technique and pass for the given effect.
 		Material* material = new Material();
 
-		const auto& technique = material->_techniques.emplace_back(new Technique(nullptr, material));
+		const auto& technique = material->_techniques.emplace_back(new Technique(EMPTY_STRING, material));
 
-		const auto& pass = technique->_passes.emplace_back(new Pass(nullptr, technique));
+		const auto& pass = technique->_passes.emplace_back(new Pass(EMPTY_STRING, technique));
 		pass->_effect = effect;
 		effect->addRef();
 
@@ -103,20 +104,17 @@ namespace tractor
 		return material;
 	}
 
-	Material* Material::create(const char* vshPath, const char* fshPath, const char* defines)
+	Material* Material::create(const std::string& vshPath, const std::string& fshPath, const std::string& defines)
 	{
-		assert(vshPath);
-		assert(fshPath);
-
 		// Create a new material with a single technique and pass for the given effect
 		Material* material = new Material();
 
-		const auto& technique = material->_techniques.emplace_back(new Technique(nullptr, material));
+		const auto& technique = material->_techniques.emplace_back(new Technique(EMPTY_STRING, material));
 		technique->addRef();
-		Pass* pass = new Pass(nullptr, technique);
+		Pass* pass = new Pass(EMPTY_STRING, technique);
 		if (!pass->initialize(vshPath, fshPath, defines))
 		{
-			GP_WARN("Failed to create pass for material: vertexShader = %s, fragmentShader = %s, defines = %s", vshPath, fshPath, defines ? defines : "");
+			GP_WARN("Failed to create pass for material: vertexShader = %s, fragmentShader = %s, defines = %s", vshPath.c_str(), fshPath.c_str(), defines.c_str());
 			SAFE_RELEASE(pass);
 			SAFE_RELEASE(material);
 			return nullptr;
@@ -139,14 +137,13 @@ namespace tractor
 		return _techniques[index];
 	}
 
-	Technique* Material::getTechnique(const char* id) const
+	Technique* Material::getTechnique(const std::string& id) const
 	{
-		assert(id);
 		for (size_t i = 0, count = _techniques.size(); i < count; ++i)
 		{
 			Technique* t = _techniques[i];
 			assert(t);
-			if (strcmp(t->getId(), id) == 0) return t;
+			if (t->getId() == id) return t;
 		}
 
 		return nullptr;
@@ -157,7 +154,7 @@ namespace tractor
 		return _currentTechnique;
 	}
 
-	void Material::setTechnique(const char* id)
+	void Material::setTechnique(const std::string& id)
 	{
 		Technique* t = getTechnique(id);
 		if (t) _currentTechnique = t;
@@ -206,7 +203,7 @@ namespace tractor
 		Properties* passProperties = nullptr;
 		while ((passProperties = techniqueProperties->getNextNamespace()))
 		{
-			if (strcmp(passProperties->getNamespace(), "pass") == 0)
+			if (passProperties->getNamespace() == "pass")
 			{
 				// Create and load passes.
 				if (!loadPass(technique, passProperties, callback, cookie))
@@ -227,11 +224,9 @@ namespace tractor
 		assert(technique);
 
 		// Fetch shader info required to create the effect of this technique.
-		const char* vertexShaderPath = passProperties->getString("vertexShader");
-		assert(vertexShaderPath);
-		const char* fragmentShaderPath = passProperties->getString("fragmentShader");
-		assert(fragmentShaderPath);
-		const char* passDefines = passProperties->getString("defines");
+		auto vertexShaderPath = passProperties->getString("vertexShader");
+		auto fragmentShaderPath = passProperties->getString("fragmentShader");
+		auto passDefines = passProperties->getString("defines");
 
 		// Create the pass
 		Pass* pass = new Pass(passProperties->getId(), technique);
@@ -240,7 +235,7 @@ namespace tractor
 		loadRenderState(pass, passProperties);
 
 		// If a pass callback was specified, call it and add the result to our list of defines
-		std::string allDefines = passDefines ? passDefines : "";
+		std::string allDefines = !passDefines.empty() ? passDefines : "";
 		if (callback)
 		{
 			std::string customDefines = callback(pass, cookie);
@@ -253,7 +248,7 @@ namespace tractor
 		}
 
 		// Initialize/compile the effect with the full set of defines
-		if (!pass->initialize(vertexShaderPath, fragmentShaderPath, allDefines.c_str()))
+		if (!pass->initialize(vertexShaderPath.c_str(), fragmentShaderPath.c_str(), allDefines.c_str()))
 		{
 			GP_WARN("Failed to create pass for technique.");
 			SAFE_RELEASE(pass);
@@ -266,12 +261,10 @@ namespace tractor
 		return true;
 	}
 
-	static bool isMaterialKeyword(const char* str)
+	static bool isMaterialKeyword(const std::string& str)
 	{
-		assert(str);
-
 #define MATERIAL_KEYWORD_COUNT 3
-		static const char* reservedKeywords[MATERIAL_KEYWORD_COUNT] =
+		static std::string reservedKeywords[MATERIAL_KEYWORD_COUNT] =
 		{
 			"vertexShader",
 			"fragmentShader",
@@ -279,7 +272,7 @@ namespace tractor
 		};
 		for (unsigned int i = 0; i < MATERIAL_KEYWORD_COUNT; ++i)
 		{
-			if (strcmp(reservedKeywords[i], str) == 0)
+			if (reservedKeywords[i] == str)
 			{
 				return true;
 			}
@@ -287,34 +280,34 @@ namespace tractor
 		return false;
 	}
 
-	static Texture::Filter parseTextureFilterMode(const char* str, Texture::Filter defaultValue)
+	static Texture::Filter parseTextureFilterMode(const std::string& str, Texture::Filter defaultValue)
 	{
-		if (str == nullptr || strlen(str) == 0)
+		if (str.empty())
 		{
 			GP_ERROR("Texture filter mode string must be non-null and non-empty.");
 			return defaultValue;
 		}
-		else if (strcmp(str, "NEAREST") == 0)
+		else if (str == "NEAREST")
 		{
 			return Texture::NEAREST;
 		}
-		else if (strcmp(str, "LINEAR") == 0)
+		else if (str == "LINEAR")
 		{
 			return Texture::LINEAR;
 		}
-		else if (strcmp(str, "NEAREST_MIPMAP_NEAREST") == 0)
+		else if (str == "NEAREST_MIPMAP_NEAREST")
 		{
 			return Texture::NEAREST_MIPMAP_NEAREST;
 		}
-		else if (strcmp(str, "LINEAR_MIPMAP_NEAREST") == 0)
+		else if (str == "LINEAR_MIPMAP_NEAREST")
 		{
 			return Texture::LINEAR_MIPMAP_NEAREST;
 		}
-		else if (strcmp(str, "NEAREST_MIPMAP_LINEAR") == 0)
+		else if (str == "NEAREST_MIPMAP_LINEAR")
 		{
 			return Texture::NEAREST_MIPMAP_LINEAR;
 		}
-		else if (strcmp(str, "LINEAR_MIPMAP_LINEAR") == 0)
+		else if (str == "LINEAR_MIPMAP_LINEAR")
 		{
 			return Texture::LINEAR_MIPMAP_LINEAR;
 		}
@@ -325,18 +318,18 @@ namespace tractor
 		}
 	}
 
-	static Texture::Wrap parseTextureWrapMode(const char* str, Texture::Wrap defaultValue)
+	static Texture::Wrap parseTextureWrapMode(const std::string& str, Texture::Wrap defaultValue)
 	{
-		if (str == nullptr || strlen(str) == 0)
+		if (str.empty())
 		{
 			GP_ERROR("Texture wrap mode string must be non-null and non-empty.");
 			return defaultValue;
 		}
-		else if (strcmp(str, "REPEAT") == 0)
+		else if (str == "REPEAT")
 		{
 			return Texture::REPEAT;
 		}
-		else if (strcmp(str, "CLAMP") == 0)
+		else if (str == "CLAMP")
 		{
 			return Texture::CLAMP;
 		}
@@ -355,24 +348,23 @@ namespace tractor
 		// Rewind the properties to start reading from the start.
 		properties->rewind();
 
-		const char* name;
-		while ((name = properties->getNextProperty()))
+		while (auto property = properties->getNextProperty())
 		{
+			const auto& name = property->name;
+
 			if (isMaterialKeyword(name))
 				continue; // keyword - skip
 
 			switch (properties->getType())
 			{
 			case Properties::NUMBER:
-				assert(renderState->getParameter(name));
 				renderState->getParameter(name)->setValue(properties->getFloat());
 				break;
 			case Properties::VECTOR2:
 			{
 				Vector2 vector2;
-				if (properties->getVector2(nullptr, &vector2))
+				if (properties->getVector2(EMPTY_STRING, &vector2))
 				{
-					assert(renderState->getParameter(name));
 					renderState->getParameter(name)->setValue(vector2);
 				}
 			}
@@ -380,9 +372,8 @@ namespace tractor
 			case Properties::VECTOR3:
 			{
 				Vector3 vector3;
-				if (properties->getVector3(nullptr, &vector3))
+				if (properties->getVector3(EMPTY_STRING, &vector3))
 				{
-					assert(renderState->getParameter(name));
 					renderState->getParameter(name)->setValue(vector3);
 				}
 			}
@@ -390,9 +381,8 @@ namespace tractor
 			case Properties::VECTOR4:
 			{
 				Vector4 vector4;
-				if (properties->getVector4(nullptr, &vector4))
+				if (properties->getVector4(EMPTY_STRING, &vector4))
 				{
-					assert(renderState->getParameter(name));
 					renderState->getParameter(name)->setValue(vector4);
 				}
 			}
@@ -400,9 +390,8 @@ namespace tractor
 			case Properties::MATRIX:
 			{
 				Matrix matrix;
-				if (properties->getMatrix(nullptr, &matrix))
+				if (properties->getMatrix(EMPTY_STRING, &matrix))
 				{
-					assert(renderState->getParameter(name));
 					renderState->getParameter(name)->setValue(matrix);
 				}
 			}
@@ -416,15 +405,19 @@ namespace tractor
 			}
 		}
 
+		// Rewind the properties to start reading from the start.
+		properties->rewind();
+
 		// Iterate through all child namespaces searching for samplers and render state blocks.
 		Properties* ns;
 		while ((ns = properties->getNextNamespace()))
 		{
-			if (strcmp(ns->getNamespace(), "sampler") == 0)
+			std::string name;
+			if (ns->getNamespace() == "sampler")
 			{
 				// Read the texture uniform name.
 				name = ns->getId();
-				if (strlen(name) == 0)
+				if (name.empty())
 				{
 					GP_ERROR("Texture sampler is missing required uniform name.");
 					continue;
@@ -459,12 +452,12 @@ namespace tractor
 					sampler->setFilterMode(minFilter, magFilter);
 				}
 			}
-			else if (strcmp(ns->getNamespace(), "renderState") == 0)
+			else if (ns->getNamespace() == "renderState")
 			{
-				while ((name = ns->getNextProperty()))
+				while (auto property = ns->getNextProperty())
 				{
 					assert(renderState->getStateBlock());
-					renderState->getStateBlock()->setState(name, ns->getString());
+					renderState->getStateBlock()->setState(property->name, ns->getString());
 				}
 			}
 		}

@@ -52,7 +52,7 @@ namespace tractor
      *
      * @return A new AIMessage.
      */
-    static AIMessage* create(unsigned int id, const char* sender, const char* receiver, unsigned int parameterCount);
+    static AIMessage* create(unsigned int id, const std::string& sender, const std::string& receiver, unsigned int parameterCount);
 
     /**
      * Destroys an AIMessage.

@@ -50,14 +50,14 @@ namespace tractor
      *
      * @param path The path to the root of the resources folder.
      */
-    static void setResourcePath(const char* path);
+    static void setResourcePath(const std::string& path);
 
     /**
      * Returns the currently set resource path.
      *
      * @return The currently set resource path.
      */
-    static const char* getResourcePath();
+    static std::string getResourcePath();
 
     /**
      * Loads a properties file containing a list of filesystem aliases.
@@ -75,7 +75,7 @@ namespace tractor
      *
      * @see Properties
      */
-    static void loadResourceAliases(const char* aliasFilePath);
+    static void loadResourceAliases(const std::string& aliasFilePath);
 
     /**
      * Loads a set of filesystem aliases from the given Properties object.
@@ -107,7 +107,7 @@ namespace tractor
      *
      * @script{ignore}
      */
-    static std::string displayFileDialog(size_t dialogMode, const char* title, const char* filterDescription, const char* filterExtensions, const char* initialDirectory);
+    static std::string displayFileDialog(size_t dialogMode, const std::string& title, const std::string& filterDescription, const std::string& filterExtensions, const std::string& initialDirectory);
 
     /**
      * Resolves a filesystem path.
@@ -122,19 +122,19 @@ namespace tractor
      *
      * @return The resolved file path.
      */
-    static const char* resolvePath(const char* path);
+    static std::string resolvePath(const std::string& path);
 
     /**
      * Lists the files in the specified directory and adds the files to the vector. Excludes directories.
      *
-     * @param dirPath Directory path relative to the path set in <code>setResourcePath(const char*)</code>.
+     * @param dirPath Directory path relative to the path set in <code>setResourcePath(const std::string&)</code>.
      * @param files The vector to append the files to.
      *
      * @return True if successful, false if error.
      *
      * @script{ignore}
      */
-    static bool listFiles(const char* dirPath, std::vector<std::string>& files);
+    static bool listFiles(const std::string& dirPath, std::vector<std::string>& files);
 
     /**
      * Checks if the file at the given path exists.
@@ -143,7 +143,7 @@ namespace tractor
      *
      * @return <code>true</code> if the file exists; <code>false</code> otherwise.
      */
-    static bool fileExists(const char* filePath);
+    static bool fileExists(const std::string& filePath);
 
     /**
      * Opens a byte stream for the given resource path.
@@ -159,7 +159,7 @@ namespace tractor
      *
      * @script{ignore}
      */
-    static std::unique_ptr<Stream> open(const char* path, size_t streamMode = READ);
+    static std::unique_ptr<Stream> open(const std::string& path, size_t streamMode = READ);
 
     /**
      * Opens the specified file.
@@ -172,10 +172,10 @@ namespace tractor
      *
      * @return A pointer to a FILE object that can be used to identify the stream or nullptr on error.
      *
-     * @see setResourcePath(const char*)
+     * @see setResourcePath(const std::string&)
      * @script{ignore}
      */
-    static FILE* openFile(const char* filePath, const char* mode);
+    static FILE* openFile(const std::string& filePath, const std::string& mode);
 
     /**
      * Reads the entire contents of the specified file and returns its contents.
@@ -189,7 +189,7 @@ namespace tractor
      * @return A newly allocated (nullptr-terminated) character array containing the
      *      contents of the file, or nullptr if the file could not be read.
      */
-    static char* readAll(const char* filePath, int* fileSize = nullptr);
+    static char* readAll(const std::string& filePath, int* fileSize = nullptr);
 
     /**
      * Determines if the file path is an absolute path for the current platform.
@@ -198,7 +198,7 @@ namespace tractor
      *
      * @return True if the path is an absolute path or false otherwise.
      */
-    static bool isAbsolutePath(const char* filePath);
+    static bool isAbsolutePath(const std::string& filePath);
 
     /**
     * Sets the asset root path for the game on platforms that have separate assets (currently just Android).
@@ -208,21 +208,21 @@ namespace tractor
     *
     * @param path The asset root path.
     */
-    static void setAssetPath(const char* path);
+    static void setAssetPath(const std::string& path);
 
     /**
     * Returns the currently set asset root path.
     *
     * @return The currently set asset root path.
     */
-    static const char* getAssetPath();
+    static std::string getAssetPath();
 
     /**
      * Creates a file on the file system from the specified asset (Android-specific).
      *
      * @param path The path to the file.
      */
-    static void createFileFromAsset(const char* path);
+    static void createFileFromAsset(const std::string& path);
 
     /**
      * Returns the directory name up to and including the trailing '/'.
@@ -238,7 +238,7 @@ namespace tractor
      *
      * @return The directory name with the trailing '/'. Returns "" if path is nullptr or the path does not contain a directory.
      */
-    static std::string getDirectoryName(const char* path);
+    static std::string getDirectoryName(const std::string& path);
 
     /**
      * Returns the extension of the given file path.
@@ -252,7 +252,7 @@ namespace tractor
      *
      * @return The file extension, all uppercase, including the '.'.
      */
-    static std::string getExtension(const char* path);
+    static std::string getExtension(const std::string& path);
 
   private:
 

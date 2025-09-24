@@ -166,10 +166,8 @@ namespace tractor
 		return false;
 	}
 
-	Script* ScriptController::loadScript(const char* path, Script::Scope scope, bool forceReload)
+	Script* ScriptController::loadScript(const std::string& path, Script::Scope scope, bool forceReload)
 	{
-		assert(path);
-
 		Script* script = nullptr;
 
 		// For global scripts, check if a script with the same path and scope is already loaded.
@@ -222,7 +220,7 @@ namespace tractor
 	{
 		assert(script);
 
-		if (!FileSystem::fileExists(script->_path.c_str()))
+		if (!FileSystem::fileExists(script->_path))
 		{
 			GP_WARN("Failed to load script: %s. File does not exist.", script->_path.c_str());
 			return false;
@@ -233,7 +231,7 @@ namespace tractor
 		scripts.push_back(script);
 
 		// Load the contents of the script, but don't execute it yet
-		const char* scriptSource = FileSystem::readAll(script->_path.c_str());
+		const char* scriptSource = FileSystem::readAll(script->_path);
 		int ret = luaL_loadstring(_lua, scriptSource); // [chunk]
 		SAFE_DELETE_ARRAY(scriptSource);
 
@@ -732,7 +730,7 @@ namespace tractor
 #endif
 
 		// Append to the LUA_PATH to allow scripts to be found in the resource folder on all platforms
-		appendLuaPath(_lua, FileSystem::getResourcePath());
+		appendLuaPath(_lua, FileSystem::getResourcePath().c_str());
 
 		// Create our own print() function that uses tractor::print.
 		if (luaL_dostring(_lua, lua_print_function))

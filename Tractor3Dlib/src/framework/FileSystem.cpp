@@ -32,7 +32,7 @@ namespace tractor
 	 * @param path The path to resolve.
 	 * @param fullPath The full resolved path. (out param)
 	 */
-	static void getFullPath(const char* path, std::string& fullPath)
+	static void getFullPath(const std::string& path, std::string& fullPath)
 	{
 		if (FileSystem::isAbsolutePath(path))
 		{
@@ -68,7 +68,7 @@ namespace tractor
 		virtual bool seek(long int offset, int origin);
 		virtual bool rewind();
 
-		static std::unique_ptr<FileStream> create(const char* filePath, const char* mode);
+		static std::unique_ptr<FileStream> create(const std::string& filePath, const std::string& mode);
 
 	private:
 		FileStream(FILE* file);
@@ -86,8 +86,8 @@ namespace tractor
 		};
 
 		std::unique_ptr<FILE, FileCloser> _file;
-		bool _canRead;
-		bool _canWrite;
+		bool _canRead{ false };
+		bool _canWrite{ false };
 	};
 
 	/////////////////////////////
@@ -100,17 +100,17 @@ namespace tractor
 	{
 	}
 
-	void FileSystem::setResourcePath(const char* path)
+	void FileSystem::setResourcePath(const std::string& path)
 	{
-		__resourcePath = path == nullptr ? "" : path;
+		__resourcePath = path.empty() ? "" : path;
 	}
 
-	const char* FileSystem::getResourcePath()
+	std::string FileSystem::getResourcePath()
 	{
-		return __resourcePath.c_str();
+		return __resourcePath;
 	}
 
-	void FileSystem::loadResourceAliases(const char* aliasFilePath)
+	void FileSystem::loadResourceAliases(const std::string& aliasFilePath)
 	{
 		Properties* properties = Properties::create(aliasFilePath);
 		if (properties)
@@ -128,42 +128,40 @@ namespace tractor
 	{
 		assert(properties);
 
-		const char* name;
-		while ((name = properties->getNextProperty()) != nullptr)
+		while (auto property = properties->getNextProperty())
 		{
-			__aliases[name] = properties->getString();
+			__aliases[property->name] = properties->getString();
 		}
 	}
 
-	std::string FileSystem::displayFileDialog(size_t dialogMode, const char* title, const char* filterDescription, const char* filterExtensions, const char* initialDirectory)
+	std::string FileSystem::displayFileDialog(size_t dialogMode, const std::string& title, const std::string& filterDescription, const std::string& filterExtensions, const std::string& initialDirectory)
 	{
 		return Platform::displayFileDialog(dialogMode, title, filterDescription, filterExtensions, initialDirectory);
 	}
 
-	const char* FileSystem::resolvePath(const char* path)
+	std::string FileSystem::resolvePath(const std::string& path)
 	{
-		assert(path);
-
-		size_t len = strlen(path);
+		size_t len = path.size();
 		if (len > 1 && path[0] == '@')
 		{
-			std::string alias(path + 1);
+			std::string alias(path.substr(1));
 			std::map<std::string, std::string>::const_iterator itr = __aliases.find(alias);
 			if (itr == __aliases.end())
 				return path; // no matching alias found
-			return itr->second.c_str();
+			return itr->second;
 		}
 
 		return path;
 	}
 
-	bool FileSystem::listFiles(const char* dirPath, std::vector<std::string>& files)
+	bool FileSystem::listFiles(const std::string& dirPath, std::vector<std::string>& files)
 	{
 		std::string path(FileSystem::getResourcePath());
-		if (dirPath && strlen(dirPath) > 0)
+		if (not dirPath.empty())
 		{
 			path.append(dirPath);
 		}
+
 		path.append("/*");
 		// Convert char to wchar
 		std::basic_string<TCHAR> wPath;
@@ -192,12 +190,9 @@ namespace tractor
 		return true;
 	}
 
-	bool FileSystem::fileExists(const char* filePath)
+	bool FileSystem::fileExists(const std::string& filePath)
 	{
-		assert(filePath);
-
 		std::string fullPath;
-
 		getFullPath(filePath, fullPath);
 
 		gp_stat_struct s;
@@ -205,7 +200,7 @@ namespace tractor
 
 	}
 
-	std::unique_ptr<Stream> FileSystem::open(const char* path, size_t streamMode)
+	std::unique_ptr<Stream> FileSystem::open(const std::string& path, size_t streamMode)
 	{
 		char modeStr[] = "rb";
 		if ((streamMode & WRITE) != 0)
@@ -217,27 +212,22 @@ namespace tractor
 		return std::move(stream);
 	}
 
-	FILE* FileSystem::openFile(const char* filePath, const char* mode)
+	FILE* FileSystem::openFile(const std::string& filePath, const std::string& mode)
 	{
-		assert(filePath);
-		assert(mode);
-
 		std::string fullPath;
 		getFullPath(filePath, fullPath);
 
 		createFileFromAsset(filePath);
 
-		FILE* fp = fopen(fullPath.c_str(), mode);
+		FILE* fp = fopen(fullPath.c_str(), mode.c_str());
 		return fp;
 	}
 
-	char* FileSystem::readAll(const char* filePath, int* fileSize)
+	char* FileSystem::readAll(const std::string& filePath, int* fileSize)
 	{
-		assert(filePath);
-
 		// Open file for reading.
 		std::unique_ptr<Stream> stream(open(filePath));
-		if (stream.get() == nullptr)
+		if (!stream)
 		{
 			GP_ERROR("Failed to load file: %s", filePath);
 			return nullptr;
@@ -261,48 +251,47 @@ namespace tractor
 		{
 			*fileSize = (int)size;
 		}
+
 		return buffer;
 	}
 
-	bool FileSystem::isAbsolutePath(const char* filePath)
+	bool FileSystem::isAbsolutePath(const std::string& filePath)
 	{
-		if (filePath == 0 || filePath[0] == '\0')
+		if (filePath.empty())
 			return false;
-#ifdef WIN32
+
 		if (filePath[1] != '\0')
 		{
 			char first = filePath[0];
 			return (filePath[1] == ':' && ((first >= 'a' && first <= 'z') || (first >= 'A' && first <= 'Z')));
 		}
+
 		return false;
-#else
-		return filePath[0] == '/';
-#endif
 	}
 
-	void FileSystem::setAssetPath(const char* path)
+	void FileSystem::setAssetPath(const std::string& path)
 	{
 		__assetPath = path;
 	}
 
-	const char* FileSystem::getAssetPath()
+	std::string FileSystem::getAssetPath()
 	{
-		return __assetPath.c_str();
+		return __assetPath;
 	}
 
-	void FileSystem::createFileFromAsset(const char* path)
+	void FileSystem::createFileFromAsset(const std::string& path)
 	{
 	}
 
-	std::string FileSystem::getDirectoryName(const char* path)
+	std::string FileSystem::getDirectoryName(const std::string& path)
 	{
-		if (path == nullptr || strlen(path) == 0)
-		{
+		if (path.empty())
 			return "";
-		}
+
 		char drive[_MAX_DRIVE];
 		char dir[_MAX_DIR];
-		_splitpath(path, drive, dir, nullptr, nullptr);
+		_splitpath(path.c_str(), drive, dir, nullptr, nullptr);
+
 		std::string dirname;
 		size_t driveLength = strlen(drive);
 		if (driveLength > 0)
@@ -319,47 +308,45 @@ namespace tractor
 		return dirname;
 	}
 
-	std::string FileSystem::getExtension(const char* path)
+	std::string FileSystem::getExtension(const std::string& path)
 	{
-		const char* str = strrchr(path, '.');
-		if (str == nullptr)
+		// Find the last occurrence of '.' in the path
+		auto pos = path.find_last_of('.');
+		if (pos == std::string::npos || pos == path.length() - 1)
+		{
+			// No '.' found or '.' is the last character (no extension)
 			return "";
+		}
 
-		std::string ext;
-		size_t len = strlen(str);
-		for (size_t i = 0; i < len; ++i)
-			ext += std::toupper(str[i]);
+		// Extract the extension (including the '.')
+		std::string ext = path.substr(pos);
+
+		// Convert the extension to uppercase
+		std::transform(ext.begin(), ext.end(), ext.begin(),
+			[](auto c) { return std::tolower(c); });
 
 		return ext;
 	}
 
-	//////////////////
-
 	FileStream::FileStream(FILE* file)
-		: _file(file), _canRead(false), _canWrite(false)
+		: _file(file)
 	{
-
 	}
 
-	std::unique_ptr<FileStream> FileStream::create(const char* filePath, const char* mode)
+	std::unique_ptr<FileStream> FileStream::create(const std::string& filePath, const std::string& mode)
 	{
-		FILE* file = fopen(filePath, mode);
-		if (file)
-		{
-			auto stream = std::unique_ptr<FileStream>(new FileStream(file));
-			const char* s = mode;
-			while (s != nullptr && *s != '\0')
-			{
-				if (*s == 'r')
-					stream->_canRead = true;
-				else if (*s == 'w')
-					stream->_canWrite = true;
-				++s;
-			}
+		FILE* file = fopen(filePath.c_str(), mode.c_str());
 
-			return stream;
-		}
-		return nullptr;
+		if (!file)
+			return nullptr;
+
+		auto stream = std::unique_ptr<FileStream>(new FileStream(file));
+
+		// Set read/write flags based on the mode string
+		stream->_canRead = mode.find('r') != std::string::npos;
+		stream->_canWrite = mode.find('w') != std::string::npos;
+
+		return stream;
 	}
 
 	bool FileStream::canRead()

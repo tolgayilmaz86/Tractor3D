@@ -31,7 +31,7 @@ namespace tractor
      * @return The new checkbox.
      * @script{create}
      */
-    static CheckBox* create(const char* id, Theme::Style* style = nullptr);
+    static CheckBox* create(const std::string& id, Theme::Style* style = nullptr);
 
     /**
      * Extends ScriptTarget::getTypeName() to return the type name of this class.
@@ -41,7 +41,7 @@ namespace tractor
      * @return The type name of this class: "CheckBox"
      * @see ScriptTarget::getTypeName()
      */
-    const char* getTypeName() const;
+    const std::string& getTypeName() const;
 
     /**
      * Gets whether this checkbox is checked.
@@ -94,7 +94,7 @@ namespace tractor
     /**
     * @see Control::initialize
     */
-    void initialize(const char* typeName, Theme::Style* style, Properties* properties);
+    void initialize(const std::string& typeName, Theme::Style* style, Properties* properties);
 
     /**
      * Keyboard callback on key events.

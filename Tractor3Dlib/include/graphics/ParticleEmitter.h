@@ -165,7 +165,7 @@ namespace tractor
      * @return An initialized ParticleEmitter.
      * @script{create}
      */
-    static ParticleEmitter* create(const char* url);
+    static ParticleEmitter* create(const std::string& url);
 
     /**
      * Creates a particle emitter from the specified properties object.
@@ -185,7 +185,7 @@ namespace tractor
      * @param particleCountMax The maximum number of particles that can be alive at one time in this ParticleEmitter's system.
      * @script{create}
      */
-    static ParticleEmitter* create(const char* texturePath, BlendMode blendMode, unsigned int particleCountMax);
+    static ParticleEmitter* create(const std::string& texturePath, BlendMode blendMode, unsigned int particleCountMax);
 
     /**
      * Sets a new texture for this particle emitter.
@@ -195,7 +195,7 @@ namespace tractor
      * @param texturePath Path to the new texture to set.
      * @param blendMode Blend mode for the new texture.
      */
-    void setTexture(const char* texturePath, BlendMode blendMode);
+    void setTexture(const std::string& texturePath, BlendMode blendMode);
 
     /**
      * Sets a new texture for this particle emitter.
@@ -762,7 +762,7 @@ namespace tractor
     void generateColor(const Vector4& base, const Vector4& variance, Vector4* dst);
 
     // Gets the blend mode from string.
-    static ParticleEmitter::BlendMode getBlendModeFromString(const char* src);
+    static ParticleEmitter::BlendMode getBlendModeFromString(const std::string& src);
 
     /**
      * Defines the data for a single particle in the system.

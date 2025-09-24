@@ -132,7 +132,7 @@ namespace tractor
 		assert(node);
 
 		// Check if the properties is valid and has a valid namespace.
-		if (!properties || !(strcmp(properties->getNamespace(), "collisionObject") == 0))
+		if (!properties || properties->getNamespace() != "collisionObject")
 		{
 			GP_ERROR("Failed to load physics collision shape from properties object: must be non-null object and have namespace equal to 'collisionObject'.");
 			return Definition();
@@ -147,17 +147,20 @@ namespace tractor
 		float width = -1.0f;
 		float height = -1.0f;
 		bool centerIsAbsolute = false;
-		const char* imagePath = nullptr;
+		std::string imagePath;
 		float maxHeight = 0;
 		float minHeight = 0;
 		bool shapeSpecified = false;
 
 		// Load the defined properties.
 		properties->rewind();
-		const char* name;
-		while ((name = properties->getNextProperty()))
+		std::string name;
+
+		while (auto property = properties->getNextProperty())
 		{
-			if (strcmp(name, "shape") == 0)
+			const auto& name = property->name;
+
+			if (name == "shape")
 			{
 				std::string shapeStr = properties->getString();
 				if (shapeStr == "BOX")
@@ -178,41 +181,41 @@ namespace tractor
 
 				shapeSpecified = true;
 			}
-			else if (strcmp(name, "image") == 0)
+			else if (name == "image")
 			{
 				imagePath = properties->getString();
 			}
-			else if (strcmp(name, "maxHeight") == 0)
+			else if (name == "maxHeight")
 			{
 				maxHeight = properties->getFloat();
 			}
-			else if (strcmp(name, "minHeight") == 0)
+			else if (name == "minHeight")
 			{
 				minHeight = properties->getFloat();
 			}
-			else if (strcmp(name, "radius") == 0)
+			else if (name == "radius")
 			{
 				radius = properties->getFloat();
 			}
-			else if (strcmp(name, "width") == 0)
+			else if (name == "width")
 			{
 				width = properties->getFloat();
 			}
-			else if (strcmp(name, "height") == 0)
+			else if (name == "height")
 			{
 				height = properties->getFloat();
 			}
-			else if (strcmp(name, "extents") == 0)
+			else if (name == "extents")
 			{
 				properties->getVector3("extents", &extents);
 				extentsSpecified = true;
 			}
-			else if (strcmp(name, "center") == 0)
+			else if (name == "center")
 			{
 				properties->getVector3("center", &center);
 				centerSpecified = true;
 			}
-			else if (strcmp(name, "centerAbsolute") == 0)
+			else if (name == "centerAbsolute")
 			{
 				centerIsAbsolute = properties->getBool();
 			}
@@ -315,7 +318,7 @@ namespace tractor
 
 		case SHAPE_HEIGHTFIELD:
 		{
-			if (imagePath == nullptr)
+			if (imagePath.empty())
 			{
 				// Node requires a valid terrain
 				if (dynamic_cast<Terrain*>(node->getDrawable()) == nullptr)

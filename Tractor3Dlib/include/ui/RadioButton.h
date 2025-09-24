@@ -42,7 +42,7 @@ namespace tractor
      * @return The type name of this class: "RadioButton"
      * @see ScriptTarget::getTypeName()
      */
-    const char* getTypeName() const;
+    const std::string& getTypeName() const;
 
     /**
      * Get whether this radio button is currently selected.

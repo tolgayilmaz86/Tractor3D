@@ -30,7 +30,7 @@ namespace tractor
     return imageControl;
   }
 
-  void ImageControl::initialize(const char* typeName, Theme::Style* style, Properties* properties)
+  void ImageControl::initialize(const std::string& typeName, Theme::Style* style, Properties* properties)
   {
     Control::initialize(typeName, style, properties);
 
@@ -39,7 +39,7 @@ namespace tractor
       std::string path;
       if (properties->getPath("path", &path))
       {
-        setImage(path.c_str());
+        setImage(path);
       }
 
       if (properties->exists("srcRegion"))
@@ -58,12 +58,12 @@ namespace tractor
     }
   }
 
-  const char* ImageControl::getTypeName() const
+  const std::string& ImageControl::getTypeName() const
   {
     return "ImageControl";
   }
 
-  void ImageControl::setImage(const char* path)
+  void ImageControl::setImage(const std::string& path)
   {
     SAFE_DELETE(_batch);
     Texture* texture = Texture::create(path);

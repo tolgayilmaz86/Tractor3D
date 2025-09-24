@@ -60,7 +60,7 @@ namespace tractor
 				return nullptr;
 			}
 
-			AudioSource* audioSource = create((strlen(properties->getNamespace()) > 0) ? properties : properties->getNextNamespace());
+			AudioSource* audioSource = create(properties->getNamespace().length() > 0 ? properties : properties->getNextNamespace());
 			SAFE_DELETE(properties);
 			return audioSource;
 		}
@@ -88,7 +88,7 @@ namespace tractor
 	{
 		// Check if the properties is valid and has a valid namespace.
 		assert(properties);
-		if (!properties || !(strcmp(properties->getNamespace(), "audio") == 0))
+		if (!properties || properties->getNamespace() != "audio")
 		{
 			GP_ERROR("Failed to load audio source from properties object: must be non-null object and have namespace equal to 'audio'.");
 			return nullptr;

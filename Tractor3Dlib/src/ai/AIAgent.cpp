@@ -21,12 +21,12 @@ namespace tractor
 		return new AIAgent();
 	}
 
-	const char* AIAgent::getId() const
+	const std::string& AIAgent::getId() const
 	{
 		if (_node)
 			return _node->getId();
 
-		return "";
+		return EMPTY_STRING;
 	}
 
 	Node* AIAgent::getNode() const

@@ -48,7 +48,7 @@ namespace tractor
     }
   }
 
-  SpriteBatch* SpriteBatch::create(const char* texturePath, Effect* effect, unsigned int initialCapacity)
+  SpriteBatch* SpriteBatch::create(const std::string& texturePath, Effect* effect, unsigned int initialCapacity)
   {
     Texture* texture = Texture::create(texturePath);
     SpriteBatch* batch = SpriteBatch::create(texture, effect, initialCapacity);

@@ -52,13 +52,11 @@ namespace tractor
 		SAFE_RELEASE(StateBlock::_defaultState);
 	}
 
-	MaterialParameter* RenderState::getParameter(const char* name) const
+	MaterialParameter* RenderState::getParameter(const std::string& name) const
 	{
-		assert(name);
-
 		// Search for an existing parameter with this name.
 		auto param = std::ranges::find_if(_parameters, [name](const auto& param) {
-			return strcmp(param->getName(), name) == 0;
+			return param->getName() == name;
 			});
 
 		if (param != _parameters.end())
@@ -84,7 +82,7 @@ namespace tractor
 		param->addRef();
 	}
 
-	void RenderState::removeParameter(const char* name)
+	void RenderState::removeParameter(const std::string& name)
 	{
 		auto it = std::ranges::find(_parameters, name, &MaterialParameter::_name);
 		if (it != _parameters.end())
@@ -143,17 +141,14 @@ namespace tractor
 		}
 	}
 
-	void RenderState::setParameterAutoBinding(const char* name, AutoBinding autoBinding)
+	void RenderState::setParameterAutoBinding(const std::string& name, AutoBinding autoBinding)
 	{
 		setParameterAutoBinding(name, autoBindingToString(autoBinding));
 	}
 
-	void RenderState::setParameterAutoBinding(const char* name, const char* autoBinding)
+	void RenderState::setParameterAutoBinding(const std::string& name, const std::string& autoBinding)
 	{
-		assert(name);
-		assert(autoBinding);
-
-		if (autoBinding == nullptr)
+		if (autoBinding.empty())
 		{
 			// Remove an existing auto-binding
 			std::map<std::string, std::string>::iterator itr = _autoBindings.find(name);
@@ -217,7 +212,7 @@ namespace tractor
 		}
 	}
 
-	void RenderState::applyAutoBinding(const char* uniformName, const char* autoBinding)
+	void RenderState::applyAutoBinding(const std::string& uniformName, const std::string& autoBinding)
 	{
 		assert(_nodeBinding);
 
@@ -411,7 +406,7 @@ namespace tractor
 
 		// Clone parameters
 		for (const auto& [parameter, binder] : _autoBindings)
-			renderState->setParameterAutoBinding(parameter.c_str(), binder.c_str());
+			renderState->setParameterAutoBinding(parameter, binder);
 
 		for (auto& param : _parameters | std::views::filter([](const auto& param) {
 			// If this parameter is a method binding auto binding, don't clone it - it will get setup automatically
@@ -703,11 +698,9 @@ namespace tractor
 		state->_bits = _bits;
 	}
 
-	static bool parseBoolean(const char* value)
+	static bool parseBoolean(const std::string& value)
 	{
-		assert(value);
-
-		if (strlen(value) == 4)
+		if (value.length() == 4)
 		{
 			return (
 				tolower(value[0]) == 't' &&
@@ -719,12 +712,10 @@ namespace tractor
 		return false;
 	}
 
-	static int parseInt(const char* value)
+	static int parseInt(const std::string& value)
 	{
-		assert(value);
-
 		int rValue;
-		int scanned = sscanf(value, "%d", &rValue);
+		int scanned = sscanf(value.c_str(), "%d", &rValue);
 		if (scanned != 1)
 		{
 			GP_ERROR("Error attempting to parse int '%s'. (Will default to 0 if errors are treated as warnings)", value);
@@ -733,12 +724,10 @@ namespace tractor
 		return rValue;
 	}
 
-	static unsigned int parseUInt(const char* value)
+	static unsigned int parseUInt(const std::string& value)
 	{
-		assert(value);
-
 		unsigned int rValue;
-		int scanned = sscanf(value, "%u", &rValue);
+		int scanned = sscanf(value.c_str(), "%u", &rValue);
 		if (scanned != 1)
 		{
 			GP_ERROR("Error attempting to parse unsigned int '%s'. (Will default to 0 if errors are treated as warnings)", value);
@@ -747,10 +736,8 @@ namespace tractor
 		return rValue;
 	}
 
-	static RenderState::Blend parseBlend(const char* value)
+	static RenderState::Blend parseBlend(const std::string& value)
 	{
-		assert(value);
-
 		// Convert the string to uppercase for comparison.
 		std::string upper(value);
 		std::transform(upper.begin(), upper.end(), upper.begin(), (int(*)(int))toupper);
@@ -787,10 +774,8 @@ namespace tractor
 		}
 	}
 
-	static RenderState::DepthFunction parseDepthFunc(const char* value)
+	static RenderState::DepthFunction parseDepthFunc(const std::string& value)
 	{
-		assert(value);
-
 		// Convert string to uppercase for comparison
 		std::string upper(value);
 		std::transform(upper.begin(), upper.end(), upper.begin(), (int(*)(int))toupper);
@@ -817,10 +802,8 @@ namespace tractor
 		}
 	}
 
-	static RenderState::CullFaceSide parseCullFaceSide(const char* value)
+	static RenderState::CullFaceSide parseCullFaceSide(const std::string& value)
 	{
-		assert(value);
-
 		// Convert string to uppercase for comparison
 		std::string upper(value);
 		std::transform(upper.begin(), upper.end(), upper.begin(), (int(*)(int))toupper);
@@ -837,10 +820,8 @@ namespace tractor
 		}
 	}
 
-	static RenderState::FrontFace parseFrontFace(const char* value)
+	static RenderState::FrontFace parseFrontFace(const std::string& value)
 	{
-		assert(value);
-
 		// Convert string to uppercase for comparison
 		std::string upper(value);
 		std::transform(upper.begin(), upper.end(), upper.begin(), (int(*)(int))toupper);
@@ -855,10 +836,8 @@ namespace tractor
 		}
 	}
 
-	static RenderState::StencilFunction parseStencilFunc(const char* value)
+	static RenderState::StencilFunction parseStencilFunc(const std::string& value)
 	{
-		assert(value);
-
 		// Convert string to uppercase for comparison
 		std::string upper(value);
 		std::transform(upper.begin(), upper.end(), upper.begin(), (int(*)(int))toupper);
@@ -885,10 +864,8 @@ namespace tractor
 		}
 	}
 
-	static RenderState::StencilOperation parseStencilOp(const char* value)
+	static RenderState::StencilOperation parseStencilOp(const std::string& value)
 	{
-		assert(value);
-
 		// Convert string to uppercase for comparison
 		std::string upper(value);
 		std::transform(upper.begin(), upper.end(), upper.begin(), (int(*)(int))toupper);
@@ -915,75 +892,73 @@ namespace tractor
 		}
 	}
 
-	void RenderState::StateBlock::setState(const char* name, const char* value)
+	void RenderState::StateBlock::setState(const std::string& name, const std::string& value)
 	{
-		assert(name);
-
-		if (strcmp(name, "blend") == 0)
+		if (name == "blend")
 		{
 			setBlend(parseBoolean(value));
 		}
-		else if (strcmp(name, "blendSrc") == 0 || strcmp(name, "srcBlend") == 0)   // Leaving srcBlend for backward compat.
+		else if (name == "blendSrc" || name == "srcBlend")   // Leaving srcBlend for backward compat.
 		{
 			setBlendSrc(parseBlend(value));
 		}
-		else if (strcmp(name, "blendDst") == 0 || strcmp(name, "dstBlend") == 0)    // // Leaving dstBlend for backward compat.
+		else if (name == "blendDst" || name == "dstBlend")    // Leaving dstBlend for backward compat.
 		{
 			setBlendDst(parseBlend(value));
 		}
-		else if (strcmp(name, "cullFace") == 0)
+		else if (name == "cullFace")
 		{
 			setCullFace(parseBoolean(value));
 		}
-		else if (strcmp(name, "cullFaceSide") == 0)
+		else if (name == "cullFaceSide")
 		{
 			setCullFaceSide(parseCullFaceSide(value));
 		}
-		else if (strcmp(name, "frontFace") == 0)
+		else if (name == "frontFace")
 		{
 			setFrontFace(parseFrontFace(value));
 		}
-		else if (strcmp(name, "depthTest") == 0)
+		else if (name == "depthTest")
 		{
 			setDepthTest(parseBoolean(value));
 		}
-		else if (strcmp(name, "depthWrite") == 0)
+		else if (name == "depthWrite")
 		{
 			setDepthWrite(parseBoolean(value));
 		}
-		else if (strcmp(name, "depthFunc") == 0)
+		else if (name == "depthFunc")
 		{
 			setDepthFunction(parseDepthFunc(value));
 		}
-		else if (strcmp(name, "stencilTest") == 0)
+		else if (name == "stencilTest")
 		{
 			setStencilTest(parseBoolean(value));
 		}
-		else if (strcmp(name, "stencilWrite") == 0)
+		else if (name == "stencilWrite")
 		{
 			setStencilWrite(parseUInt(value));
 		}
-		else if (strcmp(name, "stencilFunc") == 0)
+		else if (name == "stencilFunc")
 		{
 			setStencilFunction(parseStencilFunc(value), _stencilFunctionRef, _stencilFunctionMask);
 		}
-		else if (strcmp(name, "stencilFuncRef") == 0)
+		else if (name == "stencilFuncRef")
 		{
 			setStencilFunction(_stencilFunction, parseInt(value), _stencilFunctionMask);
 		}
-		else if (strcmp(name, "stencilFuncMask") == 0)
+		else if (name == "stencilFuncMask")
 		{
 			setStencilFunction(_stencilFunction, _stencilFunctionRef, parseUInt(value));
 		}
-		else if (strcmp(name, "stencilOpSfail") == 0)
+		else if (name == "stencilOpSfail")
 		{
 			setStencilOperation(parseStencilOp(value), _stencilOpDpfail, _stencilOpDppass);
 		}
-		else if (strcmp(name, "stencilOpDpfail") == 0)
+		else if (name == "stencilOpDpfail")
 		{
 			setStencilOperation(_stencilOpSfail, parseStencilOp(value), _stencilOpDppass);
 		}
-		else if (strcmp(name, "stencilOpDppass") == 0)
+		else if (name == "stencilOpDppass")
 		{
 			setStencilOperation(_stencilOpSfail, _stencilOpDpfail, parseStencilOp(value));
 		}

@@ -245,7 +245,7 @@ namespace tractor
      * @return The type name of this class: "Control"
      * @see ScriptTarget::getTypeName()
      */
-    const char* getTypeName() const;
+    const std::string& getTypeName() const;
 
     /**
      * Get this control's ID string.
@@ -1274,7 +1274,7 @@ namespace tractor
      * @param style The style to apply to this control (optional).
      * @param properties The properties to set on this control (optional).
      */
-    virtual void initialize(const char* typeName, Theme::Style* style, Properties* properties);
+    virtual void initialize(const std::string& typeName, Theme::Style* style, Properties* properties);
 
     /**
      * Get a Control::State enum from a matching string.
@@ -1332,7 +1332,7 @@ namespace tractor
      * @param alignment The string representation of the Alignment type.
      * @return The Alignment enum value corresponding to the given string.
      */
-    static Alignment getAlignment(const char* alignment);
+    static Alignment getAlignment(const std::string& alignment);
 
     /**
      * Converts a string in the format of either 'N' or 'N%' (where N is a number)
@@ -1342,7 +1342,7 @@ namespace tractor
      * @param isPercentage Set to true if the returned value should be treated as a percentage
      * @return The number contained within the string
      */
-    static float parseCoord(const char* s, bool* isPercentage);
+    static float parseCoord(const std::string& s, bool* isPercentage);
 
     /**
      * Converts a string in the format of either 'N, N' or 'N%, N%' (where N is a number)
@@ -1355,7 +1355,7 @@ namespace tractor
      * @param v2Percentage Set to true if the second number should be treated as a percentage
      * @return true if the string was parsed
      */
-    static bool parseCoordPair(const char* s, float* v1, float* v2, bool* v1Percentage, bool* v2Percentage);
+    static bool parseCoordPair(const std::string&, float* v1, float* v2, bool* v1Percentage, bool* v2Percentage);
 
     /**
      * The Control's ID.
@@ -1481,7 +1481,7 @@ namespace tractor
 
     bool updateBoundsInternal(const Vector2& offset);
 
-    AutoSize parseAutoSize(const char* str);
+    AutoSize parseAutoSize(const std::string& str);
 
     Theme::Style::Overlay** getOverlays(unsigned char overlayTypes, Theme::Style::Overlay** overlays);
 

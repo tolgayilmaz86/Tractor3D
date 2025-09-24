@@ -14,10 +14,10 @@ namespace tractor
   {
   }
 
-  Button* Button::create(const char* id, Theme::Style* style)
+  Button* Button::create(const std::string& id, Theme::Style* style)
   {
     Button* button = new Button();
-    button->_id = id ? id : "";
+    button->_id = id;
     button->initialize("Button", style, nullptr);
     return button;
   }
@@ -29,7 +29,7 @@ namespace tractor
     return button;
   }
 
-  void Button::initialize(const char* typeName, Theme::Style* style, Properties* properties)
+  void Button::initialize(const std::string& typeName, Theme::Style* style, Properties* properties)
   {
     Label::initialize(typeName, style, properties);
 
@@ -37,15 +37,15 @@ namespace tractor
     {
       // Different types of data bindings can be named differently in a button namespace.
       // Gamepad button mappings have the name "mapping" and correspond to Gamepad::ButtonMapping enums.
-      const char* mapping = properties->getString("mapping");
-      if (mapping)
+      auto mapping = properties->getString("mapping");
+      if (!mapping.empty())
       {
-        _dataBinding = Gamepad::getButtonMappingFromString(mapping);
+        _dataBinding = Gamepad::getButtonMappingFromString(mapping.c_str());
       }
     }
   }
 
-  const char* Button::getTypeName() const
+  const std::string& Button::getTypeName() const
   {
     return "Button";
   }

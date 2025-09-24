@@ -58,7 +58,7 @@ namespace tractor
      * @return The type name of this class: "TextBox"
      * @see ScriptTarget::getTypeName()
      */
-    const char* getTypeName() const;
+    const std::string& getTypeName() const;
 
     /**
      * Returns the current location of the caret with the text of this TextBox.
@@ -114,7 +114,7 @@ namespace tractor
     /**
      * Update the text being edited.
      */
-    void setText(char const* text) override;
+    void setText(const std::string& text) override;
 
   protected:
 
@@ -195,7 +195,7 @@ namespace tractor
      * @param inputMode The string representation of the InputMode type.
      * @return The InputMode enum value corresponding to the given string.
      */
-    static InputMode getInputMode(const char* inputMode);
+    static InputMode getInputMode(const std::string& inputMode);
 
     /**
      * Get the text which should be displayed, depending on

@@ -25,39 +25,24 @@ namespace tractor
 	}
 
 	// Returns true if 'str' ends with 'suffix'; false otherwise.
-	static bool endsWith(const char* str, const char* suffix, bool ignoreCase)
+	static bool endsWith(const std::string& str, const std::string& suffix, bool ignoreCase)
 	{
-		if (str == nullptr || suffix == nullptr)
+		if (str.empty() || suffix.empty() || suffix.length() > str.length())
 			return false;
-		size_t length = strlen(str);
-		size_t suffixLength = strlen(suffix);
 
-		if (suffixLength > length)
+		const auto startPos = str.length() - suffix.length();
+
+		if (ignoreCase)
 		{
-			return false;
+			return std::equal(suffix.begin(), suffix.end(),
+				str.begin() + startPos,
+				[](char a, char b) {
+					return std::tolower(static_cast<unsigned char>(a)) ==
+						std::tolower(static_cast<unsigned char>(b));
+				});
 		}
 
-		size_t offset = length - suffixLength;
-
-		const char* p = str + offset;
-		while (*p != '\0' && *suffix != '\0')
-		{
-			if (ignoreCase)
-			{
-				if (lowercase(*p) != lowercase(*suffix))
-				{
-					return false;
-				}
-			}
-			else if (*p != *suffix)
-			{
-				return false;
-			}
-
-			++p;
-			++suffix;
-		}
-		return true;
+		return str.compare(startPos, suffix.length(), suffix) == 0;
 	}
 
 
@@ -91,14 +76,14 @@ namespace tractor
 			__sceneList.erase(itr);
 	}
 
-	Scene* Scene::create(const char* id)
+	Scene* Scene::create(const std::string& id)
 	{
 		Scene* scene = new Scene();
 		scene->setId(id);
 		return scene;
 	}
 
-	Scene* Scene::load(const char* filePath)
+	Scene* Scene::load(const std::string& filePath)
 	{
 		if (endsWith(filePath, ".gpb", true))
 		{
@@ -114,9 +99,9 @@ namespace tractor
 		return SceneLoader::load(filePath);
 	}
 
-	Scene* Scene::getScene(const char* id)
+	Scene* Scene::getScene(const std::string& id)
 	{
-		if (id == nullptr)
+		if (!id.empty())
 			return __sceneList.size() ? __sceneList[0] : nullptr;
 
 		for (size_t i = 0, count = __sceneList.size(); i < count; ++i)
@@ -129,20 +114,18 @@ namespace tractor
 	}
 
 
-	const char* Scene::getId() const
+	const std::string& Scene::getId() const
 	{
-		return _id.c_str();
+		return _id;
 	}
 
-	void Scene::setId(const char* id)
+	void Scene::setId(const std::string& id)
 	{
-		_id = id ? id : "";
+		_id = id;
 	}
 
-	Node* Scene::findNode(const char* id, bool recursive, bool exactMatch) const
+	Node* Scene::findNode(const std::string& id, bool recursive, bool exactMatch) const
 	{
-		assert(id);
-
 		// Search immediate children first.
 		for (Node* child = getFirstNode(); child != nullptr; child = child->getNextSibling())
 		{
@@ -168,10 +151,8 @@ namespace tractor
 		return nullptr;
 	}
 
-	unsigned int Scene::findNodes(const char* id, std::vector<Node*>& nodes, bool recursive, bool exactMatch) const
+	unsigned int Scene::findNodes(const std::string& id, std::vector<Node*>& nodes, bool recursive, bool exactMatch) const
 	{
-		assert(id);
-
 		unsigned int count = 0;
 
 		// Search immediate children first.
@@ -223,7 +204,7 @@ namespace tractor
 		}
 	}
 
-	Node* Scene::addNode(const char* id)
+	Node* Scene::addNode(const std::string& id)
 	{
 		Node* node = Node::create(id);
 		assert(node);

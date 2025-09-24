@@ -57,7 +57,7 @@ namespace tractor
 		Properties* p = Properties::create(url);
 		assert(p);
 
-		Animation* animation = createAnimation(id, (strlen(p->getNamespace()) > 0) ? p : p->getNextNamespace());
+		Animation* animation = createAnimation(id, (p->getNamespace().length() > 0) ? p : p->getNextNamespace());
 
 		SAFE_DELETE(p);
 
@@ -117,21 +117,21 @@ namespace tractor
 	Animation* AnimationTarget::createAnimation(const char* id, Properties* animationProperties)
 	{
 		assert(animationProperties);
-		if (std::strcmp(animationProperties->getNamespace(), "animation") != 0)
+		if (animationProperties->getNamespace() != "animation")
 		{
 			GP_ERROR("Invalid animation namespace '%s'.", animationProperties->getNamespace());
 			return nullptr;
 		}
 
-		const char* propertyIdStr = animationProperties->getString("property");
-		if (propertyIdStr == nullptr)
+		auto propertyIdStr = animationProperties->getString("property");
+		if (propertyIdStr.empty())
 		{
 			GP_ERROR("Attribute 'property' must be specified for an animation.");
 			return nullptr;
 		}
 
 		// Get animation target property id
-		int propertyId = getPropertyId(_targetType, propertyIdStr);
+		int propertyId = getPropertyId(_targetType, propertyIdStr.c_str());
 		if (propertyId == -1)
 		{
 			GP_ERROR("Property ID is invalid.");
@@ -145,22 +145,22 @@ namespace tractor
 			return nullptr;
 		}
 
-		const char* keyTimesStr = animationProperties->getString("keyTimes");
-		if (keyTimesStr == nullptr)
+		auto keyTimesStr = animationProperties->getString("keyTimes");
+		if (keyTimesStr.empty())
 		{
 			GP_ERROR("Attribute 'keyTimes' must be specified for an animation.");
 			return nullptr;
 		}
 
-		const char* keyValuesStr = animationProperties->getString("keyValues");
-		if (keyValuesStr == nullptr)
+		auto keyValuesStr = animationProperties->getString("keyValues");
+		if (keyValuesStr.empty())
 		{
 			GP_ERROR("Attribute 'keyValues' must be specified for an animation.");
 			return nullptr;
 		}
 
-		const char* curveStr = animationProperties->getString("curve");
-		if (curveStr == nullptr)
+		auto curveStr = animationProperties->getString("curve");
+		if (curveStr.empty())
 		{
 			GP_ERROR("Attribute 'curve' must be specified for an animation.");
 			return nullptr;
@@ -208,9 +208,9 @@ namespace tractor
 			startOffset = endOffset + 1;
 		}
 
-		const char* keyInStr = animationProperties->getString("keyIn");
+		auto keyInStr = animationProperties->getString("keyIn");
 		float* keyIn = nullptr;
-		if (keyInStr)
+		if (!keyInStr.empty())
 		{
 			keyIn = new float[components];
 			startOffset = 0;
@@ -230,9 +230,9 @@ namespace tractor
 			}
 		}
 
-		const char* keyOutStr = animationProperties->getString("keyOut");
+		auto keyOutStr = animationProperties->getString("keyOut");
 		float* keyOut = nullptr;
-		if (keyOutStr)
+		if (!keyOutStr.empty())
 		{
 			keyOut = new float[components];
 			startOffset = 0;
@@ -252,7 +252,7 @@ namespace tractor
 			}
 		}
 
-		int curve = Curve::getInterpolationType(curveStr);
+		int curve = Curve::getInterpolationType(curveStr.c_str());
 
 		Animation* animation = nullptr;
 		if (keyIn && keyOut)
@@ -264,17 +264,17 @@ namespace tractor
 			animation = createAnimation(id, propertyId, keyCount, keyTimes, keyValues, (Curve::InterpolationType)curve);
 		}
 
-		const char* repeat = animationProperties->getString("repeatCount");
-		if (repeat)
+		auto repeat = animationProperties->getString("repeatCount");
+		if (!repeat.empty())
 		{
-			if (strcmp(repeat, ANIMATION_TARGET_INDEFINITE_STR) == 0)
+			if (repeat == ANIMATION_TARGET_INDEFINITE_STR)
 			{
 				animation->getClip()->setRepeatCount(AnimationClip::REPEAT_INDEFINITE);
 			}
 			else
 			{
 				float value;
-				sscanf(repeat, "%f", &value);
+				sscanf(repeat.c_str(), "%f", &value);
 				animation->getClip()->setRepeatCount(value);
 			}
 		}
@@ -285,7 +285,7 @@ namespace tractor
 		SAFE_DELETE_ARRAY(keyTimes);
 
 		Properties* pClip = animationProperties->getNextNamespace();
-		if (pClip && std::strcmp(pClip->getNamespace(), "clip") == 0)
+		if (pClip && pClip->getNamespace() == "clip")
 		{
 			int frameCount = animationProperties->getInt("frameCount");
 			if (frameCount <= 0)

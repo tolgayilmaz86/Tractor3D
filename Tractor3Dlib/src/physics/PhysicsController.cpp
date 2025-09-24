@@ -50,7 +50,7 @@ namespace tractor
 		SAFE_DELETE(_listeners);
 	}
 
-	const char* PhysicsController::getTypeName() const
+	const std::string& PhysicsController::getTypeName() const
 	{
 		return "PhysicsController";
 	}
@@ -1070,7 +1070,7 @@ namespace tractor
 
 		// The mesh must have a valid URL (i.e. it must have been loaded from a Bundle)
 		// in order to fetch mesh data for computing mesh rigid body.
-		if (strlen(mesh->getUrl()) == 0)
+		if (mesh->getUrl().empty())
 		{
 			GP_ERROR("Cannot create mesh rigid body for mesh without valid URL.");
 			return nullptr;
@@ -1326,7 +1326,7 @@ namespace tractor
 			btIDebugDraw::DBG_DrawContactPoints | btIDebugDraw::DBG_DrawWireframe), _meshBatch(nullptr), _lineCount(0)
 	{
 		// Vertex shader for drawing colored lines.
-		const char* vs_str =
+		const std::string vs_str
 		{
 			"uniform mat4 u_viewProjectionMatrix;\n"
 			"attribute vec4 a_position;\n"
@@ -1339,7 +1339,7 @@ namespace tractor
 		};
 
 		// Fragment shader for drawing colored lines.
-		const char* fs_str =
+		const std::string fs_str =
 		{
 		#ifdef OPENGL_ES
 			"precision highp float;\n"

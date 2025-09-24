@@ -53,7 +53,7 @@ namespace tractor
 
 			if (properties->exists("valueTextAlignment"))
 			{
-				_valueTextAlignment = Font::getJustify(properties->getString("valueTextAlignment"));
+				_valueTextAlignment = Font::getJustify(properties->getString("valueTextAlignment").c_str());
 			}
 		}
 
@@ -61,7 +61,7 @@ namespace tractor
 		setValue(_value);
 	}
 
-	const char* Slider::getTypeName() const
+	const std::string& Slider::getTypeName() const
 	{
 		return "Slider";
 	}

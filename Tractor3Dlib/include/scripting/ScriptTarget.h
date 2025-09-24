@@ -226,7 +226,7 @@ public: \
      * @return A string describing the type name of the ScriptTarget child
      *      class, as it is defined in the lua bindings (i.e. "Node").
      */
-    virtual const char* getTypeName() const = 0;
+    virtual const std::string& getTypeName() const = 0;
 
     /**
      * Attaches a script to this object.
@@ -238,7 +238,7 @@ public: \
      * @param path Path to the script.
      * @return A pointer to the successfully loaded script, or nullptr if unsuccessful.
      */
-    Script* addScript(const char* path);
+    Script* addScript(const std::string& path);
 
     /**
      * Removes a previously attached script from this object.
@@ -246,7 +246,7 @@ public: \
      * @param path The same path that was used to load the script being removed.
      * @return True if a script is successfully removed, false otherwise.
      */
-    bool removeScript(const char* path);
+    bool removeScript(const std::string& path);
 
     /**
      * Adds the given global script function as a callback for the given event.

@@ -45,7 +45,7 @@ namespace tractor
      *
      * @return The created effect.
      */
-    static Effect* createFromFile(const char* vshPath, const char* fshPath, const char* defines = nullptr);
+    static Effect* createFromFile(const std::string& vshPath, const std::string& fshPath, const std::string& defines = EMPTY_STRING);
 
     /**
      * Creates an effect from the given vertex and fragment shader source code.
@@ -56,13 +56,13 @@ namespace tractor
      *
      * @return The created effect.
      */
-    static Effect* createFromSource(const char* vshSource, const char* fshSource, const char* defines = nullptr);
+    static Effect* createFromSource(const std::string& vshSource, const std::string& fshSource, const std::string& defines = EMPTY_STRING);
 
     /**
      * Returns the unique string identifier for the effect, which is a concatenation of
      * the shader paths it was loaded from.
      */
-    const char* getId() const;
+    const std::string& getId() const;
 
     /**
      * Returns the vertex attribute handle for the vertex attribute with the specified name.
@@ -71,7 +71,7 @@ namespace tractor
      *
      * @return The vertex attribute, or -1 if no such vertex attribute exists.
      */
-    VertexAttribute getVertexAttribute(const char* name) const;
+    VertexAttribute getVertexAttribute(const std::string& name) const;
 
     /**
      * Returns the uniform handle for the uniform with the specified name.
@@ -80,7 +80,7 @@ namespace tractor
      *
      * @return The uniform, or nullptr if no such uniform exists.
      */
-    Uniform* getUniform(const char* name) const;
+    Uniform* getUniform(const std::string& name) const;
 
     /**
      * Returns the specified active uniform.
@@ -238,7 +238,7 @@ namespace tractor
      */
     Effect& operator=(const Effect&);
 
-    static Effect* createFromSource(const char* vshPath, const char* vshSource, const char* fshPath, const char* fshSource, const char* defines = nullptr);
+    static Effect* createFromSource(const std::string& vshPath, const std::string& vshSource, const std::string& fshPath, const std::string& fshSource, const std::string& defines = EMPTY_STRING);
 
     GLuint _program;
     std::string _id;
@@ -261,7 +261,7 @@ namespace tractor
      *
      * @return The name of the uniform.
      */
-    const char* getName() const;
+    const std::string& getName() const;
 
     /**
      * Returns the OpenGL uniform type.

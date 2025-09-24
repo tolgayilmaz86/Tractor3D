@@ -24,16 +24,10 @@
 namespace tractor
 {
 
-	Node::Node(const char* id)
-		: _scene(nullptr), _firstChild(nullptr), _nextSibling(nullptr), _prevSibling(nullptr), _parent(nullptr), _childCount(0), _enabled(true), _tags(nullptr),
-		_drawable(nullptr), _camera(nullptr), _light(nullptr), _audioSource(nullptr), _collisionObject(nullptr), _agent(nullptr), _userObject(nullptr),
-		_dirtyBits(NODE_DIRTY_ALL)
+	Node::Node(const std::string& id) : _id(id), _dirtyBits(NODE_DIRTY_ALL)
 	{
 		GP_REGISTER_SCRIPT_EVENTS();
-		if (id)
-		{
-			_id = id;
-		}
+		_id = id;
 	}
 
 	Node::~Node()
@@ -50,11 +44,10 @@ namespace tractor
 		SAFE_RELEASE(_audioSource);
 		SAFE_DELETE(_collisionObject);
 		SAFE_RELEASE(_userObject);
-		SAFE_DELETE(_tags);
 		setAgent(nullptr);
 	}
 
-	Node* Node::create(const char* id)
+	Node* Node::create(const std::string& id)
 	{
 		return new Node(id);
 	}
@@ -170,15 +163,13 @@ namespace tractor
 		return n;
 	}
 
-	Node* Node::findNode(const char* id, bool recursive, bool exactMatch) const
+	Node* Node::findNode(const std::string& id, bool recursive, bool exactMatch) const
 	{
 		return findNode(id, recursive, exactMatch, false);
 	}
 
-	Node* Node::findNode(const char* id, bool recursive, bool exactMatch, bool skipSkin) const
+	Node* Node::findNode(const std::string& id, bool recursive, bool exactMatch, bool skipSkin) const
 	{
-		assert(id);
-
 		// If not skipSkin hierarchy, try searching the skin hierarchy
 		if (!skipSkin)
 		{
@@ -224,15 +215,13 @@ namespace tractor
 		return nullptr;
 	}
 
-	unsigned int Node::findNodes(const char* id, std::vector<Node*>& nodes, bool recursive, bool exactMatch) const
+	unsigned int Node::findNodes(const std::string& id, std::vector<Node*>& nodes, bool recursive, bool exactMatch) const
 	{
 		return findNodes(id, nodes, recursive, exactMatch, false);
 	}
 
-	unsigned int Node::findNodes(const char* id, std::vector<Node*>& nodes, bool recursive, bool exactMatch, bool skipSkin) const
+	unsigned int Node::findNodes(const std::string& id, std::vector<Node*>& nodes, bool recursive, bool exactMatch, bool skipSkin) const
 	{
-		assert(id);
-
 		// If the drawable is a model with a mesh skin, search the skin's hierarchy as well.
 		unsigned int count = 0;
 
@@ -1036,7 +1025,7 @@ namespace tractor
 			return nullptr;
 		}
 
-		PhysicsCollisionObject* collisionObject = setCollisionObject((strlen(properties->getNamespace()) > 0) ? properties : properties->getNextNamespace());
+		PhysicsCollisionObject* collisionObject = setCollisionObject(properties->getNamespace().length() > 0 ? properties : properties->getNextNamespace());
 		SAFE_DELETE(properties);
 
 		return collisionObject;
@@ -1047,31 +1036,31 @@ namespace tractor
 		SAFE_DELETE(_collisionObject);
 
 		// Check if the properties is valid.
-		if (!properties || !(strcmp(properties->getNamespace(), "collisionObject") == 0))
+		if (!properties || properties->getNamespace() != "collisionObject")
 		{
 			GP_ERROR("Failed to load collision object from properties object: must be non-null object and have namespace equal to 'collisionObject'.");
 			return nullptr;
 		}
-
-		if (const char* type = properties->getString("type"))
+		auto type = properties->getString("type");
+		if (type != EMPTY_STRING)
 		{
-			if (strcmp(type, "CHARACTER") == 0)
+			if (type == "CHARACTER")
 			{
 				_collisionObject = PhysicsCharacter::create(this, properties);
 			}
-			else if (strcmp(type, "GHOST_OBJECT") == 0)
+			else if (type == "GHOST_OBJECT")
 			{
 				_collisionObject = PhysicsGhostObject::create(this, properties);
 			}
-			else if (strcmp(type, "RIGID_BODY") == 0)
+			else if (type == "RIGID_BODY")
 			{
 				_collisionObject = PhysicsRigidBody::create(this, properties);
 			}
-			else if (strcmp(type, "VEHICLE") == 0)
+			else if (type == "VEHICLE")
 			{
 				_collisionObject = PhysicsVehicle::create(this, properties);
 			}
-			else if (strcmp(type, "VEHICLE_WHEEL") == 0)
+			else if (type == "VEHICLE_WHEEL")
 			{
 				//
 				// PhysicsVehicleWheel is special because this call will traverse up the scene graph for the

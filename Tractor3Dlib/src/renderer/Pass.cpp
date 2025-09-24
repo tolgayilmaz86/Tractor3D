@@ -7,8 +7,8 @@
 namespace tractor
 {
 
-	Pass::Pass(const char* id, Technique* technique) :
-		_id(id ? id : ""), _technique(technique), _effect(nullptr), _vaBinding(nullptr)
+	Pass::Pass(const std::string& id, Technique* technique) :
+		_id(id), _technique(technique), _effect(nullptr), _vaBinding(nullptr)
 	{
 		RenderState::_parent = _technique;
 	}
@@ -25,11 +25,8 @@ namespace tractor
 		SAFE_RELEASE(_vaBinding);
 	}
 
-	bool Pass::initialize(const char* vshPath, const char* fshPath, const char* defines)
+	bool Pass::initialize(const std::string& vshPath, const std::string& fshPath, const std::string& defines)
 	{
-		assert(vshPath);
-		assert(fshPath);
-
 		SAFE_RELEASE(_effect);
 		SAFE_RELEASE(_vaBinding);
 
@@ -37,16 +34,16 @@ namespace tractor
 		_effect = Effect::createFromFile(vshPath, fshPath, defines);
 		if (_effect == nullptr)
 		{
-			GP_WARN("Failed to create effect for pass. vertexShader = %s, fragmentShader = %s, defines = %s", vshPath, fshPath, defines ? defines : "");
+			GP_WARN("Failed to create effect for pass. vertexShader = %s, fragmentShader = %s, defines = %s", vshPath.c_str(), fshPath.c_str(), defines.c_str());
 			return false;
 		}
 
 		return true;
 	}
 
-	const char* Pass::getId() const
+	const std::string& Pass::getId() const
 	{
-		return _id.c_str();
+		return _id;
 	}
 
 	Effect* Pass::getEffect() const

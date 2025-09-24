@@ -120,7 +120,7 @@ namespace tractor
 		}
 	}
 
-	Script* ScriptTarget::addScript(const char* path)
+	Script* ScriptTarget::addScript(const std::string& path)
 	{
 		ScriptController* sc = Game::getInstance()->getScriptController();
 
@@ -172,14 +172,12 @@ namespace tractor
 		return script;
 	}
 
-	bool ScriptTarget::removeScript(const char* path)
+	bool ScriptTarget::removeScript(const std::string& path)
 	{
-		assert(path);
-
 		ScriptEntry* se = _scripts;
 		while (se)
 		{
-			if (strcmp(se->script->getPath(), path) == 0 && se->script->getScope() == Script::PROTECTED)
+			if (se->script->getPath() == path && se->script->getScope() == Script::PROTECTED)
 			{
 				removeScript(se);
 				return true;

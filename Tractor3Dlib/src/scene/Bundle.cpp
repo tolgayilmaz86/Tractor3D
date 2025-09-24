@@ -35,8 +35,7 @@ namespace tractor
 
 	static std::vector<Bundle*> __bundleCache;
 
-	Bundle::Bundle(const char* path) :
-		_path(path), _referenceCount(0), _references(nullptr), _trackedNodes(nullptr)
+	Bundle::Bundle(const std::string& path) : _path(path)
 	{
 	}
 
@@ -163,10 +162,8 @@ namespace tractor
 		return str;
 	}
 
-	Bundle* Bundle::create(const char* path)
+	Bundle* Bundle::create(const std::string& path)
 	{
-		assert(path);
-
 		// Search the cache for this bundle.
 		for (size_t i = 0, count = __bundleCache.size(); i < count; ++i)
 		{
@@ -243,9 +240,8 @@ namespace tractor
 		return bundle;
 	}
 
-	Bundle::Reference* Bundle::find(const char* id) const
+	Bundle::Reference* Bundle::find(const std::string& id) const
 	{
-		assert(id);
 		assert(_references);
 
 		// Search the ref table for the given id (case-sensitive).
@@ -311,7 +307,7 @@ namespace tractor
 		return _materialPath;
 	}
 
-	Bundle::Reference* Bundle::seekTo(const char* id, unsigned int type)
+	Bundle::Reference* Bundle::seekTo(const std::string& id, unsigned int type)
 	{
 		Reference* ref = find(id);
 		if (ref == nullptr)
@@ -379,12 +375,12 @@ namespace tractor
 		return _stream->read(m, sizeof(float), 16) == 16;
 	}
 
-	Scene* Bundle::loadScene(const char* id)
+	Scene* Bundle::loadScene(const std::string& id)
 	{
 		clearLoadSession();
 
 		Reference* ref = nullptr;
-		if (id)
+		if (!id.empty())
 		{
 			ref = seekTo(id, BUNDLE_TYPE_SCENE);
 			if (!ref)
@@ -482,14 +478,13 @@ namespace tractor
 		return scene;
 	}
 
-	Node* Bundle::loadNode(const char* id)
+	Node* Bundle::loadNode(const std::string& id)
 	{
 		return loadNode(id, nullptr);
 	}
 
-	Node* Bundle::loadNode(const char* id, Scene* sceneContext)
+	Node* Bundle::loadNode(const std::string& id, Scene* sceneContext)
 	{
-		assert(id);
 		assert(_references);
 		assert(_stream);
 
@@ -595,10 +590,8 @@ namespace tractor
 		return node;
 	}
 
-	Node* Bundle::loadNode(const char* id, Scene* sceneContext, Node* nodeContext)
+	Node* Bundle::loadNode(const std::string& id, Scene* sceneContext, Node* nodeContext)
 	{
-		assert(id);
-
 		Node* node = nullptr;
 
 		// Search the passed in loading contexts (scene/node) first to see
@@ -960,7 +953,7 @@ namespace tractor
 		return light;
 	}
 
-	Model* Bundle::readModel(const char* nodeId)
+	Model* Bundle::readModel(const std::string& nodeId)
 	{
 		std::string xref = readString(_stream.get());
 		if (xref.length() > 1 && xref[0] == '#') // TODO: Handle full xrefs
@@ -1345,15 +1338,14 @@ namespace tractor
 		return animation;
 	}
 
-	std::shared_ptr<Mesh> Bundle::loadMesh(const char* id)
+	std::shared_ptr<Mesh> Bundle::loadMesh(const std::string& id)
 	{
 		return loadMesh(id, nullptr);
 	}
 
-	std::shared_ptr<Mesh> Bundle::loadMesh(const char* id, const char* nodeId)
+	std::shared_ptr<Mesh> Bundle::loadMesh(const std::string& id, const std::string& nodeId)
 	{
 		assert(_stream);
-		assert(id);
 
 		// Save the file position.
 		long position = _stream->position();
@@ -1576,12 +1568,9 @@ namespace tractor
 		return meshData;
 	}
 
-	std::unique_ptr<Bundle::MeshData> Bundle::readMeshData(const char* url)
+	std::unique_ptr<Bundle::MeshData> Bundle::readMeshData(const std::string& url)
 	{
-		assert(url);
-
-		size_t len = strlen(url);
-		if (len == 0)
+		if (url.empty())
 		{
 			GP_ERROR("Mesh data URL must be non-empty.");
 			return nullptr;
@@ -1623,9 +1612,8 @@ namespace tractor
 		return meshData;
 	}
 
-	Font* Bundle::loadFont(const char* id)
+	Font* Bundle::loadFont(const std::string& id)
 	{
-		assert(id);
 		assert(_stream);
 
 		// Seek to the specified font.
@@ -1800,7 +1788,7 @@ namespace tractor
 			}
 
 			// Create the font for this size
-			Font* font = Font::create(family.c_str(), Font::PLAIN, size, glyphs, glyphCount, texture, (Font::Format)format);
+			Font* font = Font::create(family, Font::PLAIN, size, glyphs, glyphCount, texture, (Font::Format)format);
 
 			// Free the glyph array.
 			SAFE_DELETE_ARRAY(glyphs);
@@ -1837,7 +1825,7 @@ namespace tractor
 		transform->setRotation(rotation);
 	}
 
-	bool Bundle::contains(const char* id) const
+	bool Bundle::contains(const std::string& id) const
 	{
 		return (find(id) != nullptr);
 	}
@@ -1847,10 +1835,16 @@ namespace tractor
 		return _referenceCount;
 	}
 
-	const char* Bundle::getObjectId(unsigned int index) const
+	const std::string& Bundle::getObjectId(unsigned int index) const
 	{
 		assert(_references);
-		return (index >= _referenceCount ? nullptr : _references[index].id.c_str());
+
+		if(index >= _referenceCount)
+		{
+			return EMPTY_STRING;
+		}
+
+		return _references[index].id;
 	}
 
 	Bundle::Reference::Reference()

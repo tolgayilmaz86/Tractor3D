@@ -29,7 +29,7 @@ namespace tractor
      * @return The new label.
      * @script{create}
      */
-    static Label* create(const char* id, Theme::Style* style = nullptr);
+    static Label* create(const std::string& id, Theme::Style* style = nullptr);
 
     /**
      * Extends ScriptTarget::getTypeName() to return the type name of this class.
@@ -39,21 +39,21 @@ namespace tractor
      * @return The type name of this class: "Label"
      * @see ScriptTarget::getTypeName()
      */
-    const char* getTypeName() const;
+    const std::string& getTypeName() const;
 
     /**
      * Set the text for this label to display.
      *
      * @param text The text to display.
      */
-    virtual void setText(const char* text);
+    virtual void setText(const std::string& text);
 
     /**
      * Get the text displayed by this label.
      *
      * @return The text displayed by this label.
      */
-    const char* getText();
+    const std::string& getText();
 
     /**
      * Add a listener to be notified of specific events affecting
@@ -93,7 +93,7 @@ namespace tractor
     /**
      * @see Control::initialize
      */
-    void initialize(const char* typeName, Theme::Style* style, Properties* properties);
+    void initialize(const std::string& typeName, Theme::Style* style, Properties* properties);
 
     /**
      * @see Control::update

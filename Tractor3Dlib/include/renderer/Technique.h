@@ -31,7 +31,7 @@ namespace tractor
      *
      * @return The Id of this technique.
      */
-    const char* getId() const;
+    const std::string& getId() const;
 
     /**
      * Gets the number of passes in this technique.
@@ -52,7 +52,7 @@ namespace tractor
      *
      * @return The pass at the specified id.
      */
-    Pass* getPass(const char* id) const;
+    Pass* getPass(const std::string& id) const;
 
     /**
      * @see RenderState::setNodeBinding
@@ -64,7 +64,7 @@ namespace tractor
     /**
      * Constructor.
      */
-    Technique(const char* id, Material* material);
+    Technique(const std::string& id, Material* material);
 
     /**
      * Hidden copy constructor.

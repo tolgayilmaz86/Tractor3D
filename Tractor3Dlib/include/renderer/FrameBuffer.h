@@ -39,7 +39,7 @@ namespace tractor
      * @return A newly created FrameBuffer.
      * @script{create}
      */
-    static FrameBuffer* create(const char* id);
+    static FrameBuffer* create(const std::string& id);
 
     /**
      * Creates a new FrameBuffer with a single RenderTarget of the specified width and height,
@@ -58,7 +58,7 @@ namespace tractor
      * @return A newly created FrameBuffer.
      * @script{create}
      */
-    static FrameBuffer* create(const char* id, unsigned int width, unsigned int height, Texture::Format format = Texture::RGBA);
+    static FrameBuffer* create(const std::string& id, unsigned int width, unsigned int height, Texture::Format format = Texture::RGBA);
 
     /**
      * Get a named FrameBuffer from its ID.
@@ -67,14 +67,14 @@ namespace tractor
      *
      * @return The FrameBuffer with the specified ID, or nullptr if one was not found.
      */
-    static FrameBuffer* getFrameBuffer(const char* id);
+    static FrameBuffer* getFrameBuffer(const std::string& id);
 
     /**
      * Get the ID of this FrameBuffer.
      *
      * @return The ID of this FrameBuffer.
      */
-    const char* getId() const;
+    const std::string& getId() const;
 
     /**
      * Gets the width of the frame buffer.
@@ -196,7 +196,7 @@ namespace tractor
     /**
      * Constructor.
      */
-    FrameBuffer(const char* id, unsigned int width, unsigned int height, FrameBufferHandle handle);
+    FrameBuffer(const std::string& id, unsigned int width, unsigned int height, FrameBufferHandle handle);
 
     /**
      * Destructor.

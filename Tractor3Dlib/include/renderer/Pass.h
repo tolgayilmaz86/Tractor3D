@@ -27,7 +27,7 @@ namespace tractor
     /**
      * Returns the Id of this pass.
      */
-    const char* getId() const;
+    const std::string& getId() const;
 
     /**
      * Returns the effect for this Pass.
@@ -72,7 +72,7 @@ namespace tractor
     /**
      * Constructor.
      */
-    Pass(const char* id, Technique* technique);
+    Pass(const std::string& id, Technique* technique);
 
     /**
      * Constructor.
@@ -92,7 +92,7 @@ namespace tractor
     /**
      * Creates a new pass for the given shaders.
      */
-    bool initialize(const char* vshPath, const char* fshPath, const char* defines);
+    bool initialize(const std::string& vshPath, const std::string& fshPath, const std::string& defines);
 
     /**
      * Hidden copy assignment operator.

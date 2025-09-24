@@ -35,19 +35,18 @@ namespace tractor
     return (256.0f * r + g + 0.00390625f * b) / 65536.0f;
   }
 
-  HeightField* HeightField::createFromImage(const char* path, float heightMin, float heightMax)
+  HeightField* HeightField::createFromImage(const std::string& path, float heightMin, float heightMax)
   {
     return create(path, 0, 0, heightMin, heightMax);
   }
 
-  HeightField* HeightField::createFromRAW(const char* path, unsigned int width, unsigned int height, float heightMin, float heightMax)
+  HeightField* HeightField::createFromRAW(const std::string& path, unsigned int width, unsigned int height, float heightMin, float heightMax)
   {
     return create(path, width, height, heightMin, heightMax);
   }
 
-  HeightField* HeightField::create(const char* path, unsigned int width, unsigned int height, float heightMin, float heightMax)
+  HeightField* HeightField::create(const std::string& path, unsigned int width, unsigned int height, float heightMin, float heightMax)
   {
-    assert(path);
     assert(heightMax >= heightMin);
 
     float heightScale = heightMax - heightMin;

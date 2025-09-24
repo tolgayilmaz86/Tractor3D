@@ -35,7 +35,7 @@ namespace tractor
      *
      * @return The loaded script, or nullptr if the script could not be loaded.
      */
-    Script* loadScript(const char* path, Script::Scope scope = Script::GLOBAL, bool forceReload = false);
+    Script* loadScript(const std::string& path, Script::Scope scope = Script::GLOBAL, bool forceReload = false);
 
     /**
      * Calls a zero-parameter global function.

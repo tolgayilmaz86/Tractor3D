@@ -41,7 +41,7 @@ namespace tractor
      * @return The new form or nullptr if there was an error.
      * @script{create}
      */
-    static Form* create(const char* url);
+    static Form* create(const std::string& url);
 
     /**
      * Create a new Form.
@@ -57,7 +57,7 @@ namespace tractor
      * @return The new Form.
      * @script{create}
      */
-    static Form* create(const char* id, Theme::Style* style, Layout::Type layoutType = Layout::LAYOUT_ABSOLUTE);
+    static Form* create(const std::string& id, Theme::Style* style, Layout::Type layoutType = Layout::LAYOUT_ABSOLUTE);
 
     /**
      * Get a form from its ID.
@@ -66,7 +66,7 @@ namespace tractor
      *
      * @return A form with the given ID, or null if one was not found.
      */
-    static Form* getForm(const char* id);
+    static Form* getForm(const std::string& id);
 
     /**
      * Returns the currently active control within the UI system.
@@ -101,7 +101,7 @@ namespace tractor
      * @return The type name of this class: "Form"
      * @see ScriptTarget::getTypeName
      */
-    const char* getTypeName() const;
+    const std::string& getTypeName() const;
 
     /**
      * @see Container#isForm()
@@ -164,7 +164,7 @@ namespace tractor
     /**
      * @see Control::initialize
      */
-    void initialize(const char* typeName, Theme::Style* style, Properties* properties);
+    void initialize(const std::string& typeName, Theme::Style* style, Properties* properties);
 
     /**
      * Initialize a quad for this form in order to draw it in 3D.

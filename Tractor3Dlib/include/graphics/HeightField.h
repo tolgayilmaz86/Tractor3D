@@ -42,7 +42,7 @@ namespace tractor
      *
      * @return The new HeightField.
      */
-    static HeightField* createFromImage(const char* path, float heightMin = 0, float heightMax = 1);
+    static HeightField* createFromImage(const std::string& path, float heightMin = 0, float heightMax = 1);
 
     /**
      * Creates a HeightField from the specified RAW8 or RAW16 file.
@@ -69,7 +69,7 @@ namespace tractor
      *
      * @return The new HeightField.
      */
-    static HeightField* createFromRAW(const char* path, unsigned int width, unsigned int height, float heightMin = 0, float heightMax = 1);
+    static HeightField* createFromRAW(const std::string& path, unsigned int width, unsigned int height, float heightMin = 0, float heightMax = 1);
 
     /**
      * Returns a pointer to the underlying height array.
@@ -127,7 +127,7 @@ namespace tractor
     /**
      * Internal method for creating a HeightField.
      */
-    static HeightField* create(const char* path, unsigned int width, unsigned int height, float heightMin, float heightMax);
+    static HeightField* create(const std::string& path, unsigned int width, unsigned int height, float heightMin, float heightMax);
 
     float* _array;
     unsigned int _cols;

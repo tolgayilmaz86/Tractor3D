@@ -69,7 +69,7 @@ namespace tractor
      * @return The type name of this class: "Container"
      * @see ScriptTarget::getTypeName()
      */
-    const char* getTypeName() const;
+    const std::string& getTypeName() const;
 
     /**
      * Get this container's layout.
@@ -328,7 +328,7 @@ namespace tractor
     /**
      * @see Control::initialize
      */
-    void initialize(const char* typeName, Theme::Style* style, Properties* properties);
+    void initialize(const std::string& typeName, Theme::Style* style, Properties* properties);
 
     /**
      * @see Control::update
@@ -438,7 +438,7 @@ namespace tractor
      *
      * @return The Scroll enum value that matches the given string.
      */
-    static Scroll getScroll(const char* scroll);
+    static Scroll getScroll(const std::string& scroll);
 
     /**
      * The container's layout.

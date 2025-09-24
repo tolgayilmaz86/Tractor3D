@@ -2,6 +2,7 @@
 #include "ui/Image.h"
 #include "renderer/Texture.h"
 #include "framework/FileSystem.h"
+#include <filesystem>
 
 // PVRTC (GL_IMG_texture_compression_pvrtc) : Imagination based gpus
 #ifndef GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG
@@ -75,10 +76,8 @@ namespace tractor
 		}
 	}
 
-	Texture* Texture::create(const char* path, bool generateMipmaps)
+	Texture* Texture::create(const std::string& path, bool generateMipmaps)
 	{
-		assert(path);
-
 		// Search texture cache first.
 		for (size_t i = 0, count = __textureCache.size(); i < count; ++i)
 		{
@@ -103,31 +102,28 @@ namespace tractor
 		Texture* texture = nullptr;
 
 		// Filter loading based on file extension.
-		const char* ext = strrchr(FileSystem::resolvePath(path), '.');
-		if (ext)
+		std::filesystem::path filePath(FileSystem::resolvePath(path));
+		std::string ext = filePath.extension().string();
+
+		std::transform(ext.begin(), ext.end(), ext.begin(),
+			[](auto c) { return std::tolower(c); });
+
+		if (ext == ".png")
 		{
-			switch (strlen(ext))
-			{
-			case 4:
-				if (tolower(ext[1]) == 'p' && tolower(ext[2]) == 'n' && tolower(ext[3]) == 'g')
-				{
-					Image* image = Image::create(path);
-					if (image)
-						texture = create(image, generateMipmaps);
-					SAFE_RELEASE(image);
-				}
-				else if (tolower(ext[1]) == 'p' && tolower(ext[2]) == 'v' && tolower(ext[3]) == 'r')
-				{
-					// PowerVR Compressed Texture RGBA.
-					texture = createCompressedPVRTC(path);
-				}
-				else if (tolower(ext[1]) == 'd' && tolower(ext[2]) == 'd' && tolower(ext[3]) == 's')
-				{
-					// DDS file format (DXT/S3TC) compressed textures
-					texture = createCompressedDDS(path);
-				}
-				break;
-			}
+			Image* image = Image::create(path);
+			if (image)
+				texture = create(image, generateMipmaps);
+			SAFE_RELEASE(image);
+		}
+		else if (ext == ".pvr")
+		{
+			// PowerVR Compressed Texture RGBA.
+			texture = createCompressedPVRTC(path);
+		}
+		else if (ext == ".dds")
+		{
+			// DDS file format (DXT/S3TC) compressed textures
+			texture = createCompressedDDS(path);
 		}
 
 		if (texture)
@@ -408,7 +404,7 @@ namespace tractor
 		return widthBlocks * heightBlocks * ((blockSize * bpp) >> 3);
 	}
 
-	Texture* Texture::createCompressedPVRTC(const char* path)
+	Texture* Texture::createCompressedPVRTC(const std::string& path)
 	{
 		std::unique_ptr<Stream> stream(FileSystem::open(path));
 		if (stream.get() == nullptr || !stream->canRead())
@@ -505,10 +501,9 @@ namespace tractor
 		return texture;
 	}
 
-	GLubyte* Texture::readCompressedPVRTC(const char* path, Stream* stream, GLsizei* width, GLsizei* height, GLenum* format, unsigned int* mipMapCount, unsigned int* faceCount, GLenum* faces)
+	GLubyte* Texture::readCompressedPVRTC(const std::string& path, Stream* stream, GLsizei* width, GLsizei* height, GLenum* format, unsigned int* mipMapCount, unsigned int* faceCount, GLenum* faces)
 	{
 		assert(stream);
-		assert(path);
 		assert(width);
 		assert(height);
 		assert(format);
@@ -683,7 +678,7 @@ namespace tractor
 		return data;
 	}
 
-	GLubyte* Texture::readCompressedPVRTCLegacy(const char* path, Stream* stream, GLsizei* width, GLsizei* height, GLenum* format, unsigned int* mipMapCount, unsigned int* faceCount, GLenum* faces)
+	GLubyte* Texture::readCompressedPVRTCLegacy(const std::string& path, Stream* stream, GLsizei* width, GLsizei* height, GLenum* format, unsigned int* mipMapCount, unsigned int* faceCount, GLenum* faces)
 	{
 		char PVRTCIdentifier[] = "PVR!";
 
@@ -791,10 +786,8 @@ namespace tractor
 		}
 	}
 
-	Texture* Texture::createCompressedDDS(const char* path)
+	Texture* Texture::createCompressedDDS(const std::string& path)
 	{
-		assert(path);
-
 		// DDS file structures.
 		struct dds_pixel_format
 		{
@@ -1230,7 +1223,7 @@ namespace tractor
 		return new Sampler(texture);
 	}
 
-	Texture::Sampler* Texture::Sampler::create(const char* path, bool generateMipmaps)
+	Texture::Sampler* Texture::Sampler::create(const std::string& path, bool generateMipmaps)
 	{
 		Texture* texture = Texture::create(path, generateMipmaps);
 		return texture ? new Sampler(texture) : nullptr;

@@ -46,7 +46,7 @@ namespace tractor
      *
      * @return A Text object.
      */
-    static Text* create(const char* fontPath, const char* str, const Vector4& color = Vector4::one(), unsigned int size = 0);
+    static Text* create(const std::string& fontPath, const std::string& str, const Vector4& color = Vector4::one(), unsigned int size = 0);
 
     /**
      * Creates text from a properties object.

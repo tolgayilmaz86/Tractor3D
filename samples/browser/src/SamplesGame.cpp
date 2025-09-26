@@ -9,11 +9,6 @@ std::vector<SamplesGame::SampleRecordList>* SamplesGame::_samples = nullptr;
 // Declare our game instance
 SamplesGame game;
 
-SamplesGame::SamplesGame()
-	: _activeSample(nullptr), _font(nullptr), _sampleSelectForm(nullptr)
-{
-}
-
 void SamplesGame::initialize()
 {
 	_font = Font::create("res/ui/arial.gpb");
@@ -274,7 +269,7 @@ void SamplesGame::exitActiveSample()
 	setMouseCaptured(false);
 }
 
-void SamplesGame::addSample(const char* category, const char* title, void* func, unsigned int order)
+void SamplesGame::addSample(const std::string& category, const std::string& title, void* func, unsigned int order)
 {
 	if (_samples == nullptr)
 		_samples = new std::vector<SampleRecordList>();

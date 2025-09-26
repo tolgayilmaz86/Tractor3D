@@ -52,7 +52,8 @@ namespace tractor
 
 	const std::string& PhysicsController::getTypeName() const
 	{
-		return "PhysicsController";
+		static const std::string TYPE_NAME = "PhysicsController";
+		return TYPE_NAME;
 	}
 
 	void PhysicsController::addStatusListener(Listener* listener)

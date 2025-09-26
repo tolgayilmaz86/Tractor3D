@@ -280,6 +280,7 @@ namespace tractor
 		if (ret != LUA_OK)
 		{
 			script->_env = 0; // clear _env on failure
+			auto err = lua_tostring(_lua, -1);
 			GP_WARN("Failed to load script: %s. %s.", script->_path.c_str(), lua_tostring(_lua, -1));
 			return false;
 		}
@@ -806,7 +807,7 @@ namespace tractor
 
 		if (!getNestedVariable(_lua, func, env))
 		{
-			GP_WARN("Failed to call function '%s'", func);
+			//GP_WARN("Failed to call function '%s'", func);
 			return false;
 		}
 
@@ -918,7 +919,7 @@ namespace tractor
 		bool success = lua_pcall(_lua, argumentCount, resultCount, 0) == 0;
 		if (!success)
 		{
-			GP_WARN("Failed to call function '%s' with error '%s'.", func, lua_tostring(_lua, -1));
+			//GP_WARN("Failed to call function '%s' with error '%s'.", func, lua_tostring(_lua, -1));
 			lua_pop(_lua, 1); // pop the error
 		}
 

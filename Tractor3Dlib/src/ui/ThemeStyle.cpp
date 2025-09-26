@@ -8,7 +8,7 @@ namespace tractor
 	/****************
 	 * Theme::Style *
 	 ****************/
-	Theme::Style::Style(Theme* theme, const char* id, float tw, float th,
+	Theme::Style::Style(Theme* theme, const std::string& id, float tw, float th,
 		const Theme::Margin& margin, const Theme::Padding& padding,
 		Theme::Style::Overlay* normal, Theme::Style::Overlay* focus,
 		Theme::Style::Overlay* active, Theme::Style::Overlay* disabled,
@@ -53,9 +53,9 @@ namespace tractor
 		return _theme;
 	}
 
-	const char* Theme::Style::getId() const
+	const std::string& Theme::Style::getId() const
 	{
-		return _id.c_str();
+		return _id;
 	}
 
 	Theme::Style::Overlay* Theme::Style::getOverlay(OverlayType overlayType) const
@@ -277,7 +277,7 @@ namespace tractor
 		_textColor = color;
 	}
 
-	const Rectangle& Theme::Style::Overlay::getImageRegion(const char* id) const
+	const Rectangle& Theme::Style::Overlay::getImageRegion(const std::string& id) const
 	{
 		if (!_imageList)
 		{
@@ -295,7 +295,7 @@ namespace tractor
 		}
 	}
 
-	void Theme::Style::Overlay::setImageRegion(const char* id, const Rectangle& region, float tw, float th)
+	void Theme::Style::Overlay::setImageRegion(const std::string& id, const Rectangle& region, float tw, float th)
 	{
 		assert(_imageList);
 		ThemeImage* image = _imageList->getImage(id);
@@ -304,7 +304,7 @@ namespace tractor
 		generateUVs(tw, th, region.x, region.y, region.width, region.height, &(image->_uvs));
 	}
 
-	const Vector4& Theme::Style::Overlay::getImageColor(const char* id) const
+	const Vector4& Theme::Style::Overlay::getImageColor(const std::string& id) const
 	{
 		assert(_imageList);
 		ThemeImage* image = _imageList->getImage(id);
@@ -318,7 +318,7 @@ namespace tractor
 		}
 	}
 
-	void Theme::Style::Overlay::setImageColor(const char* id, const Vector4& color)
+	void Theme::Style::Overlay::setImageColor(const std::string& id, const Vector4& color)
 	{
 		assert(_imageList);
 		ThemeImage* image = _imageList->getImage(id);
@@ -326,7 +326,7 @@ namespace tractor
 		image->_color.set(color);
 	}
 
-	const Theme::UVs& Theme::Style::Overlay::getImageUVs(const char* id) const
+	const Theme::UVs& Theme::Style::Overlay::getImageUVs(const std::string& id) const
 	{
 		assert(_imageList);
 		ThemeImage* image = _imageList->getImage(id);

@@ -4,9 +4,25 @@
 ADD_SAMPLE("Input", "Gamepads", GamepadSample, 3);
 #endif
 
-GamepadSample::GamepadSample() : _gamepad(nullptr), _font(nullptr)
-{
-}
+static const std::unordered_map<Gamepad::ButtonMapping, std::string> buttonMap = {
+  {Gamepad::BUTTON_A, std::string("A")},
+  {Gamepad::BUTTON_B, std::string("B")},
+  {Gamepad::BUTTON_X, std::string("X")},
+  {Gamepad::BUTTON_Y, std::string("Y")},
+  {Gamepad::BUTTON_L1, std::string("L1")},
+  {Gamepad::BUTTON_L2, std::string("L2")},
+  {Gamepad::BUTTON_L3, std::string("L3")},
+  {Gamepad::BUTTON_R1, std::string("R1")},
+  {Gamepad::BUTTON_R2, std::string("R2")},
+  {Gamepad::BUTTON_R3, std::string("R3")},
+  {Gamepad::BUTTON_UP, std::string("UP")},
+  {Gamepad::BUTTON_DOWN, std::string("DOWN")},
+  {Gamepad::BUTTON_LEFT, std::string("LEFT")},
+  {Gamepad::BUTTON_RIGHT, std::string("RIGHT")},
+  {Gamepad::BUTTON_MENU1, std::string("MENU1")},
+  {Gamepad::BUTTON_MENU2, std::string("MENU2")},
+  {Gamepad::BUTTON_MENU3, std::string("MENU3")}
+};
 
 void GamepadSample::initialize()
 {
@@ -29,31 +45,34 @@ void GamepadSample::finalize()
 
 void GamepadSample::updateGamepad(float elapsedTime, Gamepad* gamepad, unsigned int player)
 {
-	char s[128];
-	sprintf(s, "Player: %d - %s\nButtons: ", player, gamepad->getName().c_str());
-	_status += s;
-	for (int i = 0; i < 20; ++i)
+	std::ostringstream statusStream;
+	statusStream << "Player: " << player << " - " << gamepad->getName() << "\nButtons: ";
+
+	for (const auto& [button, strValue] : buttonMap)
 	{
-		if (gamepad->isButtonDown((Gamepad::ButtonMapping)i))
+		if (gamepad->isButtonDown(button))
 		{
-			sprintf(s, "%s ", getStringFromButtonMapping((Gamepad::ButtonMapping)i));
-			_status += s;
+			statusStream << strValue << " ";
 		}
 	}
-	_status += "\n";
-	for (unsigned int j = 0; j < gamepad->getJoystickCount(); ++j)
+	statusStream << "\n";
+
+	// Joystick information
+	for (size_t j = 0; j < gamepad->getJoystickCount(); ++j)
 	{
 		Vector2 joystick;
 		gamepad->getJoystickValues(j, &joystick);
-		sprintf(s, "Joystick %d: (%f, %f)\n", j, joystick.x, joystick.y);
-		_status += s;
+		statusStream << "Joystick " << j << ": (" << joystick.x << ", " << joystick.y << ")\n";
 	}
-	for (unsigned int k = 0; k < gamepad->getTriggerCount(); ++k)
+
+	// Trigger information
+	for (size_t k = 0; k < gamepad->getTriggerCount(); ++k)
 	{
-		sprintf(s, "Trigger %d: %f\n", k, gamepad->getTriggerValue(k));
-		_status += s;
+		statusStream << "Trigger " << k << ": " << gamepad->getTriggerValue(k) << "\n";
 	}
-	_status += "\n";
+
+	statusStream << "\n";
+	_status = statusStream.str();
 }
 
 void GamepadSample::update(float elapsedTime)
@@ -70,7 +89,7 @@ void GamepadSample::render(float elapsedTime)
 	drawFrameRate(_font, Vector4(0, 0.5f, 1, 1), 5, 1, getFrameRate());
 
 	_font->start();
-	_font->drawText(_status.c_str(), 7, 27, Vector4::one(), 22);
+	_font->drawText(_status, 7, 27, Vector4::one(), 22);
 	_font->finish();
 
 
@@ -92,45 +111,27 @@ void GamepadSample::gamepadEvent(Gamepad::GamepadEvent evt, Gamepad* gamepad)
 	}
 }
 
-const char* GamepadSample::getStringFromButtonMapping(Gamepad::ButtonMapping mapping)
+const std::string& GamepadSample::getStringFromButtonMapping(Gamepad::ButtonMapping mapping)
 {
-	switch (mapping)
-	{
-	case Gamepad::BUTTON_A:
-		return "A";
-	case Gamepad::BUTTON_B:
-		return "B";
-	case Gamepad::BUTTON_X:
-		return "X";
-	case Gamepad::BUTTON_Y:
-		return "Y";
-	case Gamepad::BUTTON_L1:
-		return "L1";
-	case Gamepad::BUTTON_L2:
-		return "L2";
-	case Gamepad::BUTTON_L3:
-		return "L3";
-	case Gamepad::BUTTON_R1:
-		return "R1";
-	case Gamepad::BUTTON_R2:
-		return "R2";
-	case Gamepad::BUTTON_R3:
-		return "R3";
-	case Gamepad::BUTTON_UP:
-		return "UP";
-	case Gamepad::BUTTON_DOWN:
-		return "DOWN";
-	case Gamepad::BUTTON_LEFT:
-		return "LEFT";
-	case Gamepad::BUTTON_RIGHT:
-		return "RIGHT";
-	case Gamepad::BUTTON_MENU1:
-		return "MENU1";
-	case Gamepad::BUTTON_MENU2:
-		return "MENU2";
-	case Gamepad::BUTTON_MENU3:
-		return "MENU3";
-	default:
-		return "";
-	}
+	static const std::unordered_map<Gamepad::ButtonMapping, std::string> buttonMap = {
+	  {Gamepad::BUTTON_A, std::string("A")},
+	  {Gamepad::BUTTON_B, std::string("B")},
+	  {Gamepad::BUTTON_X, std::string("X")},
+	  {Gamepad::BUTTON_Y, std::string("Y")},
+	  {Gamepad::BUTTON_L1, std::string("L1")},
+	  {Gamepad::BUTTON_L2, std::string("L2")},
+	  {Gamepad::BUTTON_L3, std::string("L3")},
+	  {Gamepad::BUTTON_R1, std::string("R1")},
+	  {Gamepad::BUTTON_R2, std::string("R2")},
+	  {Gamepad::BUTTON_R3, std::string("R3")},
+	  {Gamepad::BUTTON_UP, std::string("UP")},
+	  {Gamepad::BUTTON_DOWN, std::string("DOWN")},
+	  {Gamepad::BUTTON_LEFT, std::string("LEFT")},
+	  {Gamepad::BUTTON_RIGHT, std::string("RIGHT")},
+	  {Gamepad::BUTTON_MENU1, std::string("MENU1")},
+	  {Gamepad::BUTTON_MENU2, std::string("MENU2")},
+	  {Gamepad::BUTTON_MENU3, std::string("MENU3")}
+	};
+	auto it = buttonMap.find(mapping);
+	return (it != buttonMap.end()) ? it->second : EMPTY_STRING;
 }

@@ -146,7 +146,7 @@ namespace tractor
 		{
 			Form* f = __forms[i];
 			assert(f);
-			if (id, f->getId())
+			if (id == f->getId())
 			{
 				return f;
 			}
@@ -174,7 +174,8 @@ namespace tractor
 
 	const std::string& Form::getTypeName() const
 	{
-		return "Form";
+		static const std::string TYPE_NAME = "Form";
+		return TYPE_NAME;
 	}
 
 	bool Form::isForm() const

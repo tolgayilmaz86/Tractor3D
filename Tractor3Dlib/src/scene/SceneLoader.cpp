@@ -115,7 +115,7 @@ namespace tractor
 		auto activeCamera = sceneProperties->getString("activeCamera");
 		if (!activeCamera.empty())
 		{
-			Node* camera = _scene->findNode(activeCamera.c_str());
+			Node* camera = _scene->findNode(activeCamera);
 			if (camera && camera->getCamera())
 				_scene->setActiveCamera(camera->getCamera());
 		}
@@ -164,7 +164,7 @@ namespace tractor
 		{
 			for (const auto& node : sceneNode._nodes)
 			{
-				node->setTag(tag.first.c_str(), tag.second.c_str());
+				node->setTag(tag.first, tag.second);
 			}
 		}
 
@@ -345,7 +345,7 @@ namespace tractor
 
 					if (!name.empty())
 					{
-						Node* modelNode = _scene->findNode(name.c_str());
+						Node* modelNode = _scene->findNode(name);
 						if (!modelNode)
 						{
 							GP_ERROR("Node '%s' does not exist; attempting to use its model for collision object creation.", name);
@@ -418,26 +418,26 @@ namespace tractor
 			case SceneNodeProperty::TRANSLATE:
 			{
 				Vector3 t;
-				if (Properties::parseVector3(snp._value.c_str(), &t))
+				if (Properties::parseVector3(snp._value, &t))
 					node->translate(t);
 				break;
 			}
 			case SceneNodeProperty::ROTATE:
 			{
 				Quaternion r;
-				if (Properties::parseAxisAngle(snp._value.c_str(), &r))
+				if (Properties::parseAxisAngle(snp._value, &r))
 					node->rotate(r);
 				break;
 			}
 			case SceneNodeProperty::SCALE:
 			{
 				Vector3 s;
-				if (Properties::parseVector3(snp._value.c_str(), &s))
+				if (Properties::parseVector3(snp._value, &s))
 					node->scale(s);
 				break;
 			}
 			case SceneNodeProperty::SCRIPT:
-				node->addScript(snp._value.c_str());
+				node->addScript(snp._value);
 				break;
 			case SceneNodeProperty::ENABLED:
 				node->setEnabled(snp._value.compare("true") == 0);
@@ -607,7 +607,7 @@ namespace tractor
 		std::vector<SceneNode>& list = parent ? parent->_children : _sceneNodes;
 		list.emplace_back(SceneNode());
 		SceneNode& sceneNode = list[list.size() - 1];
-		sceneNode._nodeID = ns->getId().c_str();
+		sceneNode._nodeID = ns->getId();
 
 		// Parse the node's sub-namespaces.
 		Properties* subns;
@@ -620,61 +620,61 @@ namespace tractor
 			else if (subns->getNamespace() == "audio")
 			{
 				propertyUrl = path + "audio/" + std::string(subns->getId());
-				addSceneNodeProperty(sceneNode, SceneNodeProperty::AUDIO, propertyUrl.c_str());
+				addSceneNodeProperty(sceneNode, SceneNodeProperty::AUDIO, propertyUrl);
 				_properties[propertyUrl] = subns;
 			}
 			else if (subns->getNamespace() == "material")
 			{
 				propertyUrl = path + "material/" + std::string(subns->getId());
-				addSceneNodeProperty(sceneNode, SceneNodeProperty::MATERIAL, propertyUrl.c_str());
+				addSceneNodeProperty(sceneNode, SceneNodeProperty::MATERIAL, propertyUrl);
 				_properties[propertyUrl] = subns;
 			}
 			else if (subns->getNamespace() == "particle")
 			{
 				propertyUrl = path + "particle/" + std::string(subns->getId());
-				addSceneNodeProperty(sceneNode, SceneNodeProperty::PARTICLE, propertyUrl.c_str());
+				addSceneNodeProperty(sceneNode, SceneNodeProperty::PARTICLE, propertyUrl);
 				_properties[propertyUrl] = subns;
 			}
 			else if (subns->getNamespace() == "terrain")
 			{
 				propertyUrl = path + "terrain/" + std::string(subns->getId());
-				addSceneNodeProperty(sceneNode, SceneNodeProperty::TERRAIN, propertyUrl.c_str());
+				addSceneNodeProperty(sceneNode, SceneNodeProperty::TERRAIN, propertyUrl);
 				_properties[propertyUrl] = subns;
 			}
 			else if (subns->getNamespace() == "light")
 			{
 				propertyUrl = path + "light/" + std::string(subns->getId());
-				addSceneNodeProperty(sceneNode, SceneNodeProperty::LIGHT, propertyUrl.c_str());
+				addSceneNodeProperty(sceneNode, SceneNodeProperty::LIGHT, propertyUrl);
 				_properties[propertyUrl] = subns;
 			}
 			else if (subns->getNamespace() == "camera")
 			{
 				propertyUrl = path + "camera/" + std::string(subns->getId());
-				addSceneNodeProperty(sceneNode, SceneNodeProperty::CAMERA, propertyUrl.c_str());
+				addSceneNodeProperty(sceneNode, SceneNodeProperty::CAMERA, propertyUrl);
 				_properties[propertyUrl] = subns;
 			}
 			else if (subns->getNamespace() == "collisionObject")
 			{
 				propertyUrl = path + "collisionObject/" + std::string(subns->getId());
-				addSceneNodeProperty(sceneNode, SceneNodeProperty::COLLISION_OBJECT, propertyUrl.c_str());
+				addSceneNodeProperty(sceneNode, SceneNodeProperty::COLLISION_OBJECT, propertyUrl);
 				_properties[propertyUrl] = subns;
 			}
 			else if (subns->getNamespace() == "sprite")
 			{
 				propertyUrl = path + "sprite/" + std::string(subns->getId());
-				addSceneNodeProperty(sceneNode, SceneNodeProperty::SPRITE, propertyUrl.c_str());
+				addSceneNodeProperty(sceneNode, SceneNodeProperty::SPRITE, propertyUrl);
 				_properties[propertyUrl] = subns;
 			}
 			else if (subns->getNamespace() == "tileset")
 			{
 				propertyUrl = path + "tileset/" + std::string(subns->getId());
-				addSceneNodeProperty(sceneNode, SceneNodeProperty::TILESET, propertyUrl.c_str());
+				addSceneNodeProperty(sceneNode, SceneNodeProperty::TILESET, propertyUrl);
 				_properties[propertyUrl] = subns;
 			}
 			else if (subns->getNamespace() == "text")
 			{
 				propertyUrl = path + "text/" + std::string(subns->getId());
-				addSceneNodeProperty(sceneNode, SceneNodeProperty::TEXT, propertyUrl.c_str());
+				addSceneNodeProperty(sceneNode, SceneNodeProperty::TEXT, propertyUrl);
 				_properties[propertyUrl] = subns;
 			}
 			else if (subns->getNamespace() == "tags")
@@ -787,7 +787,7 @@ namespace tractor
 		{
 			// If the target node doesn't exist in the scene, then we
 			// can't do anything so we skip to the next animation.
-			Node* node = _scene->findNode(_animations[i]._targetID.c_str());
+			Node* node = _scene->findNode(_animations[i]._targetID);
 			if (!node)
 			{
 				GP_ERROR("Attempting to create an animation targeting node '%s', which does not exist in the scene.", _animations[i]._targetID);
@@ -802,7 +802,7 @@ namespace tractor
 				continue;
 			}
 
-			node->createAnimation(_animations[i]._animationID.c_str(), p);
+			node->createAnimation(_animations[i]._animationID, p);
 		}
 	}
 
@@ -915,7 +915,7 @@ namespace tractor
 		assert(sceneProperties);
 
 		// Load the main scene from the specified path.
-		Bundle* bundle = Bundle::create(_gpbPath.c_str());
+		Bundle* bundle = Bundle::create(_gpbPath);
 		if (!bundle)
 		{
 			GP_WARN("Failed to load scene GPB file '%s'.", _gpbPath.c_str());
@@ -962,7 +962,7 @@ namespace tractor
 					GP_ERROR("Missing property 'rigidBodyA' for constraint '%s'.", constraint->getId());
 					continue;
 				}
-				Node* rbANode = _scene->findNode(name.c_str());
+				Node* rbANode = _scene->findNode(name);
 				if (!rbANode)
 				{
 					GP_ERROR("Node '%s' to be used as 'rigidBodyA' for constraint '%s' cannot be found.", name, constraint->getId());
@@ -983,7 +983,7 @@ namespace tractor
 				PhysicsRigidBody* rbB = nullptr;
 				if (!name.empty())
 				{
-					Node* rbBNode = _scene->findNode(name.c_str());
+					Node* rbBNode = _scene->findNode(name);
 					if (!rbBNode)
 					{
 						GP_ERROR("Node '%s' to be used as 'rigidBodyB' for constraint '%s' cannot be found.", name, constraint->getId());
@@ -1064,7 +1064,7 @@ namespace tractor
 				}
 				else
 				{
-					properties = Properties::create(fileString.c_str());
+					properties = Properties::create(fileString);
 					if (properties == nullptr)
 					{
 						GP_WARN("Failed to load referenced properties file '%s'.", fileString.c_str());
@@ -1224,7 +1224,7 @@ namespace tractor
 
 	void SceneLoader::processExactMatchNode(SceneNode& sceneNode, Node* parent, const std::string& id)
 	{
-		Node* node = parent ? parent->findNode(id.c_str()) : _scene->findNode(id.c_str());
+		Node* node = parent ? parent->findNode(id) : _scene->findNode(id);
 		if (node)
 		{
 			node->setId(sceneNode._nodeID);
@@ -1240,7 +1240,7 @@ namespace tractor
 	{
 		// Search for nodes using a partial match
 		std::vector<Node*> nodes;
-		unsigned int nodeCount = parent ? parent->findNodes(id.c_str(), nodes, true, false) : _scene->findNodes(id.c_str(), nodes, true, false);
+		unsigned int nodeCount = parent ? parent->findNodes(id, nodes, true, false) : _scene->findNodes(id, nodes, true, false);
 		if (nodeCount > 0)
 		{
 			for (unsigned int k = 0; k < nodeCount; ++k)
@@ -1264,12 +1264,12 @@ namespace tractor
 		// TODO: Revisit this to determine if we should cache Bundle objects for the duration of the scene
 		// load to prevent constantly creating/destroying the same externally referenced bundles each time
 		// a url with a file is encountered.
-		Bundle* tmpBundle = Bundle::create(file.c_str());
+		Bundle* tmpBundle = Bundle::create(file);
 		if (tmpBundle)
 		{
 			if (sceneNode._exactMatch)
 			{
-				Node* node = tmpBundle->loadNode(id.c_str(), _scene);
+				Node* node = tmpBundle->loadNode(id, _scene);
 				if (node)
 				{
 					node->setId(sceneNode._nodeID);
@@ -1300,7 +1300,7 @@ namespace tractor
 							// Construct a new node ID using _nodeID plus the remainder of the partial match.
 							std::string newID(sceneNode._nodeID);
 							newID += (node->getId() + std::to_string(id.length()));
-							node->setId(newID.c_str());
+							node->setId(newID);
 							parent ? parent->addChild(node) : _scene->addNode(node);
 							sceneNode._nodes.push_back(node);
 							SAFE_RELEASE(node);

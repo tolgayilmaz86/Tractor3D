@@ -42,10 +42,8 @@ namespace tractor
 		return _joints[index];
 	}
 
-	Joint* MeshSkin::getJoint(const char* id) const
+	Joint* MeshSkin::getJoint(const std::string& id) const
 	{
-		assert(id);
-
 		for (size_t i = 0, count = _joints.size(); i < count; ++i)
 		{
 			Joint* j = _joints[i];

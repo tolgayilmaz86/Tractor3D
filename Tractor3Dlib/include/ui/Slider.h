@@ -32,7 +32,7 @@ namespace tractor
      * @return The new slider.
      * @script{create}
      */
-    static Slider* create(const char* id, Theme::Style* style = nullptr);
+    static Slider* create(const std::string& id, Theme::Style* style = nullptr);
 
     /**
      * Extends ScriptTarget::getTypeName() to return the type name of this class.
@@ -181,7 +181,7 @@ namespace tractor
     /**
      * @see Control::initialize
      */
-    void initialize(const char* typeName, Theme::Style* style, Properties* properties);
+    void initialize(const std::string& typeName, Theme::Style* style, Properties* properties);
 
     /**
      * @see Control::KeyEvent

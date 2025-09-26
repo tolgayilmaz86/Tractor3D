@@ -34,7 +34,7 @@ public:
      *
      * @return The Animation's ID.
      */
-    const char* getId() const;
+    const std::string& getId() const;
 
     /**
      * Gets the Animation's duration.
@@ -149,17 +149,17 @@ private:
     /**
      * Constructor.
      */
-    Animation(const char* id, AnimationTarget* target, int propertyId, unsigned int keyCount, unsigned int* keyTimes, float* keyValues, float* keyInValue, float* keyOutValue, unsigned int type);
+    Animation(const std::string& id, AnimationTarget* target, int propertyId, unsigned int keyCount, unsigned int* keyTimes, float* keyValues, float* keyInValue, float* keyOutValue, unsigned int type);
 
     /**
      * Constructor.
      */
-    Animation(const char* id, AnimationTarget* target, int propertyId, unsigned int keyCount, unsigned int* keyTimes, float* keyValues, unsigned int type);
+    Animation(const std::string& id, AnimationTarget* target, int propertyId, unsigned int keyCount, unsigned int* keyTimes, float* keyValues, unsigned int type);
 
     /**
      * Constructor.
      */
-    Animation(const char* id);
+    Animation(const std::string& id);
 
     /**
      * Destructor.

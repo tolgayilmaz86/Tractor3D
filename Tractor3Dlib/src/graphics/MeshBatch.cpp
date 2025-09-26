@@ -21,7 +21,7 @@ namespace tractor
     SAFE_DELETE_ARRAY(_indices);
   }
 
-  MeshBatch* MeshBatch::create(const VertexFormat& vertexFormat, Mesh::PrimitiveType primitiveType, const char* materialPath, bool indexed, unsigned int initialCapacity, unsigned int growSize)
+  MeshBatch* MeshBatch::create(const VertexFormat& vertexFormat, Mesh::PrimitiveType primitiveType, const std::string& materialPath, bool indexed, unsigned int initialCapacity, unsigned int growSize)
   {
     Material* material = Material::create(materialPath);
     if (material == nullptr)

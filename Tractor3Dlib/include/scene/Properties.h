@@ -7,9 +7,6 @@
 
 namespace tractor
 {
-
-	class Properties;
-
 	/**
 	 * Internal structure containing a single property.
 	 */
@@ -565,6 +562,8 @@ namespace tractor
 		std::string* _dirPath{ nullptr };
 		bool _visited{ false };
 		Properties* _parent{ nullptr };
+	public:
+		std::unordered_map <std::string, std::string> _resolvedVariableMap{};
 	};
 
 }

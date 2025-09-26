@@ -248,17 +248,18 @@ namespace tractor
 
 	const std::string& Control::getTypeName() const
 	{
-		return "Control";
+		static const std::string TYPE_NAME = "Control";
+		return TYPE_NAME;
 	}
 
-	const char* Control::getId() const
+	const std::string& Control::getId() const
 	{
-		return _id.c_str();
+		return _id;
 	}
 
-	void Control::setId(const char* id)
+	void Control::setId(const std::string& id)
 	{
-		_id = id ? id : "";
+		_id = id;
 	}
 
 	float Control::getX() const
@@ -665,7 +666,7 @@ namespace tractor
 		return _style->getPadding();
 	}
 
-	void Control::setImageRegion(const char* id, const Rectangle& region, unsigned char states)
+	void Control::setImageRegion(const std::string& id, const Rectangle& region, unsigned char states)
 	{
 		overrideStyle();
 		Theme::Style::Overlay* overlays[Theme::Style::OVERLAY_MAX] = { 0 };
@@ -678,14 +679,14 @@ namespace tractor
 		}
 	}
 
-	const Rectangle& Control::getImageRegion(const char* id, State state) const
+	const Rectangle& Control::getImageRegion(const std::string& id, State state) const
 	{
 		Theme::Style::Overlay* overlay = getOverlay(state);
 		assert(overlay);
 		return overlay->getImageRegion(id);
 	}
 
-	void Control::setImageColor(const char* id, const Vector4& color, unsigned char states)
+	void Control::setImageColor(const std::string& id, const Vector4& color, unsigned char states)
 	{
 		overrideStyle();
 		Theme::Style::Overlay* overlays[Theme::Style::OVERLAY_MAX] = { 0 };
@@ -698,14 +699,14 @@ namespace tractor
 		}
 	}
 
-	const Vector4& Control::getImageColor(const char* id, State state) const
+	const Vector4& Control::getImageColor(const std::string& id, State state) const
 	{
 		Theme::Style::Overlay* overlay = getOverlay(state);
 		assert(overlay);
 		return overlay->getImageColor(id);
 	}
 
-	const Theme::UVs& Control::getImageUVs(const char* id, State state) const
+	const Theme::UVs& Control::getImageUVs(const std::string& id, State state) const
 	{
 		Theme::Style::Overlay* overlay = getOverlay(state);
 		assert(overlay);
@@ -1423,30 +1424,30 @@ namespace tractor
 		return false;
 	}
 
-	Control::State Control::getState(const char* state)
+	Control::State Control::getState(const std::string& state)
 	{
-		if (!state)
+		if (state.empty())
 		{
 			return NORMAL;
 		}
 
-		if (strcmp(state, "NORMAL") == 0)
+		if (state.compare("NORMAL") == 0)
 		{
 			return NORMAL;
 		}
-		else if (strcmp(state, "ACTIVE") == 0)
+		else if (state.compare("ACTIVE") == 0)
 		{
 			return ACTIVE;
 		}
-		else if (strcmp(state, "FOCUS") == 0)
+		else if (state.compare("FOCUS") == 0)
 		{
 			return FOCUS;
 		}
-		else if (strcmp(state, "DISABLED") == 0)
+		else if (state.compare("DISABLED") == 0)
 		{
 			return DISABLED;
 		}
-		else if (strcmp(state, "HOVER") == 0)
+		else if (state.compare("HOVER") == 0)
 		{
 			return HOVER;
 		}
@@ -1454,7 +1455,7 @@ namespace tractor
 		return NORMAL;
 	}
 
-	Theme::ThemeImage* Control::getImage(const char* id, State state)
+	Theme::ThemeImage* Control::getImage(const std::string& id, State state)
 	{
 		Theme::ThemeImage* image = nullptr;
 

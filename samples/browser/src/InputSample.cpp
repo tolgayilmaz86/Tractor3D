@@ -8,7 +8,7 @@ ADD_SAMPLE("Input", "Basic Input", InputSample, 1);
 /**
  * Returns the string representation of the given key.
  */
-static const char* keyString(int key);
+static const std::string& keyString(int key);
 
 InputSample::InputSample()
   : _mouseString("No Mouse"), _font(nullptr), _inputSampleControls(nullptr), _mouseWheel(0), _crosshair(nullptr),
@@ -163,7 +163,7 @@ void InputSample::render(float elapsedTime)
     if (!_keyboardState && _mouseString.length() > 0)
     {
       int y = getHeight() - fontSize;
-      _font->drawText(_mouseString.c_str(), 0, y, fontColor, fontSize);
+      _font->drawText(_mouseString, 0, y, fontColor, fontSize);
     }
     if (_mouseWheel)
     {
@@ -178,13 +178,13 @@ void InputSample::render(float elapsedTime)
   // Pressed keys
   if (_keyboardString.length() > 0)
   {
-    _font->drawText(_keyboardString.c_str(), 0, 0, fontColor, fontSize);
+    _font->drawText(_keyboardString, 0, 0, fontColor, fontSize);
   }
 
   // Printable symbols typed
   if (_symbolsString.length() > 0)
   {
-    _font->drawText(_symbolsString.c_str(), 0, 18, fontColor, fontSize);
+    _font->drawText(_symbolsString, 0, 18, fontColor, fontSize);
   }
 
   // Held keys
@@ -193,15 +193,15 @@ void InputSample::render(float elapsedTime)
     std::string displayKeys;
     for (std::set<int>::const_iterator i = _downKeys.begin(); i != _downKeys.end(); ++i)
     {
-      const char* str = keyString(*i);
+      const auto& str = keyString(*i);
       displayKeys.append(str);
     }
     if (!displayKeys.empty())
     {
-      _font->measureText(displayKeys.c_str(), 18, &width, &height);
+      _font->measureText(displayKeys, 18, &width, &height);
       int x = Game::getInstance()->getWidth() - width;
       int y = 0;
-      _font->drawText(displayKeys.c_str(), x, y, fontColor, fontSize);
+      _font->drawText(displayKeys, x, y, fontColor, fontSize);
     }
   }
 
@@ -382,13 +382,13 @@ void InputSample::keyEvent(Keyboard::KeyEvent evt, int key)
 
 void InputSample::controlEvent(Control* control, EventType evt)
 {
-  if (strcmp(control->getId(), "showKeyboardButton") == 0)
+  if (control->getId() == "showKeyboardButton")
   {
     _keyboardState = !_keyboardState;
     displayKeyboard(_keyboardState);
     static_cast<Button*>(_inputSampleControls->getControl("showKeyboardButton"))->setText(_keyboardState ? "Hide virtual keyboard" : "Show virtual keyboard");
   }
-  else if (strcmp(control->getId(), "captureMouseButton") == 0 && hasMouse())
+  else if (control->getId() == "captureMouseButton" && hasMouse())
   {
     setCaptured(true);
   }
@@ -412,325 +412,168 @@ void InputSample::setCaptured(bool captured)
       (float)getHeight() / 2.0f + _crosshairLowerLimit.y);
   }
 }
-const char* keyString(int key)
+
+const std::string& keyString(int key)
 {
-  // This function is helpful for finding collisions in the Keyboard::Key enum.
-  switch (key)
-  {
-  case Keyboard::KEY_NONE:
-    return "NONE";
-  case Keyboard::KEY_PAUSE:
-    return "PAUSE";
-  case Keyboard::KEY_SCROLL_LOCK:
-    return "SCROLL_LOCK";
-  case Keyboard::KEY_PRINT:
-    return "PRINT";
-  case Keyboard::KEY_SYSREQ:
-    return "SYSREQ";
-  case Keyboard::KEY_BREAK:
-    return "BREAK";
-  case Keyboard::KEY_ESCAPE:
-    return "ESCAPE";
-  case Keyboard::KEY_BACKSPACE:
-    return "BACKSPACE";
-  case Keyboard::KEY_TAB:
-    return "TAB";
-  case Keyboard::KEY_BACK_TAB:
-    return "BACK_TAB";
-  case Keyboard::KEY_RETURN:
-    return "RETURN";
-  case Keyboard::KEY_CAPS_LOCK:
-    return "CAPS_LOCK";
-  case Keyboard::KEY_SHIFT:
-    return "SHIFT";
-  case Keyboard::KEY_CTRL:
-    return "CTRL";
-  case Keyboard::KEY_ALT:
-    return "ALT";
-  case Keyboard::KEY_MENU:
-    return "MENU";
-  case Keyboard::KEY_HYPER:
-    return "HYPER";
-  case Keyboard::KEY_INSERT:
-    return "INSERT";
-  case Keyboard::KEY_HOME:
-    return "HOME";
-  case Keyboard::KEY_PG_UP:
-    return "PG_UP";
-  case Keyboard::KEY_DELETE:
-    return "DELETE";
-  case Keyboard::KEY_END:
-    return "END";
-  case Keyboard::KEY_PG_DOWN:
-    return "PG_DOWN";
-  case Keyboard::KEY_LEFT_ARROW:
-    return "LEFT_ARROW";
-  case Keyboard::KEY_RIGHT_ARROW:
-    return "RIGHT_ARROW";
-  case Keyboard::KEY_UP_ARROW:
-    return "UP_ARROW";
-  case Keyboard::KEY_DOWN_ARROW:
-    return "DOWN_ARROW";
-  case Keyboard::KEY_NUM_LOCK:
-    return "NUM_LOCK";
-  case Keyboard::KEY_KP_PLUS:
-    return "KP_PLUS";
-  case Keyboard::KEY_KP_MINUS:
-    return "KP_MINUS";
-  case Keyboard::KEY_KP_MULTIPLY:
-    return "KP_MULTIPLY";
-  case Keyboard::KEY_KP_DIVIDE:
-    return "KP_DIVIDE";
-  case Keyboard::KEY_KP_ENTER:
-    return "KP_ENTER";
-  case Keyboard::KEY_KP_HOME:
-    return "KP_HOME";
-  case Keyboard::KEY_KP_UP:
-    return "KP_UP";
-  case Keyboard::KEY_KP_PG_UP:
-    return "KP_PG_UP";
-  case Keyboard::KEY_KP_LEFT:
-    return "KP_LEFT";
-  case Keyboard::KEY_KP_FIVE:
-    return "KP_FIVE";
-  case Keyboard::KEY_KP_RIGHT:
-    return "KP_RIGHT";
-  case Keyboard::KEY_KP_END:
-    return "KP_END";
-  case Keyboard::KEY_KP_DOWN:
-    return "KP_DOWN";
-  case Keyboard::KEY_KP_PG_DOWN:
-    return "KP_PG_DOWN";
-  case Keyboard::KEY_KP_INSERT:
-    return "KP_INSERT";
-  case Keyboard::KEY_KP_DELETE:
-    return "KP_DELETE";
-  case Keyboard::KEY_F1:
-    return "F1";
-  case Keyboard::KEY_F2:
-    return "F2";
-  case Keyboard::KEY_F3:
-    return "F3";
-  case Keyboard::KEY_F4:
-    return "F4";
-  case Keyboard::KEY_F5:
-    return "F5";
-  case Keyboard::KEY_F6:
-    return "F6";
-  case Keyboard::KEY_F7:
-    return "F7";
-  case Keyboard::KEY_F8:
-    return "F8";
-  case Keyboard::KEY_F9:
-    return "F9";
-  case Keyboard::KEY_F10:
-    return "F10";
-  case Keyboard::KEY_F11:
-    return "F11";
-  case Keyboard::KEY_F12:
-    return "F12";
-  case Keyboard::KEY_SPACE:
-    return "SPACE";
-  case Keyboard::KEY_EXCLAM:
-    return "!";
-  case Keyboard::KEY_QUOTE:
-    return "\"";
-  case Keyboard::KEY_NUMBER:
-    return "#";
-  case Keyboard::KEY_DOLLAR:
-    return "$";
-  case Keyboard::KEY_PERCENT:
-    return "%";
-  case Keyboard::KEY_CIRCUMFLEX:
-    return "^";
-  case Keyboard::KEY_AMPERSAND:
-    return "&";
-  case Keyboard::KEY_APOSTROPHE:
-    return "'";
-  case Keyboard::KEY_LEFT_PARENTHESIS:
-    return "(";
-  case Keyboard::KEY_RIGHT_PARENTHESIS:
-    return ")";
-  case Keyboard::KEY_ASTERISK:
-    return "*";
-  case Keyboard::KEY_PLUS:
-    return "+";
-  case Keyboard::KEY_COMMA:
-    return ",";
-  case Keyboard::KEY_MINUS:
-    return "-";
-  case Keyboard::KEY_PERIOD:
-    return ".";
-  case Keyboard::KEY_SLASH:
-    return "/";
-  case Keyboard::KEY_ZERO:
-    return "0";
-  case Keyboard::KEY_ONE:
-    return "1";
-  case Keyboard::KEY_TWO:
-    return "2";
-  case Keyboard::KEY_THREE:
-    return "3";
-  case Keyboard::KEY_FOUR:
-    return "4";
-  case Keyboard::KEY_FIVE:
-    return "5";
-  case Keyboard::KEY_SIX:
-    return "6";
-  case Keyboard::KEY_SEVEN:
-    return "7";
-  case Keyboard::KEY_EIGHT:
-    return "8";
-  case Keyboard::KEY_NINE:
-    return "9";
-  case Keyboard::KEY_COLON:
-    return ":";
-  case Keyboard::KEY_SEMICOLON:
-    return ";";
-  case Keyboard::KEY_LESS_THAN:
-    return "<";
-  case Keyboard::KEY_EQUAL:
-    return "=";
-  case Keyboard::KEY_GREATER_THAN:
-    return ">";
-  case Keyboard::KEY_QUESTION:
-    return "?";
-  case Keyboard::KEY_AT:
-    return "@";
-  case Keyboard::KEY_CAPITAL_A:
-    return "A";
-  case Keyboard::KEY_CAPITAL_B:
-    return "B";
-  case Keyboard::KEY_CAPITAL_C:
-    return "C";
-  case Keyboard::KEY_CAPITAL_D:
-    return "D";
-  case Keyboard::KEY_CAPITAL_E:
-    return "E";
-  case Keyboard::KEY_CAPITAL_F:
-    return "F";
-  case Keyboard::KEY_CAPITAL_G:
-    return "G";
-  case Keyboard::KEY_CAPITAL_H:
-    return "H";
-  case Keyboard::KEY_CAPITAL_I:
-    return "I";
-  case Keyboard::KEY_CAPITAL_J:
-    return "J";
-  case Keyboard::KEY_CAPITAL_K:
-    return "K";
-  case Keyboard::KEY_CAPITAL_L:
-    return "L";
-  case Keyboard::KEY_CAPITAL_M:
-    return "M";
-  case Keyboard::KEY_CAPITAL_N:
-    return "N";
-  case Keyboard::KEY_CAPITAL_O:
-    return "O";
-  case Keyboard::KEY_CAPITAL_P:
-    return "P";
-  case Keyboard::KEY_CAPITAL_Q:
-    return "Q";
-  case Keyboard::KEY_CAPITAL_R:
-    return "R";
-  case Keyboard::KEY_CAPITAL_S:
-    return "S";
-  case Keyboard::KEY_CAPITAL_T:
-    return "T";
-  case Keyboard::KEY_CAPITAL_U:
-    return "U";
-  case Keyboard::KEY_CAPITAL_V:
-    return "V";
-  case Keyboard::KEY_CAPITAL_W:
-    return "W";
-  case Keyboard::KEY_CAPITAL_X:
-    return "X";
-  case Keyboard::KEY_CAPITAL_Y:
-    return "Y";
-  case Keyboard::KEY_CAPITAL_Z:
-    return "Z";
-  case Keyboard::KEY_LEFT_BRACKET:
-    return "[";
-  case Keyboard::KEY_BACK_SLASH:
-    return "\\";
-  case Keyboard::KEY_RIGHT_BRACKET:
-    return "]";
-  case Keyboard::KEY_UNDERSCORE:
-    return "_";
-  case Keyboard::KEY_GRAVE:
-    return "`";
-  case Keyboard::KEY_A:
-    return "a";
-  case Keyboard::KEY_B:
-    return "b";
-  case Keyboard::KEY_C:
-    return "c";
-  case Keyboard::KEY_D:
-    return "d";
-  case Keyboard::KEY_E:
-    return "e";
-  case Keyboard::KEY_F:
-    return "f";
-  case Keyboard::KEY_G:
-    return "g";
-  case Keyboard::KEY_H:
-    return "h";
-  case Keyboard::KEY_I:
-    return "i";
-  case Keyboard::KEY_J:
-    return "j";
-  case Keyboard::KEY_K:
-    return "k";
-  case Keyboard::KEY_L:
-    return "l";
-  case Keyboard::KEY_M:
-    return "m";
-  case Keyboard::KEY_N:
-    return "n";
-  case Keyboard::KEY_O:
-    return "o";
-  case Keyboard::KEY_P:
-    return "p";
-  case Keyboard::KEY_Q:
-    return "q";
-  case Keyboard::KEY_R:
-    return "r";
-  case Keyboard::KEY_S:
-    return "s";
-  case Keyboard::KEY_T:
-    return "t";
-  case Keyboard::KEY_U:
-    return "u";
-  case Keyboard::KEY_V:
-    return "v";
-  case Keyboard::KEY_W:
-    return "w";
-  case Keyboard::KEY_X:
-    return "x";
-  case Keyboard::KEY_Y:
-    return "y";
-  case Keyboard::KEY_Z:
-    return "z";
-  case Keyboard::KEY_LEFT_BRACE:
-    return "{";
-  case Keyboard::KEY_BAR:
-    return "|";
-  case Keyboard::KEY_RIGHT_BRACE:
-    return "}";
-  case Keyboard::KEY_TILDE:
-    return "~";
-  case Keyboard::KEY_EURO:
-    return "EURO";
-  case Keyboard::KEY_POUND:
-    return "POUND";
-  case Keyboard::KEY_YEN:
-    return "YEN";
-  case Keyboard::KEY_MIDDLE_DOT:
-    return "MIDDLE DOT";
-  case Keyboard::KEY_SEARCH:
-    return "SEARCH";
-  default:
-    return "";
-  };
-  return "";
+    static const std::unordered_map<int, std::string> keyMap = {
+      {Keyboard::KEY_NONE, std::string("NONE")},
+      {Keyboard::KEY_PAUSE, std::string("PAUSE")},
+      {Keyboard::KEY_SCROLL_LOCK, std::string("SCROLL_LOCK")},
+      {Keyboard::KEY_PRINT, std::string("PRINT")},
+      {Keyboard::KEY_SYSREQ, std::string("SYSREQ")},
+      {Keyboard::KEY_BREAK, std::string("BREAK")},
+      {Keyboard::KEY_ESCAPE, std::string("ESCAPE")},
+      {Keyboard::KEY_BACKSPACE, std::string("BACKSPACE")},
+      {Keyboard::KEY_TAB, std::string("TAB")},
+      {Keyboard::KEY_BACK_TAB, std::string("BACK_TAB")},
+      {Keyboard::KEY_RETURN, std::string("RETURN")},
+      {Keyboard::KEY_CAPS_LOCK, std::string("CAPS_LOCK")},
+      {Keyboard::KEY_SHIFT, std::string("SHIFT")},
+      {Keyboard::KEY_CTRL, std::string("CTRL")},
+      {Keyboard::KEY_ALT, std::string("ALT")},
+      {Keyboard::KEY_MENU, std::string("MENU")},
+      {Keyboard::KEY_HYPER, std::string("HYPER")},
+      {Keyboard::KEY_INSERT, std::string("INSERT")},
+      {Keyboard::KEY_HOME, std::string("HOME")},
+      {Keyboard::KEY_PG_UP, std::string("PG_UP")},
+      {Keyboard::KEY_DELETE, std::string("DELETE")},
+      {Keyboard::KEY_END, std::string("END")},
+      {Keyboard::KEY_PG_DOWN, std::string("PG_DOWN")},
+      {Keyboard::KEY_LEFT_ARROW, std::string("LEFT_ARROW")},
+      {Keyboard::KEY_RIGHT_ARROW, std::string("RIGHT_ARROW")},
+      {Keyboard::KEY_UP_ARROW, std::string("UP_ARROW")},
+      {Keyboard::KEY_DOWN_ARROW, std::string("DOWN_ARROW")},
+      {Keyboard::KEY_NUM_LOCK, std::string("NUM_LOCK")},
+      {Keyboard::KEY_KP_PLUS, std::string("KP_PLUS")},
+      {Keyboard::KEY_KP_MINUS, std::string("KP_MINUS")},
+      {Keyboard::KEY_KP_MULTIPLY, std::string("KP_MULTIPLY")},
+      {Keyboard::KEY_KP_DIVIDE, std::string("KP_DIVIDE")},
+      {Keyboard::KEY_KP_ENTER, std::string("KP_ENTER")},
+      {Keyboard::KEY_KP_HOME, std::string("KP_HOME")},
+      {Keyboard::KEY_KP_UP, std::string("KP_UP")},
+      {Keyboard::KEY_KP_PG_UP, std::string("KP_PG_UP")},
+      {Keyboard::KEY_KP_LEFT, std::string("KP_LEFT")},
+      {Keyboard::KEY_KP_FIVE, std::string("KP_FIVE")},
+      {Keyboard::KEY_KP_RIGHT, std::string("KP_RIGHT")},
+      {Keyboard::KEY_KP_END, std::string("KP_END")},
+      {Keyboard::KEY_KP_DOWN, std::string("KP_DOWN")},
+      {Keyboard::KEY_KP_PG_DOWN, std::string("KP_PG_DOWN")},
+      {Keyboard::KEY_KP_INSERT, std::string("KP_INSERT")},
+      {Keyboard::KEY_KP_DELETE, std::string("KP_DELETE")},
+      {Keyboard::KEY_F1, std::string("F1")},
+      {Keyboard::KEY_F2, std::string("F2")},
+      {Keyboard::KEY_F3, std::string("F3")},
+      {Keyboard::KEY_F4, std::string("F4")},
+      {Keyboard::KEY_F5, std::string("F5")},
+      {Keyboard::KEY_F6, std::string("F6")},
+      {Keyboard::KEY_F7, std::string("F7")},
+      {Keyboard::KEY_F8, std::string("F8")},
+      {Keyboard::KEY_F9, std::string("F9")},
+      {Keyboard::KEY_F10, std::string("F10")},
+      {Keyboard::KEY_F11, std::string("F11")},
+      {Keyboard::KEY_F12, std::string("F12")},
+      {Keyboard::KEY_SPACE, std::string("SPACE")},
+      {Keyboard::KEY_EXCLAM, std::string("!")},
+      {Keyboard::KEY_QUOTE, std::string("\"")},
+      {Keyboard::KEY_NUMBER, std::string("#")},
+      {Keyboard::KEY_DOLLAR, std::string("$")},
+      {Keyboard::KEY_PERCENT, std::string("%")},
+      {Keyboard::KEY_CIRCUMFLEX, std::string("^")},
+      {Keyboard::KEY_AMPERSAND, std::string("&")},
+      {Keyboard::KEY_APOSTROPHE, std::string("'")},
+      {Keyboard::KEY_LEFT_PARENTHESIS, std::string("(")},
+      {Keyboard::KEY_RIGHT_PARENTHESIS, std::string(")")},
+      {Keyboard::KEY_ASTERISK, std::string("*")},
+      {Keyboard::KEY_PLUS, std::string("+")},
+      {Keyboard::KEY_COMMA, std::string(",")},
+      {Keyboard::KEY_MINUS, std::string("-")},
+      {Keyboard::KEY_PERIOD, std::string(".")},
+      {Keyboard::KEY_SLASH, std::string("/")},
+      {Keyboard::KEY_ZERO, std::string("0")},
+      {Keyboard::KEY_ONE, std::string("1")},
+      {Keyboard::KEY_TWO, std::string("2")},
+      {Keyboard::KEY_THREE, std::string("3")},
+      {Keyboard::KEY_FOUR, std::string("4")},
+      {Keyboard::KEY_FIVE, std::string("5")},
+      {Keyboard::KEY_SIX, std::string("6")},
+      {Keyboard::KEY_SEVEN, std::string("7")},
+      {Keyboard::KEY_EIGHT, std::string("8")},
+      {Keyboard::KEY_NINE, std::string("9")},
+      {Keyboard::KEY_COLON, std::string(":")},
+      {Keyboard::KEY_SEMICOLON, std::string(";")},
+      {Keyboard::KEY_LESS_THAN, std::string("<")},
+      {Keyboard::KEY_EQUAL, std::string("=")},
+      {Keyboard::KEY_GREATER_THAN, std::string(">")},
+      {Keyboard::KEY_QUESTION, std::string("?")},
+      {Keyboard::KEY_AT, std::string("@")},
+      {Keyboard::KEY_CAPITAL_A, std::string("A")},
+      {Keyboard::KEY_CAPITAL_B, std::string("B")},
+      {Keyboard::KEY_CAPITAL_C, std::string("C")},
+      {Keyboard::KEY_CAPITAL_D, std::string("D")},
+      {Keyboard::KEY_CAPITAL_E, std::string("E")},
+      {Keyboard::KEY_CAPITAL_F, std::string("F")},
+      {Keyboard::KEY_CAPITAL_G, std::string("G")},
+      {Keyboard::KEY_CAPITAL_H, std::string("H")},
+      {Keyboard::KEY_CAPITAL_I, std::string("I")},
+      {Keyboard::KEY_CAPITAL_J, std::string("J")},
+      {Keyboard::KEY_CAPITAL_K, std::string("K")},
+      {Keyboard::KEY_CAPITAL_L, std::string("L")},
+      {Keyboard::KEY_CAPITAL_M, std::string("M")},
+      {Keyboard::KEY_CAPITAL_N, std::string("N")},
+      {Keyboard::KEY_CAPITAL_O, std::string("O")},
+      {Keyboard::KEY_CAPITAL_P, std::string("P")},
+      {Keyboard::KEY_CAPITAL_Q, std::string("Q")},
+      {Keyboard::KEY_CAPITAL_R, std::string("R")},
+      {Keyboard::KEY_CAPITAL_S, std::string("S")},
+      {Keyboard::KEY_CAPITAL_T, std::string("T")},
+      {Keyboard::KEY_CAPITAL_U, std::string("U")},
+      {Keyboard::KEY_CAPITAL_V, std::string("V")},
+      {Keyboard::KEY_CAPITAL_W, std::string("W")},
+      {Keyboard::KEY_CAPITAL_X, std::string("X")},
+      {Keyboard::KEY_CAPITAL_Y, std::string("Y")},
+      {Keyboard::KEY_CAPITAL_Z, std::string("Z")},
+      {Keyboard::KEY_LEFT_BRACKET, std::string("[")},
+      {Keyboard::KEY_BACK_SLASH, std::string("\\")},
+      {Keyboard::KEY_RIGHT_BRACKET, std::string("]")},
+      {Keyboard::KEY_UNDERSCORE, std::string("_")},
+      {Keyboard::KEY_GRAVE, std::string("`")},
+      {Keyboard::KEY_A, std::string("a")},
+      {Keyboard::KEY_B, std::string("b")},
+      {Keyboard::KEY_C, std::string("c")},
+      {Keyboard::KEY_D, std::string("d")},
+      {Keyboard::KEY_E, std::string("e")},
+      {Keyboard::KEY_F, std::string("f")},
+      {Keyboard::KEY_G, std::string("g")},
+      {Keyboard::KEY_H, std::string("h")},
+      {Keyboard::KEY_I, std::string("i")},
+      {Keyboard::KEY_J, std::string("j")},
+      {Keyboard::KEY_K, std::string("k")},
+      {Keyboard::KEY_L, std::string("l")},
+      {Keyboard::KEY_M, std::string("m")},
+      {Keyboard::KEY_N, std::string("n")},
+      {Keyboard::KEY_O, std::string("o")},
+      {Keyboard::KEY_P, std::string("p")},
+      {Keyboard::KEY_Q, std::string("q")},
+      {Keyboard::KEY_R, std::string("r")},
+      {Keyboard::KEY_S, std::string("s")},
+      {Keyboard::KEY_T, std::string("t")},
+      {Keyboard::KEY_U, std::string("u")},
+      {Keyboard::KEY_V, std::string("v")},
+      {Keyboard::KEY_W, std::string("w")},
+      {Keyboard::KEY_X, std::string("x")},
+      {Keyboard::KEY_Y, std::string("y")},
+      {Keyboard::KEY_Z, std::string("z")},
+      {Keyboard::KEY_LEFT_BRACE, std::string("{")},
+      {Keyboard::KEY_BAR, std::string("|")},
+      {Keyboard::KEY_RIGHT_BRACE, std::string("}")},
+      {Keyboard::KEY_TILDE, std::string("~")},
+      {Keyboard::KEY_EURO, std::string("EURO")},
+      {Keyboard::KEY_POUND, std::string("POUND")},
+      {Keyboard::KEY_YEN, std::string("YEN")},
+      {Keyboard::KEY_MIDDLE_DOT, std::string("MIDDLE DOT")},
+      {Keyboard::KEY_SEARCH, std::string("SEARCH")}
+    };
+
+    auto it = keyMap.find(key);
+    return (it != keyMap.end()) ? it->second : EMPTY_STRING;
 }

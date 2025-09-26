@@ -42,7 +42,7 @@ namespace tractor
     return __controlFactory;
   }
 
-  bool ControlFactory::registerCustomControl(const char* typeName, ControlActivator activator)
+  bool ControlFactory::registerCustomControl(const std::string& typeName, ControlActivator activator)
   {
     std::string upper(typeName);
     std::transform(upper.begin(), upper.end(), upper.begin(), (int(*)(int))toupper);
@@ -54,7 +54,7 @@ namespace tractor
     return true;
   }
 
-  void ControlFactory::unregisterCustomControl(const char* typeName)
+  void ControlFactory::unregisterCustomControl(const std::string& typeName)
   {
     std::string upper(typeName);
     std::transform(upper.begin(), upper.end(), upper.begin(), (int(*)(int))toupper);
@@ -66,7 +66,7 @@ namespace tractor
     }
   }
 
-  Control* ControlFactory::createControl(const char* typeName, Theme::Style* style, Properties* properties)
+  Control* ControlFactory::createControl(const std::string& typeName, Theme::Style* style, Properties* properties)
   {
     std::string upper(typeName);
     std::transform(upper.begin(), upper.end(), upper.begin(), (int(*)(int))toupper);

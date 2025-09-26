@@ -151,7 +151,7 @@ namespace tractor
     Platform::displayKeyboard(display);
   }
 
-  inline bool Game::launchURL(const char* url) const
+  inline bool Game::launchURL(const std::string& url) const
   {
     return Platform::launchURL(url);
   }

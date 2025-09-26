@@ -292,7 +292,7 @@ void Audio3DSample::addSound(const std::string& file)
     audioSource->setLooped(true);
 
     node = _cubeNode->clone();
-    node->setId(file.c_str());
+    node->setId(file);
     node->setAudioSource(audioSource);
     audioSource->release();
 

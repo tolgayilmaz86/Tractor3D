@@ -33,15 +33,10 @@ namespace tractor
 		bindGamepadControls(_form);
 	}
 
-	Gamepad::Gamepad(GamepadHandle handle, unsigned int buttonCount, unsigned int joystickCount, unsigned int triggerCount, const char* name)
-		: _handle(handle), _buttonCount(buttonCount), _joystickCount(joystickCount), _triggerCount(triggerCount),
+	Gamepad::Gamepad(GamepadHandle handle, unsigned int buttonCount, unsigned int joystickCount, unsigned int triggerCount, const std::string& name)
+		: _handle(handle), _buttonCount(buttonCount), _joystickCount(joystickCount), _triggerCount(triggerCount), _name(name),
 		_form(nullptr), _buttons(0)
 	{
-		if (name)
-		{
-			_name = name;
-		}
-
 		for (int i = 0; i < 2; ++i)
 		{
 			_triggers[i] = 0.0f;
@@ -53,7 +48,7 @@ namespace tractor
 		SAFE_RELEASE(_form);
 	}
 
-	Gamepad* Gamepad::add(GamepadHandle handle, unsigned int buttonCount, unsigned int joystickCount, unsigned int triggerCount, const char* name)
+	Gamepad* Gamepad::add(GamepadHandle handle, unsigned int buttonCount, unsigned int joystickCount, unsigned int triggerCount, const std::string& name)
 	{
 		Gamepad* gamepad = new Gamepad(handle, buttonCount, joystickCount, triggerCount, name);
 
@@ -117,14 +112,14 @@ namespace tractor
 			{
 				bindGamepadControls((Container*)control);
 			}
-			else if ("JoystickControl" == control->getTypeName())
+			else if (control->getTypeName() == "JoystickControl")
 			{
 				JoystickControl* joystick = (JoystickControl*)control;
 				joystick->setConsumeInputEvents(true);
 				_uiJoysticks[joystick->getIndex()] = joystick;
 				_joystickCount++;
 			}
-			else if ("Button" == control->getTypeName())
+			else if (control->getTypeName() == "Button")
 			{
 				Button* button = (Button*)control;
 				button->setConsumeInputEvents(true);

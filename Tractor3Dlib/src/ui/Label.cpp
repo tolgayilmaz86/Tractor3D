@@ -43,7 +43,8 @@ namespace tractor
 
 	const std::string& Label::getTypeName() const
 	{
-		return "Label";
+		static const std::string TYPE_NAME = "Label";
+		return TYPE_NAME;
 	}
 
 	void Label::addListener(Control::Listener* listener, int eventFlags)
@@ -101,7 +102,7 @@ namespace tractor
 			// This is a trade-off for functionality vs performance, but changing the size of UI controls on hover/focus/etc
 			// is a pretty bad practice so we'll prioritize performance here.
 			unsigned int w, h;
-			_font->measureText(_text.c_str(), getFontSize(NORMAL), &w, &h);
+			_font->measureText(_text, getFontSize(NORMAL), &w, &h);
 			if (_autoSize & AUTO_SIZE_WIDTH)
 			{
 				setWidthInternal(w + getBorder(NORMAL).left + getBorder(NORMAL).right + getPadding().left + getPadding().right);
@@ -130,7 +131,7 @@ namespace tractor
 
 			SpriteBatch* batch = _font->getSpriteBatch(fontSize);
 			startBatch(form, batch);
-			_font->drawText(_text.c_str(), _textBounds, _textColor, fontSize, getTextAlignment(state), true, getTextRightToLeft(state), _viewportClipBounds);
+			_font->drawText(_text, _textBounds, _textColor, fontSize, getTextAlignment(state), true, getTextRightToLeft(state), _viewportClipBounds);
 			finishBatch(form, batch);
 
 			return 1;

@@ -77,7 +77,7 @@ namespace tractor
 		{
 			SceneNode();
 
-			const char* _nodeID;
+			std::string _nodeID;
 			bool _exactMatch;
 			Properties* _namespace;
 			std::vector<Node*> _nodes; // list of nodes sharing properties defined in this SceneNode

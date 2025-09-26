@@ -23,10 +23,10 @@ namespace tractor
 	{
 	}
 
-	Slider* Slider::create(const char* id, Theme::Style* style)
+	Slider* Slider::create(const std::string& id, Theme::Style* style)
 	{
 		Slider* slider = new Slider();
-		slider->_id = id ? id : "";
+		slider->_id = id ;
 		slider->initialize("Slider", style, nullptr);
 		return slider;
 	}
@@ -38,7 +38,7 @@ namespace tractor
 		return slider;
 	}
 
-	void Slider::initialize(const char* typeName, Theme::Style* style, Properties* properties)
+	void Slider::initialize(const std::string& typeName, Theme::Style* style, Properties* properties)
 	{
 		Label::initialize(typeName, style, properties);
 
@@ -53,7 +53,7 @@ namespace tractor
 
 			if (properties->exists("valueTextAlignment"))
 			{
-				_valueTextAlignment = Font::getJustify(properties->getString("valueTextAlignment").c_str());
+				_valueTextAlignment = Font::getJustify(properties->getString("valueTextAlignment"));
 			}
 		}
 
@@ -63,7 +63,8 @@ namespace tractor
 
 	const std::string& Slider::getTypeName() const
 	{
-		return "Slider";
+		static const std::string TYPE_NAME = "Slider";
+		return TYPE_NAME;
 	}
 
 	void Slider::setMin(float min)
@@ -484,7 +485,7 @@ namespace tractor
 
 			SpriteBatch* batch = _font->getSpriteBatch(fontSize);
 			startBatch(form, batch);
-			_font->drawText(_valueText.c_str(), _textBounds, _textColor, fontSize, _valueTextAlignment, true, getTextRightToLeft(state), _viewportClipBounds);
+			_font->drawText(_valueText, _textBounds, _textColor, fontSize, _valueTextAlignment, true, getTextRightToLeft(state), _viewportClipBounds);
 			finishBatch(form, batch);
 
 			++drawCalls;

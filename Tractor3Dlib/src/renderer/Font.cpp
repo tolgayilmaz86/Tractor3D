@@ -236,10 +236,9 @@ namespace tractor
 		return closest;
 	}
 
-	void Font::drawText(const char* text, int x, int y, const Vector4& color, unsigned int size, bool rightToLeft)
+	void Font::drawText(const std::string& text, int x, int y, const Vector4& color, unsigned int size, bool rightToLeft)
 	{
 		assert(_size);
-		assert(text);
 
 		if (size == 0)
 		{
@@ -264,7 +263,7 @@ namespace tractor
 
 		if (rightToLeft)
 		{
-			cursor = text;
+			cursor = text.c_str();
 		}
 
 		int xPos = x, yPos = y;
@@ -316,7 +315,7 @@ namespace tractor
 			}
 			else
 			{
-				length = strlen(text);
+				length = text.length();
 				startIndex = 0;
 				iteration = 1;
 			}
@@ -381,14 +380,13 @@ namespace tractor
 		}
 	}
 
-	void Font::drawText(const char* text, int x, int y, float red, float green, float blue, float alpha, unsigned int size, bool rightToLeft)
+	void Font::drawText(const std::string& text, int x, int y, float red, float green, float blue, float alpha, unsigned int size, bool rightToLeft)
 	{
 		drawText(text, x, y, Vector4(red, green, blue, alpha), size, rightToLeft);
 	}
 
-	void Font::drawText(const char* text, const Rectangle& area, const Vector4& color, unsigned int size, Justify justify, bool wrap, bool rightToLeft, const Rectangle& clip)
+	void Font::drawText(const std::string& text, const Rectangle& area, const Vector4& color, unsigned int size, Justify justify, bool wrap, bool rightToLeft, const Rectangle& clip)
 	{
-		assert(text);
 		assert(_size);
 
 		if (size == 0)
@@ -425,7 +423,7 @@ namespace tractor
 			xPos = *xPositionsIt++;
 		}
 
-		const char* token = text;
+		const char* token = text.c_str();
 		int iteration = 1;
 		unsigned int lineLength;
 		unsigned int currentLineLength = 0;
@@ -659,10 +657,9 @@ namespace tractor
 		}
 	}
 
-	void Font::measureText(const char* text, const Rectangle& clip, unsigned int size, Rectangle* out, Justify justify, bool wrap, bool ignoreClip)
+	void Font::measureText(const std::string& text, const Rectangle& clip, unsigned int size, Rectangle* out, Justify justify, bool wrap, bool ignoreClip)
 	{
 		assert(_size);
-		assert(text);
 		assert(out);
 
 		if (size == 0)
@@ -680,7 +677,7 @@ namespace tractor
 			}
 		}
 
-		if (strlen(text) == 0)
+		if (text.empty())
 		{
 			out->set(0, 0, 0, 0);
 			return;
@@ -699,7 +696,7 @@ namespace tractor
 			hAlign = ALIGN_LEFT;
 		}
 
-		const char* token = text;
+		const char* token = text.c_str();
 		std::vector<bool> emptyLines;
 		std::vector<Vector2> lines;
 
@@ -1005,11 +1002,10 @@ namespace tractor
 		}
 	}
 
-	void Font::getMeasurementInfo(const char* text, const Rectangle& area, unsigned int size, Justify justify, bool wrap, bool rightToLeft,
+	void Font::getMeasurementInfo(const std::string& text, const Rectangle& area, unsigned int size, Justify justify, bool wrap, bool rightToLeft,
 		std::vector<int>* xPositions, int* yPosition, std::vector<unsigned int>* lineLengths)
 	{
 		assert(_size);
-		assert(text);
 		assert(yPosition);
 
 		if (size == 0)
@@ -1029,7 +1025,7 @@ namespace tractor
 			hAlign = ALIGN_LEFT;
 		}
 
-		const char* token = text;
+		const char* token = text.c_str();
 		const float areaHeight = area.height - size;
 
 		// For alignments other than top-left, need to calculate the y position to begin drawing from
@@ -1202,23 +1198,22 @@ namespace tractor
 		_spacing = spacing;
 	}
 
-	int Font::getIndexAtLocation(const char* text, const Rectangle& area, unsigned int size, const Vector2& inLocation, Vector2* outLocation,
+	int Font::getIndexAtLocation(const std::string& text, const Rectangle& area, unsigned int size, const Vector2& inLocation, Vector2* outLocation,
 		Justify justify, bool wrap, bool rightToLeft)
 	{
 		return getIndexOrLocation(text, area, size, inLocation, outLocation, -1, justify, wrap, rightToLeft);
 	}
 
-	void Font::getLocationAtIndex(const char* text, const Rectangle& clip, unsigned int size, Vector2* outLocation, const unsigned int destIndex,
+	void Font::getLocationAtIndex(const std::string& text, const Rectangle& clip, unsigned int size, Vector2* outLocation, const unsigned int destIndex,
 		Justify justify, bool wrap, bool rightToLeft)
 	{
 		getIndexOrLocation(text, clip, size, *outLocation, outLocation, (const int)destIndex, justify, wrap, rightToLeft);
 	}
 
-	int Font::getIndexOrLocation(const char* text, const Rectangle& area, unsigned int size, const Vector2& inLocation, Vector2* outLocation,
+	int Font::getIndexOrLocation(const std::string& text, const Rectangle& area, unsigned int size, const Vector2& inLocation, Vector2* outLocation,
 		const int destIndex, Justify justify, bool wrap, bool rightToLeft)
 	{
 		assert(_size);
-		assert(text);
 		assert(outLocation);
 
 		if (size == 0)
@@ -1254,7 +1249,7 @@ namespace tractor
 			xPos = *xPositionsIt++;
 		}
 
-		const char* token = text;
+		const char* token = text.c_str();
 
 		int iteration = 1;
 		unsigned int lineLength;
@@ -1463,7 +1458,6 @@ namespace tractor
 
 	unsigned int Font::getTokenWidth(const char* token, unsigned int length, unsigned int size, float scale)
 	{
-		assert(token);
 		assert(_glyphs);
 
 		if (size == 0)
@@ -1498,12 +1492,9 @@ namespace tractor
 		return tokenWidth;
 	}
 
-	unsigned int Font::getReversedTokenLength(const char* token, const char* bufStart)
+	unsigned int Font::getReversedTokenLength(const std::string& token, const std::string& bufStart)
 	{
-		assert(token);
-		assert(bufStart);
-
-		const char* cursor = token;
+		const char* cursor = token.c_str();
 		char c = cursor[0];
 		unsigned int length = 0;
 

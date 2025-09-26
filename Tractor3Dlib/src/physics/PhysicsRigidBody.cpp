@@ -168,7 +168,7 @@ namespace tractor
 		}
 
 		// Check that the type is specified and correct.
-		auto type = properties->getString("type");
+		const auto& type = properties->getString("type");
 		if (type.empty())
 		{
 			GP_ERROR("Failed to load physics rigid body from properties object; required attribute 'type' is missing.");

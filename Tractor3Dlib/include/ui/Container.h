@@ -59,7 +59,7 @@ namespace tractor
      * @return The new container.
      * @script{create}
      */
-    static Container* create(const char* id, Theme::Style* style = nullptr, Layout::Type layout = Layout::LAYOUT_ABSOLUTE);
+    static Container* create(const std::string& id, Theme::Style* style = nullptr, Layout::Type layout = Layout::LAYOUT_ABSOLUTE);
 
     /**
      * Extends ScriptTarget::getTypeName() to return the type name of this class.
@@ -114,7 +114,7 @@ namespace tractor
      *
      * @param id The ID of the control to remove.
      */
-    void removeControl(const char* id);
+    void removeControl(const std::string& id);
 
     /**
      * Remove a specific control.
@@ -137,7 +137,7 @@ namespace tractor
      *
      * @param id The ID of the Control to search for.
      */
-    Control* getControl(const char* id) const;
+    Control* getControl(const std::string& id) const;
 
     /**
      * Returns the number of child controls for this container.
@@ -235,7 +235,7 @@ namespace tractor
     /**
      * @see AnimationTarget::getAnimation
      */
-    Animation* getAnimation(const char* id = nullptr) const;
+    Animation* getAnimation(const std::string& id = EMPTY_STRING) const;
 
     /**
      * @see Control::isContainer
@@ -369,7 +369,7 @@ namespace tractor
      * @param layoutString The layout string to parse
      * @return The parsed layout type.
      */
-    static Layout::Type getLayoutType(const char* layoutString);
+    static Layout::Type getLayoutType(const std::string& layoutString);
 
     /**
      * Creates a layout for the specified layout type.

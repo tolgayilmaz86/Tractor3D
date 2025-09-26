@@ -75,9 +75,9 @@ namespace tractor
 		_type = MaterialParameter::NONE;
 	}
 
-	const char* MaterialParameter::getName() const
+	const std::string& MaterialParameter::getName() const
 	{
-		return _name.c_str();
+		return _name;
 	}
 
 	Texture::Sampler* MaterialParameter::getSampler(unsigned int index) const
@@ -246,9 +246,8 @@ namespace tractor
 		_type = MaterialParameter::SAMPLER_ARRAY;
 	}
 
-	Texture::Sampler* MaterialParameter::setValue(const char* texturePath, bool generateMipmaps)
+	Texture::Sampler* MaterialParameter::setValue(const std::string& texturePath, bool generateMipmaps)
 	{
-		assert(texturePath);
 		clearValue();
 
 		Texture::Sampler* sampler = Texture::Sampler::create(texturePath, generateMipmaps);
@@ -437,7 +436,7 @@ namespace tractor
 		// we need to update our uniform to point to the new effect's uniform.
 		if (!_uniform || _uniform->getEffect() != effect)
 		{
-			_uniform = effect->getUniform(_name.c_str());
+			_uniform = effect->getUniform(_name);
 
 			if (!_uniform)
 			{

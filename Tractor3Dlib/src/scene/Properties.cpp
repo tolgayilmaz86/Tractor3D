@@ -11,12 +11,12 @@ namespace
 
 	struct NamespaceInfo
 	{
-		std::string name;
-		std::string id;
-		std::string parentID;
-		bool hasOpenBrace;
-		bool hasCloseBrace;
-	};
+		std::string name{};
+		std::string id{};
+		std::string parentID{};
+		bool hasOpenBrace{ false };
+		bool hasCloseBrace{ false };
+	}; 
 
 	/**
 	 * Reads the next character from the stream. Returns EOF if the end of the stream is reached.
@@ -39,7 +39,7 @@ namespace
 
 
 	//-----------------------------------------------------------------------------------------------------------------
-	static bool isVariable(const std::string& str, std::string& outName, size_t outSize)
+	static bool isVariable(const std::string& str, std::string& outName)
 	{
 		// Check if the string matches the variable pattern "${...}"
 		if (str.size() > 3 && str.front() == '$' && str[1] == '{' && str.back() == '}')
@@ -50,6 +50,18 @@ namespace
 		}
 
 		return false;
+	};
+
+	static std::string getVariableName(const std::string& str)
+	{
+		// Check if the string matches the variable pattern "${...}"
+		if (str.size() > 3 && str.front() == '$' && str[1] == '{' && str.back() == '}')
+		{
+			// Extract the variable name (excluding "${" and "}")
+			return std::string(str.substr(2, str.size() - 3));
+		}
+
+		return str;
 	};
 
 	//-----------------------------------------------------------------------------------------------------------------
@@ -65,21 +77,6 @@ namespace
 		auto end = str.find_last_not_of(" \t\n\r");
 		return str = (start == std::string::npos) ? "" : str.substr(start, end - start + 1);
 	};
-
-	//-----------------------------------------------------------------------------------------------------------------
-	bool isVariableAssignment(const std::string& name)
-	{
-		std::string dummy;
-		return isVariable(name, dummy, 256);
-	}
-
-	//-----------------------------------------------------------------------------------------------------------------
-	std::string extractVariableName(const std::string& name)
-	{
-		std::string variable;
-		isVariable(name, variable, 256);
-		return variable;
-	}
 
 	//-----------------------------------------------------------------------------------------------------------------
 	std::optional<NamespaceInfo> parseNamespaceTokens(
@@ -138,7 +135,10 @@ namespace
 		{
 			std::string parentToken = getNextToken(workingLine, "{");
 			if (!parentToken.empty())
-				info.parentID = trimWhiteSpace(parentToken);
+			{
+				parentToken = parentToken.substr(parentToken.find(":")+1); // ensure we start with ':'
+				info.parentID = trimWhiteSpace(parentToken); // omit leading ':' inheritance character
+			}
 		}
 
 		return info;
@@ -160,7 +160,7 @@ namespace
 
 		// Extract value (everything after '=')
 		std::string value;
-		if (equalsPos + 1 < line.length())
+		if (equalsPos + 1 <= line.length())
 		{
 			value = line.substr(equalsPos + 1);
 		}
@@ -209,7 +209,6 @@ namespace
 				{
 					return;
 				}
-
 				processLine(line);
 			}
 		}
@@ -265,11 +264,33 @@ namespace
 			if (!tokens)
 				return;
 
-			const auto [name, value] = *tokens;
+			const auto& [name, value] = *tokens;
 
-			if (isVariableAssignment(name))
+			std::string variable;
+
+			// first resolve value variable
+			if (isVariable(value, variable))
 			{
-				const auto variable = extractVariableName(name);
+				auto itr = m_properties->_resolvedVariableMap.find(value);
+				if (itr != m_properties->_resolvedVariableMap.end())
+				{
+					// Found a variable reference, replace value
+					const auto& normalizedName = getVariableName(name);
+					m_properties->setVariable(normalizedName, itr->second);
+
+					if(isVariable(name, variable))
+						m_properties->_resolvedVariableMap.insert({ name, itr->second });
+					return;
+				}
+			}
+
+			if (isVariable(name, variable))
+			{
+				// Check if this variable assigned as another variable
+				// e.g.: ${normalColor} = #ffffffff
+				//       ${focusColor} = ${normalColor}
+				//	In this case we want to resolve the value of ${normalColor} first
+				m_properties->_resolvedVariableMap.insert({ name, value });
 				m_properties->setVariable(variable, value);
 			}
 			else
@@ -305,12 +326,13 @@ namespace
 			if (!namespaceInfo)
 				return;
 
-			const auto [name, id, parentID, hasOpenBrace, hasCloseBrace] = *namespaceInfo;
+			const auto& [name, id, parentID, hasOpenBrace, hasCloseBrace] = *namespaceInfo;
 
 			if (name[0] == '}')
 			{
 				return; // End of namespace
 			}
+
 
 			const bool isInlineNamespace = hasOpenBrace && hasCloseBrace;
 
@@ -480,7 +502,7 @@ namespace tractor
 		std::vector<std::string> namespacePath;
 		calculateNamespacePath(urlString, fileString, namespacePath);
 
-		std::unique_ptr<Stream> stream(FileSystem::open(fileString.c_str()));
+		std::unique_ptr<Stream> stream(FileSystem::open(fileString));
 		if (stream.get() == nullptr)
 		{
 			GP_WARN("Failed to open file '%s'.", fileString.c_str());
@@ -559,7 +581,7 @@ namespace tractor
 			if (!derived->_parentID.empty())
 			{
 				derived->_visited = true;
-				Properties* parent = getNamespace(derived->_parentID.c_str());
+				Properties* parent = getNamespace(derived->_parentID);
 				if (parent)
 				{
 					assert(!parent->_visited);
@@ -599,7 +621,7 @@ namespace tractor
 			derived->resolveInheritance();
 
 			// Get the next top-level namespace and check again.
-			if (!id.empty())
+			if (id.empty())
 			{
 				derived = getNextNamespace();
 			}
@@ -704,6 +726,12 @@ namespace tractor
 	//-----------------------------------------------------------------------------------------------------------------
 	Properties* Properties::getNamespace(const std::string& id, bool searchNames, bool recurse) const
 	{
+
+		if (id == "base")
+		{
+			__nop();
+		}
+
 		for (auto* p : _namespaces)
 		{
 			const std::string& compareStr = searchNames ? p->_namespace : p->_id;
@@ -826,6 +854,11 @@ namespace tractor
 		}
 
 		std::string variable;
+		// If 'name' is a variable, return the variable value
+		if (isVariable(name, variable))
+		{
+			return getVariable(variable, defaultValue);
+		}
 
 		auto it = std::find_if(_properties.begin(), _properties.end(), [&name](const Property& prop) {
 			return prop.name == name;
@@ -834,7 +867,7 @@ namespace tractor
 		if (it != _properties.end())
 		{
 			// If 'name' is a variable, return the variable value
-			if (isVariable(it->value, variable, 256))
+			if (isVariable(it->value, variable))
 			{
 				return getVariable(variable, defaultValue);
 			}
@@ -1029,7 +1062,7 @@ namespace tractor
 			{
 				std::string relativePath = *dirPath;
 				relativePath.append(valueString);
-				if (FileSystem::fileExists(relativePath.c_str()))
+				if (FileSystem::fileExists(relativePath))
 				{
 					path->assign(relativePath);
 					return true;
@@ -1092,7 +1125,7 @@ namespace tractor
 		if (prop)
 		{
 			// Found an existing property, set it
-			prop->value = !value.empty() ? value : "";
+			prop->value = value;
 		}
 		else
 		{

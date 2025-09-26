@@ -280,7 +280,7 @@ namespace tractor
      *
      * @return True if URL was opened successfully, false otherwise.
      */
-    static bool launchURL(const char* url);
+    static bool launchURL(const std::string& url);
 
     /**
      * Constructor.

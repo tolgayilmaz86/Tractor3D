@@ -189,7 +189,7 @@ namespace tractor
 				size_t len = endQuote - (startQuote);
 				std::string includeStr = str.substr(startQuote, len);
 				directoryPath.append(includeStr);
-				const char* includedSource = FileSystem::readAll(directoryPath.c_str());
+				const char* includedSource = FileSystem::readAll(directoryPath);
 				if (includedSource == nullptr)
 				{
 					GP_ERROR("Compile failed for shader '%s' invalid filepath.", filepathStr.c_str());
@@ -198,14 +198,14 @@ namespace tractor
 				else
 				{
 					// Valid file so lets attempt to see if we need to append anything to it too (recurse...)
-					replaceIncludes(directoryPath.c_str(), includedSource, out);
+					replaceIncludes(directoryPath, includedSource, out);
 					SAFE_DELETE_ARRAY(includedSource);
 				}
 			}
 			else
 			{
 				// Append the remaining
-				out.append(str.c_str(), lastPos, tailPos);
+				out.append(str, lastPos, tailPos);
 			}
 		}
 	}
@@ -214,7 +214,7 @@ namespace tractor
 	{
 		std::string path = filePath;
 		path += ".err";
-		std::unique_ptr<Stream> stream(FileSystem::open(path.c_str(), FileSystem::WRITE));
+		std::unique_ptr<Stream> stream(FileSystem::open(path, FileSystem::WRITE));
 		if (stream.get() != nullptr && stream->canWrite())
 		{
 			stream->write(source.c_str(), 1, source.length());

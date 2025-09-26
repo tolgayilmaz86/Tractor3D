@@ -64,7 +64,7 @@ namespace tractor
      *
      * @return The joint, or nullptr if not found.
      */
-    Joint* getJoint(const char* id) const;
+    Joint* getJoint(const std::string& id) const;
 
     /**
      * Returns the root most joint for this MeshSkin.

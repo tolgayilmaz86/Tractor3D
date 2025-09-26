@@ -298,7 +298,7 @@ namespace tractor
 			{
 				_materialPath = _path.substr(0, pos);
 				_materialPath.append(".material");
-				if (!FileSystem::fileExists(_materialPath.c_str()))
+				if (!FileSystem::fileExists(_materialPath))
 				{
 					_materialPath.clear();
 				}
@@ -426,7 +426,7 @@ namespace tractor
 		std::string xref = readString(_stream.get());
 		if (xref.length() > 1 && xref[0] == '#') // TODO: Handle full xrefs
 		{
-			Node* node = scene->findNode(xref.c_str() + 1, true);
+			Node* node = scene->findNode(xref.substr(1), true);
 			assert(node);
 			Camera* camera = node->getCamera();
 			assert(camera);
@@ -958,7 +958,7 @@ namespace tractor
 		std::string xref = readString(_stream.get());
 		if (xref.length() > 1 && xref[0] == '#') // TODO: Handle full xrefs
 		{
-			auto mesh = loadMesh(xref.c_str() + 1, nodeId);
+			auto mesh = loadMesh(xref.substr(1), nodeId);
 			if (mesh.get())
 			{
 				Model* model = Model::create(mesh);
@@ -996,7 +996,7 @@ namespace tractor
 						{
 							materialPath.append("#");
 							materialPath.append(materialName);
-							Material* material = Material::create(materialPath.c_str());
+							Material* material = Material::create(materialPath);
 							if (material)
 							{
 								int partIndex = model->getMesh()->getPartCount() > 0 ? i : -1;
@@ -1102,9 +1102,9 @@ namespace tractor
 				std::string jointId = skinData->joints[j];
 				if (jointId.length() > 1 && jointId[0] == '#')
 				{
-					jointId = jointId.substr(1, jointId.length() - 1);
+					jointId = jointId.substr(1);
 
-					Node* n = loadNode(jointId.c_str(), sceneContext, nodeContext);
+					Node* n = loadNode(jointId, sceneContext, nodeContext);
 					if (n && n->getType() == Node::JOINT)
 					{
 						Joint* joint = static_cast<Joint*>(n);
@@ -1147,7 +1147,7 @@ namespace tractor
 						while (true)
 						{
 							// Get the node's type.
-							Reference* ref = find(nodeId.c_str());
+							Reference* ref = find(nodeId);
 							if (ref == nullptr)
 							{
 								GP_ERROR("No object with name '%s' in bundle '%s'.", nodeId.c_str(), _path.c_str());
@@ -1155,7 +1155,7 @@ namespace tractor
 							}
 
 							// Seek to the current node in the file so we can get it's parent ID.
-							seekTo(nodeId.c_str(), ref->type);
+							seekTo(nodeId, ref->type);
 
 							// Skip over the node type (1 unsigned int) and transform (16 floats) and read the parent id.
 							if (_stream->seek(sizeof(unsigned int) + sizeof(float) * 16, SEEK_CUR) == false)
@@ -1172,7 +1172,7 @@ namespace tractor
 						}
 
 						if (nodeId != rootJoint->getId())
-							loadedNodes.push_back(loadNode(nodeId.c_str(), sceneContext, nodeContext));
+							loadedNodes.push_back(loadNode(nodeId, sceneContext, nodeContext));
 
 						break;
 					}
@@ -1257,7 +1257,7 @@ namespace tractor
 		// Search for a node that matches the target.
 		if (!target)
 		{
-			target = scene->findNode(targetId.c_str());
+			target = scene->findNode(targetId);
 			if (!target)
 			{
 				GP_ERROR("Failed to find the animation target (with id '%s') for animation '%s'.", targetId.c_str(), animationId);
@@ -1589,7 +1589,7 @@ namespace tractor
 		std::string id = urlstring.substr(pos + 1);
 
 		// Load bundle.
-		Bundle* bundle = Bundle::create(file.c_str());
+		Bundle* bundle = Bundle::create(file);
 		if (bundle == nullptr)
 		{
 			GP_ERROR("Failed to load bundle '%s'.", file.c_str());
@@ -1597,7 +1597,7 @@ namespace tractor
 		}
 
 		// Seek to mesh with specified ID in bundle.
-		Reference* ref = bundle->seekTo(id.c_str(), BUNDLE_TYPE_MESH);
+		Reference* ref = bundle->seekTo(id, BUNDLE_TYPE_MESH);
 		if (ref == nullptr)
 		{
 			GP_ERROR("Failed to load ref from bundle '%s' for mesh with id '%s'.", file.c_str(), id.c_str());

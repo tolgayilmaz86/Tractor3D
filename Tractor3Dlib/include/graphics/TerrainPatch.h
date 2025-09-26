@@ -115,11 +115,11 @@ namespace tractor
       float xOffset, float zOffset, unsigned int step, float verticalSkirtSize);
 
 
-    bool setLayer(int index, const char* texturePath, const Vector2& textureRepeat, const char* blendPath, int blendChannel);
+    bool setLayer(int index, const std::string& texturePath, const Vector2& textureRepeat, const std::string& blendPath, int blendChannel);
 
     void deleteLayer(Layer* layer);
 
-    int addSampler(const char* path);
+    int addSampler(const std::string& path);
 
     unsigned int draw(bool wireframe);
 

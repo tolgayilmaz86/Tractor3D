@@ -380,14 +380,14 @@ void LightSample::controlEvent(Control* control, EventType evt)
   }
 }
 
-void LightSample::initializeDirectionalTechnique(const char* technique)
+void LightSample::initializeDirectionalTechnique(const std::string& technique)
 {
   _lighting->getTechnique(technique)->getParameter("u_ambientColor")->setValue(Vector3(0.0f, 0.0f, 0.0f));
   _lighting->getTechnique(technique)->getParameter("u_directionalLightColor[0]")->setValue(Vector3(_redSlider->getValue(), _greenSlider->getValue(), _blueSlider->getValue()));
   _lighting->getTechnique(technique)->getParameter("u_directionalLightDirection[0]")->bindValue(_directionalLightNode, &Node::getForwardVectorView);
 }
 
-void LightSample::initializeSpotTechnique(const char* technique)
+void LightSample::initializeSpotTechnique(const std::string& technique)
 {
   _lighting->getTechnique(technique)->getParameter("u_ambientColor")->setValue(Vector3(0.0f, 0.0f, 0.0f));
   _lighting->getTechnique(technique)->getParameter("u_spotLightColor[0]")->setValue(Vector3(_redSlider->getValue(), _greenSlider->getValue(), _blueSlider->getValue()));
@@ -398,7 +398,7 @@ void LightSample::initializeSpotTechnique(const char* technique)
   _lighting->getTechnique(technique)->getParameter("u_spotLightPosition[0]")->bindValue(_spotLightNode, &Node::getTranslationView);
 }
 
-void LightSample::initializePointTechnique(const char* technique)
+void LightSample::initializePointTechnique(const std::string& technique)
 {
   _lighting->getTechnique(technique)->getParameter("u_ambientColor")->setValue(Vector3(0.0f, 0.0f, 0.0f));
   _lighting->getTechnique(technique)->getParameter("u_pointLightColor[0]")->setValue(Vector3(_redSlider->getValue(), _greenSlider->getValue(), _blueSlider->getValue()));
@@ -406,7 +406,7 @@ void LightSample::initializePointTechnique(const char* technique)
   _lighting->getTechnique(technique)->getParameter("u_pointLightRangeInverse[0]")->setValue(_pointLightNode->getLight()->getRangeInverse());
 }
 
-void LightSample::setUnlitMaterialTexture(Model* model, const char* texturePath, bool mipmap)
+void LightSample::setUnlitMaterialTexture(Model* model, const std::string& texturePath, bool mipmap)
 {
   Material* material = model->setMaterial("res/shaders/textured.vert", "res/shaders/textured.frag", "DIRECTIONAL_LIGHT_COUNT 1");
   material->setParameterAutoBinding("u_worldViewProjectionMatrix", "WORLD_VIEW_PROJECTION_MATRIX");

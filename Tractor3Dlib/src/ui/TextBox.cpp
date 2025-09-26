@@ -15,10 +15,10 @@ namespace tractor
 	{
 	}
 
-	TextBox* TextBox::create(const char* id, Theme::Style* style)
+	TextBox* TextBox::create(const std::string& id, Theme::Style* style)
 	{
 		TextBox* textBox = new TextBox();
-		textBox->_id = id ? id : "";
+		textBox->_id = id;
 		textBox->initialize("TextBox", style, nullptr);
 		return textBox;
 	}
@@ -30,7 +30,7 @@ namespace tractor
 		return textBox;
 	}
 
-	void TextBox::initialize(const char* typeName, Theme::Style* style, Properties* properties)
+	void TextBox::initialize(const std::string& typeName, Theme::Style* style, Properties* properties)
 	{
 		Label::initialize(typeName, style, properties);
 
@@ -42,7 +42,8 @@ namespace tractor
 
 	const std::string& TextBox::getTypeName() const
 	{
-		return "TextBox";
+		static const std::string TYPE_NAME = "TextBox";
+		return TYPE_NAME;
 	}
 
 	void TextBox::addListener(Control::Listener* listener, int eventFlags)
@@ -360,7 +361,7 @@ namespace tractor
 				Font* font = getFont(state);
 				unsigned int fontSize = getFontSize(state);
 				Vector2 point;
-				font->getLocationAtIndex(getDisplayedText().c_str(), _textBounds, fontSize, &point, _caretLocation,
+				font->getLocationAtIndex(getDisplayedText(), _textBounds, fontSize, &point, _caretLocation,
 					getTextAlignment(state), true, getTextRightToLeft(state));
 
 				SpriteBatch* batch = _style->getTheme()->getSpriteBatch();
@@ -389,7 +390,7 @@ namespace tractor
 
 			SpriteBatch* batch = _font->getSpriteBatch(fontSize);
 			startBatch(form, batch);
-			_font->drawText(displayedText.c_str(), _textBounds, _textColor, fontSize, getTextAlignment(state), true, getTextRightToLeft(state), _viewportClipBounds);
+			_font->drawText(displayedText, _textBounds, _textColor, fontSize, getTextAlignment(state), true, getTextRightToLeft(state), _viewportClipBounds);
 			finishBatch(form, batch);
 
 			return 1;
@@ -421,19 +422,19 @@ namespace tractor
 		bool rightToLeft = getTextRightToLeft(state);
 		const std::string displayedText = getDisplayedText();
 
-		int index = font->getIndexAtLocation(displayedText.c_str(), _textBounds, fontSize, point, &point,
+		int index = font->getIndexAtLocation(displayedText, _textBounds, fontSize, point, &point,
 			textAlignment, true, rightToLeft);
 
 		if (index == -1)
 		{
 			// Attempt to find the nearest valid caret location.
 			Rectangle textBounds;
-			font->measureText(displayedText.c_str(), _textBounds, fontSize, &textBounds, textAlignment, true, true);
+			font->measureText(displayedText, _textBounds, fontSize, &textBounds, textAlignment, true, true);
 
 			if (point.x > textBounds.x + textBounds.width &&
 				point.y > textBounds.y + textBounds.height)
 			{
-				font->getLocationAtIndex(displayedText.c_str(), _textBounds, fontSize, &point, (unsigned int)_text.length(),
+				font->getLocationAtIndex(displayedText, _textBounds, fontSize, &point, (unsigned int)_text.length(),
 					textAlignment, true, rightToLeft);
 				return;
 			}
@@ -459,7 +460,7 @@ namespace tractor
 				point.y = textBounds.y + textBounds.height - fontSize;
 			}
 
-			index = font->getIndexAtLocation(displayedText.c_str(), _textBounds, fontSize, point, &point,
+			index = font->getIndexAtLocation(displayedText, _textBounds, fontSize, point, &point,
 				textAlignment, true, rightToLeft);
 		}
 
@@ -478,7 +479,7 @@ namespace tractor
 		assert(p);
 
 		State state = getState();
-		getFont(state)->getLocationAtIndex(getDisplayedText().c_str(), _textBounds, getFontSize(state), p, _caretLocation, getTextAlignment(state), true, getTextRightToLeft(state));
+		getFont(state)->getLocationAtIndex(getDisplayedText(), _textBounds, getFontSize(state), p, _caretLocation, getTextAlignment(state), true, getTextRightToLeft(state));
 	}
 
 	void TextBox::setPasswordChar(char character)

@@ -10,10 +10,6 @@ namespace tractor
 	static std::vector<Theme*> __themeCache;
 	static Theme* __defaultTheme = nullptr;
 
-	Theme::Theme() : _texture(nullptr), _spriteBatch(nullptr), _emptyImage(nullptr)
-	{
-	}
-
 	Theme::~Theme()
 	{
 		// Destroy all the cursors, styles and , fonts.
@@ -146,7 +142,7 @@ namespace tractor
 
 		theme->_emptyImage = new Theme::ThemeImage(tw, th, Rectangle::empty(), Vector4::zero());
 
-		themeProperties->rewind();
+		//themeProperties->rewind();
 		Properties* space = themeProperties->getNextNamespace();
 		while (space != nullptr)
 		{
@@ -167,7 +163,7 @@ namespace tractor
 				Properties* innerSpace = space->getNextNamespace();
 				if (innerSpace)
 				{
-					auto innerSpacename = innerSpace->getNamespace();
+					const auto& innerSpacename = innerSpace->getNamespace();
 					if (strcmpnocase(innerSpacename.c_str(), "border") == 0)
 					{
 						border.top = innerSpace->getFloat("top");
@@ -199,7 +195,7 @@ namespace tractor
 		space = themeProperties->getNextNamespace();
 		while (space != nullptr)
 		{
-			auto spacename = space->getNamespace();
+			const auto& spacename = space->getNamespace();
 			if (strcmpnocase(spacename.c_str(), "style") == 0)
 			{
 				// Each style contains up to MAX_OVERLAYS overlays,
@@ -216,7 +212,8 @@ namespace tractor
 				Properties* innerSpace = space->getNextNamespace();
 				while (innerSpace != nullptr)
 				{
-					auto innerSpacename = innerSpace->getNamespace();
+					const auto& innerSpacename = innerSpace->getNamespace();
+
 					if (strcmpnocase(innerSpacename.c_str(), "stateNormal") == 0)
 					{
 						Vector4 textColor(0, 0, 0, 1);
@@ -236,7 +233,7 @@ namespace tractor
 						Font::Justify textAlignment = Font::ALIGN_TOP_LEFT;
 						if (!textAlignmentString.empty())
 						{
-							textAlignment = Font::getJustify(textAlignmentString.c_str());
+							textAlignment = Font::getJustify(textAlignmentString);
 						}
 						bool rightToLeft = innerSpace->getBool("rightToLeft");
 
@@ -315,7 +312,7 @@ namespace tractor
 						std::string fontPath;
 						if (innerSpace->getPath("font", &fontPath))
 						{
-							font = Font::create(fontPath.c_str());
+							font = Font::create(fontPath);
 						}
 						if (!font)
 						{
@@ -484,7 +481,7 @@ namespace tractor
 
 				// Note: The hover and active states have their overlay left nullptr if unspecified.
 				// Events will still be triggered, but a control's overlay will not be changed.
-				theme->_styles.emplace_back(new Theme::Style(theme, space->getId().c_str(), tw, th, margin, padding, normal, focus, active, disabled, hover));
+				theme->_styles.emplace_back(new Theme::Style(theme, space->getId(), tw, th, margin, padding, normal, focus, active, disabled, hover));
 			}
 			space = themeProperties->getNextNamespace();
 		}
@@ -497,7 +494,7 @@ namespace tractor
 	Theme::Style* Theme::getStyle(const std::string& name) const
 	{
 		const auto found_style = std::ranges::find_if(_styles, [name](Style* style) {
-			return style && strcmpnocase(name.data(), style->getId()) == 0;
+			return style && strcmpnocase(name.data(), style->getId().c_str()) == 0;
 			});
 
 		return found_style != _styles.end() ? *found_style : nullptr;
@@ -598,8 +595,8 @@ namespace tractor
 		}
 
 		ThemeImage* image = new ThemeImage(tw, th, region, color);
-		auto id = properties->getId();
-		if (id.empty())
+		const auto& id = properties->getId();
+		if (!id.empty())
 		{
 			image->_id = id;
 		}

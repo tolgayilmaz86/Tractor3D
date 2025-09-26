@@ -34,7 +34,7 @@ namespace tractor
 		}
 	}
 
-	Animation* AnimationTarget::createAnimation(const char* id, int propertyId, unsigned int keyCount, unsigned int* keyTimes, float* keyValues, Curve::InterpolationType type)
+	Animation* AnimationTarget::createAnimation(const std::string& id, int propertyId, unsigned int keyCount, unsigned int* keyTimes, float* keyValues, Curve::InterpolationType type)
 	{
 		assert(type != Curve::BEZIER && type != Curve::HERMITE);
 		assert(keyCount >= 1 && keyTimes && keyValues);
@@ -44,7 +44,7 @@ namespace tractor
 		return animation;
 	}
 
-	Animation* AnimationTarget::createAnimation(const char* id, int propertyId, unsigned int keyCount, unsigned int* keyTimes, float* keyValues, float* keyInValue, float* keyOutValue, Curve::InterpolationType type)
+	Animation* AnimationTarget::createAnimation(const std::string& id, int propertyId, unsigned int keyCount, unsigned int* keyTimes, float* keyValues, float* keyInValue, float* keyOutValue, Curve::InterpolationType type)
 	{
 		assert(keyCount >= 1 && keyTimes && keyValues && keyInValue && keyOutValue);
 		Animation* animation = new Animation(id, this, propertyId, keyCount, keyTimes, keyValues, keyInValue, keyOutValue, type);
@@ -52,7 +52,7 @@ namespace tractor
 		return animation;
 	}
 
-	Animation* AnimationTarget::createAnimation(const char* id, const char* url)
+	Animation* AnimationTarget::createAnimation(const std::string& id, const std::string& url)
 	{
 		Properties* p = Properties::create(url);
 		assert(p);
@@ -64,7 +64,7 @@ namespace tractor
 		return animation;
 	}
 
-	Animation* AnimationTarget::createAnimationFromTo(const char* id, int propertyId, float* from, float* to, Curve::InterpolationType type, unsigned long duration)
+	Animation* AnimationTarget::createAnimationFromTo(const std::string& id, int propertyId, float* from, float* to, Curve::InterpolationType type, unsigned long duration)
 	{
 		assert(from);
 		assert(to);
@@ -88,7 +88,7 @@ namespace tractor
 		return animation;
 	}
 
-	Animation* AnimationTarget::createAnimationFromBy(const char* id, int propertyId, float* from, float* by, Curve::InterpolationType type, unsigned long duration)
+	Animation* AnimationTarget::createAnimationFromBy(const std::string& id, int propertyId, float* from, float* by, Curve::InterpolationType type, unsigned long duration)
 	{
 		assert(from);
 		assert(by);
@@ -114,7 +114,7 @@ namespace tractor
 		return animation;
 	}
 
-	Animation* AnimationTarget::createAnimation(const char* id, Properties* animationProperties)
+	Animation* AnimationTarget::createAnimation(const std::string& id, Properties* animationProperties)
 	{
 		assert(animationProperties);
 		if (animationProperties->getNamespace() != "animation")
@@ -131,7 +131,7 @@ namespace tractor
 		}
 
 		// Get animation target property id
-		int propertyId = getPropertyId(_targetType, propertyIdStr.c_str());
+		int propertyId = getPropertyId(_targetType, propertyIdStr);
 		if (propertyId == -1)
 		{
 			GP_ERROR("Property ID is invalid.");
@@ -252,7 +252,7 @@ namespace tractor
 			}
 		}
 
-		int curve = Curve::getInterpolationType(curveStr.c_str());
+		int curve = Curve::getInterpolationType(curveStr);
 
 		Animation* animation = nullptr;
 		if (keyIn && keyOut)
@@ -299,7 +299,7 @@ namespace tractor
 		return animation;
 	}
 
-	void AnimationTarget::destroyAnimation(const char* id)
+	void AnimationTarget::destroyAnimation(const std::string& id)
 	{
 		// Find the animation with the specified ID.
 		Animation::Channel* channel = getChannel(id);
@@ -314,14 +314,14 @@ namespace tractor
 		SAFE_DELETE(channel);
 	}
 
-	Animation* AnimationTarget::getAnimation(const char* id) const
+	Animation* AnimationTarget::getAnimation(const std::string& id) const
 	{
 		if (_animationChannels)
 		{
 			std::vector<Animation::Channel*>::iterator itr = _animationChannels->begin();
 			assert(*itr);
 
-			if (id == nullptr)
+			if (id.empty())
 				return (*itr)->_animation;
 
 			for (auto& channel : *_animationChannels)
@@ -338,60 +338,58 @@ namespace tractor
 		return nullptr;
 	}
 
-	int AnimationTarget::getPropertyId(TargetType type, const char* propertyIdStr)
+	int AnimationTarget::getPropertyId(TargetType type, const std::string& propertyIdStr)
 	{
-		assert(propertyIdStr);
-
 		if (type == AnimationTarget::TRANSFORM)
 		{
-			if (strcmp(propertyIdStr, "ANIMATE_SCALE") == 0)
+			if (propertyIdStr == "ANIMATE_SCALE")
 			{
 				return Transform::ANIMATE_SCALE;
 			}
-			else if (strcmp(propertyIdStr, "ANIMATE_SCALE_X") == 0)
+			else if (propertyIdStr == "ANIMATE_SCALE_X")
 			{
 				return Transform::ANIMATE_SCALE_X;
 			}
-			else if (strcmp(propertyIdStr, "ANIMATE_SCALE_Y") == 0)
+			else if (propertyIdStr == "ANIMATE_SCALE_Y")
 			{
 				return Transform::ANIMATE_SCALE_Y;
 			}
-			else if (strcmp(propertyIdStr, "ANIMATE_SCALE_Z") == 0)
+			else if (propertyIdStr == "ANIMATE_SCALE_Z")
 			{
 				return Transform::ANIMATE_SCALE_Z;
 			}
-			else if (strcmp(propertyIdStr, "ANIMATE_ROTATE") == 0)
+			else if (propertyIdStr == "ANIMATE_ROTATE")
 			{
 				return Transform::ANIMATE_ROTATE;
 			}
-			else if (strcmp(propertyIdStr, "ANIMATE_TRANSLATE") == 0)
+			else if (propertyIdStr == "ANIMATE_TRANSLATE")
 			{
 				return Transform::ANIMATE_TRANSLATE;
 			}
-			else if (strcmp(propertyIdStr, "ANIMATE_TRANSLATE_X") == 0)
+			else if (propertyIdStr == "ANIMATE_TRANSLATE_X")
 			{
 				return Transform::ANIMATE_TRANSLATE_X;
 			}
-			else if (strcmp(propertyIdStr, "ANIMATE_TRANSLATE_Y") == 0)
+			else if (propertyIdStr == "ANIMATE_TRANSLATE_Y")
 			{
 				return Transform::ANIMATE_TRANSLATE_Y;
 			}
-			else if (strcmp(propertyIdStr, "ANIMATE_TRANSLATE_Z") == 0)
+			else if (propertyIdStr == "ANIMATE_TRANSLATE_Z")
 			{
 				return Transform::ANIMATE_TRANSLATE_Z;
 			}
-			else if (strcmp(propertyIdStr, "ANIMATE_ROTATE_TRANSLATE") == 0)
+			else if (propertyIdStr == "ANIMATE_ROTATE_TRANSLATE")
 			{
 				return Transform::ANIMATE_ROTATE_TRANSLATE;
 			}
-			else if (strcmp(propertyIdStr, "ANIMATE_SCALE_ROTATE_TRANSLATE") == 0)
+			else if (propertyIdStr == "ANIMATE_SCALE_ROTATE_TRANSLATE")
 			{
 				return Transform::ANIMATE_SCALE_ROTATE_TRANSLATE;
 			}
 		}
 		else
 		{
-			if (strcmp(propertyIdStr, "ANIMATE_UNIFORM") == 0)
+			if (propertyIdStr == "ANIMATE_UNIFORM")
 			{
 				return MaterialParameter::ANIMATE_UNIFORM;
 			}
@@ -419,30 +417,35 @@ namespace tractor
 				});
 
 			// Only erase if we found any matching channel
-			if (itr != _animationChannels->end()) {
+			if (itr != _animationChannels->end())
+			{
 				_animationChannels->erase(itr, _animationChannels->end());
 
 				// Check if the vector is empty before deleting
-				if (_animationChannels->empty()) {
+				if (_animationChannels->empty())
+				{
 					SAFE_DELETE(_animationChannels);
 				}
 			}
 		}
 	}
 
-	Animation::Channel* AnimationTarget::getChannel(const char* id) const
+	Animation::Channel* AnimationTarget::getChannel(const std::string& id) const
 	{
 		if (_animationChannels)
 		{
-			if (id == nullptr) {
+			if (id.empty())
+			{
 				return _animationChannels->front(); // Return the first element if id is null
 			}
 
-			for (const auto& channelPtr : *_animationChannels) {
+			for (const auto& channelPtr : *_animationChannels)
+			{
 
 				assert(channelPtr);
 
-				if (channelPtr->_animation->_id.compare(id) == 0) {
+				if (channelPtr->_animation->_id.compare(id) == 0)
+				{
 					// Found!
 					return channelPtr;
 				}
@@ -456,16 +459,19 @@ namespace tractor
 	{
 		if (_animationChannels)
 		{
-			for (Animation::Channel* channel : *_animationChannels) {
+			for (Animation::Channel* channel : *_animationChannels)
+			{
 				assert(channel);
 				assert(channel->_animation);
 
 				Animation* animation = context.findClonedAnimation(channel->_animation);
-				if (animation != nullptr) {
+				if (animation != nullptr)
+				{
 					Animation::Channel* channelCopy = new Animation::Channel(*channel, animation, target);
 					animation->addChannel(channelCopy);
 				}
-				else {
+				else
+				{
 					// Clone the animation and register it with the context so that it only gets cloned once.
 					animation = channel->_animation->clone(channel, target);
 					context.registerClonedAnimation(channel->_animation, animation);

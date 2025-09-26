@@ -82,7 +82,7 @@ void GestureSample::render(float elapsedTime)
   for (auto& str : _eventLog)
   {
     ++count;
-    _font->drawText(str.c_str(), 0, y, fontColor, fontSize);
+    _font->drawText(str, 0, y, fontColor, fontSize);
     y += fontSize;
 
     if (y > (int)getHeight())

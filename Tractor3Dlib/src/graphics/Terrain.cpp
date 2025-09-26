@@ -101,7 +101,7 @@ namespace tractor
 				return nullptr;
 			}
 
-			std::string ext = FileSystem::getExtension(heightmap);
+			const auto ext = FileSystem::getExtension(heightmap);
 			if (ext == ".PNG")
 			{
 				// Read normalized height values from heightmap image
@@ -234,7 +234,7 @@ namespace tractor
 		return terrain;
 	}
 
-	Terrain* Terrain::create(HeightField* heightfield, const Vector3& scale, unsigned int patchSize, unsigned int detailLevels, float skirtScale, const char* normalMapPath, const char* materialPath)
+	Terrain* Terrain::create(HeightField* heightfield, const Vector3& scale, unsigned int patchSize, unsigned int detailLevels, float skirtScale, const std::string& normalMapPath, const std::string& materialPath)
 	{
 		return create(heightfield, scale, patchSize, detailLevels, skirtScale, normalMapPath, materialPath, nullptr);
 	}
@@ -313,22 +313,17 @@ namespace tractor
 						++index;
 
 					std::string textureMap;
-					const char* textureMapPtr = nullptr;
 					std::string blendMap;
-					const char* blendMapPtr = nullptr;
 					Vector2 textureRepeat;
 					int blendChannel = 0;
-					int row = -1, column = -1;
-					Vector4 temp;
+					int row = -1;
+					int column = -1;
 
 					// Read layer textures
 					Properties* t = lp->getNamespace("texture", true);
 					if (t)
 					{
-						if (t->getPath("path", &textureMap))
-						{
-							textureMapPtr = textureMap.c_str();
-						}
+						t->getPath("path", &textureMap);
 						if (!t->getVector2("repeat", &textureRepeat))
 							textureRepeat.set(1, 1);
 					}
@@ -336,12 +331,10 @@ namespace tractor
 					Properties* b = lp->getNamespace("blend", true);
 					if (b)
 					{
-						if (b->getPath("path", &blendMap))
-						{
-							blendMapPtr = blendMap.c_str();
-						}
-						const char* channel = b->getString("channel").c_str();
-						if (channel && strlen(channel) > 0)
+						b->getPath("path", &blendMap);
+
+						const std::string& channel = b->getString("channel");
+						if (!channel.empty())
 						{
 							char c = std::toupper(channel[0]);
 							if (c == 'R' || c == '0')
@@ -361,7 +354,7 @@ namespace tractor
 					if (lp->exists("column"))
 						column = lp->getInt("column");
 
-					if (!terrain->setLayer(index, textureMapPtr, textureRepeat, blendMapPtr, blendChannel, row, column))
+					if (!terrain->setLayer(index, textureMap, textureRepeat, blendMap, blendChannel, row, column))
 					{
 						GP_WARN("Failed to load terrain layer: %s", textureMap.c_str());
 					}
@@ -425,9 +418,9 @@ namespace tractor
 		return _inverseWorldMatrix;
 	}
 
-	bool Terrain::setLayer(int index, const char* texturePath, const Vector2& textureRepeat, const char* blendPath, int blendChannel, int row, int column)
+	bool Terrain::setLayer(int index, const std::string& texturePath, const Vector2& textureRepeat, const std::string& blendPath, int blendChannel, int row, int column)
 	{
-		if (!texturePath)
+		if (texturePath.empty())
 			return false;
 
 		// Set layer on applicable patches

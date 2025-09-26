@@ -76,10 +76,10 @@ namespace tractor
 		SAFE_RELEASE(_layout);
 	}
 
-	Container* Container::create(const char* id, Theme::Style* style, Layout::Type layout)
+	Container* Container::create(const std::string& id, Theme::Style* style, Layout::Type layout)
 	{
 		Container* container = new Container();
-		container->_id = id ? id : "";
+		container->_id = id;
 		container->_layout = createLayout(layout);
 		container->initialize("Container", style, nullptr);
 		return container;
@@ -102,7 +102,7 @@ namespace tractor
 			Properties* layoutNS = properties->getNamespace("layout", true, false);
 			if (layoutNS)
 			{
-				_layout = createLayout(getLayoutType(layoutNS->getString("type").c_str()));
+				_layout = createLayout(getLayoutType(layoutNS->getString("type")));
 				switch (_layout->getType())
 				{
 				case Layout::LAYOUT_FLOW:
@@ -115,10 +115,10 @@ namespace tractor
 			}
 			else
 			{
-				_layout = createLayout(getLayoutType(properties->getString("layout").c_str()));
+				_layout = createLayout(getLayoutType(properties->getString("layout")));
 			}
 
-			setScroll(getScroll(properties->getString("scroll").c_str()));
+			setScroll(getScroll(properties->getString("scroll")));
 			_scrollBarsAutoHide = properties->getBool("scrollBarsAutoHide");
 			if (_scrollBarsAutoHide)
 			{
@@ -164,7 +164,7 @@ namespace tractor
 
 			// Pass our own style into the creation of the child control.
 			// The child control's style will be looked up using the passed in style's theme.
-			Control* control = ControlFactory::getInstance()->createControl(controlName.c_str(), _style, controlSpace);
+			Control* control = ControlFactory::getInstance()->createControl(controlName, _style, controlSpace);
 
 			// Add the new control to the form.
 			if (control)
@@ -183,7 +183,8 @@ namespace tractor
 
 	const std::string& Container::getTypeName() const
 	{
-		return "Container";
+		static const std::string TYPE_NAME = "Container";
+		return TYPE_NAME;
 	}
 
 	Layout* Container::getLayout()
@@ -293,14 +294,12 @@ namespace tractor
 		SAFE_RELEASE(control);
 	}
 
-	void Container::removeControl(const char* id)
+	void Container::removeControl(const std::string& id)
 	{
-		assert(id);
-
 		for (size_t i = 0, size = _controls.size(); i < size; ++i)
 		{
 			Control* c = _controls[i];
-			if (strcmp(id, c->getId()) == 0)
+			if (id == c->getId())
 			{
 				removeControl((unsigned int)i);
 				return;
@@ -329,9 +328,8 @@ namespace tractor
 		return _controls[index];
 	}
 
-	Control* Container::getControl(const char* id) const
+	Control* Container::getControl(const std::string& id) const
 	{
-		assert(id);
 		std::string_view targetId(id);
 
 		for (Control* control : _controls)
@@ -438,7 +436,7 @@ namespace tractor
 		setChildrenDirty(DIRTY_BOUNDS, true);
 	}
 
-	Animation* Container::getAnimation(const char* id) const
+	Animation* Container::getAnimation(const std::string& id) const
 	{
 		std::vector<Control*>::const_iterator itr = _controls.begin();
 		std::vector<Control*>::const_iterator end = _controls.end();
@@ -1028,9 +1026,9 @@ namespace tractor
 		return true;
 	}
 
-	Layout::Type Container::getLayoutType(const char* layoutString)
+	Layout::Type Container::getLayoutType(const std::string& layoutString)
 	{
-		if (!layoutString)
+		if (layoutString.empty())
 		{
 			return Layout::LAYOUT_ABSOLUTE;
 		}

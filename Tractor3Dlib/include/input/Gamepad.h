@@ -161,7 +161,7 @@ namespace tractor
      * @param triggerCount the number of triggers on the gamepad.
      * @param name The product/device name.
      */
-    Gamepad(GamepadHandle handle, unsigned int buttonCount, unsigned int joystickCount, unsigned int triggerCount, const char* name);
+    Gamepad(GamepadHandle handle, unsigned int buttonCount, unsigned int joystickCount, unsigned int triggerCount, const std::string& name);
 
     /**
      * Copy constructor.
@@ -175,7 +175,7 @@ namespace tractor
 
     static void updateInternal(float elapsedTime);
 
-    static Gamepad* add(GamepadHandle handle, unsigned int buttonCount, unsigned int joystickCount, unsigned int triggerCount, const char* name);
+    static Gamepad* add(GamepadHandle handle, unsigned int buttonCount, unsigned int joystickCount, unsigned int triggerCount, const std::string& name);
 
     static Gamepad* add(const std::string& formPath);
 

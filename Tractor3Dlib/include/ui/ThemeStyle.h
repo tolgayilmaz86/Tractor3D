@@ -119,15 +119,15 @@ namespace tractor
 
       void setTextColor(const Vector4& color);
 
-      const Rectangle& getImageRegion(const char* id) const;
+      const Rectangle& getImageRegion(const std::string& id) const;
 
-      void setImageRegion(const char* id, const Rectangle& region, float tw, float th);
+      void setImageRegion(const std::string& id, const Rectangle& region, float tw, float th);
 
-      const Vector4& getImageColor(const char* id) const;
+      const Vector4& getImageColor(const std::string& id) const;
 
-      void setImageColor(const char* id, const Vector4& color);
+      void setImageColor(const std::string& id, const Vector4& color);
 
-      const Theme::UVs& getImageUVs(const char* id) const;
+      const Theme::UVs& getImageUVs(const std::string& id) const;
 
       const Rectangle& getCursorRegion() const;
 
@@ -180,7 +180,7 @@ namespace tractor
     /**
      * Constructor.
      */
-    Style(Theme* theme, const char* id, float tw, float th,
+    Style(Theme* theme, const std::string& id, float tw, float th,
       const Theme::Margin& margin, const Theme::Padding& padding,
       Overlay* normal, Overlay* focus, Overlay* active, Overlay* disabled, Overlay* hover);
 
@@ -202,7 +202,7 @@ namespace tractor
     /**
      * Returns the Id of this Style.
      */
-    const char* getId() const;
+    const std::string& getId() const;
 
     /**
      * Gets an overlay from the overlay type.

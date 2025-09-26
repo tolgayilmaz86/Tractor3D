@@ -32,7 +32,7 @@ namespace tractor
      * @return The new radio button.
      * @script{create}
      */
-    static RadioButton* create(const char* id, Theme::Style* style = nullptr);
+    static RadioButton* create(const std::string& id, Theme::Style* style = nullptr);
 
     /**
      * Extends ScriptTarget::getTypeName() to return the type name of this class.
@@ -72,14 +72,14 @@ namespace tractor
      *
      * @param groupId
      */
-    void setGroupId(const char* groupId);
+    void setGroupId(const std::string& groupId);
 
     /**
      * Gets the RadioButton's group ID.
      *
      * @return the RadioButton's group ID.
      */
-    const char* getGroupId() const;
+    const std::string& getGroupId() const;
 
   protected:
 
@@ -106,7 +106,7 @@ namespace tractor
     /**
      * @see Control::initialize
      */
-    void initialize(const char* typeName, Theme::Style* style, Properties* properties);
+    void initialize(const std::string& typeName, Theme::Style* style, Properties* properties);
 
     /**
      * Keyboard callback on key events.

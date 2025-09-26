@@ -40,14 +40,14 @@ namespace tractor
      *
      * @return true if the control was successfully registered.
      */
-    bool registerCustomControl(const char* typeName, ControlActivator activator);
+    bool registerCustomControl(const std::string& typeName, ControlActivator activator);
 
     /**
      * Unregisters a custom control and specify the activator.
      *
      * @param typeName The name of the custom control type to unregister.
      */
-    void unregisterCustomControl(const char* typeName);
+    void unregisterCustomControl(const std::string& typeName);
 
   private:
 
@@ -84,7 +84,7 @@ namespace tractor
     * @param properties A Properties object describing the control (optional).
     * @return The new control.
     */
-    Control* createControl(const char* typeName, Theme::Style* style, Properties* properties = nullptr);
+    Control* createControl(const std::string& typeName, Theme::Style* style, Properties* properties = nullptr);
 
     /**
    * Registers the standard (built-in) controls

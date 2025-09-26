@@ -48,7 +48,7 @@ namespace tractor
      * @return The new textbox.
      * @script{create}
      */
-    static TextBox* create(const char* id, Theme::Style* style = nullptr);
+    static TextBox* create(const std::string& id, Theme::Style* style = nullptr);
 
     /**
      * Extends ScriptTarget::getTypeName() to return the type name of this class.
@@ -141,7 +141,7 @@ namespace tractor
     /**
      * @see Control::initialize
      */
-    void initialize(const char* typeName, Theme::Style* style, Properties* properties);
+    void initialize(const std::string& typeName, Theme::Style* style, Properties* properties);
 
     /**
      * Touch callback on touch events.  Controls return true if they consume the touch event.

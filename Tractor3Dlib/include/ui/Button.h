@@ -38,12 +38,12 @@ namespace tractor
     /**
      * Constructor.
      */
-    Button();
+    Button() = default;
 
     /**
      * Destructor.
      */
-    virtual ~Button();
+    virtual ~Button() = default;
 
     /**
      * Create a button with a given style and properties.

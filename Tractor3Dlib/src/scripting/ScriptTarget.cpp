@@ -284,7 +284,7 @@ namespace tractor
 		if (!loaded)
 		{
 			// The specified global script is not yet loaded, so do so
-			script = Game::getInstance()->getScriptController()->loadScript(scriptPath.c_str(), Script::GLOBAL);
+			script = Game::getInstance()->getScriptController()->loadScript(scriptPath, Script::GLOBAL);
 			if (script)
 			{
 				loaded = true;

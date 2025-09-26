@@ -74,7 +74,10 @@ namespace tractor
 		 * @return The type name of this class: "Node"
 		 * @see ScriptTarget::getTypeName()
 		 */
-		const std::string& getTypeName() const { return "Node"; }
+		const std::string& getTypeName() const {
+			static const std::string TYPE_NAME = "Node";
+			return TYPE_NAME;
+		}
 
 		/**
 		 * Gets the identifier for the node.
@@ -204,7 +207,7 @@ namespace tractor
 		 * @param name Name of the tag to set.
 		 * @param value Optional value of the tag (empty string by default).
 		 */
-		void setTag(const char* name, const char* value = "");
+		void setTag(const std::string& name, const std::string& value = EMPTY_STRING);
 
 		/**
 		 * Returns the value of the custom tag with the given name.
@@ -213,7 +216,7 @@ namespace tractor
 		 *
 		 * @return The value of the given tag, or nullptr if the tag is not set.
 		 */
-		const char* getTag(const char* name) const;
+		const std::string& getTag(const std::string& name) const;
 
 		/**
 		 * Determines if a custom tag with the specified name is set.
@@ -222,7 +225,7 @@ namespace tractor
 		 *
 		 * @return true if the tag is set, false otherwise.
 		 */
-		bool hasTag(const char* name) const;
+		bool hasTag(const std::string& name) const;
 
 		/**
 		 * Sets if the node is enabled in the scene.
@@ -410,7 +413,7 @@ namespace tractor
 		 * @param id The ID of the animation to get. Returns the first animation if ID is nullptr.
 		 * @return The first animation with the specified ID.
 		 */
-		Animation* getAnimation(const char* id = nullptr) const;
+		Animation* getAnimation(const std::string& id = EMPTY_STRING) const;
 
 		/**
 		 * Gets the drawable object attached to this node.
@@ -547,7 +550,7 @@ namespace tractor
 		 *
 		 * @param url The URL pointing to the Properties object defining the physics collision object.
 		 */
-		PhysicsCollisionObject* setCollisionObject(const char* url);
+		PhysicsCollisionObject* setCollisionObject(const std::string& url);
 
 		/**
 		 * Gets the AI agent assigned to this node

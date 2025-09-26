@@ -280,28 +280,23 @@ namespace tractor
 		return nullptr;
 	}
 
-	bool Node::hasTag(const char* name) const
+	bool Node::hasTag(const std::string& name) const
 	{
-		assert(name);
 		return (_tags ? _tags->find(name) != _tags->end() : false);
 	}
 
-	const char* Node::getTag(const char* name) const
+	const std::string& Node::getTag(const std::string& name) const
 	{
-		assert(name);
-
 		if (!_tags)
-			return nullptr;
+			return EMPTY_STRING;
 
 		std::map<std::string, std::string>::const_iterator itr = _tags->find(name);
-		return (itr == _tags->end() ? nullptr : itr->second.c_str());
+		return (itr == _tags->end() ? EMPTY_STRING : itr->second);
 	}
 
-	void Node::setTag(const char* name, const char* value)
+	void Node::setTag(const std::string& name, const std::string& value)
 	{
-		assert(name);
-
-		if (value == nullptr)
+		if (value.empty())
 		{
 			// Removing tag
 			if (_tags)
@@ -624,7 +619,7 @@ namespace tractor
 			_parent->setBoundsDirty();
 	}
 
-	Animation* Node::getAnimation(const char* id) const
+	Animation* Node::getAnimation(const std::string& id) const
 	{
 		Animation* animation = ((AnimationTarget*)this)->getAnimation(id);
 		if (animation)
@@ -1015,7 +1010,7 @@ namespace tractor
 		return _collisionObject;
 	}
 
-	PhysicsCollisionObject* Node::setCollisionObject(const char* url)
+	PhysicsCollisionObject* Node::setCollisionObject(const std::string& url)
 	{
 		// Load the collision object properties from file.
 		Properties* properties = Properties::create(url);
@@ -1041,7 +1036,7 @@ namespace tractor
 			GP_ERROR("Failed to load collision object from properties object: must be non-null object and have namespace equal to 'collisionObject'.");
 			return nullptr;
 		}
-		auto type = properties->getString("type");
+		const auto& type = properties->getString("type");
 		if (type != EMPTY_STRING)
 		{
 			if (type == "CHARACTER")

@@ -538,7 +538,7 @@ namespace tractor
      * @param interpolationId The string representation of the InterpolationType
      * @return the InterpolationType value; -1 if the string does not represent an InterpolationType.
      */
-    static int getInterpolationType(const char* interpolationId);
+    static int getInterpolationType(const std::string& interpolationId);
 
     unsigned int _pointCount;           // Number of points on the curve.
     unsigned int _componentCount;       // Number of components on the curve.

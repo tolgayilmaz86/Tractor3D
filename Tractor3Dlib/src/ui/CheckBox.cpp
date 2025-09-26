@@ -40,7 +40,8 @@ namespace tractor
 
   const std::string& CheckBox::getTypeName() const
   {
-    return "CheckBox";
+      static const std::string TYPE_NAME = "CheckBox";
+      return TYPE_NAME;
   }
 
   bool CheckBox::isChecked()

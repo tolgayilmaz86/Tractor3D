@@ -70,7 +70,8 @@ namespace tractor
 
 	const std::string& AnimationClip::getTypeName() const
 	{
-		return "AnimationClip";
+		static const std::string TYPE_NAME = "AnimationClip";
+		return TYPE_NAME;
 	}
 
 	const std::string& AnimationClip::getId() const

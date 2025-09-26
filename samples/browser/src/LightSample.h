@@ -36,13 +36,13 @@ protected:
 
 private:
 
-  void initializeDirectionalTechnique(const char* technique);
+  void initializeDirectionalTechnique(const std::string& technique);
 
-  void initializeSpotTechnique(const char* technique);
+  void initializeSpotTechnique(const std::string& technique);
 
-  void initializePointTechnique(const char* technique);
+  void initializePointTechnique(const std::string& technique);
 
-  void setUnlitMaterialTexture(Model* model, const char* texturePath, bool mipmap = true);
+  void setUnlitMaterialTexture(Model* model, const std::string& texturePath, bool mipmap = true);
 
   void setColorValue(const Vector3& value);
 

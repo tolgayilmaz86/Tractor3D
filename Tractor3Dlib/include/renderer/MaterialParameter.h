@@ -47,7 +47,7 @@ namespace tractor
 		/**
 		 * Returns the name of this material parameter.
 		 */
-		const char* getName() const;
+		const std::string& getName() const;
 
 		/**
 		 * Returns the texture sampler or nullptr if this MaterialParameter is not a sampler type.
@@ -139,7 +139,7 @@ namespace tractor
 		 *
 		 * @return The texture sampler that was set for this material parameter.
 		 */
-		Texture::Sampler* setValue(const char* texturePath, bool generateMipmaps);
+		Texture::Sampler* setValue(const std::string& texturePath, bool generateMipmaps);
 
 		/**
 		 * Stores a float value in this parameter.

@@ -375,7 +375,7 @@ namespace tractor
 		SAFE_DELETE(layer);
 	}
 
-	int TerrainPatch::addSampler(const char* path)
+	int TerrainPatch::addSampler(const std::string& path)
 	{
 		// TODO: Support shared samplers stored in Terrain class for layers that span all patches
 		// on the terrain (row == col == -1).
@@ -431,7 +431,7 @@ namespace tractor
 		return (int)(_samplers.size() - 1);
 	}
 
-	bool TerrainPatch::setLayer(int index, const char* texturePath, const Vector2& textureRepeat, const char* blendPath, int blendChannel)
+	bool TerrainPatch::setLayer(int index, const std::string& texturePath, const Vector2& textureRepeat, const std::string& blendPath, int blendChannel)
 	{
 		// If there is an existing layer at this index, delete it
 		for (auto layer : _layers)
@@ -450,7 +450,7 @@ namespace tractor
 
 		// Load blend sampler
 		int blendIndex = -1;
-		if (blendPath)
+		if (!blendPath.empty())
 		{
 			blendIndex = addSampler(blendPath);
 		}
@@ -534,7 +534,7 @@ namespace tractor
 
 		for (size_t i = 0, count = _levels.size(); i < count; ++i)
 		{
-			Material* material = Material::create(_terrain->_materialPath.c_str(), &passCallback, this);
+			Material* material = Material::create(_terrain->_materialPath, &passCallback, this);
 			assert(material);
 			if (!material)
 			{

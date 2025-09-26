@@ -29,145 +29,145 @@ class SamplesGame : public Game, Control::Listener
 {
 public:
 
-  /**
-   * Constructor.
-   */
-  SamplesGame();
+	/**
+	 * Constructor.
+	 */
+	SamplesGame() = default;
 
-  void resizeEvent(unsigned int width, unsigned int height);
+	void resizeEvent(unsigned int width, unsigned int height);
 
-  void keyEvent(Keyboard::KeyEvent evt, int key);
+	void keyEvent(Keyboard::KeyEvent evt, int key);
 
-  void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
+	void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
 
-  bool mouseEvent(Mouse::MouseEvent evt, int x, int y, int wheelDelta);
+	bool mouseEvent(Mouse::MouseEvent evt, int x, int y, int wheelDelta);
 
-  void menuEvent();
+	void menuEvent();
 
-  void gestureSwipeEvent(int x, int y, int direction);
+	void gestureSwipeEvent(int x, int y, int direction);
 
-  void gesturePinchEvent(int x, int y, float scale);
+	void gesturePinchEvent(int x, int y, float scale);
 
-  void gestureTapEvent(int x, int y);
+	void gestureTapEvent(int x, int y);
 
-  void gestureLongTapEvent(int x, int y, float duration);
+	void gestureLongTapEvent(int x, int y, float duration);
 
-  void gestureDragEvent(int x, int y);
+	void gestureDragEvent(int x, int y);
 
-  void gestureDropEvent(int x, int y);
+	void gestureDropEvent(int x, int y);
 
-  void controlEvent(Control* control, EventType evt);
+	void controlEvent(Control* control, EventType evt);
 
-  void gamepadEvent(Gamepad::GamepadEvent evt, Gamepad* gamepad, unsigned int analogIndex = 0);
+	void gamepadEvent(Gamepad::GamepadEvent evt, Gamepad* gamepad, unsigned int analogIndex = 0);
 
-  /**
-   * Adds a sample.
-   *
-   * @param category The cateogry title to group the sample in.
-   * @param title The title string of the sample.
-   * @param func The function pointer that is used to create the sample.
-   * @param order The order of the sample. Samples are sorted lowest order to highest.
-   */
-  static void addSample(const char* category, const char* title, void* func, unsigned int order);
+	/**
+	 * Adds a sample.
+	 *
+	 * @param category The cateogry title to group the sample in.
+	 * @param title The title string of the sample.
+	 * @param func The function pointer that is used to create the sample.
+	 * @param order The order of the sample. Samples are sorted lowest order to highest.
+	 */
+	static void addSample(const std::string& category, const std::string& title, void* func, unsigned int order);
 
-  static SamplesGame* getInstance();
+	static SamplesGame* getInstance();
 
 protected:
 
-  /**
-   * @see Game::initialize
-   */
-  void initialize();
+	/**
+	 * @see Game::initialize
+	 */
+	void initialize();
 
-  /**
-   * @see Game::finalize
-   */
-  void finalize();
+	/**
+	 * @see Game::finalize
+	 */
+	void finalize();
 
-  /**
-   * @see Game::update
-   */
-  void update(float elapsedTime);
+	/**
+	 * @see Game::update
+	 */
+	void update(float elapsedTime);
 
-  /**
-   * @see Game::render
-   */
-  void render(float elapsedTime);
-
-private:
-
-  /**
-   * Function pointer type that is used to create a SampleGame.
-   */
-  typedef void* (*SampleGameCreatePtr)();
-
-  /**
-   * Run the given sample.
-   *
-   * @param func The function pointer that creates the SampleGame.
-   */
-  void runSample(void* func);
-
-  /**
-   * Handles the activate when the user touches or clicks on a part of the screen.
-   *
-   * @param x The x-coordinate in screen space where the user clicked.
-   * @param y The y-coordinate in screen space where the user clicked.
-   */
-  void activate(int x, int y);
-
-  /**
-   * Exits the active sample and returns to the main menu.
-   */
-  void exitActiveSample();
-
-  /**
-   * Draws the main menu, which is a list of all the available samples.
-   */
-  void drawTextMenu();
+	/**
+	 * @see Game::render
+	 */
+	void render(float elapsedTime);
 
 private:
 
-  struct SampleRecord
-  {
-    std::string title;
-    void* funcPtr;
-    unsigned int order;
+	/**
+	 * Function pointer type that is used to create a SampleGame.
+	 */
+	typedef void* (*SampleGameCreatePtr)();
 
-    SampleRecord() : funcPtr(nullptr), order(0) { }
-    SampleRecord(std::string title, void* funcPtr, unsigned int order) : title(title), funcPtr(funcPtr), order(order) { }
+	/**
+	 * Run the given sample.
+	 *
+	 * @param func The function pointer that creates the SampleGame.
+	 */
+	void runSample(void* func);
 
-    SampleRecord& operator = (const SampleRecord& copy)
-    {
-      title = copy.title;
-      funcPtr = copy.funcPtr;
-      order = copy.order;
-      return *this;
-    }
+	/**
+	 * Handles the activate when the user touches or clicks on a part of the screen.
+	 *
+	 * @param x The x-coordinate in screen space where the user clicked.
+	 * @param y The y-coordinate in screen space where the user clicked.
+	 */
+	void activate(int x, int y);
 
-    bool operator<(const SampleRecord& v) const
-    {
-      return order < v.order;
-    }
-  };
+	/**
+	 * Exits the active sample and returns to the main menu.
+	 */
+	void exitActiveSample();
+
+	/**
+	 * Draws the main menu, which is a list of all the available samples.
+	 */
+	void drawTextMenu();
+
+private:
+
+	struct SampleRecord
+	{
+		std::string title;
+		void* funcPtr;
+		unsigned int order;
+
+		SampleRecord() : funcPtr(nullptr), order(0) {}
+		SampleRecord(std::string title, void* funcPtr, unsigned int order) : title(title), funcPtr(funcPtr), order(order) {}
+
+		SampleRecord& operator = (const SampleRecord& copy)
+		{
+			title = copy.title;
+			funcPtr = copy.funcPtr;
+			order = copy.order;
+			return *this;
+		}
+
+		bool operator<(const SampleRecord& v) const
+		{
+			return order < v.order;
+		}
+	};
 
 
-  /**
-   * The list of category title strings.
-   */
-  static std::vector<std::string>* _categories;
+	/**
+	 * The list of category title strings.
+	 */
+	static std::vector<std::string>* _categories;
 
-  /**
-   * The collection of sample titles and the function pointers that create the samples.
-   * The pair represents the string title of the sample and the function pointer that is used to create the sample.
-   * The inner vector is a list of those pairs in the order that they were added.
-   * The outer vector represents the list of categories that contain the list of samples in the category.
-   * The index of _categories maps to the index of the outer vector. (Therefore their size should always be the same).
-   */
-  typedef std::vector<SampleRecord> SampleRecordList;
-  static std::vector<SampleRecordList>* _samples;
+	/**
+	 * The collection of sample titles and the function pointers that create the samples.
+	 * The pair represents the string title of the sample and the function pointer that is used to create the sample.
+	 * The inner vector is a list of those pairs in the order that they were added.
+	 * The outer vector represents the list of categories that contain the list of samples in the category.
+	 * The index of _categories maps to the index of the outer vector. (Therefore their size should always be the same).
+	 */
+	typedef std::vector<SampleRecord> SampleRecordList;
+	static std::vector<SampleRecordList>* _samples;
 
-  Sample* _activeSample;
-  Font* _font;
-  Form* _sampleSelectForm;
+	Sample* _activeSample{ nullptr };
+	Font* _font{ nullptr };
+	Form* _sampleSelectForm{ nullptr };
 };

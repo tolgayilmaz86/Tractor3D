@@ -27,7 +27,7 @@ namespace tractor
      * @return A new mesh batch.
      * @script{create}
      */
-    static MeshBatch* create(const VertexFormat& vertexFormat, Mesh::PrimitiveType primitiveType, const char* materialPath, bool indexed, unsigned int initialCapacity = 1024, unsigned int growSize = 1024);
+    static MeshBatch* create(const VertexFormat& vertexFormat, Mesh::PrimitiveType primitiveType, const std::string& materialPath, bool indexed, unsigned int initialCapacity = 1024, unsigned int growSize = 1024);
 
     /**
      * Creates a new mesh batch.

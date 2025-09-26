@@ -35,7 +35,7 @@ protected:
 
 	bool drawScene(Node* node);
 
-	void setMessage(const char* message);
+	void setMessage(const std::string& message);
 
 private:
 

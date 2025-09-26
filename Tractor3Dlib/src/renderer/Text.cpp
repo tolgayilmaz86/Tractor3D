@@ -262,7 +262,7 @@ namespace tractor
 			}
 		}
 		_drawFont->start();
-		_drawFont->drawText(_text.c_str(), Rectangle(position.x, position.y, _width, _height),
+		_drawFont->drawText(_text, Rectangle(position.x, position.y, _width, _height),
 			Vector4(_color.x, _color.y, _color.z, _color.w * _opacity), _size,
 			_align, _wrap, _rightToLeft, clipViewport);
 		_drawFont->finish();

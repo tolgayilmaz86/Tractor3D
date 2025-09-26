@@ -34,7 +34,7 @@ namespace tractor
      *
      * @return The newly created animation.
      */
-    Animation* createAnimation(const char* id, int propertyId, unsigned int keyCount, unsigned int* keyTimes, float* keyValues, Curve::InterpolationType type);
+    Animation* createAnimation(const std::string& id, int propertyId, unsigned int keyCount, unsigned int* keyTimes, float* keyValues, Curve::InterpolationType type);
 
     /**
      * Creates an animation on this target from a set of key value and key time pairs.
@@ -50,7 +50,7 @@ namespace tractor
      *
      * @return The newly created animation.
      */
-    Animation* createAnimation(const char* id, int propertyId, unsigned int keyCount, unsigned int* keyTimes, float* keyValues, float* keyInValue, float* keyOutValue, Curve::InterpolationType type);
+    Animation* createAnimation(const std::string& id, int propertyId, unsigned int keyCount, unsigned int* keyTimes, float* keyValues, float* keyInValue, float* keyOutValue, Curve::InterpolationType type);
 
     /**
      * Creates an animation on this target using the data from the Properties object defined at the specified URL,
@@ -62,7 +62,7 @@ namespace tractor
      *
      * @return The newly created animation.
      */
-    Animation* createAnimation(const char* id, const char* url);
+    Animation* createAnimation(const std::string& id, const std::string& url);
 
     /**
      * Creates an animation on this target using the data from the given properties object.
@@ -72,7 +72,7 @@ namespace tractor
      *
      * @return The newly created animation.
      */
-    Animation* createAnimation(const char* id, Properties* animationProperties);
+    Animation* createAnimation(const std::string& id, Properties* animationProperties);
 
     /**
      * Creates a simple two keyframe from-to animation.
@@ -87,7 +87,7 @@ namespace tractor
      *
      * @return The newly created animation.
      */
-    Animation* createAnimationFromTo(const char* id, int propertyId, float* from, float* to, Curve::InterpolationType type, unsigned long duration);
+    Animation* createAnimationFromTo(const std::string& id, int propertyId, float* from, float* to, Curve::InterpolationType type, unsigned long duration);
 
     /**
      * Creates a simple two keyframe from-by animation.
@@ -102,14 +102,14 @@ namespace tractor
      *
      * @return The newly created animation.
      */
-    Animation* createAnimationFromBy(const char* id, int propertyId, float* from, float* by, Curve::InterpolationType type, unsigned long duration);
+    Animation* createAnimationFromBy(const std::string& id, int propertyId, float* from, float* by, Curve::InterpolationType type, unsigned long duration);
 
     /**
      * Destroys the animation with the specified ID. Destroys the first animation if ID is nullptr.
      *
      * @param id The ID of the animation to destroy.
      */
-    void destroyAnimation(const char* id = nullptr);
+    void destroyAnimation(const std::string& id = EMPTY_STRING);
 
     /**
      * Abstract method to return the property component count of the given property ID on the AnimationTarget.
@@ -142,7 +142,7 @@ namespace tractor
      *
      * @param id The name of the animation to get.
      */
-    Animation* getAnimation(const char* id = nullptr) const;
+    Animation* getAnimation(const std::string& id = EMPTY_STRING) const;
 
   protected:
 
@@ -173,7 +173,7 @@ namespace tractor
        * @return The property ID value for the property ID string; -1 if the propertyIdStr does not exist
        *    for the TargetType.
        */
-    virtual int getPropertyId(TargetType type, const char* propertyIdStr);
+    virtual int getPropertyId(TargetType type, const std::string& propertyIdStr);
 
     /**
      * Adds the given animation channel to this animation target.
@@ -194,7 +194,7 @@ namespace tractor
      *
      * @param id The ID of the Animation the Channel belongs to.
      */
-    Animation::Channel* getChannel(const char* id) const;
+    Animation::Channel* getChannel(const std::string& id) const;
 
     /**
      * Copies data from this animation target into the given target for the purpose of cloning.

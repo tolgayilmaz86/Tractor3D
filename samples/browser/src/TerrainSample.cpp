@@ -270,7 +270,7 @@ void TerrainSample::touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int
 					_shapes.push_back(clone);
 
 					_mode = MODE_LOOK;
-					setMessage(nullptr);
+					setMessage(EMPTY_STRING);
 				}
 			}
 		}
@@ -284,7 +284,7 @@ bool TerrainSample::mouseEvent(Mouse::MouseEvent evt, int x, int y, int wheelDel
 
 void TerrainSample::controlEvent(Control* control, EventType evt)
 {
-	if (strcmp(control->getId(), "plusButton") == 0)
+	if (control->getId() == "plusButton")
 	{
 		control->setVisible(false);
 		_form->getControl("minusButton")->setVisible(true);
@@ -293,7 +293,7 @@ void TerrainSample::controlEvent(Control* control, EventType evt)
 		_form->getControl("main")->setSize(_formSize.x, _formSize.y);
 		_formVisible = true;
 	}
-	else if (strcmp(control->getId(), "minusButton") == 0)
+	else if (control->getId() == "minusButton")
 	{
 		control->setVisible(false);
 		_form->getControl("plusButton")->setVisible(true);
@@ -302,23 +302,23 @@ void TerrainSample::controlEvent(Control* control, EventType evt)
 		_form->getControl("main")->setSize(50, 50);
 		_formVisible = false;
 	}
-	else if (strcmp(control->getId(), "wireframe") == 0)
+	else if (control->getId() == "wireframe")
 	{
 		_wireframe = static_cast<CheckBox*>(control)->isChecked();
 	}
-	else if (strcmp(control->getId(), "patches") == 0)
+	else if (control->getId() == "patches")
 	{
 		_terrain->setFlag(Terrain::DEBUG_PATCHES, static_cast<CheckBox*>(control)->isChecked());
 	}
-	else if (strcmp(control->getId(), "physics") == 0)
+	else if (control->getId() == "physics")
 	{
 		_debugPhysics = static_cast<CheckBox*>(control)->isChecked();
 	}
-	else if (strcmp(control->getId(), "lod") == 0)
+	else if (control->getId() == "lod")
 	{
 		_terrain->setFlag(Terrain::LEVEL_OF_DETAIL, static_cast<CheckBox*>(control)->isChecked());
 	}
-	else if (strcmp(control->getId(), "snapToGround") == 0)
+	else if (control->getId() == "snapToGround")
 	{
 		_snapToGround = static_cast<CheckBox*>(control)->isChecked();
 		if (_snapToGround)
@@ -326,7 +326,7 @@ void TerrainSample::controlEvent(Control* control, EventType evt)
 		else
 			setScriptCameraSpeed(200, 800);
 	}
-	else if (strcmp(control->getId(), "dropSphere") == 0)
+	else if (control->getId() == "dropSphere")
 	{
 		if (_mode == MODE_DROP_SPHERE)
 		{
@@ -339,7 +339,7 @@ void TerrainSample::controlEvent(Control* control, EventType evt)
 			setMessage("Click on the terrain to drop a sphere.");
 		}
 	}
-	else if (strcmp(control->getId(), "dropBox") == 0)
+	else if (control->getId() == "dropBox")
 	{
 		if (_mode == MODE_DROP_BOX)
 		{
@@ -352,7 +352,7 @@ void TerrainSample::controlEvent(Control* control, EventType evt)
 			setMessage("Click on the terrain to drop a box.");
 		}
 	}
-	else if (strcmp(control->getId(), "clearAll") == 0)
+	else if (control->getId() == "clearAll")
 	{
 		for (std::list<Node*>::iterator itr = _shapes.begin(); itr != _shapes.end(); ++itr)
 			_scene->removeNode(*itr);
@@ -360,11 +360,11 @@ void TerrainSample::controlEvent(Control* control, EventType evt)
 	}
 }
 
-void TerrainSample::setMessage(const char* message)
+void TerrainSample::setMessage(const std::string& message)
 {
 	Label* label = static_cast<Label*>(_form->getControl("message"));
-	label->setText(message ? message : "");
-	_form->getControl("messageBox")->setVisible(message ? true : false);
+	label->setText(message);
+	_form->getControl("messageBox")->setVisible(!message.empty() ? true : false);
 }
 
 Vector3 TerrainSample::getLightDirection0() const

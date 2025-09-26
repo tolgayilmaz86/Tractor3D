@@ -248,7 +248,7 @@ namespace tractor
 		}
 
 		// Initialize/compile the effect with the full set of defines
-		if (!pass->initialize(vertexShaderPath.c_str(), fragmentShaderPath.c_str(), allDefines.c_str()))
+		if (!pass->initialize(vertexShaderPath, fragmentShaderPath, allDefines))
 		{
 			GP_WARN("Failed to create pass for technique.");
 			SAFE_RELEASE(pass);
@@ -445,7 +445,7 @@ namespace tractor
 
 				// Set the sampler parameter.
 				assert(renderState->getParameter(name));
-				Texture::Sampler* sampler = renderState->getParameter(name)->setValue(path.c_str(), mipmap);
+				Texture::Sampler* sampler = renderState->getParameter(name)->setValue(path, mipmap);
 				if (sampler)
 				{
 					sampler->setWrapMode(wrapS, wrapT, wrapR);

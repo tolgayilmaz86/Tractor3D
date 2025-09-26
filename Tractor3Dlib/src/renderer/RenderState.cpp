@@ -195,7 +195,7 @@ namespace tractor
 			if (_nodeBinding)
 			{   // Apply all existing auto-bindings using this node.
 				for (const auto& [key, value] : _autoBindings)
-					applyAutoBinding(key.c_str(), value.c_str());
+					applyAutoBinding(key, value);
 
 				// Alternatives
 				//std::ranges::for_each(_autoBindings, [this](const auto& binding) {

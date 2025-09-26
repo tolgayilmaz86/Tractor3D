@@ -323,15 +323,15 @@ std::string ParticlesSample::toString(ParticleEmitter::BlendMode blendMode)
   switch (blendMode)
   {
   case ParticleEmitter::BLEND_NONE:
-    return "NONE";
+    return std::string("NONE");
   case ParticleEmitter::BLEND_ALPHA:
-    return "ALPHA";
+    return std::string("ALPHA");
   case ParticleEmitter::BLEND_ADDITIVE:
-    return "ADDITIVE";
+    return std::string("ADDITIVE");
   case ParticleEmitter::BLEND_MULTIPLIED:
-    return "MULTIPLIED";
+    return std::string("MULTIPLIED");
   default:
-    return "ALPHA";
+    return std::string("ALPHA");
   }
 }
 
@@ -346,13 +346,13 @@ void ParticlesSample::saveFile()
   ParticleEmitter* e = _particleEmitter;
 
   // Extract just the particle name from the filename
-  std::string dir = FileSystem::getDirectoryName(filename.c_str());
-  std::string ext = FileSystem::getExtension(filename.c_str());
+  std::string dir = FileSystem::getDirectoryName(filename);
+  std::string ext = FileSystem::getExtension(filename);
   std::string name = filename.substr(dir.length(), filename.length() - dir.length() - ext.length());
 
   Texture* texture = e->getTexture();
   std::string texturePath = texture->getPath();
-  std::string textureDir = FileSystem::getDirectoryName(texturePath.c_str());
+  std::string textureDir = FileSystem::getDirectoryName(texturePath);
   texturePath = texturePath.substr(textureDir.length());
 
   // Get camera rotation as axis-angle
@@ -413,7 +413,7 @@ void ParticlesSample::saveFile()
     "}\n";
 
   std::string text = s.str();
-  auto stream = FileSystem::open(filename.c_str(), FileSystem::WRITE);
+  auto stream = FileSystem::open(filename, FileSystem::WRITE);
   stream->write(text.c_str(), 1, text.length());
   stream->close();
 }
@@ -699,7 +699,7 @@ void ParticlesSample::controlEvent(Control* control, EventType evt)
     if (control == _reset)
     {
       // Re-load the current emitter and reset the view
-      _particleEmitter = ParticleEmitter::create(_url.c_str());
+      _particleEmitter = ParticleEmitter::create(_url);
       emitterChanged();
     }
     else if (control == _emit)
@@ -749,7 +749,7 @@ void ParticlesSample::controlEvent(Control* control, EventType evt)
       if (filename.length() > 0)
       {
         _url = filename;
-        _particleEmitter = ParticleEmitter::create(_url.c_str());
+        _particleEmitter = ParticleEmitter::create(_url);
         emitterChanged();
       }
       Game::getInstance()->resume();
@@ -771,11 +771,11 @@ void ParticlesSample::updateFrames()
   {
     if (w > _particleEmitter->getTexture()->getWidth())
     {
-      wBox->setText(toString(texture->getWidth()).c_str());
+      wBox->setText(toString(texture->getWidth()));
     }
     if (h > texture->getHeight())
     {
-      hBox->setText(toString(texture->getHeight()).c_str());
+      hBox->setText(toString(texture->getHeight()));
     }
 
     _particleEmitter->setSpriteFrameCoords(fc, w, h);
@@ -1008,7 +1008,7 @@ void ParticlesSample::loadEmitters()
 {
   // Load the default particle emitter
   _url = DEFAULT_PARTICLE_EMITTER;
-  _particleEmitter = ParticleEmitter::create(_url.c_str());
+  _particleEmitter = ParticleEmitter::create(_url);
 
   _particleEmitterNode = _scene->addNode("Particle Emitter");
   _particleEmitterNode->setTranslation(0.0f, 0.0f, 0.0f);
@@ -1030,7 +1030,7 @@ void ParticlesSample::emitterChanged()
   _particleEmitterNode->setIdentity();
 
   // Parse editor section of particle properties
-  Properties* p = Properties::create(_url.c_str());
+  Properties* p = Properties::create(_url);
   Properties* ns = p->getNamespace("editor", true);
   if (ns)
   {
@@ -1156,7 +1156,7 @@ void ParticlesSample::updateTexture()
   if (file.length() > 0)
   {
     // Set new sprite on our emitter
-    _particleEmitter->setTexture(file.c_str(), _particleEmitter->getBlendMode());
+    _particleEmitter->setTexture(file, _particleEmitter->getBlendMode());
 
     // Update the UI to display the new sprite
     updateImageControl();
@@ -1181,9 +1181,9 @@ void ParticlesSample::updateImageControl()
   img->setSize(w, h);
   _form->getControl("image")->setHeight(h + _form->getControl("imageSettings")->getHeight() + 50);
 
-  ((TextBox*)_form->getControl("frameCount"))->setText(toString(_particleEmitter->getSpriteFrameCount()).c_str());
-  ((TextBox*)_form->getControl("frameWidth"))->setText(toString(_particleEmitter->getSpriteWidth()).c_str());
-  ((TextBox*)_form->getControl("frameHeight"))->setText(toString(_particleEmitter->getSpriteHeight()).c_str());
+  ((TextBox*)_form->getControl("frameCount"))->setText(toString(_particleEmitter->getSpriteFrameCount()));
+  ((TextBox*)_form->getControl("frameWidth"))->setText(toString(_particleEmitter->getSpriteWidth()));
+  ((TextBox*)_form->getControl("frameHeight"))->setText(toString(_particleEmitter->getSpriteHeight()));
 
   switch (_particleEmitter->getBlendMode())
   {

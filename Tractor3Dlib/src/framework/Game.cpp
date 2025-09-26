@@ -56,7 +56,8 @@ namespace tractor
 
 		const std::string& getTypeName() const
 		{
-			return "GameScriptTarget";
+			static const std::string TYPE_NAME = "GameScriptTarget";
+			return TYPE_NAME;
 		}
 	};
 
@@ -187,7 +188,7 @@ namespace tractor
 			if (!scriptPath.empty())
 			{
 				_scriptTarget = new GameScriptTarget();
-				_scriptTarget->addScript(scriptPath.c_str());
+				_scriptTarget->addScript(scriptPath);
 			}
 			else
 			{
@@ -803,7 +804,7 @@ namespace tractor
 					if (inner->exists("form"))
 					{
 						auto gamepadFormPath = inner->getString("form");
-						Gamepad* gamepad = Gamepad::add(gamepadFormPath.c_str());
+						Gamepad* gamepad = Gamepad::add(gamepadFormPath);
 						assert(gamepad);
 					}
 				}

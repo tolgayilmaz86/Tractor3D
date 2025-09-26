@@ -23,7 +23,7 @@ Node* addQuadModelAndNode(Scene* scene, float x, float y, float width, float hei
   return node;
 }
 
-Material* setTextureUnlitMaterial(Model* model, const char* texturePath, bool mipmap = true)
+Material* setTextureUnlitMaterial(Model* model, const std::string& texturePath, bool mipmap = true)
 {
   Material* material = model->setMaterial("res/shaders/textured.vert", "res/shaders/textured.frag");
   material->setParameterAutoBinding("u_worldViewProjectionMatrix", "WORLD_VIEW_PROJECTION_MATRIX");

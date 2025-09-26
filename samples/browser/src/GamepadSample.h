@@ -9,27 +9,27 @@ class GamepadSample : public Sample
 {
 public:
 
-  GamepadSample();
+	GamepadSample() = default;
 
-  void gamepadEvent(Gamepad::GamepadEvent evt, Gamepad* gamepad);
+	void gamepadEvent(Gamepad::GamepadEvent evt, Gamepad* gamepad);
 
 protected:
 
-  void initialize();
+	void initialize();
 
-  void finalize();
+	void finalize();
 
-  void update(float elapsedTime);
+	void update(float elapsedTime);
 
-  void render(float elapsedTime);
+	void render(float elapsedTime);
 
 private:
 
-  void updateGamepad(float elapsedTime, Gamepad* gamepad, unsigned int player);
+	void updateGamepad(float elapsedTime, Gamepad* gamepad, unsigned int player);
 
-  const char* getStringFromButtonMapping(Gamepad::ButtonMapping mapping);
+	const std::string& getStringFromButtonMapping(Gamepad::ButtonMapping mapping);
 
-  Gamepad* _gamepad;
-  Font* _font;
-  std::string _status;
+	Gamepad* _gamepad{ nullptr };
+	Font* _font{ nullptr };
+	std::string _status{};
 };

@@ -1354,15 +1354,16 @@ namespace tractor
 		Game::getInstance()->shutdown();
 	}
 
-	bool Platform::launchURL(const char* url)
+	bool Platform::launchURL(const std::string& url)
 	{
-		if (url == nullptr || *url == '\0')
+		if (url.empty())
 			return false;
+		auto urlPtr = url.c_str();
 
 		// Success when result code > 32
-		int len = MultiByteToWideChar(CP_ACP, 0, url, -1, nullptr, 0);
+		int len = MultiByteToWideChar(CP_ACP, 0, urlPtr, -1, nullptr, 0);
 		wchar_t* wurl = new wchar_t[len];
-		MultiByteToWideChar(CP_ACP, 0, url, -1, wurl, len);
+		MultiByteToWideChar(CP_ACP, 0, urlPtr, -1, wurl, len);
 		int r = (int)ShellExecute(nullptr, nullptr, wurl, nullptr, nullptr, SW_SHOWNORMAL);
 		SAFE_DELETE_ARRAY(wurl);
 		return (r > 32);

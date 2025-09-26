@@ -618,7 +618,7 @@ namespace tractor
      *
      * @return True if URL was opened successfully, false otherwise.
      */
-    bool launchURL(const char* url) const;
+    bool launchURL(const std::string& url) const;
 
   protected:
 

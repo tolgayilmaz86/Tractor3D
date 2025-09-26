@@ -15,7 +15,7 @@
 namespace tractor
 {
 
-	Animation::Animation(const char* id, AnimationTarget* target, int propertyId, unsigned int keyCount, unsigned int* keyTimes, float* keyValues, unsigned int type)
+	Animation::Animation(const std::string& id, AnimationTarget* target, int propertyId, unsigned int keyCount, unsigned int* keyTimes, float* keyValues, unsigned int type)
 		: _controller(Game::getInstance()->getAnimationController()), _id(id), _duration(0L), _defaultClip(nullptr), _clips(nullptr)
 	{
 		createChannel(target, propertyId, keyCount, keyTimes, keyValues, type);
@@ -25,7 +25,7 @@ namespace tractor
 		assert(getRefCount() == 1);
 	}
 
-	Animation::Animation(const char* id, AnimationTarget* target, int propertyId, unsigned int keyCount, unsigned int* keyTimes, float* keyValues, float* keyInValue, float* keyOutValue, unsigned int type)
+	Animation::Animation(const std::string& id, AnimationTarget* target, int propertyId, unsigned int keyCount, unsigned int* keyTimes, float* keyValues, float* keyInValue, float* keyOutValue, unsigned int type)
 		: _controller(Game::getInstance()->getAnimationController()), _id(id), _duration(0L), _defaultClip(nullptr), _clips(nullptr)
 	{
 		createChannel(target, propertyId, keyCount, keyTimes, keyValues, keyInValue, keyOutValue, type);
@@ -34,7 +34,7 @@ namespace tractor
 		assert(getRefCount() == 1);
 	}
 
-	Animation::Animation(const char* id)
+	Animation::Animation(const std::string& id)
 		: _controller(Game::getInstance()->getAnimationController()), _id(id), _duration(0L), _defaultClip(nullptr), _clips(nullptr)
 	{
 	}
@@ -109,9 +109,9 @@ namespace tractor
 		return _curve;
 	}
 
-	const char* Animation::getId() const
+	const std::string& Animation::getId() const
 	{
-		return _id.c_str();
+		return _id;
 	}
 
 	unsigned long Animation::getDuration() const
@@ -251,7 +251,7 @@ namespace tractor
 			int begin = pClip->getInt("begin");
 			int end = pClip->getInt("end");
 
-			AnimationClip* clip = createClip(pClip->getId().c_str(), ((float)begin / frameCount) * _duration, ((float)end / frameCount) * _duration);
+			AnimationClip* clip = createClip(pClip->getId(), ((float)begin / frameCount) * _duration, ((float)end / frameCount) * _duration);
 
 			auto repeat = pClip->getString("repeatCount");
 			if (!repeat.empty())

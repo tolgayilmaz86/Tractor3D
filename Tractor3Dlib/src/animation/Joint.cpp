@@ -33,7 +33,8 @@ namespace tractor
 
 	const std::string& Joint::getTypeName() const
 	{
-		return "Joint";
+		static const std::string TYPE_NAME = "Joint";
+		return TYPE_NAME;
 	}
 
 	Scene* Joint::getScene() const

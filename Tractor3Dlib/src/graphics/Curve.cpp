@@ -1270,198 +1270,60 @@ namespace tractor
 		return max;
 	}
 
-	int Curve::getInterpolationType(const char* curveId)
+	int Curve::getInterpolationType(const std::string& curveId)
 	{
-		if (strcmp(curveId, "BEZIER") == 0)
-		{
-			return Curve::BEZIER;
-		}
-		else if (strcmp(curveId, "BSPLINE") == 0)
-		{
-			return Curve::BSPLINE;
-		}
-		else if (strcmp(curveId, "FLAT") == 0)
-		{
-			return Curve::FLAT;
-		}
-		else if (strcmp(curveId, "HERMITE") == 0)
-		{
-			return Curve::HERMITE;
-		}
-		else if (strcmp(curveId, "LINEAR") == 0)
-		{
-			return Curve::LINEAR;
-		}
-		else if (strcmp(curveId, "SMOOTH") == 0)
-		{
-			return Curve::SMOOTH;
-		}
-		else if (strcmp(curveId, "STEP") == 0)
-		{
-			return Curve::STEP;
-		}
-		else if (strcmp(curveId, "QUADRATIC_IN") == 0)
-		{
-			return Curve::QUADRATIC_IN;
-		}
-		else if (strcmp(curveId, "QUADRATIC_OUT") == 0)
-		{
-			return Curve::QUADRATIC_OUT;
-		}
-		else if (strcmp(curveId, "QUADRATIC_IN_OUT") == 0)
-		{
-			return Curve::QUADRATIC_IN_OUT;
-		}
-		else if (strcmp(curveId, "QUADRATIC_OUT_IN") == 0)
-		{
-			return Curve::QUADRATIC_OUT_IN;
-		}
-		else if (strcmp(curveId, "CUBIC_IN") == 0)
-		{
-			return Curve::CUBIC_IN;
-		}
-		else if (strcmp(curveId, "CUBIC_OUT") == 0)
-		{
-			return Curve::CUBIC_OUT;
-		}
-		else if (strcmp(curveId, "CUBIC_IN_OUT") == 0)
-		{
-			return Curve::CUBIC_IN_OUT;
-		}
-		else if (strcmp(curveId, "CUBIC_OUT_IN") == 0)
-		{
-			return Curve::CUBIC_OUT_IN;
-		}
-		else if (strcmp(curveId, "QUARTIC_IN") == 0)
-		{
-			return Curve::QUARTIC_IN;
-		}
-		else if (strcmp(curveId, "QUARTIC_OUT") == 0)
-		{
-			return Curve::QUARTIC_OUT;
-		}
-		else if (strcmp(curveId, "QUARTIC_IN_OUT") == 0)
-		{
-			return Curve::QUARTIC_IN_OUT;
-		}
-		else if (strcmp(curveId, "QUARTIC_OUT_IN") == 0)
-		{
-			return Curve::QUARTIC_OUT_IN;
-		}
-		else if (strcmp(curveId, "QUINTIC_IN") == 0)
-		{
-			return Curve::QUINTIC_IN;
-		}
-		else if (strcmp(curveId, "QUINTIC_OUT") == 0)
-		{
-			return Curve::QUINTIC_OUT;
-		}
-		else if (strcmp(curveId, "QUINTIC_IN_OUT") == 0)
-		{
-			return Curve::QUINTIC_IN_OUT;
-		}
-		else if (strcmp(curveId, "QUINTIC_OUT_IN") == 0)
-		{
-			return Curve::QUINTIC_OUT_IN;
-		}
-		else if (strcmp(curveId, "SINE_IN") == 0)
-		{
-			return Curve::SINE_IN;
-		}
-		else if (strcmp(curveId, "SINE_OUT") == 0)
-		{
-			return Curve::SINE_OUT;
-		}
-		else if (strcmp(curveId, "SINE_IN_OUT") == 0)
-		{
-			return Curve::SINE_IN_OUT;
-		}
-		else if (strcmp(curveId, "SINE_OUT_IN") == 0)
-		{
-			return Curve::SINE_OUT_IN;
-		}
-		else if (strcmp(curveId, "EXPONENTIAL_IN") == 0)
-		{
-			return Curve::EXPONENTIAL_IN;
-		}
-		else if (strcmp(curveId, "EXPONENTIAL_OUT") == 0)
-		{
-			return Curve::EXPONENTIAL_OUT;
-		}
-		else if (strcmp(curveId, "EXPONENTIAL_IN_OUT") == 0)
-		{
-			return Curve::EXPONENTIAL_IN_OUT;
-		}
-		else if (strcmp(curveId, "EXPONENTIAL_OUT_IN") == 0)
-		{
-			return Curve::EXPONENTIAL_OUT_IN;
-		}
-		else if (strcmp(curveId, "CIRCULAR_IN") == 0)
-		{
-			return Curve::CIRCULAR_IN;
-		}
-		else if (strcmp(curveId, "CIRCULAR_OUT") == 0)
-		{
-			return Curve::CIRCULAR_OUT;
-		}
-		else if (strcmp(curveId, "CIRCULAR_IN_OUT") == 0)
-		{
-			return Curve::CIRCULAR_IN_OUT;
-		}
-		else if (strcmp(curveId, "CIRCULAR_OUT_IN") == 0)
-		{
-			return Curve::CIRCULAR_OUT_IN;
-		}
-		else if (strcmp(curveId, "ELASTIC_IN") == 0)
-		{
-			return Curve::ELASTIC_IN;
-		}
-		else if (strcmp(curveId, "ELASTIC_OUT") == 0)
-		{
-			return Curve::ELASTIC_OUT;
-		}
-		else if (strcmp(curveId, "ELASTIC_IN_OUT") == 0)
-		{
-			return Curve::ELASTIC_IN_OUT;
-		}
-		else if (strcmp(curveId, "ELASTIC_OUT_IN") == 0)
-		{
-			return Curve::ELASTIC_OUT_IN;
-		}
-		else if (strcmp(curveId, "OVERSHOOT_IN") == 0)
-		{
-			return Curve::OVERSHOOT_IN;
-		}
-		else if (strcmp(curveId, "OVERSHOOT_OUT") == 0)
-		{
-			return Curve::OVERSHOOT_OUT;
-		}
-		else if (strcmp(curveId, "OVERSHOOT_IN_OUT") == 0)
-		{
-			return Curve::OVERSHOOT_IN_OUT;
-		}
-		else if (strcmp(curveId, "OVERSHOOT_OUT_IN") == 0)
-		{
-			return Curve::OVERSHOOT_OUT_IN;
-		}
-		else if (strcmp(curveId, "BOUNCE_IN") == 0)
-		{
-			return Curve::BOUNCE_IN;
-		}
-		else if (strcmp(curveId, "BOUNCE_OUT") == 0)
-		{
-			return Curve::BOUNCE_OUT;
-		}
-		else if (strcmp(curveId, "BOUNCE_IN_OUT") == 0)
-		{
-			return Curve::BOUNCE_IN_OUT;
-		}
-		else if (strcmp(curveId, "BOUNCE_OUT_IN") == 0)
-		{
-			return Curve::BOUNCE_OUT_IN;
-		}
+		static const std::unordered_map<std::string, InterpolationType> interpolationMap = {
+			{"BEZIER", BEZIER},
+			{"BSPLINE", BSPLINE},
+			{"FLAT", FLAT},
+			{"HERMITE", HERMITE},
+			{"LINEAR", LINEAR},
+			{"SMOOTH", SMOOTH},
+			{"STEP", STEP},
+			{"QUADRATIC_IN", QUADRATIC_IN},
+			{"QUADRATIC_OUT", QUADRATIC_OUT},
+			{"QUADRATIC_IN_OUT", QUADRATIC_IN_OUT},
+			{"QUADRATIC_OUT_IN", QUADRATIC_OUT_IN},
+			{"CUBIC_IN", CUBIC_IN},
+			{"CUBIC_OUT", CUBIC_OUT},
+			{"CUBIC_IN_OUT", CUBIC_IN_OUT},
+			{"CUBIC_OUT_IN", CUBIC_OUT_IN},
+			{"QUARTIC_IN", QUARTIC_IN},
+			{"QUARTIC_OUT", QUARTIC_OUT},
+			{"QUARTIC_IN_OUT", QUARTIC_IN_OUT},
+			{"QUARTIC_OUT_IN", QUARTIC_OUT_IN},
+			{"QUINTIC_IN", QUINTIC_IN},
+			{"QUINTIC_OUT", QUINTIC_OUT},
+			{"QUINTIC_IN_OUT", QUINTIC_IN_OUT},
+			{"QUINTIC_OUT_IN", QUINTIC_OUT_IN},
+			{"SINE_IN", SINE_IN},
+			{"SINE_OUT", SINE_OUT},
+			{"SINE_IN_OUT", SINE_IN_OUT},
+			{"SINE_OUT_IN", SINE_OUT_IN},
+			{"EXPONENTIAL_IN", EXPONENTIAL_IN},
+			{"EXPONENTIAL_OUT", EXPONENTIAL_OUT},
+			{"EXPONENTIAL_IN_OUT", EXPONENTIAL_IN_OUT},
+			{"EXPONENTIAL_OUT_IN", EXPONENTIAL_OUT_IN},
+			{"CIRCULAR_IN", CIRCULAR_IN},
+			{"CIRCULAR_OUT", CIRCULAR_OUT},
+			{"CIRCULAR_IN_OUT", CIRCULAR_IN_OUT},
+			{"CIRCULAR_OUT_IN", CIRCULAR_OUT_IN},
+			{"ELASTIC_IN", ELASTIC_IN},
+			{"ELASTIC_OUT", ELASTIC_OUT},
+			{"ELASTIC_IN_OUT", ELASTIC_IN_OUT},
+			{"ELASTIC_OUT_IN", ELASTIC_OUT_IN},
+			{"OVERSHOOT_IN", OVERSHOOT_IN},
+			{"OVERSHOOT_OUT", OVERSHOOT_OUT},
+			{"OVERSHOOT_IN_OUT", OVERSHOOT_IN_OUT},
+			{"OVERSHOOT_OUT_IN", OVERSHOOT_OUT_IN},
+			{"BOUNCE_IN", BOUNCE_IN},
+			{"BOUNCE_OUT", BOUNCE_OUT},
+			{"BOUNCE_IN_OUT", BOUNCE_IN_OUT},
+			{"BOUNCE_OUT_IN", BOUNCE_OUT_IN}
+		};
 
-		return -1;
+		const auto it = interpolationMap.find(curveId);
+		return (it != interpolationMap.end()) ? it->second : -1;
 	}
 
 }

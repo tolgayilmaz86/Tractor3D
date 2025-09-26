@@ -54,7 +54,7 @@ namespace tractor
 	public:
 		friend class FileSystem;
 
-		~FileStream() = default; // Default destructor, no explicit close call needed
+		~FileStream();
 		virtual bool canRead();
 		virtual bool canWrite();
 		virtual bool canSeek();
@@ -208,7 +208,7 @@ namespace tractor
 
 		std::string fullPath;
 		getFullPath(path, fullPath);
-		auto stream = FileStream::create(fullPath.c_str(), modeStr);
+		auto stream = FileStream::create(fullPath, modeStr);
 		return std::move(stream);
 	}
 
@@ -286,7 +286,7 @@ namespace tractor
 	std::string FileSystem::getDirectoryName(const std::string& path)
 	{
 		if (path.empty())
-			return "";
+			return EMPTY_STRING;
 
 		char drive[_MAX_DRIVE];
 		char dir[_MAX_DIR];
@@ -315,7 +315,7 @@ namespace tractor
 		if (pos == std::string::npos || pos == path.length() - 1)
 		{
 			// No '.' found or '.' is the last character (no extension)
-			return "";
+			return EMPTY_STRING;
 		}
 
 		// Extract the extension (including the '.')
@@ -323,7 +323,7 @@ namespace tractor
 
 		// Convert the extension to uppercase
 		std::transform(ext.begin(), ext.end(), ext.begin(),
-			[](auto c) { return std::tolower(c); });
+			[](auto c) { return std::toupper(c); });
 
 		return ext;
 	}
@@ -331,6 +331,14 @@ namespace tractor
 	FileStream::FileStream(FILE* file)
 		: _file(file)
 	{
+	}
+
+	FileStream::~FileStream()
+	{
+		if (_file)
+		{
+			close();
+		}
 	}
 
 	std::unique_ptr<FileStream> FileStream::create(const std::string& filePath, const std::string& mode)
@@ -366,6 +374,8 @@ namespace tractor
 
 	void FileStream::close()
 	{
+		if (_file)
+			fclose(_file.get());
 		_file.reset(); // Explicitly reset the unique_ptr to close the file
 	}
 

@@ -94,7 +94,8 @@ namespace tractor
 
   const std::string& Transform::getTypeName() const
   {
-    return "Transform";
+      static const std::string TYPE_NAME = "Transform";
+      return TYPE_NAME;
   }
 
   const Matrix& Transform::getMatrix() const

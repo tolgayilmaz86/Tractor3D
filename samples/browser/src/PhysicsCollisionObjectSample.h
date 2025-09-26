@@ -58,8 +58,8 @@ private:
   bool _throw;
   int _drawDebug;
   bool _wireFrame;
-  std::vector<const char*> _collisionObjectPaths;
-  std::vector<const char*> _nodeIds;
-  std::vector<const char*> _nodeNames;
+  std::vector<std::string> _collisionObjectPaths;
+  std::vector<std::string> _nodeIds;
+  std::vector<std::string> _nodeNames;
   std::vector<Vector4> _colors;
 };

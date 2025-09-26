@@ -13,79 +13,78 @@ class PostProcessSample : public Sample
 {
 public:
 
-  /**
-   * Constructor.
-   */
-  PostProcessSample();
+	/**
+	 * Constructor.
+	 */
+	PostProcessSample();
 
-  /**
-   * @see Sample::touchEvent
-   */
-  void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
+	/**
+	 * @see Sample::touchEvent
+	 */
+	void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
 
-  /**
-   * Compositing blitter with a specified material/technique applied from a source buffer into the destination buffer.
-   *
-   * If destination buffer is nullptr then it composites to the default frame buffer.
-   *
-   * Requried uniforms:
-   * sampler2d u_texture - The input texture sampler
-   */
-  class Compositor
-  {
-  public:
+	/**
+	 * Compositing blitter with a specified material/technique applied from a source buffer into the destination buffer.
+	 *
+	 * If destination buffer is nullptr then it composites to the default frame buffer.
+	 *
+	 * Requried uniforms:
+	 * sampler2d u_texture - The input texture sampler
+	 */
+	class Compositor
+	{
+	public:
 
-    static Compositor* create(FrameBuffer* srcBuffer, FrameBuffer* dstBuffer, const char* materialPath, const char* techniqueId);
+		static Compositor* create(FrameBuffer* srcBuffer, FrameBuffer* dstBuffer, const std::string& materialPath, const std::string& techniqueId);
 
-    ~Compositor();
+		~Compositor();
 
-    FrameBuffer* getSrcFrameBuffer() const;
+		FrameBuffer* getSrcFrameBuffer() const;
 
-    FrameBuffer* getDstFrameBuffer() const;
+		FrameBuffer* getDstFrameBuffer() const;
 
-    const char* getTechniqueId() const;
+		const std::string& getTechniqueId() const;
 
-    Material* getMaterial() const;
+		Material* getMaterial() const;
 
-    void blit(const Rectangle& dst);
+		void blit(const Rectangle& dst);
 
-  private:
+	private:
 
-    Compositor();
+		Compositor();
 
-    Compositor(FrameBuffer* srcBuffer, FrameBuffer* dstBuffer, Material* material, const char* techniqueId);
+		Compositor(FrameBuffer* srcBuffer, FrameBuffer* dstBuffer, Material* material, const std::string& techniqueId);
 
-    FrameBuffer* _srcBuffer;
-    FrameBuffer* _dstBuffer;
-    Material* _material;
-    const char* _techniqueId;
-  };
+		FrameBuffer* _srcBuffer;
+		FrameBuffer* _dstBuffer;
+		Material* _material;
+		const std::string _techniqueId;
+	};
 
 protected:
 
-  void initialize();
+	void initialize();
 
-  void finalize();
+	void finalize();
 
-  void update(float elapsedTime);
+	void update(float elapsedTime);
 
-  void render(float elapsedTime);
-
-private:
-
-  bool drawScene(Node* node);
-
-  void drawTechniqueId(const char* techniqueId);
+	void render(float elapsedTime);
 
 private:
 
-  Font* _font;
-  Scene* _scene;
-  Node* _modelNode;
-  FrameBuffer* _frameBuffer;
-  unsigned int _compositorIndex;
-  std::vector<Compositor*> _compositors;
-  static  Model* _quadModel;
-  static  Material* _compositorMaterial;
+	bool drawScene(Node* node);
 
+	void drawTechniqueId(const std::string& techniqueId);
+
+private:
+
+	Font* _font;
+	Scene* _scene;
+	Node* _modelNode;
+	FrameBuffer* _frameBuffer;
+	unsigned int _compositorIndex;
+	std::vector<Compositor*> _compositors;
+	static  Model* _quadModel;
+	static  Material* _compositorMaterial;
 };

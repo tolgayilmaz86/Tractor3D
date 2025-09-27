@@ -20,8 +20,6 @@ namespace tractor
  * are defined in their own namespaces.  The rest of the Theme consists of Style namespaces.
  * A Style describes the border, margin, and padding of a Control, what images, skins, and cursors
  * are associated with a Control, and Font properties to apply to a Control's text.
- *
- * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-Theme
  */
 class Theme : public Ref
 {
@@ -131,17 +129,17 @@ class Theme : public Ref
     /**
      * Struct representing margin areas by the width or height of each side.
      */
-    typedef SideRegions Margin;
+    using Margin = SideRegions;
 
     /**
      * Struct representing border areas by the width or height of each side.
      */
-    typedef SideRegions Border;
+    using Border = SideRegions;
 
     /**
      * Struct representing padding areas by the width or height of each side.
      */
-    typedef SideRegions Padding;
+    using Padding = SideRegions;
 
     /**
      * Class representing an image within the theme's texture atlas.

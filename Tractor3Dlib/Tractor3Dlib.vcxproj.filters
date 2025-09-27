@@ -900,5 +900,8 @@
     <ClInclude Include="include\pch.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\utils\StringUtil.h">
+      <Filter>include\utils</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

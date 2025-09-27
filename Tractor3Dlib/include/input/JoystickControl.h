@@ -9,8 +9,6 @@ namespace tractor
  * Defines a control representing a joystick (axis).
  *
  * This is used in virtual Gamepad instances.
- *
- * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-UI_Forms
  */
 class JoystickControl : public Control
 {

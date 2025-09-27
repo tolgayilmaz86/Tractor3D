@@ -13,8 +13,6 @@ namespace tractor
  * Radio buttons can be toggled between two states.
  * A radio button can belong to a group, and only one radio button
  * from a group can be selected at one time.
- *
- * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-UI_Forms
  */
 class RadioButton : public Button
 {
@@ -84,7 +82,7 @@ class RadioButton : public Button
     /**
      * Constructor.
      */
-    RadioButton();
+    RadioButton() = default;
 
     /**
      * Destructor.
@@ -149,17 +147,17 @@ class RadioButton : public Button
     /**
      * The RadioButton's group ID.
      */
-    std::string _groupId;
+    std::string _groupId{};
 
     /**
      * Whether the RadioButton is currently selected.
      */
-    bool _selected;
+    bool _selected{ false };
 
     /**
      * The theme image for the radio button.
      */
-    Theme::ThemeImage* _image;
+    Theme::ThemeImage* _image{ nullptr };
 
   private:
     RadioButton(const RadioButton& copy);

@@ -18,8 +18,6 @@ class AnimationClip;
  * Every Animation has the default clip which will run from begin-end time.
  * You can create additional clips to run only parts of an animation and control
  * various runtime characteristics, such as repeat count, etc.
- *
- * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-Animation
  */
 class Animation : public Ref
 {

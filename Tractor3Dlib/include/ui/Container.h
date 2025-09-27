@@ -9,8 +9,6 @@ namespace tractor
 
 /**
  * Defines a container that contains zero or more controls.
- *
- * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-UI_Forms
  */
 class Container : public Control
 {

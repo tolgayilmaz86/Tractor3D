@@ -135,8 +135,6 @@ class Node;
  * Sets the blend mode used by this particle emitter.  The given blend factors will
  * be set before rendering the particle system and then will be reset to their original
  * values.  Accepts the same symbolic constants as glBlendFunc().
- *
- * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-Particles
  */
 class ParticleEmitter : public Ref, public Drawable
 {

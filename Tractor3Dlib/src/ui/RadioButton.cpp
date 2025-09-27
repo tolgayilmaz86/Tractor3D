@@ -6,8 +6,6 @@ namespace tractor
 {
 static std::vector<RadioButton*> __radioButtons;
 
-RadioButton::RadioButton() : _selected(false), _image(nullptr) {}
-
 RadioButton::~RadioButton()
 {
     // Remove this RadioButton from the global list.

@@ -11,8 +11,6 @@ namespace tractor
 
 /**
  * Defines a button control.
- *
- * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-UI_Forms
  */
 class Button : public Label
 {

@@ -14,8 +14,6 @@ namespace tractor
  * Defines a slider control.
  *
  * A slider consists of a marker (grabber) that can slide along a track between two end-caps.
- *
- * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-UI_Forms
  */
 class Slider : public Label
 {
@@ -160,12 +158,12 @@ class Slider : public Label
     /**
      * Constructor.
      */
-    Slider();
+    Slider() = default;
 
     /**
      * Destructor.
      */
-    ~Slider();
+    ~Slider() = default;
 
     /**
      * Create a slider with a given style and properties.
@@ -230,62 +228,62 @@ class Slider : public Label
     /**
      * The minimum value for the Slider.
      */
-    float _min;
+    float _min{ 0.f };
 
     /**
      * The maximum value for the Slider
      */
-    float _max;
+    float _max{ 0.f };
 
     /**
      * The Slider's step size.
      */
-    float _step;
+    float _step{ 0.f };
 
     /**
      * The Slider's current value.
      */
-    float _value;
+    float _value{ 0.f };
 
     /**
      * When a gamepad is in use, this stores how much to move the slider's value.
      */
-    float _delta;
+    float _delta{ 0.f };
 
     /**
      * The image for the minimum slider value.
      */
-    Theme::ThemeImage* _minImage;
+    Theme::ThemeImage* _minImage{ nullptr };
 
     /**
      * The image for the maximum slider value.
      */
-    Theme::ThemeImage* _maxImage;
+    Theme::ThemeImage* _maxImage{ nullptr };
 
     /**
      * The image for the slider track.
      */
-    Theme::ThemeImage* _trackImage;
+    Theme::ThemeImage* _trackImage{ nullptr };
 
     /**
      * The image for the slider marker.
      */
-    Theme::ThemeImage* _markerImage;
+    Theme::ThemeImage* _markerImage{ nullptr };
 
     /**
      * Whether to display this slider's value.
      */
-    bool _valueTextVisible;
+    bool _valueTextVisible{ true };
 
     /**
      * Alignment of value text.
      */
-    Font::Justify _valueTextAlignment;
+    Font::Justify _valueTextAlignment{ Font::Justify::ALIGN_LEFT };
 
     /**
      * Number of digits after the decimal to draw for value text.
      */
-    unsigned int _valueTextPrecision;
+    unsigned int _valueTextPrecision{ 1 };
 
   private:
     /**
@@ -298,11 +296,11 @@ class Slider : public Label
     /**
      * The text displayed by this slider if set to display its value.
      */
-    std::string _valueText;
+    std::string _valueText{};
 
-    float _trackHeight;
+    float _trackHeight{ 0.f };
 
-    float _gamepadValue;
+    float _gamepadValue{ 0.f };
 };
 
 } // namespace tractor

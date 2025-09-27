@@ -11,17 +11,6 @@ static const float SCROLLWHEEL_FRACTION = 0.1f;
 // Fraction of slider to scroll for a delta of 1.0f when a gamepad or keyboard is used.
 static const float MOVE_FRACTION = 0.005f;
 
-Slider::Slider()
-    : _min(0.0f), _max(0.0f), _step(0.0f), _value(0.0f), _delta(0.0f), _minImage(nullptr),
-      _maxImage(nullptr), _trackImage(nullptr), _markerImage(nullptr), _valueTextVisible(false),
-      _valueTextAlignment(Font::ALIGN_BOTTOM_HCENTER), _valueTextPrecision(0), _valueText(""),
-      _trackHeight(0.0f), _gamepadValue(0.0f)
-{
-    _canFocus = true;
-}
-
-Slider::~Slider() {}
-
 Slider* Slider::create(const std::string& id, Theme::Style* style)
 {
     Slider* slider = new Slider();

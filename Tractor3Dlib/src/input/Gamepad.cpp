@@ -158,7 +158,7 @@ Gamepad* Gamepad::getGamepad(unsigned int index, bool preferPhysical)
         backupVirtual = __gamepads[index];
     }
 
-    for (unsigned int i = 0; i < count; ++i)
+    for (size_t i = 0; i < count; ++i)
     {
         if (!__gamepads[i]->isVirtual())
         {
@@ -176,8 +176,8 @@ Gamepad* Gamepad::getGamepad(unsigned int index, bool preferPhysical)
 
 Gamepad* Gamepad::getGamepad(GamepadHandle handle)
 {
-    unsigned int count = __gamepads.size();
-    for (unsigned int i = 0; i < count; ++i)
+    size_t count = __gamepads.size();
+    for (size_t i = 0; i < count; ++i)
     {
         if (__gamepads[i]->_handle == handle)
         {
@@ -240,8 +240,8 @@ void Gamepad::update(float elapsedTime)
 
 void Gamepad::updateInternal(float elapsedTime)
 {
-    unsigned int size = __gamepads.size();
-    for (unsigned int i = 0; i < size; ++i)
+    size_t size = __gamepads.size();
+    for (size_t i = 0; i < size; ++i)
     {
         __gamepads[i]->update(elapsedTime);
     }

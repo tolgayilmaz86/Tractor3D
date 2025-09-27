@@ -184,27 +184,78 @@ class Gamepad
                         unsigned int joystickCount,
                         unsigned int triggerCount,
                         const std::string& name);
-
+    /**
+     * @brief Creates and adds a new Gamepad instance using the specified form path.
+     * @param formPath The path to the form file used to initialize the Gamepad.
+     * @return A pointer to the newly created Gamepad instance.
+     */
     static Gamepad* add(const std::string& formPath);
 
+    /**
+     * @brief Removes the specified gamepad from the system.
+     * @param handle The handle identifying the gamepad to remove.
+     */
     static void remove(GamepadHandle handle);
 
+    /**
+     * @brief Removes the specified gamepad from the system.
+     * @param gamepad A pointer to the Gamepad instance to remove.
+     */
     static void remove(Gamepad* gamepad);
 
+    /**
+     * @brief Returns the number of connected gamepads.
+     * @return The number of gamepads currently connected as an unsigned integer.
+     */
     static unsigned int getGamepadCount();
 
+    /**
+     * @brief Retrieves a pointer to a gamepad at the specified index, optionally preferring physical devices.
+     * @param index The zero-based index of the gamepad to retrieve.
+     * @param preferPhysical If true, prefers physical gamepads over virtual ones.
+     * @return A pointer to the Gamepad at the given index, or nullptr if no gamepad is available.
+     */
     static Gamepad* getGamepad(unsigned int index, bool preferPhysical);
 
+    /**
+     * @brief Retrieves a pointer to a gamepad using its handle.
+     * @param handle The handle identifying the gamepad to retrieve.
+     * @return A pointer to the Gamepad with the specified handle, or nullptr if not found.
+     */
     static Gamepad* getGamepad(GamepadHandle handle);
 
+    /**
+     * @brief Retrieves the ButtonMapping value corresponding to the given string.
+     * @param string The string representation of a button mapping.
+     * @return The ButtonMapping value that matches the input string.
+     */
     static ButtonMapping getButtonMappingFromString(const std::string& string);
 
+    /**
+     * @brief Sets the state of the buttons using the provided value.
+     * @param buttons An unsigned integer representing the button states to set.
+     */
     void setButtons(unsigned int buttons);
 
+    /**
+     * @brief Sets the X and Y values for a joystick at the specified index.
+     * @param index The index of the joystick to set.
+     * @param x The X-axis value to assign to the joystick.
+     * @param y The Y-axis value to assign to the joystick.
+     */
     void setJoystickValue(unsigned int index, float x, float y);
 
+    /**
+     * @brief Sets the value of a trigger at the specified index.
+     * @param index The index of the trigger to set.
+     * @param value The value to assign to the trigger, typically between 0 and 1.
+     */
     void setTriggerValue(unsigned int index, float value);
 
+    /**
+     * @brief Associates gamepad controls with the specified container.
+     * @param container Pointer to the container to which gamepad controls will be bound.
+     */
     void bindGamepadControls(Container* container);
 
     GamepadHandle _handle;

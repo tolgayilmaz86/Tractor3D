@@ -19,7 +19,7 @@ namespace tractor
     SAFE_RELEASE(_material);
     if (_partMaterials)
     {
-      for (unsigned int i = 0; i < _partCount; ++i)
+      for (size_t i = 0; i < _partCount; ++i)
       {
         SAFE_RELEASE(_partMaterials[i]);
       }

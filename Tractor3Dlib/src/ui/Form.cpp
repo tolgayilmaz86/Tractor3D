@@ -23,6 +23,12 @@ static const float GAMEPAD_FOCUS_REPEAT_DELAY = 300.0f;
 #define FORM_VSH "res/shaders/sprite.vert"
 #define FORM_FSH "res/shaders/sprite.frag"
 
+static bool stringEqualIgnoreCase(const std::string& a, const std::string& b) {
+	return std::equal(a.begin(), a.end(), b.begin(), b.end(),
+		[](char a, char b) {
+			return std::tolower(a) == std::tolower(b);
+		});
+}
 namespace tractor
 {
 
@@ -71,7 +77,7 @@ namespace tractor
 		}
 		// Check if the Properties is valid and has a valid namespace.
 		Properties* formProperties = properties->getNamespace().length() > 0 ? properties : properties->getNextNamespace();
-		if (!formProperties || !(strcmpnocase(formProperties->getNamespace().c_str(), "form") == 0))
+		if (!formProperties || !stringEqualIgnoreCase(formProperties->getNamespace(), "form"))
 		{
 			GP_WARN("Invalid properties file for form: %s", url);
 			SAFE_DELETE(properties);

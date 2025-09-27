@@ -1,5 +1,7 @@
 #include "pch.h"
+
 #include "ai/AIController.h"
+
 #include "framework/Game.h"
 
 namespace tractor
@@ -52,7 +54,7 @@ namespace tractor
 		if (delay <= 0)
 		{
 			// Send instantly
-			if (message->getReceiver() == nullptr || strlen(message->getReceiver()) == 0)
+			if (message->getReceiver().empty())
 			{
 				// Broadcast message to all agents
 				AIAgent* agent = _firstAgent;
@@ -165,10 +167,8 @@ namespace tractor
 		}
 	}
 
-	AIAgent* AIController::findAgent(const char* id) const
+	AIAgent* AIController::findAgent(const std::string& id) const
 	{
-		assert(id);
-
 		AIAgent* agent = _firstAgent;
 		while (agent)
 		{

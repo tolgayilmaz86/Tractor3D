@@ -40,7 +40,7 @@ namespace tractor
 		 *
 		 * @return The first agent matching the specified ID, or nullptr if no matching agent could be found.
 		 */
-		AIAgent* findAgent(const char* id) const;
+		AIAgent* findAgent(const std::string& id) const;
 
 		/**
 		 * Constructor.

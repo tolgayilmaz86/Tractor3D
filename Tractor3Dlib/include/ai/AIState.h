@@ -71,14 +71,14 @@ namespace tractor
 		 * @return The new AIState.
 		 * @script{create}
 		 */
-		static AIState* create(const char* id);
+		static AIState* create(const std::string& id);
 
 		/**
 		 * Returns the ID of this state.
 		 *
 		 * @return The state ID.
 		 */
-		const char* getId() const;
+		const std::string& getId() const;
 
 		/**
 		 * Sets a listener to dispatch state events to.
@@ -92,7 +92,7 @@ namespace tractor
 		/**
 		 * Constructs a new AIState.
 		 */
-		AIState(const char* id);
+		AIState(const std::string& id);
 
 		/**
 		 * Destructor.

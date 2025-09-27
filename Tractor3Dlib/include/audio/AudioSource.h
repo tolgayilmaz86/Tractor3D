@@ -15,8 +15,6 @@ namespace tractor
    * Defines an audio source in 3D space.
    *
    * This can be attached to a Node for applying its 3D transformation.
-   *
-   * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-Audio
    */
   class AudioSource : public Ref, public Transform::Listener
   {
@@ -56,7 +54,7 @@ namespace tractor
      * @return The newly created audio source, or nullptr if an audio source cannot be created.
      * @script{create}
      */
-    static AudioSource* create(const char* url, bool streamed = false);
+    static AudioSource* create(const std::string& url, bool streamed = false);
 
     /**
      * Create an audio source from the given properties object.

@@ -1155,9 +1155,9 @@ namespace tractor
 		return _type;
 	}
 
-	const char* Texture::getPath() const
+	const std::string& Texture::getPath() const
 	{
-		return _path.c_str();
+		return _path;
 	}
 
 	unsigned int Texture::getWidth() const

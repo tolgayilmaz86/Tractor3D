@@ -287,7 +287,7 @@ void Audio3DSample::addSound(const std::string& file)
   }
   else
   {
-    AudioSource* audioSource = AudioSource::create(path.c_str());
+    AudioSource* audioSource = AudioSource::create(path);
     assert(audioSource);
     audioSource->setLooped(true);
 

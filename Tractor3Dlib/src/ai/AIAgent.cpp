@@ -72,8 +72,8 @@ namespace tractor
 		case AIMessage::MESSAGE_TYPE_STATE_CHANGE:
 		{
 			// Change state message
-			const char* stateId = message->getString(0);
-			if (stateId)
+			const auto& stateId = message->getString(0);
+			if (!stateId.empty())
 			{
 				AIState* state = _stateMachine->getState(stateId);
 				if (state)

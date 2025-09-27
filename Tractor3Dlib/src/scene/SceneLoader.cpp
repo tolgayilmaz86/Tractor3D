@@ -923,7 +923,7 @@ namespace tractor
 		}
 
 		// TODO: Support loading a specific scene from a GPB file using the URL syntax (i.e. "res/scene.gpb#myscene").
-		Scene* scene = bundle->loadScene(nullptr);
+		Scene* scene = bundle->loadScene();
 		if (!scene)
 		{
 			GP_WARN("Failed to load scene from '%s'.", _gpbPath.c_str());

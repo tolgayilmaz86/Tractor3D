@@ -89,10 +89,17 @@
       </Outputs>
     </CustomBuildStep>
     <PreBuildEvent>
-      <Command>xcopy ..\..\Tractor3Dlib\res\shaders res\shaders\* /s /y /d
-xcopy ..\..\Tractor3Dlib\res\ui res\ui\* /s /y /d
-copy ..\..\Tractor3Dlib\res\logo_powered_white.png res</Command>
+      <Command>echo [PRE-BUILD]
+xcopy $(SolutionDir)Tractor3Dlib\res\shaders res\shaders\* /s /y /d
+xcopy $(SolutionDir)Tractor3Dlib\res\ui res\ui\* /s /y /d
+copy $(SolutionDir)Tractor3Dlib\res\logo_powered_white.png res</Command>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>echo [POST-BUILD] Copying required DLLs...
+   
+xcopy "$(SolutionDir)..\vcpkg\installed\x64-windows\debug\bin\*.dll" "$(OutDir)" /s /y /d
+xcopy "$(SolutionDir)..\vcpkg\installed\x64-windows\bin\*.dll" "$(OutDir)" /s /y /d</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugMem|x64'">
     <ClCompile>

@@ -3,12 +3,22 @@
 #include "ui/ThemeStyle.h"
 #include "framework/Game.h"
 #include "framework/FileSystem.h"
+#include <algorithm>
+#include <cctype>
 
 namespace tractor
 {
 
 	static std::vector<Theme*> __themeCache;
 	static Theme* __defaultTheme = nullptr;
+
+	// Helper function for case-insensitive string comparison
+	static bool stringEqualIgnoreCase(const std::string& a, const std::string& b) {
+		return std::equal(a.begin(), a.end(), b.begin(), b.end(),
+			[](char a, char b) {
+				return std::tolower(a) == std::tolower(b);
+			});
+	}
 
 	Theme::~Theme()
 	{
@@ -115,7 +125,7 @@ namespace tractor
 		// Check if the Properties is valid and has a valid namespace.
 		Properties* themeProperties = properties->getNamespace().length() > 0 ? properties : properties->getNextNamespace();
 		assert(themeProperties);
-		if (!themeProperties || !(strcmpnocase(themeProperties->getNamespace().c_str(), "theme") == 0))
+		if (!themeProperties || !stringEqualIgnoreCase(themeProperties->getNamespace(), "theme"))
 		{
 			SAFE_DELETE(properties);
 			return nullptr;
@@ -149,22 +159,22 @@ namespace tractor
 			// First load all cursors, checkboxes etc. that can be referred to by styles.
 			const auto& spacename = space->getNamespace();
 
-			if (strcmpnocase(spacename.c_str(), "image") == 0)
+			if (stringEqualIgnoreCase(spacename, "image"))
 			{
 				theme->_images.emplace_back(ThemeImage::create(tw, th, space, Vector4::one()));
 			}
-			else if (strcmpnocase(spacename.c_str(), "imageList") == 0)
+			else if (stringEqualIgnoreCase(spacename, "imageList"))
 			{
 				theme->_imageLists.emplace_back(ImageList::create(tw, th, space));
 			}
-			else if (strcmpnocase(spacename.c_str(), "skin") == 0)
+			else if (stringEqualIgnoreCase(spacename, "skin"))
 			{
 				Theme::Border border;
 				Properties* innerSpace = space->getNextNamespace();
 				if (innerSpace)
 				{
 					const auto& innerSpacename = innerSpace->getNamespace();
-					if (strcmpnocase(innerSpacename.c_str(), "border") == 0)
+					if (stringEqualIgnoreCase(innerSpacename, "border"))
 					{
 						border.top = innerSpace->getFloat("top");
 						border.bottom = innerSpace->getFloat("bottom");
@@ -196,7 +206,7 @@ namespace tractor
 		while (space != nullptr)
 		{
 			const auto& spacename = space->getNamespace();
-			if (strcmpnocase(spacename.c_str(), "style") == 0)
+			if (stringEqualIgnoreCase(spacename, "style"))
 			{
 				// Each style contains up to MAX_OVERLAYS overlays,
 				// as well as Border and Padding namespaces.
@@ -214,7 +224,7 @@ namespace tractor
 				{
 					const auto& innerSpacename = innerSpace->getNamespace();
 
-					if (strcmpnocase(innerSpacename.c_str(), "stateNormal") == 0)
+					if (stringEqualIgnoreCase(innerSpacename, "stateNormal"))
 					{
 						Vector4 textColor(0, 0, 0, 1);
 						if (innerSpace->exists("textColor"))
@@ -283,22 +293,22 @@ namespace tractor
 				innerSpace = space->getNextNamespace();
 				while (innerSpace != nullptr)
 				{
-					auto innerSpacename = innerSpace->getNamespace();
-					if (strcmpnocase(innerSpacename.c_str(), "margin") == 0)
+					const auto& innerSpacename = innerSpace->getNamespace();
+					if (stringEqualIgnoreCase(innerSpacename, "margin"))
 					{
 						margin.top = innerSpace->getFloat("top");
 						margin.bottom = innerSpace->getFloat("bottom");
 						margin.left = innerSpace->getFloat("left");
 						margin.right = innerSpace->getFloat("right");
 					}
-					else if (strcmpnocase(innerSpacename.c_str(), "padding") == 0)
+					else if (stringEqualIgnoreCase(innerSpacename, "padding"))
 					{
 						padding.top = innerSpace->getFloat("top");
 						padding.bottom = innerSpace->getFloat("bottom");
 						padding.left = innerSpace->getFloat("left");
 						padding.right = innerSpace->getFloat("right");
 					}
-					else if (strcmpnocase(innerSpacename.c_str(), "stateNormal") != 0)
+					else if (!stringEqualIgnoreCase(innerSpacename, "stateNormal"))
 					{
 						// Either OVERLAY_FOCUS or OVERLAY_ACTIVE.
 						// If a property isn't specified, it inherits from OVERLAY_NORMAL.
@@ -331,11 +341,11 @@ namespace tractor
 							fontSize = normal->getFontSize();
 						}
 
-						auto textAlignmentString = innerSpace->getString("textAlignment");
+						const auto& textAlignmentString = innerSpace->getString("textAlignment");
 						Font::Justify textAlignment;
 						if (!textAlignmentString.empty())
 						{
-							textAlignment = Font::getJustify(textAlignmentString.c_str());
+							textAlignment = Font::getJustify(textAlignmentString);
 						}
 						else
 						{
@@ -382,7 +392,7 @@ namespace tractor
 							skin = normal->getSkin();
 						}
 
-						if (strcmpnocase(innerSpacename.c_str(), "stateFocus") == 0)
+						if (stringEqualIgnoreCase(innerSpacename, "stateFocus"))
 						{
 							focus = Theme::Style::Overlay::create();
 							assert(focus);
@@ -402,7 +412,7 @@ namespace tractor
 								font->release();
 							}
 						}
-						else if (strcmpnocase(innerSpacename.c_str(), "stateActive") == 0)
+						else if (stringEqualIgnoreCase(innerSpacename, "stateActive"))
 						{
 							active = Theme::Style::Overlay::create();
 							assert(active);
@@ -422,7 +432,7 @@ namespace tractor
 								font->release();
 							}
 						}
-						else if (strcmpnocase(innerSpacename.c_str(), "stateDisabled") == 0)
+						else if (stringEqualIgnoreCase(innerSpacename, "stateDisabled"))
 						{
 							disabled = Theme::Style::Overlay::create();
 							assert(disabled);
@@ -442,7 +452,7 @@ namespace tractor
 								font->release();
 							}
 						}
-						else if (strcmpnocase(innerSpacename.c_str(), "stateHover") == 0)
+						else if (stringEqualIgnoreCase(innerSpacename, "stateHover"))
 						{
 							hover = Theme::Style::Overlay::create();
 							assert(hover);
@@ -494,7 +504,7 @@ namespace tractor
 	Theme::Style* Theme::getStyle(const std::string& name) const
 	{
 		const auto found_style = std::ranges::find_if(_styles, [name](Style* style) {
-			return style && strcmpnocase(name.data(), style->getId().c_str()) == 0;
+			return style && stringEqualIgnoreCase(name, style->getId());
 			});
 
 		return found_style != _styles.end() ? *found_style : nullptr;
@@ -690,7 +700,7 @@ namespace tractor
 	Theme::ThemeImage* Theme::ImageList::getImage(const std::string& imageId) const
 	{
 		auto it = std::ranges::find_if(_images, [imageId](ThemeImage* image) {
-			return image && strcmpnocase(imageId.c_str(), image->getId().c_str()) == 0;
+			return image && stringEqualIgnoreCase(imageId, image->getId());
 			});
 
 		if (it != _images.end())
@@ -832,7 +842,7 @@ namespace tractor
 		{
 			auto it = std::ranges::find_if(_imageLists, [imageListString](ImageList* imgList) {
 				assert(imgList);
-				return strcmpnocase(imgList->getId().c_str(), imageListString.c_str()) == 0;
+				return stringEqualIgnoreCase(imgList->getId(), imageListString);
 				});
 
 			if (it != _imageLists.end())
@@ -846,7 +856,7 @@ namespace tractor
 		{
 			auto it = std::ranges::find_if(_images, [cursorString](ThemeImage* image) {
 				assert(image);
-				return strcmpnocase(image->getId().c_str(), cursorString.c_str()) == 0;
+				return stringEqualIgnoreCase(image->getId(), cursorString);
 				});
 
 			if (it != _images.end())
@@ -860,7 +870,7 @@ namespace tractor
 		{
 			auto it = std::ranges::find_if(_skins, [skinString](Skin* skin) {
 				assert(skin);
-				return strcmpnocase(skin->getId().c_str(), skinString.c_str()) == 0;
+				return stringEqualIgnoreCase(skin->getId(), skinString);
 				});
 
 			if (it != _skins.end())

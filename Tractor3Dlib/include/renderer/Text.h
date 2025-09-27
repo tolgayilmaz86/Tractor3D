@@ -61,14 +61,14 @@ namespace tractor
      *
      * @param str The text string to be drawn.
      */
-    void setText(const char* str);
+    void setText(const std::string& str);
 
     /**
      * Get the string that will be drawn from this Text object.
      *
      * @return The text string to be drawn.
      */
-    const char* getText() const;
+    const std::string& getText() const;
 
     /**
      * Gets the size of the text to be drawn.
@@ -233,7 +233,7 @@ namespace tractor
     /**
      * @see AnimationTarget::getPropertyId
      */
-    int getPropertyId(TargetType type, const char* propertyIdStr);
+    int getPropertyId(TargetType type, const std::string& propertyIdStr);
 
     /**
      * @see AnimationTarget::getAnimationPropertyComponentCount

@@ -9,19 +9,19 @@ namespace tractor
 
 	AIState* AIState::_empty = nullptr;
 
-	AIState::AIState(const char* id)
+	AIState::AIState(const std::string& id)
 		: _id(id), _listener(nullptr)
 	{
 	}
 
-	AIState* AIState::create(const char* id)
+	AIState* AIState::create(const std::string& id)
 	{
 		return new AIState(id);
 	}
 
-	const char* AIState::getId() const
+	const std::string& AIState::getId() const
 	{
-		return _id.c_str();
+		return _id;
 	}
 
 	void AIState::setListener(Listener* listener)

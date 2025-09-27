@@ -48,7 +48,7 @@ public:
      *
      * @return The newly created and added state.
      */
-    AIState* addState(const char* id);
+    AIState* addState(const std::string& id);
 
     /**
      * Adds a state to the state machine.
@@ -75,7 +75,7 @@ public:
      *
      * @return The state with the given ID, or nullptr if no such state exists.
      */
-    AIState* getState(const char* id) const;
+    AIState* getState(const std::string& id) const;
 
     /**
      * Returns the active state for this state machine.
@@ -94,7 +94,7 @@ public:
      *
      * @return The new state, or nullptr if no matching state could be found.
      */
-    AIState* setState(const char* id);
+    AIState* setState(const std::string& id);
 
     /**
      * Changes the state of this state machine to the given state.

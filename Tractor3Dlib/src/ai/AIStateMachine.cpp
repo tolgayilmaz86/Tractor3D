@@ -1,5 +1,7 @@
 #include "pch.h"
+
 #include "ai/AIStateMachine.h"
+
 #include "ai/AIAgent.h"
 #include "ai/AIMessage.h"
 #include "framework/Game.h"
@@ -43,7 +45,7 @@ namespace tractor
 		return _agent;
 	}
 
-	AIState* AIStateMachine::addState(const char* id)
+	AIState* AIStateMachine::addState(const std::string& id)
 	{
 		return _states.emplace_back(AIState::create(id));
 	}
@@ -64,10 +66,8 @@ namespace tractor
 		}
 	}
 
-	AIState* AIStateMachine::getState(const char* id) const
+	AIState* AIStateMachine::getState(const std::string& id) const
 	{
-		assert(id);
-
 		for (AIState* state : _states) {
 			if (state->getId() == std::string_view{ id }) {
 				return state;
@@ -89,7 +89,7 @@ namespace tractor
 		return (std::find(_states.begin(), _states.end(), state) != _states.end());
 	}
 
-	AIState* AIStateMachine::setState(const char* id)
+	AIState* AIStateMachine::setState(const std::string& id)
 	{
 		AIState* state = getState(id);
 		if (state)

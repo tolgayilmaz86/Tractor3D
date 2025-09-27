@@ -112,14 +112,14 @@ namespace tractor
 		return Text::create(fontPath, text, color, size);
 	}
 
-	void Text::setText(const char* str)
+	void Text::setText(const std::string& str)
 	{
 		_text = str;
 	}
 
-	const char* Text::getText() const
+	const std::string& Text::getText() const
 	{
-		return _text.c_str();
+		return _text;
 	}
 
 	unsigned int Text::getSize() const
@@ -269,17 +269,15 @@ namespace tractor
 		return 1;
 	}
 
-	int Text::getPropertyId(TargetType type, const char* propertyIdStr)
+	int Text::getPropertyId(TargetType type, const std::string& propertyIdStr)
 	{
-		assert(propertyIdStr);
-
 		if (type == AnimationTarget::TRANSFORM)
 		{
-			if (strcmp(propertyIdStr, "ANIMATE_OPACITY") == 0)
+			if (propertyIdStr == "ANIMATE_OPACITY")
 			{
 				return Text::ANIMATE_OPACITY;
 			}
-			else if (strcmp(propertyIdStr, "ANIMATE_COLOR") == 0)
+			else if (propertyIdStr == "ANIMATE_COLOR")
 			{
 				return Text::ANIMATE_COLOR;
 			}

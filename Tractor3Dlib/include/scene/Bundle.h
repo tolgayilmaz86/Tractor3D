@@ -193,7 +193,7 @@ namespace tractor
 		 *
 		 * @return The ID string or nullptr if not found.
 		 */
-		const char* getIdFromOffset() const;
+		const std::string& getIdFromOffset() const;
 
 		/**
 		 * Returns the ID of the object at the given file offset by searching through the reference table.
@@ -203,7 +203,7 @@ namespace tractor
 		 *
 		 * @return The ID string or nullptr if not found.
 		 */
-		const char* getIdFromOffset(unsigned int offset) const;
+		const std::string& getIdFromOffset(unsigned int offset) const;
 
 		/**
 		 * Gets the path to the bundle's default material file, if it exists.
@@ -410,7 +410,7 @@ namespace tractor
 		 *
 		 * @return The animation that the channel was loaded into.
 		 */
-		Animation* readAnimationChannel(Scene* scene, Animation* animation, const char* animationId);
+		Animation* readAnimationChannel(Scene* scene, Animation* animation, const std::string& animationId);
 
 		/**
 		 * Reads the animation channel data at the current file position into the given animation
@@ -425,7 +425,7 @@ namespace tractor
 		 *
 		 * @return The animation that the channel was loaded into.
 		 */
-		Animation* readAnimationChannelData(Animation* animation, const char* id, AnimationTarget* target, unsigned int targetAttribute);
+		Animation* readAnimationChannelData(Animation* animation, const std::string& id, AnimationTarget* target, unsigned int targetAttribute);
 
 		/**
 		 * Sets the transformation matrix.

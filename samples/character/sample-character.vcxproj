@@ -47,20 +47,22 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(Configuration)\</OutDir>
-    <CustomBuildAfterTargets>Build</CustomBuildAfterTargets>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <CustomBuildBeforeTargets />
     <IntDir>$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugMem|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(Configuration)\</OutDir>
-    <CustomBuildAfterTargets>Build</CustomBuildAfterTargets>
-    <IntDir>$(\Configuration)</IntDir>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <CustomBuildBeforeTargets />
+    <IntDir>$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(Configuration)</OutDir>
-    <CustomBuildAfterTargets>Build</CustomBuildAfterTargets>
-    <IntDir>$(Configuration)</IntDir>
+    <OutDir>$(Configuration)\</OutDir>
+    <CustomBuildBeforeTargets />
+    <IntDir>$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -70,8 +72,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;GP_USE_GAMEPAD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)Tractor3Dlib\include;$(SolutionDir)..\vcpkg\installed\x64-windows\include\bullet;$(SolutionDir)..\vcpkg\installed\x64-windows\include;$(DXSDK_DIR)include</AdditionalIncludeDirectories>
-      <RuntimeTypeInfo>
-      </RuntimeTypeInfo>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -91,11 +92,18 @@
       <Outputs>game.config.dummy</Outputs>
     </CustomBuildStep>
     <PreBuildEvent>
-      <Command>xcopy ..\..\Tractor3Dlib\res\shaders res\shaders\* /s /y /d
-xcopy ..\..\Tractor3Dlib\res\ui res\ui\* /s /y /d
-copy ..\..\Tractor3Dlib\res\logo_powered_white.png res
+      <Command>echo [PRE-BUILD]
+xcopy $(SolutionDir)Tractor3Dlib\res\shaders res\shaders\* /s /y /d
+xcopy $(SolutionDir)Tractor3Dlib\res\ui res\ui\* /s /y /d
+copy $(SolutionDir)Tractor3Dlib\res\logo_powered_white.png res
 copy .\game.dxt.config .\game.config</Command>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>echo [POST-BUILD] Copying required DLLs...
+   
+xcopy "$(SolutionDir)..\vcpkg\installed\x64-windows\debug\bin\*.dll" "$(OutDir)" /s /y /d
+xcopy "$(SolutionDir)..\vcpkg\installed\x64-windows\bin\*.dll" "$(OutDir)" /s /y /d</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugMem|x64'">
     <ClCompile>
@@ -103,10 +111,13 @@ copy .\game.dxt.config .\game.config</Command>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;GP_USE_GAMEPAD;GP_USE_MEM_LEAK_DETECTION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(MSBuildProgramFiles32)\Microsoft DirectX SDK (June 2010)\include;</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;GP_USE_GAMEPAD;GP_USE_MEM_LEAK_DETECTION;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)Tractor3Dlib\include;$(SolutionDir)..\vcpkg\installed\x64-windows\include\bullet;$(SolutionDir)..\vcpkg\installed\x64-windows\include;$(DXSDK_DIR)include</AdditionalIncludeDirectories>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <ShowIncludes>false</ShowIncludes>
+      <PreprocessToFile>false</PreprocessToFile>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -138,8 +149,11 @@ copy .\game.dxt.config .\game.config</Command>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;GP_USE_GAMEPAD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(MSBuildProgramFiles32)\Microsoft DirectX SDK (June 2010)\include;</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;GP_USE_GAMEPAD;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)Tractor3Dlib\include;$(SolutionDir)..\vcpkg\installed\x64-windows\include\bullet;$(SolutionDir)..\vcpkg\installed\x64-windows\include;$(DXSDK_DIR)include</AdditionalIncludeDirectories>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

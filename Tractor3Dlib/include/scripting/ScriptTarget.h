@@ -135,14 +135,14 @@ public: \
        *
        * @return The event name.
        */
-      const char* getName() const;
+      const std::string& getName() const;
 
       /**
        * Gets the argument string for this event.
        *
        * @return The argument string.
        */
-      const char* getArgs() const;
+      const std::string& getArgs() const;
 
     private:
 

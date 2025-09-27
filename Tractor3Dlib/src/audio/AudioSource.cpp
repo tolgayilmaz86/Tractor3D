@@ -47,7 +47,7 @@ namespace tractor
 		SAFE_RELEASE(_buffer);
 	}
 
-	AudioSource* AudioSource::create(const char* url, bool streamed)
+	AudioSource* AudioSource::create(const std::string& url, bool streamed)
 	{
 		// Load from a .audio file.
 		std::string pathStr = url;
@@ -108,7 +108,7 @@ namespace tractor
 		}
 
 		// Create the audio source.
-		AudioSource* audio = AudioSource::create(path.c_str(), streamed);
+		AudioSource* audio = AudioSource::create(path, streamed);
 		if (audio == nullptr)
 		{
 			GP_ERROR("Audio file '%s' failed to load properly.", path.c_str());

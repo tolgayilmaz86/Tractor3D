@@ -266,13 +266,13 @@ namespace tractor
 		_meshSkins.clear();
 	}
 
-	const char* Bundle::getIdFromOffset() const
+	const std::string& Bundle::getIdFromOffset() const
 	{
 		assert(_stream);
 		return getIdFromOffset((unsigned int)_stream->position());
 	}
 
-	const char* Bundle::getIdFromOffset(unsigned int offset) const
+	const std::string& Bundle::getIdFromOffset(unsigned int offset) const
 	{
 		// Search the ref table for the given offset.
 		if (offset > 0)
@@ -280,13 +280,13 @@ namespace tractor
 			assert(_references);
 			for (unsigned int i = 0; i < _referenceCount; ++i)
 			{
-				if (_references[i].offset == offset && _references[i].id.length() > 0)
+				if (_references[i].offset == offset)
 				{
-					return _references[i].id.c_str();
+					return _references[i].id;
 				}
 			}
 		}
-		return nullptr;
+		return EMPTY_STRING;
 	}
 
 	const std::string& Bundle::getMaterialPath()
@@ -564,7 +564,7 @@ namespace tractor
 								return nullptr;
 							}
 
-							animation = readAnimationChannelData(animation, id.c_str(), target, targetAttribute);
+							animation = readAnimationChannelData(animation, id, target, targetAttribute);
 						}
 						else
 						{
@@ -579,7 +579,7 @@ namespace tractor
 
 							// Skip the animation channel (passing a target attribute of
 							// 0 causes the animation to not be created).
-							readAnimationChannelData(nullptr, id.c_str(), nullptr, 0);
+							readAnimationChannelData(nullptr, id, nullptr, 0);
 						}
 					}
 				}
@@ -626,8 +626,7 @@ namespace tractor
 
 	bool Bundle::skipNode()
 	{
-		const char* id = getIdFromOffset();
-		assert(id);
+		const auto& id = getIdFromOffset();
 		assert(_stream);
 
 		// Skip the node's type.
@@ -675,8 +674,7 @@ namespace tractor
 
 	Node* Bundle::readNode(Scene* sceneContext, Node* nodeContext)
 	{
-		const char* id = getIdFromOffset();
-		assert(id);
+		const auto& id = getIdFromOffset();
 		assert(_stream);
 
 		// If we are tracking nodes and it's not in the set yet, add it.
@@ -756,8 +754,7 @@ namespace tractor
 				// Search the passed in loading contexts (scene/node) first to see
 				// if we've already loaded this child node during this load session.
 				Node* child = nullptr;
-				id = getIdFromOffset();
-				assert(id);
+				const auto& id  = getIdFromOffset();
 
 				if (sceneContext)
 				{
@@ -1212,7 +1209,7 @@ namespace tractor
 		Animation* animation = nullptr;
 		for (unsigned int i = 0; i < animationChannelCount; i++)
 		{
-			animation = readAnimationChannel(scene, animation, animationId.c_str());
+			animation = readAnimationChannel(scene, animation, animationId);
 		}
 	}
 
@@ -1232,10 +1229,8 @@ namespace tractor
 		}
 	}
 
-	Animation* Bundle::readAnimationChannel(Scene* scene, Animation* animation, const char* animationId)
+	Animation* Bundle::readAnimationChannel(Scene* scene, Animation* animation, const std::string& animationId)
 	{
-		assert(animationId);
-
 		// Read target id.
 		std::string targetId = readString(_stream.get());
 		if (targetId.empty())
@@ -1268,10 +1263,8 @@ namespace tractor
 		return readAnimationChannelData(animation, animationId, target, targetAttribute);
 	}
 
-	Animation* Bundle::readAnimationChannelData(Animation* animation, const char* id, AnimationTarget* target, unsigned int targetAttribute)
+	Animation* Bundle::readAnimationChannelData(Animation* animation, const std::string& id, AnimationTarget* target, unsigned int targetAttribute)
 	{
-		assert(id);
-
 		std::vector<unsigned int> keyTimes;
 		std::vector<float> values;
 		std::vector<float> tangentsIn;

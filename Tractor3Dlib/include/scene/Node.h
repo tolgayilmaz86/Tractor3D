@@ -210,6 +210,13 @@ namespace tractor
 		void setTag(const std::string& name, const std::string& value = EMPTY_STRING);
 
 		/**
+		 * Removes a custom tag from this Node.
+		 *
+		 * @param name Name of the tag to remove.
+		 */
+		void removeTag(const std::string& name);
+
+		/**
 		 * Returns the value of the custom tag with the given name.
 		 *
 		 * @param name Name of the tag to return.
@@ -731,7 +738,7 @@ namespace tractor
 		/** The number of child nodes. */
 		unsigned int _childCount{ 0 };
 		/** If this node is enabled. Maybe different if parent is enabled/disabled. */
-		bool _enabled;
+		bool _enabled{ true };
 		/** Tags assigned to this node. */
 		std::map<std::string, std::string>* _tags{ nullptr };
 		/** The drawble component attached to this node. */

@@ -40,7 +40,7 @@ namespace tractor
 		return stream->position();
 	}
 
-	AudioBuffer::AudioBuffer(const char* path, ALuint* buffer, bool streamed)
+	AudioBuffer::AudioBuffer(const std::string& path, ALuint* buffer, bool streamed)
 		: _filePath(path), _streamed(streamed), _buffersNeededCount(0)
 	{
 		memcpy(_alBufferQueue, buffer, sizeof(_alBufferQueue));
@@ -81,10 +81,8 @@ namespace tractor
 		}
 	}
 
-	AudioBuffer* AudioBuffer::create(const char* path, bool streamed)
+	AudioBuffer* AudioBuffer::create(const std::string& path, bool streamed)
 	{
-		assert(path);
-
 		AudioBuffer* buffer = nullptr;
 		if (!streamed)
 		{

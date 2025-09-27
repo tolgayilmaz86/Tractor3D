@@ -186,7 +186,7 @@ namespace tractor
 			case VertexFormat::TEXCOORD7:
 				name = VERTEX_ATTRIBUTE_TEXCOORD_PREFIX_NAME;
 				name += '0' + (e.usage - VertexFormat::TEXCOORD0);
-				attrib = effect->getVertexAttribute(name.c_str());
+				attrib = effect->getVertexAttribute(name);
 				break;
 			default:
 				// This happens whenever vertex data contains extra information (not an error).

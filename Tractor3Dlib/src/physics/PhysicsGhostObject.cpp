@@ -56,13 +56,14 @@ namespace tractor
 		}
 
 		// Check that the type is specified and correct.
-		auto type = properties->getString("type");
+		const auto& type = properties->getString("type");
 		if (type.empty())
 		{
 			GP_ERROR("Failed to load ghost object from properties object; required attribute 'type' is missing.");
 			return nullptr;
 		}
-		if (type == "GHOST_OBJECT")
+
+		if (type != "GHOST_OBJECT")
 		{
 			GP_ERROR("Failed to load ghost object from properties object; attribute 'type' must be equal to 'GHOST_OBJECT'.");
 			return nullptr;

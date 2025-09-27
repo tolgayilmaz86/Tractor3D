@@ -804,7 +804,7 @@ static bool canReceiveFocus(Control* control)
     if (control->isContainer())
     {
         Container* container = static_cast<Container*>(control);
-        for (unsigned int i = 0, count = (unsigned int)container->getControlCount(); i < count; ++i)
+        for (size_t i = 0, count = (unsigned int)container->getControlCount(); i < count; ++i)
         {
             if (canReceiveFocus(container->getControl(i))) return true;
         }

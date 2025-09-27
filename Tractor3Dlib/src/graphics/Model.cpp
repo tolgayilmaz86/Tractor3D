@@ -115,11 +115,11 @@ void Model::setMaterial(Material* material, int partIndex)
     // Release existing material and binding.
     if (oldMaterial)
     {
-        for (unsigned int i = 0, tCount = oldMaterial->getTechniqueCount(); i < tCount; ++i)
+        for (size_t i = 0, tCount = oldMaterial->getTechniqueCount(); i < tCount; ++i)
         {
             Technique* t = oldMaterial->getTechniqueByIndex(i);
             assert(t);
-            for (unsigned int j = 0, pCount = t->getPassCount(); j < pCount; ++j)
+            for (size_t j = 0, pCount = t->getPassCount(); j < pCount; ++j)
             {
                 assert(t->getPassByIndex(j));
                 t->getPassByIndex(j)->setVertexAttributeBinding(nullptr);
@@ -131,11 +131,11 @@ void Model::setMaterial(Material* material, int partIndex)
     if (material)
     {
         // Hookup vertex attribute bindings for all passes in the new material.
-        for (unsigned int i = 0, tCount = material->getTechniqueCount(); i < tCount; ++i)
+        for (size_t i = 0, tCount = material->getTechniqueCount(); i < tCount; ++i)
         {
             Technique* t = material->getTechniqueByIndex(i);
             assert(t);
-            for (unsigned int j = 0, pCount = t->getPassCount(); j < pCount; ++j)
+            for (size_t j = 0, pCount = t->getPassCount(); j < pCount; ++j)
             {
                 Pass* p = t->getPassByIndex(j);
                 assert(p);
@@ -226,7 +226,7 @@ void Model::setNode(Node* node)
         }
         if (_partMaterials)
         {
-            for (unsigned int i = 0; i < _partCount; ++i)
+            for (size_t i = 0; i < _partCount; ++i)
             {
                 if (_partMaterials[i])
                 {
@@ -244,7 +244,7 @@ static bool drawWireframe(Mesh* mesh)
         case Mesh::TRIANGLES:
         {
             unsigned int vertexCount = mesh->getVertexCount();
-            for (unsigned int i = 0; i < vertexCount; i += 3)
+            for (size_t i = 0; i < vertexCount; i += 3)
             {
                 GL_ASSERT(glDrawArrays(GL_LINE_LOOP, i, 3));
             }
@@ -254,7 +254,7 @@ static bool drawWireframe(Mesh* mesh)
         case Mesh::TRIANGLE_STRIP:
         {
             unsigned int vertexCount = mesh->getVertexCount();
-            for (unsigned int i = 2; i < vertexCount; ++i)
+            for (size_t i = 2; i < vertexCount; ++i)
             {
                 GL_ASSERT(glDrawArrays(GL_LINE_LOOP, i - 2, 3));
             }
@@ -332,7 +332,7 @@ unsigned int Model::draw(bool wireframe)
             Technique* technique = _material->getTechnique();
             assert(technique);
             unsigned int passCount = technique->getPassCount();
-            for (unsigned int i = 0; i < passCount; ++i)
+            for (size_t i = 0; i < passCount; ++i)
             {
                 Pass* pass = technique->getPassByIndex(i);
                 assert(pass);
@@ -348,7 +348,7 @@ unsigned int Model::draw(bool wireframe)
     }
     else
     {
-        for (unsigned int i = 0; i < partCount; ++i)
+        for (size_t i = 0; i < partCount; ++i)
         {
             MeshPart* part = _mesh->getPart(i);
             assert(part);
@@ -360,7 +360,7 @@ unsigned int Model::draw(bool wireframe)
                 Technique* technique = material->getTechnique();
                 assert(technique);
                 unsigned int passCount = technique->getPassCount();
-                for (unsigned int j = 0; j < passCount; ++j)
+                for (size_t j = 0; j < passCount; ++j)
                 {
                     Pass* pass = technique->getPassByIndex(j);
                     assert(pass);
@@ -418,7 +418,7 @@ Drawable* Model::clone(NodeCloneContext& context)
     if (_partMaterials)
     {
         assert(_partCount == model->_partCount);
-        for (unsigned int i = 0; i < _partCount; ++i)
+        for (size_t i = 0; i < _partCount; ++i)
         {
             if (_partMaterials[i])
             {
@@ -446,7 +446,7 @@ void Model::validatePartCount()
             memset(_partMaterials, 0, sizeof(Material*) * partCount);
             if (oldArray)
             {
-                for (unsigned int i = 0; i < _partCount; ++i)
+                for (size_t i = 0; i < _partCount; ++i)
                 {
                     _partMaterials[i] = oldArray[i];
                 }

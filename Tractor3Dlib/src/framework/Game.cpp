@@ -239,7 +239,7 @@ void Game::shutdown()
         _scriptController->finalize();
 
         unsigned int gamepadCount = Gamepad::getGamepadCount();
-        for (unsigned int i = 0; i < gamepadCount; i++)
+        for (size_t i = 0; i < gamepadCount; i++)
         {
             Gamepad* gamepad = Gamepad::getGamepad(i, false);
             SAFE_DELETE(gamepad);

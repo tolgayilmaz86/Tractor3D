@@ -6,10 +6,10 @@
 #include "renderer/Material.h"
 
 // Default size of a newly created sprite batch
-#define SPRITE_BATCH_DEFAULT_SIZE 128
+constexpr auto SPRITE_BATCH_DEFAULT_SIZE = 128;
 
 // Factor to grow a sprite batch by when its size is exceeded
-#define SPRITE_BATCH_GROW_FACTOR 2.0f
+constexpr auto SPRITE_BATCH_GROW_FACTOR = 2.0f;
 
 // Macro for adding a sprite to the batch
 #define SPRITE_ADD_VERTEX(vtx, vx, vy, vz, vu, vv, vr, vg, vb, va)                                 \
@@ -24,18 +24,13 @@
     vtx.a = va
 
 // Default sprite shaders
-#define SPRITE_VSH "res/shaders/sprite.vert"
-#define SPRITE_FSH "res/shaders/sprite.frag"
+constexpr auto SPRITE_VSH = "res/shaders/sprite.vert";
+constexpr auto SPRITE_FSH = "res/shaders/sprite.frag";
 
 namespace tractor
 {
 
 static Effect* __spriteEffect = nullptr;
-
-SpriteBatch::SpriteBatch()
-    : _batch(nullptr), _sampler(nullptr), _textureWidthRatio(0.0f), _textureHeightRatio(0.0f)
-{
-}
 
 SpriteBatch::~SpriteBatch()
 {
@@ -94,7 +89,7 @@ SpriteBatch* SpriteBatch::create(Texture* texture, Effect* effect, unsigned int 
 
     // Search for the first sampler uniform in the effect.
     Uniform* samplerUniform = nullptr;
-    for (unsigned int i = 0, count = effect->getUniformCount(); i < count; ++i)
+    for (size_t i = 0, count = effect->getUniformCount(); i < count; ++i)
     {
         Uniform* uniform = effect->getUniform(i);
         if (uniform && uniform->getType() == GL_SAMPLER_2D)

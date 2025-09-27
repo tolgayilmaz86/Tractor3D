@@ -148,7 +148,7 @@ void BillboardSample::render(float elapsedTime)
     // Get the scene camera
     Camera* camera = _scene->getActiveCamera();
 
-    for (unsigned int i = 0; i < BILLBOARD_COUNT; i++)
+    for (size_t i = 0; i < BILLBOARD_COUNT; i++)
     {
         Node* node = _billboards[i];
 
@@ -319,7 +319,7 @@ void BillboardSample::loadBillboards()
                                             "TEXTURE_DISCARD_ALPHA");
 
     // Create the model and node and bind the material
-    for (unsigned int i = 0; i < BILLBOARD_COUNT; i++)
+    for (size_t i = 0; i < BILLBOARD_COUNT; i++)
     {
         auto& node = _billboards.emplace_back(Node::create());
 

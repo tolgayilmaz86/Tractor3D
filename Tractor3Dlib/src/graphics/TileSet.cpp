@@ -218,9 +218,9 @@ unsigned int TileSet::draw(bool wireframe)
     position.y += _tileHeight * (_rowCount - 1);
     float xStart = position.x;
     _batch->start();
-    for (unsigned int row = 0; row < _rowCount; row++)
+    for (size_t row = 0; row < _rowCount; row++)
     {
-        for (unsigned int col = 0; col < _columnCount; col++)
+        for (size_t col = 0; col < _columnCount; col++)
         {
             Vector2 scale = Vector2(_tileWidth, _tileHeight);
 

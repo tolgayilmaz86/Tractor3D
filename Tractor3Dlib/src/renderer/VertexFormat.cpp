@@ -10,7 +10,7 @@ VertexFormat::VertexFormat(const Element* elements, unsigned int elementCount) :
     assert(elements);
 
     // Copy elements and compute vertex size
-    for (unsigned int i = 0; i < elementCount; ++i)
+    for (size_t i = 0; i < elementCount; ++i)
     {
         // Copy element
         Element element;

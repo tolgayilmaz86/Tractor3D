@@ -49,7 +49,7 @@ static std::shared_ptr<Mesh> createTriangleStripMesh()
 
     float step = fabs(x) * 2.0f / (float)vertexCount;
 
-    for (unsigned int i = 0; i < vertexCount; ++i)
+    for (size_t i = 0; i < vertexCount; ++i)
     {
         // x, y, z, r, g, b
         vertices.push_back(x);
@@ -105,7 +105,7 @@ static std::shared_ptr<Mesh> createLinesMesh()
 
     std::vector<float> vertices;
     vertices.reserve(vertexCount * 6);
-    for (unsigned int i = 0; i < vertexCount; ++i)
+    for (size_t i = 0; i < vertexCount; ++i)
     {
         // x, y, z, r, g, b
         vertices.push_back(MATH_RANDOM_MINUS1_1() * scale);

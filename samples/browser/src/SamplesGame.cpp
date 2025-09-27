@@ -54,7 +54,7 @@ void SamplesGame::initialize()
     // Disable virtual gamepads.
     unsigned int gamepadCount = getGamepadCount();
 
-    for (unsigned int i = 0; i < gamepadCount; i++)
+    for (size_t i = 0; i < gamepadCount; i++)
     {
         Gamepad* gamepad = getGamepad(i, false);
         if (gamepad->isVirtual())

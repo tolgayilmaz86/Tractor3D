@@ -82,7 +82,7 @@ MeshSkin* MeshSkin::clone(NodeCloneContext& context) const
         }
         assert(node);
         skin->_rootJoint = static_cast<Joint*>(node);
-        for (unsigned int i = 0; i < jointCount; ++i)
+        for (size_t i = 0; i < jointCount; ++i)
         {
             Joint* oldJoint = getJoint(i);
             assert(oldJoint);
@@ -107,7 +107,7 @@ void MeshSkin::setJointCount(unsigned int jointCount)
 
     // Resize the joints vector and initialize to nullptr.
     _joints.resize(jointCount);
-    for (unsigned int i = 0; i < jointCount; i++)
+    for (size_t i = 0; i < jointCount; i++)
     {
         _joints[i] = nullptr;
     }
@@ -118,7 +118,7 @@ void MeshSkin::setJointCount(unsigned int jointCount)
     if (jointCount > 0)
     {
         _matrixPalette = new Vector4[jointCount * PALETTE_ROWS];
-        for (unsigned int i = 0; i < jointCount * PALETTE_ROWS; i += PALETTE_ROWS)
+        for (size_t i = 0; i < jointCount * PALETTE_ROWS; i += PALETTE_ROWS)
         {
             _matrixPalette[i + 0].set(1.0f, 0.0f, 0.0f, 0.0f);
             _matrixPalette[i + 1].set(0.0f, 1.0f, 0.0f, 0.0f);

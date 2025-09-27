@@ -311,7 +311,7 @@ void ParticleEmitter::emitOnce(unsigned int particleCount)
     world.m[14] = 0.0f;
 
     // Emit the new particles.
-    for (unsigned int i = 0; i < particleCount; i++)
+    for (size_t i = 0; i < particleCount; i++)
     {
         Particle* p = &_particles[_particleCount];
 
@@ -585,7 +585,7 @@ void ParticleEmitter::setSpriteFrameCoords(unsigned int frameCount, Rectangle* f
     _spriteTextureCoords = new float[frameCount * 4];
 
     // Pre-compute texture coordinates from rects.
-    for (unsigned int i = 0; i < frameCount; i++)
+    for (size_t i = 0; i < frameCount; i++)
     {
         _spriteTextureCoords[i * 4] = _spriteTextureWidthRatio * frameCoords[i].x;
         _spriteTextureCoords[i * 4 + 1] = 1.0f - _spriteTextureHeightRatio * frameCoords[i].y;
@@ -606,10 +606,10 @@ void ParticleEmitter::setSpriteFrameCoords(unsigned int frameCount, int width, i
     unsigned int rows = _spriteTextureHeight / height;
 
     unsigned int n = 0;
-    for (unsigned int i = 0; i < rows; ++i)
+    for (size_t i = 0; i < rows; ++i)
     {
         int y = i * height;
-        for (unsigned int j = 0; j < cols; ++j)
+        for (size_t j = 0; j < cols; ++j)
         {
             int x = j * width;
             frameCoords[i * cols + j] = Rectangle(x, y, width, height);
@@ -649,7 +649,7 @@ long ParticleEmitter::generateScalar(long min, long max)
 {
     // Note: this is not a very good RNG, but it should be suitable for our purposes.
     long r = 0;
-    for (unsigned int i = 0; i < sizeof(long) / sizeof(int); i++)
+    for (size_t i = 0; i < sizeof(long) / sizeof(int); i++)
     {
         r = r << 8; // sizeof(int) * CHAR_BITS
         r |= rand();
@@ -795,7 +795,7 @@ void ParticleEmitter::update(float elapsedTime)
 
     // Now update all currently living particles.
     assert(_particles);
-    for (unsigned int particlesIndex = 0; particlesIndex < _particleCount; ++particlesIndex)
+    for (size_t particlesIndex = 0; particlesIndex < _particleCount; ++particlesIndex)
     {
         Particle* p = &_particles[particlesIndex];
         p->_energy -= elapsedMs;
@@ -838,7 +838,7 @@ void ParticleEmitter::update(float elapsedTime)
                 {
                     // The last frame should finish exactly when the particle dies.
                     float percentSpent = 0.0f;
-                    for (unsigned int i = 0; i < p->_frame; i++)
+                    for (size_t i = 0; i < p->_frame; i++)
                     {
                         percentSpent += _spritePercentPerFrame;
                     }
@@ -910,7 +910,7 @@ unsigned int ParticleEmitter::draw(bool wireframe)
         Vector3 right = cameraWorldMatrix.getRightVector();
         Vector3 up = cameraWorldMatrix.getUpVector();
 
-        for (unsigned int i = 0; i < _particleCount; i++)
+        for (size_t i = 0; i < _particleCount; i++)
         {
             Particle* p = &_particles[i];
 

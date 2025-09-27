@@ -26,7 +26,7 @@ void MaterialParameter::clearValue()
         case MaterialParameter::SAMPLER_ARRAY:
             if (_value.samplerArrayValue)
             {
-                for (unsigned int i = 0; i < _count; ++i)
+                for (size_t i = 0; i < _count; ++i)
                 {
                     const_cast<Texture::Sampler*>(_value.samplerArrayValue[i])->release();
                 }
@@ -234,7 +234,7 @@ void MaterialParameter::setValue(const Texture::Sampler** samplers, unsigned int
     assert(samplers);
     clearValue();
 
-    for (unsigned int i = 0; i < count; ++i)
+    for (size_t i = 0; i < count; ++i)
         const_cast<Texture::Sampler*>(samplers[i])->addRef();
 
     _value.samplerArrayValue = samplers;
@@ -396,7 +396,7 @@ void MaterialParameter::setSamplerArray(const Texture::Sampler** values, unsigne
     else
         _value.samplerArrayValue = values;
 
-    for (unsigned int i = 0; i < count; ++i)
+    for (size_t i = 0; i < count; ++i)
         const_cast<Texture::Sampler*>(_value.samplerArrayValue[i])->addRef();
 
     _count = count;
@@ -616,7 +616,7 @@ void MaterialParameter::getAnimationPropertyValue(int propertyId, AnimationValue
                     break;
                 case FLOAT_ARRAY:
                     assert(_value.floatPtrValue);
-                    for (unsigned int i = 0; i < _count; i++)
+                    for (size_t i = 0; i < _count; i++)
                     {
                         value->setFloat(i, _value.floatPtrValue[i]);
                     }
@@ -626,7 +626,7 @@ void MaterialParameter::getAnimationPropertyValue(int propertyId, AnimationValue
                     break;
                 case INT_ARRAY:
                     assert(_value.intPtrValue);
-                    for (unsigned int i = 0; i < _count; i++)
+                    for (size_t i = 0; i < _count; i++)
                     {
                         value->setFloat(i, _value.intPtrValue[i]);
                     }
@@ -680,7 +680,7 @@ void MaterialParameter::setAnimationPropertyValue(int propertyId,
                     break;
                 case INT_ARRAY:
                     assert(_value.intPtrValue);
-                    for (unsigned int i = 0; i < _count; i++)
+                    for (size_t i = 0; i < _count; i++)
                         _value.intPtrValue[i] =
                             Curve::lerp(blendWeight, _value.intPtrValue[i], value->getFloat(i));
                     break;
@@ -714,7 +714,7 @@ void MaterialParameter::applyAnimationValue(AnimationValue* value, float blendWe
     assert(_value.floatPtrValue);
 
     unsigned int count = _count * components;
-    for (unsigned int i = 0; i < count; i++)
+    for (size_t i = 0; i < count; i++)
         _value.floatPtrValue[i] =
             Curve::lerp(blendWeight, _value.floatPtrValue[i], value->getFloat(i));
 }

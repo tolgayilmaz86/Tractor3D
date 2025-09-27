@@ -1025,7 +1025,7 @@ PhysicsCollisionShape* PhysicsController::createBox(const Vector3& extents, cons
     PhysicsCollisionShape* shape;
 
     // Return the box shape from the cache if it already exists.
-    for (unsigned int i = 0; i < _shapes.size(); ++i)
+    for (size_t i = 0; i < _shapes.size(); ++i)
     {
         shape = _shapes[i];
         assert(shape);
@@ -1061,7 +1061,7 @@ PhysicsCollisionShape* PhysicsController::createSphere(float radius, const Vecto
     PhysicsCollisionShape* shape;
 
     // Return the sphere shape from the cache if it already exists.
-    for (unsigned int i = 0; i < _shapes.size(); ++i)
+    for (size_t i = 0; i < _shapes.size(); ++i)
     {
         shape = _shapes[i];
         assert(shape);
@@ -1091,7 +1091,7 @@ PhysicsCollisionShape* PhysicsController::createCapsule(float radius, float heig
     PhysicsCollisionShape* shape;
 
     // Return the capsule shape from the cache if it already exists.
-    for (unsigned int i = 0; i < _shapes.size(); i++)
+    for (size_t i = 0; i < _shapes.size(); i++)
     {
         shape = _shapes[i];
         assert(shape);
@@ -1124,7 +1124,7 @@ PhysicsCollisionShape* PhysicsController::createHeightfield(Node* node,
     // Inspect the height array for the min and max values
     float* heights = heightfield->getArray();
     float minHeight = FLT_MAX, maxHeight = -FLT_MAX;
-    for (unsigned int i = 0, count = heightfield->getColumnCount() * heightfield->getRowCount();
+    for (size_t i = 0, count = heightfield->getColumnCount() * heightfield->getRowCount();
          i < count;
          ++i)
     {
@@ -1201,7 +1201,7 @@ PhysicsCollisionShape* PhysicsController::createMesh(Mesh* mesh, const Vector3& 
         bool triMesh = true;
         if (mesh->getPartCount() > 0)
         {
-            for (unsigned int i = 0; i < mesh->getPartCount(); ++i)
+            for (size_t i = 0; i < mesh->getPartCount(); ++i)
             {
                 if (mesh->getPart(i)->getPrimitiveType() != Mesh::TRIANGLES)
                 {
@@ -1242,7 +1242,7 @@ PhysicsCollisionShape* PhysicsController::createMesh(Mesh* mesh, const Vector3& 
     shapeMeshData->vertexData = new float[vertexCount * 3];
     Vector3 v;
     int vertexStride = data->vertexFormat.getVertexSize();
-    for (unsigned int i = 0; i < data->vertexCount; i++)
+    for (size_t i = 0; i < data->vertexCount; i++)
     {
         v.set(*((float*)&data->vertexData[i * vertexStride + 0 * sizeof(float)]),
               *((float*)&data->vertexData[i * vertexStride + 1 * sizeof(float)]),
@@ -1338,7 +1338,7 @@ PhysicsCollisionShape* PhysicsController::createMesh(Mesh* mesh, const Vector3& 
             std::ranges::copy(std::views::iota(0u, data->vertexCount), indexData);
 
             // The above is simply filling the indexes like this
-            // for (unsigned int i = 0; i < data->vertexCount; i++) indexData[i] = i;
+            // for (size_t i = 0; i < data->vertexCount; i++) indexData[i] = i;
 
             shapeMeshData->indexData.push_back((unsigned char*)indexData);
 

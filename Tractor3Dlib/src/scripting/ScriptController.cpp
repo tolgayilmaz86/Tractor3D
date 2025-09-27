@@ -1744,7 +1744,7 @@ void ScriptUtil::registerConstantBool(const std::string& name,
     if (!scopePath.empty())
     {
         lua_getglobal(sc->_lua, scopePath[0].c_str());
-        for (unsigned int i = 1; i < scopePath.size(); i++)
+        for (size_t i = 1; i < scopePath.size(); i++)
         {
             lua_pushstring(sc->_lua, scopePath[i].c_str());
             lua_gettable(sc->_lua, -2);
@@ -1779,7 +1779,7 @@ void ScriptUtil::registerConstantNumber(const std::string& name,
     if (!scopePath.empty())
     {
         lua_getglobal(sc->_lua, scopePath[0].c_str());
-        for (unsigned int i = 1; i < scopePath.size(); i++)
+        for (size_t i = 1; i < scopePath.size(); i++)
         {
             lua_pushstring(sc->_lua, scopePath[i].c_str());
             lua_gettable(sc->_lua, -2);
@@ -1814,7 +1814,7 @@ void ScriptUtil::registerConstantString(const std::string& name,
     if (!scopePath.empty())
     {
         lua_getglobal(sc->_lua, scopePath[0].c_str());
-        for (unsigned int i = 1; i < scopePath.size(); i++)
+        for (size_t i = 1; i < scopePath.size(); i++)
         {
             lua_pushstring(sc->_lua, scopePath[i].c_str());
             lua_gettable(sc->_lua, -2);
@@ -1849,7 +1849,7 @@ void ScriptUtil::registerEnumValue(int enumValue,
     if (!scopePath.empty())
     {
         lua_getglobal(sc->_lua, scopePath[0].c_str());
-        for (unsigned int i = 1; i < scopePath.size(); i++)
+        for (size_t i = 1; i < scopePath.size(); i++)
         {
             lua_pushstring(sc->_lua, scopePath[i].c_str());
             lua_gettable(sc->_lua, -2);
@@ -1893,7 +1893,7 @@ void ScriptUtil::registerClass(const char* name,
         std::size_t index = tablename.find(scopePath[0]);
         if (index != std::string::npos) tablename = tablename.substr(index + scopePath[0].size());
 
-        for (unsigned int i = 1; i < scopePath.size(); i++)
+        for (size_t i = 1; i < scopePath.size(); i++)
         {
             lua_pushstring(sc->_lua, scopePath[i].c_str());
             lua_gettable(sc->_lua, -2);

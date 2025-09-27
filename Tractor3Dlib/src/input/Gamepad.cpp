@@ -13,9 +13,7 @@ namespace tractor
 
 static std::vector<Gamepad*> __gamepads;
 
-Gamepad::Gamepad(const std::string& formPath)
-    : _handle((GamepadHandle)INT_MAX), _buttonCount(0), _joystickCount(0), _triggerCount(0),
-      _form(nullptr), _buttons(0)
+Gamepad::Gamepad(const std::string& formPath) : _handle((GamepadHandle)INT_MAX)
 {
     _form = Form::create(formPath);
     assert(_form);
@@ -42,9 +40,10 @@ Gamepad::Gamepad(GamepadHandle handle,
                  unsigned int triggerCount,
                  const std::string& name)
     : _handle(handle), _buttonCount(buttonCount), _joystickCount(joystickCount),
-      _triggerCount(triggerCount), _name(name), _form(nullptr), _buttons(0)
+      _triggerCount(triggerCount), _name(name)
 {
-    for (int i = 0; i < 2; ++i)
+    constexpr auto numberOfTriggers = 2;
+    for (int i = 0; i < numberOfTriggers; ++i)
     {
         _triggers[i] = 0.0f;
     }
@@ -262,24 +261,14 @@ bool Gamepad::isButtonDown(ButtonMapping mapping) const
     if (_form)
     {
         Button* button = _uiButtons[mapping];
-        if (button)
-        {
-            return (button->getState() == Control::ACTIVE);
-        }
-        else
-        {
-            return false;
-        }
+        if (button) return (button->getState() & Control::ACTIVE) != 0;
+        return false;
     }
     else if (_buttons & (1 << mapping))
-    {
         return true;
-    }
 
     return false;
 }
-
-unsigned int Gamepad::getJoystickCount() const { return _joystickCount; }
 
 void Gamepad::getJoystickValues(unsigned int joystickId, Vector2* outValue) const
 {
@@ -310,20 +299,12 @@ float Gamepad::getTriggerValue(unsigned int triggerId) const
 {
     if (triggerId >= _triggerCount) return 0.0f;
 
+    // Triggers are not part of the virtual gamepad defintion
     if (_form)
-    {
-        // Triggers are not part of the virtual gamepad defintion
         return 0.0f;
-    }
     else
-    {
         return _triggers[triggerId];
-    }
 }
-
-bool Gamepad::isVirtual() const { return _form; }
-
-Form* Gamepad::getForm() const { return _form; }
 
 void Gamepad::setButtons(unsigned int buttons)
 {

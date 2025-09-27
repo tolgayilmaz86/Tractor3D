@@ -310,7 +310,7 @@ void RacerGame::render(float elapsedTime)
     clear(CLEAR_COLOR_DEPTH, Vector4::zero(), 1.0f, 0);
 
     // Visit all the nodes in the scene to build our render queues
-    for (unsigned int i = 0; i < QUEUE_COUNT; ++i)
+    for (size_t i = 0; i < QUEUE_COUNT; ++i)
         _renderQueues[i].clear();
     _scene->visit(this, &RacerGame::buildRenderQueues);
 
@@ -371,7 +371,7 @@ bool RacerGame::buildRenderQueues(Node* node)
 void RacerGame::drawScene()
 {
     // Iterate through each render queue and draw the nodes in them
-    for (unsigned int i = 0; i < QUEUE_COUNT; ++i)
+    for (size_t i = 0; i < QUEUE_COUNT; ++i)
     {
         std::vector<Node*>& queue = _renderQueues[i];
 

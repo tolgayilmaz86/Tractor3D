@@ -90,7 +90,7 @@ HeightField* HeightField::create(const std::string& path,
         int idx;
         for (int y = image->getHeight() - 1, i = 0; y >= 0; --y)
         {
-            for (unsigned int x = 0, w = image->getWidth(); x < w; ++x)
+            for (size_t x = 0, w = image->getWidth(); x < w; ++x)
             {
                 idx = (y * w + x) * pixelSize;
                 heights[i++] =
@@ -137,9 +137,9 @@ HeightField* HeightField::create(const std::string& path,
         {
             // 16-bit (0-65535)
             int idx;
-            for (unsigned int y = 0, i = 0; y < height; ++y)
+            for (size_t y = 0, i = 0; y < height; ++y)
             {
-                for (unsigned int x = 0; x < width; ++x, ++i)
+                for (size_t x = 0; x < width; ++x, ++i)
                 {
                     idx = (y * width + x) << 1;
                     heights[i] = heightMin
@@ -150,9 +150,9 @@ HeightField* HeightField::create(const std::string& path,
         else
         {
             // 8-bit (0-255)
-            for (unsigned int y = 0, i = 0; y < height; ++y)
+            for (size_t y = 0, i = 0; y < height; ++y)
             {
-                for (unsigned int x = 0; x < width; ++x, ++i)
+                for (size_t x = 0; x < width; ++x, ++i)
                 {
                     heights[i] = heightMin + (bytes[y * width + x] / 255.0f) * heightScale;
                 }

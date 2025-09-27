@@ -116,7 +116,7 @@ void MeshBatch::add(const void* vertices,
 
             // Loop through all indices and insert them, with their values offset by
             // 'vertexCount' so that they are relative to the first newly inserted vertex.
-            for (unsigned int i = 0; i < indexCount; ++i)
+            for (size_t i = 0; i < indexCount; ++i)
             {
                 _indicesPtr[i] = indices[i] + _vertexCount;
             }
@@ -134,11 +134,11 @@ void MeshBatch::updateVertexAttributeBinding()
     assert(_material);
 
     // Update our vertex attribute bindings.
-    for (unsigned int i = 0, techniqueCount = _material->getTechniqueCount(); i < techniqueCount; ++i)
+    for (size_t i = 0, techniqueCount = _material->getTechniqueCount(); i < techniqueCount; ++i)
     {
         Technique* t = _material->getTechniqueByIndex(i);
         assert(t);
-        for (unsigned int j = 0, passCount = t->getPassCount(); j < passCount; ++j)
+        for (size_t j = 0, passCount = t->getPassCount(); j < passCount; ++j)
         {
             Pass* pass = t->getPassByIndex(j);
             assert(pass);
@@ -275,7 +275,7 @@ void MeshBatch::draw()
     Technique* technique = _material->getTechnique();
     assert(technique);
     unsigned int passCount = technique->getPassCount();
-    for (unsigned int i = 0; i < passCount; ++i)
+    for (size_t i = 0; i < passCount; ++i)
     {
         Pass* pass = technique->getPassByIndex(i);
         assert(pass);

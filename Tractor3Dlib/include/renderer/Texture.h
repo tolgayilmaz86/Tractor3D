@@ -248,35 +248,35 @@ class Texture : public Ref
      *
      * @return The texture path, or an empty string if the texture was not loaded from file.
      */
-    const std::string& getPath() const;
+    const std::string& getPath() const { return _path; }
 
     /**
      * Gets the format of the texture.
      *
      * @return The texture format.
      */
-    Format getFormat() const;
+    Format getFormat() const { return _format; }
 
     /**
      * Gets the texture type.
      *
      * @return The texture type.
      */
-    Type getType() const;
+    Texture::Type getType() const { return _type; }
 
     /**
      * Gets the texture width.
      *
      * @return The texture width.
      */
-    unsigned int getWidth() const;
+    unsigned int getWidth() const { return _width; }
 
     /**
      * Gets the texture height.
      *
      * @return The texture height.
      */
-    unsigned int getHeight() const;
+    unsigned int getHeight() const { return _height; }
 
     /**
      * Generates a full mipmap chain for this texture if it isn't already mipmapped.
@@ -288,19 +288,19 @@ class Texture : public Ref
      *
      * @return True if this texture is currently mipmapped, false otherwise.
      */
-    bool isMipmapped() const;
+    bool isMipmapped() const { return _mipmapped; }
 
     /**
      * Determines if this texture is a compressed texture.
      */
-    bool isCompressed() const;
+    bool isCompressed() const { return _compressed; }
 
     /**
      * Returns the texture handle.
      *
      * @return The texture handle.
      */
-    TextureHandle getHandle() const;
+    TextureHandle getHandle() const { return _handle; }
 
   private:
     /**

@@ -439,7 +439,7 @@ class SpriteBatch
     /**
      * Constructor.
      */
-    SpriteBatch();
+    SpriteBatch() = default;
 
     /**
      * Copy constructor.
@@ -510,12 +510,12 @@ class SpriteBatch
                     float& u2,
                     float& v2);
 
-    MeshBatch* _batch;
-    Texture::Sampler* _sampler;
-    bool _customEffect;
-    float _textureWidthRatio;
-    float _textureHeightRatio;
-    mutable Matrix _projectionMatrix;
+    MeshBatch* _batch{ nullptr };
+    Texture::Sampler* _sampler{ nullptr };
+    bool _customEffect{ false };
+    float _textureWidthRatio{ 0.0f };
+    float _textureHeightRatio{ 0.0f };
+    mutable Matrix _projectionMatrix{};
 };
 
 } // namespace tractor

@@ -425,7 +425,7 @@ void Sprite::computeFrames(unsigned int frameStride, unsigned int framePadding)
     float height = _frames[0].height;
 
     // Compute frames 1+
-    for (unsigned int frameIndex = 1; frameIndex < _frameCount; frameIndex++)
+    for (size_t frameIndex = 1; frameIndex < _frameCount; frameIndex++)
     {
         _frames[frameIndex].x = x;
         _frames[frameIndex].y = y;

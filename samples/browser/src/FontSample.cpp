@@ -27,7 +27,7 @@ void FontSample::finalize()
 {
     SAFE_RELEASE(_stateBlock);
 
-    for (unsigned int i = 0; i < _fonts.size(); i++)
+    for (size_t i = 0; i < _fonts.size(); i++)
     {
         SAFE_RELEASE(_fonts[i]);
     }
@@ -45,7 +45,7 @@ void FontSample::initialize()
     _stateBlock->setBlendSrc(RenderState::BLEND_SRC_ALPHA);
     _stateBlock->setBlendDst(RenderState::BLEND_ONE_MINUS_SRC_ALPHA);
 
-    for (unsigned int i = 0; i < _fontsCount; i++)
+    for (size_t i = 0; i < _fontsCount; i++)
     {
         _fonts.emplace_back(Font::create(_fontFiles[i]));
     }

@@ -96,9 +96,9 @@ void SpriteBatchSample::render(float elapsedTime)
     unsigned int pointCount = 16;
     unsigned int x = 0;
     unsigned int y = 192;
-    for (unsigned int i = 0; i < pointCount; i++)
+    for (size_t i = 0; i < pointCount; i++)
     {
-        for (unsigned int j = 0; j < pointCount; j++)
+        for (size_t j = 0; j < pointCount; j++)
         {
             _spriteBatch->draw(Rectangle(x, y, 32, 32), src);
             x += 32;

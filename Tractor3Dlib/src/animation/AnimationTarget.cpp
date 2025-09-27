@@ -226,7 +226,7 @@ Animation* AnimationTarget::createAnimation(const std::string& id, Properties* a
     unsigned int components = keyCount * componentCount;
 
     float* keyValues = new float[components];
-    for (unsigned int i = 0; i < components; i++)
+    for (size_t i = 0; i < components; i++)
     {
         endOffset = static_cast<std::string>(keyValuesStr).find_first_of(delimeter, startOffset);
         if (endOffset != std::string::npos)
@@ -252,7 +252,7 @@ Animation* AnimationTarget::createAnimation(const std::string& id, Properties* a
         keyIn = new float[components];
         startOffset = 0;
         endOffset = std::string::npos;
-        for (unsigned int i = 0; i < components; i++)
+        for (size_t i = 0; i < components; i++)
         {
             endOffset = static_cast<std::string>(keyInStr).find_first_of(delimeter, startOffset);
             if (endOffset != std::string::npos)
@@ -279,7 +279,7 @@ Animation* AnimationTarget::createAnimation(const std::string& id, Properties* a
         keyOut = new float[components];
         startOffset = 0;
         endOffset = std::string::npos;
-        for (unsigned int i = 0; i < components; i++)
+        for (size_t i = 0; i < components; i++)
         {
             endOffset = static_cast<std::string>(keyOutStr).find_first_of(delimeter, startOffset);
             if (endOffset != std::string::npos)
@@ -596,7 +596,7 @@ void AnimationTarget::convertQuaternionByValues(float* from, float* by)
 
 void AnimationTarget::convertScaleByValues(float* from, float* by, unsigned int componentCount)
 {
-    for (unsigned int i = 0; i < componentCount; i++)
+    for (size_t i = 0; i < componentCount; i++)
     {
         by[i] *= from[i];
     }
@@ -604,7 +604,7 @@ void AnimationTarget::convertScaleByValues(float* from, float* by, unsigned int 
 
 void AnimationTarget::convertByValues(float* from, float* by, unsigned int componentCount)
 {
-    for (unsigned int i = 0; i < componentCount; i++)
+    for (size_t i = 0; i < componentCount; i++)
     {
         by[i] += from[i];
     }

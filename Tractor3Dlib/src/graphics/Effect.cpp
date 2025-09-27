@@ -626,7 +626,7 @@ void Effect::setValue(Uniform* uniform, const Texture::Sampler** values, unsigne
 
     // Set samplers as active and load texture unit array
     GLint units[32];
-    for (unsigned int i = 0; i < count; ++i)
+    for (size_t i = 0; i < count; ++i)
     {
         assert((const_cast<Texture::Sampler*>(values[i])->getTexture()->getType() == Texture::TEXTURE_2D
                 && uniform->_type == GL_SAMPLER_2D)

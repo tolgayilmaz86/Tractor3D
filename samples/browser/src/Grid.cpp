@@ -12,7 +12,7 @@ std::shared_ptr<Mesh> createGridMesh(unsigned int lineCount)
 
     const float gridLength = (float)(lineCount / 2);
     float value = -gridLength;
-    for (unsigned int i = 0; i < verticesSize; ++i)
+    for (size_t i = 0; i < verticesSize; ++i)
     {
         // Default line color is dark grey
         Vector4 color(0.3f, 0.3f, 0.3f, 1.0f);

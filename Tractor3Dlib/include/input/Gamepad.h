@@ -79,7 +79,7 @@ class Gamepad
      *
      * @return the number of joysticks on the gamepad.
      */
-    unsigned int getJoystickCount() const;
+    unsigned int getJoystickCount() const { return _joystickCount; }
 
     /**
      * Returns the specified joystick's value as a Vector2.
@@ -120,14 +120,14 @@ class Gamepad
      * @return true if the gamepad is currently represented by a UI form; false if the gamepad is
      *         not represented by a UI form.
      */
-    bool isVirtual() const;
+    bool isVirtual() const { return _form; }
 
     /**
      * Gets the Form used to represent this gamepad.
      *
      * @return the Form used to represent this gamepad. nullptr if the gamepad is not represented with a Form.
      */
-    Form* getForm() const;
+    Form* getForm() const { return _form; }
 
     /**
      * Updates the gamepad's state.  For a virtual gamepad, this results in calling update()
@@ -259,14 +259,14 @@ class Gamepad
     void bindGamepadControls(Container* container);
 
     GamepadHandle _handle;
-    size_t _buttonCount;
-    size_t _joystickCount;
-    size_t _triggerCount;
-    std::string _name;
-    Form* _form;
-    JoystickControl* _uiJoysticks[2];
-    Button* _uiButtons[20];
-    size_t _buttons;
+    size_t _buttonCount{ 0 };
+    size_t _joystickCount{ 0 };
+    size_t _triggerCount{ 0 };
+    std::string _name{};
+    Form* _form{ nullptr };
+    JoystickControl* _uiJoysticks[2]{ nullptr, nullptr };
+    Button* _uiButtons[20]{ nullptr };
+    unsigned int _buttons{ 0 };
     Vector2 _joysticks[2];
     float _triggers[2];
 };

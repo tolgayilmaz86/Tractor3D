@@ -262,7 +262,7 @@ float BoundingSphere::distance(const BoundingSphere& sphere, const Vector3& poin
 
 bool BoundingSphere::contains(const BoundingSphere& sphere, Vector3* points, unsigned int count)
 {
-    for (unsigned int i = 0; i < count; i++)
+    for (size_t i = 0; i < count; i++)
     {
         if (distance(sphere, points[i]) > sphere.radius)
         {

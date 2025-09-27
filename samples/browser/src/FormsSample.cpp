@@ -25,7 +25,7 @@ void FormsSample::finalize()
     SAFE_RELEASE(_scene);
     SAFE_RELEASE(_formNode);
     SAFE_RELEASE(_formSelect);
-    for (unsigned int i = 0; i < _forms.size(); i++)
+    for (size_t i = 0; i < _forms.size(); i++)
     {
         SAFE_RELEASE(_forms[i]);
     }
@@ -37,7 +37,7 @@ static void printProperties(Properties* properties, unsigned int tabCount)
     const auto& spacename = properties->getNamespace();
     const auto& id = properties->getId();
     std::string tabs;
-    for (unsigned int i = 0; i < tabCount; i++)
+    for (size_t i = 0; i < tabCount; i++)
     {
         tabs.append("\t");
     }
@@ -88,7 +88,7 @@ void FormsSample::initialize()
     RadioButton* form5Button = static_cast<RadioButton*>(_formSelect->getControl("form5"));
     form5Button->addListener(this, Control::Listener::CLICK);
 
-    for (unsigned int i = 0; i < _formFiles.size(); i++)
+    for (size_t i = 0; i < _formFiles.size(); i++)
     {
         Form* form = Form::create(_formFiles[i]);
         form->setEnabled(false);

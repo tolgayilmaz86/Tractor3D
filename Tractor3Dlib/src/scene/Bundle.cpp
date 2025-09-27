@@ -216,7 +216,7 @@ Bundle* Bundle::create(const std::string& path)
 
     // Read all refs.
     Reference* refs = new Reference[refCount];
-    for (unsigned int i = 0; i < refCount; ++i)
+    for (size_t i = 0; i < refCount; ++i)
     {
         if ((refs[i].id = readString(stream.get())).empty()
             || stream->read(&refs[i].type, 4, 1) != 1 || stream->read(&refs[i].offset, 4, 1) != 1)
@@ -243,7 +243,7 @@ Bundle::Reference* Bundle::find(const std::string& id) const
     assert(_references);
 
     // Search the ref table for the given id (case-sensitive).
-    for (unsigned int i = 0; i < _referenceCount; ++i)
+    for (size_t i = 0; i < _referenceCount; ++i)
     {
         if (_references[i].id == id)
         {
@@ -276,7 +276,7 @@ const std::string& Bundle::getIdFromOffset(unsigned int offset) const
     if (offset > 0)
     {
         assert(_references);
-        for (unsigned int i = 0; i < _referenceCount; ++i)
+        for (size_t i = 0; i < _referenceCount; ++i)
         {
             if (_references[i].offset == offset)
             {
@@ -340,7 +340,7 @@ Bundle::Reference* Bundle::seekToFirstType(unsigned int type)
     assert(_references);
     assert(_stream);
 
-    for (unsigned int i = 0; i < _referenceCount; ++i)
+    for (size_t i = 0; i < _referenceCount; ++i)
     {
         Reference* ref = &_references[i];
         if (ref->type == type)
@@ -404,7 +404,7 @@ Scene* Bundle::loadScene(const std::string& id)
     if (childrenCount > 0)
     {
         // Read each child directly into the scene.
-        for (unsigned int i = 0; i < childrenCount; i++)
+        for (size_t i = 0; i < childrenCount; i++)
         {
             Node* node = readNode(scene, nullptr);
             if (node)
@@ -453,7 +453,7 @@ Scene* Bundle::loadScene(const std::string& id)
     // Parse animations.
     assert(_references);
     assert(_stream);
-    for (unsigned int i = 0; i < _referenceCount; ++i)
+    for (size_t i = 0; i < _referenceCount; ++i)
     {
         Reference* ref = &_references[i];
         if (ref->type == BUNDLE_TYPE_ANIMATIONS)
@@ -490,7 +490,7 @@ Node* Bundle::loadNode(const std::string& id, Scene* sceneContext)
     if (node) resolveJointReferences(sceneContext, node);
 
     // Load all animations targeting any nodes or mesh skins under this node's hierarchy.
-    for (unsigned int i = 0; i < _referenceCount; i++)
+    for (size_t i = 0; i < _referenceCount; i++)
     {
         Reference* ref = &_references[i];
         if (ref->type == BUNDLE_TYPE_ANIMATIONS)
@@ -513,7 +513,7 @@ Node* Bundle::loadNode(const std::string& id, Scene* sceneContext)
                 return nullptr;
             }
 
-            for (unsigned int j = 0; j < animationCount; j++)
+            for (size_t j = 0; j < animationCount; j++)
             {
                 const std::string id = readString(_stream.get());
 
@@ -529,7 +529,7 @@ Node* Bundle::loadNode(const std::string& id, Scene* sceneContext)
                 }
 
                 Animation* animation = nullptr;
-                for (unsigned int k = 0; k < animationChannelCount; k++)
+                for (size_t k = 0; k < animationChannelCount; k++)
                 {
                     // Read target id.
                     std::string targetId = readString(_stream.get());
@@ -654,7 +654,7 @@ bool Bundle::skipNode()
     }
     else if (childrenCount > 0)
     {
-        for (unsigned int i = 0; i < childrenCount; i++)
+        for (size_t i = 0; i < childrenCount; i++)
         {
             if (!skipNode()) return false;
         }
@@ -747,7 +747,7 @@ Node* Bundle::readNode(Scene* sceneContext, Node* nodeContext)
     if (childrenCount > 0)
     {
         // Read each child.
-        for (unsigned int i = 0; i < childrenCount; i++)
+        for (size_t i = 0; i < childrenCount; i++)
         {
             // Search the passed in loading contexts (scene/node) first to see
             // if we've already loaded this child node during this load session.
@@ -988,7 +988,7 @@ Model* Bundle::readModel(const std::string& nodeId)
             }
             if (materialCount > 0)
             {
-                for (unsigned int i = 0; i < materialCount; ++i)
+                for (size_t i = 0; i < materialCount; ++i)
                 {
                     std::string materialName = readString(_stream.get());
                     std::string materialPath = getMaterialPath();
@@ -1051,7 +1051,7 @@ MeshSkin* Bundle::readMeshSkin()
     meshSkin->setJointCount(jointCount);
 
     // Read joint xref strings for all joints in the list.
-    for (unsigned int i = 0; i < jointCount; i++)
+    for (size_t i = 0; i < jointCount; i++)
     {
         skinData->joints.push_back(readString(_stream.get()));
     }
@@ -1069,7 +1069,7 @@ MeshSkin* Bundle::readMeshSkin()
     {
         assert(jointCount * 16 == jointsBindPosesCount);
         float m[16];
-        for (unsigned int i = 0; i < jointCount; i++)
+        for (size_t i = 0; i < jointCount; i++)
         {
             if (!readMatrix(m))
             {
@@ -1191,7 +1191,7 @@ void Bundle::resolveJointReferences(Scene* sceneContext, Node* nodeContext)
             skinData->skin->setRootJoint(rootJoint);
 
             // Release all the nodes that we loaded since the nodes are now owned by the mesh skin/joints.
-            for (unsigned int i = 0; i < loadedNodes.size(); i++)
+            for (size_t i = 0; i < loadedNodes.size(); i++)
             {
                 SAFE_RELEASE(loadedNodes[i]);
             }
@@ -1219,7 +1219,7 @@ void Bundle::readAnimation(Scene* scene)
     }
 
     Animation* animation = nullptr;
-    for (unsigned int i = 0; i < animationChannelCount; i++)
+    for (size_t i = 0; i < animationChannelCount; i++)
     {
         animation = readAnimationChannel(scene, animation, animationId);
     }
@@ -1235,7 +1235,7 @@ void Bundle::readAnimations(Scene* scene)
         return;
     }
 
-    for (unsigned int i = 0; i < animationCount; i++)
+    for (size_t i = 0; i < animationCount; i++)
     {
         readAnimation(scene);
     }
@@ -1449,7 +1449,7 @@ std::unique_ptr<Bundle::MeshData> Bundle::readMeshData()
     }
 
     VertexFormat::Element* vertexElements = new VertexFormat::Element[vertexElementCount];
-    for (unsigned int i = 0; i < vertexElementCount; ++i)
+    for (size_t i = 0; i < vertexElementCount; ++i)
     {
         unsigned int vUsage, vSize;
         if (_stream->read(&vUsage, 4, 1) != 1)
@@ -1527,7 +1527,7 @@ std::unique_ptr<Bundle::MeshData> Bundle::readMeshData()
         // SAFE_DELETE(meshData);
         return nullptr;
     }
-    for (unsigned int i = 0; i < meshPartCount; ++i)
+    for (size_t i = 0; i < meshPartCount; ++i)
     {
         // Read primitive type, index format and index count.
         unsigned int pType, iFormat, iByteCount;
@@ -1678,7 +1678,7 @@ Font* Bundle::loadFont(const std::string& id)
 
     Font* masterFont = nullptr;
 
-    for (unsigned int i = 0; i < fontSizeCount; ++i)
+    for (size_t i = 0; i < fontSizeCount; ++i)
     {
         // Read font size
         unsigned int size;
@@ -1887,7 +1887,7 @@ Bundle::MeshData::~MeshData()
 {
     SAFE_DELETE_ARRAY(vertexData);
 
-    for (unsigned int i = 0; i < parts.size(); ++i)
+    for (size_t i = 0; i < parts.size(); ++i)
     {
         SAFE_DELETE(parts[i]);
     }

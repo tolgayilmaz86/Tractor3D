@@ -127,7 +127,7 @@ VertexAttributeBinding* VertexAttributeBinding::create(std::shared_ptr<Mesh> mes
     {
         // Construct a software representation of a VAO.
         VertexAttribute* attribs = new VertexAttribute[__maxVertexAttribs];
-        for (unsigned int i = 0; i < __maxVertexAttribs; ++i)
+        for (size_t i = 0; i < __maxVertexAttribs; ++i)
         {
             // Set GL defaults
             attribs[i].enabled = GL_FALSE;
@@ -278,7 +278,7 @@ void VertexAttributeBinding::bind()
         }
 
         assert(_attributes);
-        for (unsigned int i = 0; i < __maxVertexAttribs; ++i)
+        for (size_t i = 0; i < __maxVertexAttribs; ++i)
         {
             VertexAttribute& a = _attributes[i];
             if (a.enabled)
@@ -306,7 +306,7 @@ void VertexAttributeBinding::unbind()
         }
 
         assert(_attributes);
-        for (unsigned int i = 0; i < __maxVertexAttribs; ++i)
+        for (size_t i = 0; i < __maxVertexAttribs; ++i)
         {
             if (_attributes[i].enabled)
             {

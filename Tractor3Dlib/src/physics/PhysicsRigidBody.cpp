@@ -90,7 +90,7 @@ PhysicsRigidBody::~PhysicsRigidBody()
     _inDestructor = true;
     if (_constraints)
     {
-        for (unsigned int i = 0; i < _constraints->size(); ++i)
+        for (size_t i = 0; i < _constraints->size(); ++i)
         {
             SAFE_DELETE((*_constraints)[i]);
         }
@@ -364,7 +364,7 @@ void PhysicsRigidBody::removeConstraint(PhysicsConstraint* constraint)
     // the constraints will be destroyed from there).
     if (_constraints && !_inDestructor)
     {
-        for (unsigned int i = 0; i < _constraints->size(); ++i)
+        for (size_t i = 0; i < _constraints->size(); ++i)
         {
             if ((*_constraints)[i] == constraint)
             {

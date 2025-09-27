@@ -27,7 +27,7 @@ FrameBuffer::~FrameBuffer()
 {
     if (_renderTargets)
     {
-        for (unsigned int i = 0; i < _maxRenderTargets; ++i)
+        for (size_t i = 0; i < _maxRenderTargets; ++i)
         {
             if (_renderTargets[i])
             {

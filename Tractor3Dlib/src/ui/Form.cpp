@@ -252,7 +252,7 @@ unsigned int Form::draw(bool wireframe)
     if (_batched)
     {
         unsigned int batchCount = _batches.size();
-        for (unsigned int i = 0; i < batchCount; ++i)
+        for (size_t i = 0; i < batchCount; ++i)
             _batches[i]->finish();
         _batches.clear();
         drawCalls = batchCount;
@@ -360,7 +360,7 @@ Control* Form::findInputControl(Control* control, int x, int y, bool focus, unsi
     if (control->isContainer())
     {
         Container* container = static_cast<Container*>(control);
-        // for (unsigned int i = 0, childCount = container->getControlCount(); i < childCount; ++i)
+        // for (size_t i = 0, childCount = container->getControlCount(); i < childCount; ++i)
         //{
         //     Control* ctrl = findInputControl(container->getControl(i), x, y, focus,
         //     contactIndex); if (ctrl)
@@ -561,7 +561,7 @@ void Form::verifyRemovedControlState(Control* control)
 
     if (control->_state == ACTIVE || control->_state == HOVER)
     {
-        for (unsigned int i = 0; i < Touch::MAX_TOUCH_POINTS; ++i)
+        for (size_t i = 0; i < Touch::MAX_TOUCH_POINTS; ++i)
         {
             if (__activeControl[i] == control)
             {
@@ -925,7 +925,7 @@ bool Form::gamepadButtonEventInternal(Gamepad* gamepad)
     {
         if (__activeControl[0]) __activeControl[0]->setDirty(DIRTY_STATE);
 
-        for (unsigned int i = 0; i < Touch::MAX_TOUCH_POINTS; ++i)
+        for (size_t i = 0; i < Touch::MAX_TOUCH_POINTS; ++i)
         {
             if (__activeControl[i] == __focusControl)
             {
@@ -1049,7 +1049,7 @@ void Form::controlDisabled(Control* control)
 
     if (control->_state == ACTIVE || control->_state == HOVER)
     {
-        for (unsigned int i = 0; i < Touch::MAX_TOUCH_POINTS; ++i)
+        for (size_t i = 0; i < Touch::MAX_TOUCH_POINTS; ++i)
         {
             if (__activeControl[i] == control)
             {

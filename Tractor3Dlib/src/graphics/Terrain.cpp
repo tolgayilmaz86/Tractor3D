@@ -310,12 +310,12 @@ Terrain* Terrain::create(HeightField* heightfield,
     // Create terrain patches
     unsigned int x1, x2, z1, z2;
     unsigned int row = 0, column = 0;
-    for (unsigned int z = 0; z < height - 1; z = z2, ++row)
+    for (size_t z = 0; z < height - 1; z = z2, ++row)
     {
         z1 = z;
         z2 = std::min(z1 + patchSize, height - 1);
 
-        for (unsigned int x = 0; x < width - 1; x = x2, ++column)
+        for (size_t x = 0; x < width - 1; x = x2, ++column)
         {
             x1 = x;
             x2 = std::min(x1 + patchSize, width - 1);

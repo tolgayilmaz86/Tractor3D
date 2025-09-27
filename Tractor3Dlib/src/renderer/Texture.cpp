@@ -260,12 +260,10 @@ Texture* Texture::create(Format format,
     GL_ASSERT(glGenTextures(1, &textureId));
     GL_ASSERT(glBindTexture(target, textureId));
     GL_ASSERT(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
-#ifndef OPENGL_ES
     // glGenerateMipmap is new in OpenGL 3.0. For OpenGL 2.0 we must fallback to use glTexParameteri
     // with GL_GENERATE_MIPMAP prior to actual texture creation (glTexImage2D)
     if (generateMipmaps && !std::addressof(glGenerateMipmap))
         GL_ASSERT(glTexParameteri(target, GL_GENERATE_MIPMAP, GL_TRUE));
-#endif
 
     // Load the texture
     size_t bpp = getFormatBPP(format);
@@ -287,7 +285,7 @@ Texture* Texture::create(Format format,
         }
         textureSize *= bpp;
         // Texture Cube
-        for (unsigned int i = 0; i < 6; i++)
+        for (size_t i = 0; i < 6; i++)
         {
             const unsigned char* texturePtr = (data == nullptr) ? nullptr : &data[i * textureSize];
             GL_ASSERT(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
@@ -311,9 +309,7 @@ Texture* Texture::create(Format format,
         GL_ASSERT(glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
         GL_ASSERT(glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
         GL_ASSERT(glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-#if !defined(OPENGL_ES) || defined(GL_ES_VERSION_3_0) && GL_ES_VERSION_3_0
         GL_ASSERT(glTexParameteri(target, GL_TEXTURE_COMPARE_MODE, GL_NONE));
-#endif
     }
     else
     {
@@ -394,7 +390,7 @@ void Texture::setData(const unsigned char* data)
         unsigned int textureSize = _width * _height;
         textureSize *= _bpp;
         // Texture Cube
-        for (unsigned int i = 0; i < 6; i++)
+        for (size_t i = 0; i < 6; i++)
         {
             GL_ASSERT(glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
                                       0,
@@ -530,11 +526,11 @@ Texture* Texture::createCompressedPVRTC(const std::string& path)
 
     // Load the data for each level.
     GLubyte* ptr = data;
-    for (unsigned int level = 0; level < mipMapCount; ++level)
+    for (size_t level = 0; level < mipMapCount; ++level)
     {
         unsigned int dataSize = computePVRTCDataSize(width, height, bpp);
 
-        for (unsigned int face = 0; face < faceCount; ++face)
+        for (size_t face = 0; face < faceCount; ++face)
         {
             // Upload data to GL.
             GL_ASSERT(glCompressedTexImage2D(faces[face],
@@ -692,7 +688,7 @@ GLubyte* Texture::readCompressedPVRTC(const std::string& path,
                 GP_ERROR("Failed to read cubemap face order meta data for file '%s'.", path);
                 return nullptr;
             }
-            for (unsigned int face = 0; face < (*faceCount); ++face)
+            for (size_t face = 0; face < (*faceCount); ++face)
             {
                 faces[face] = GL_TEXTURE_CUBE_MAP_POSITIVE_X
                               + (faceOrder[face] <= 'Z' ? ((faceOrder[face] - 'X') * 2)
@@ -707,7 +703,7 @@ GLubyte* Texture::readCompressedPVRTC(const std::string& path,
         if (!foundTextureCubeMeta)
         {
             // Didn't find cubemap metadata. Just assume it's "in order"
-            for (unsigned int face = 0; face < (*faceCount); ++face)
+            for (size_t face = 0; face < (*faceCount); ++face)
             {
                 faces[face] = GL_TEXTURE_CUBE_MAP_POSITIVE_X + face;
             }
@@ -727,7 +723,7 @@ GLubyte* Texture::readCompressedPVRTC(const std::string& path,
     int w = *width;
     int h = *height;
     size_t dataSize = 0;
-    for (unsigned int level = 0; level < header.mipMapCount; ++level)
+    for (size_t level = 0; level < header.mipMapCount; ++level)
     {
         dataSize += computePVRTCDataSize(w, h, bpp) * (*faceCount);
         w = std::max(w >> 1, 1);
@@ -823,7 +819,7 @@ GLubyte* Texture::readCompressedPVRTCLegacy(const std::string& path,
     {
         // Texture cube
         *faceCount = std::min(header.surfaceCount, 6u);
-        for (unsigned int face = 0; face < (*faceCount); ++face)
+        for (size_t face = 0; face < (*faceCount); ++face)
         {
             faces[face] = GL_TEXTURE_CUBE_MAP_POSITIVE_X + face;
         }
@@ -947,7 +943,7 @@ Texture* Texture::createCompressedDDS(const std::string& path)
     if ((header.dwCaps2 & 0x200 /*DDSCAPS2_CUBEMAP*/) != 0)
     {
         facecount = 0;
-        for (unsigned int off = 0, flag = 0x400 /*DDSCAPS2_CUBEMAP_POSITIVEX*/; off < 6;
+        for (size_t off = 0, flag = 0x400 /*DDSCAPS2_CUBEMAP_POSITIVEX*/; off < 6;
              ++off, flag <<= 1)
         {
             if ((header.dwCaps2 & flag) != 0)
@@ -1020,9 +1016,9 @@ Texture* Texture::createCompressedDDS(const std::string& path)
                 return nullptr;
         }
 
-        for (unsigned int face = 0; face < facecount; ++face)
+        for (size_t face = 0; face < facecount; ++face)
         {
-            for (unsigned int i = 0; i < header.dwMipMapCount; ++i)
+            for (size_t i = 0; i < header.dwMipMapCount; ++i)
             {
                 dds_mip_level& level = mipLevels[i + face * header.dwMipMapCount];
 
@@ -1037,8 +1033,8 @@ Texture* Texture::createCompressedDDS(const std::string& path)
                     GP_ERROR("Failed to load dds compressed texture bytes for texture: %s", path);
 
                     // Cleanup mip data.
-                    for (unsigned int face = 0; face < facecount; ++face)
-                        for (unsigned int i = 0; i < header.dwMipMapCount; ++i)
+                    for (size_t face = 0; face < facecount; ++face)
+                        for (size_t i = 0; i < header.dwMipMapCount; ++i)
                             SAFE_DELETE_ARRAY(mipLevels[i + face * header.dwMipMapCount].data);
                     SAFE_DELETE_ARRAY(mipLevels);
                     return texture;
@@ -1100,9 +1096,9 @@ Texture* Texture::createCompressedDDS(const std::string& path)
         }
 
         // Read data.
-        for (unsigned int face = 0; face < facecount; ++face)
+        for (size_t face = 0; face < facecount; ++face)
         {
-            for (unsigned int i = 0; i < header.dwMipMapCount; ++i)
+            for (size_t i = 0; i < header.dwMipMapCount; ++i)
             {
                 dds_mip_level& level = mipLevels[i + face * header.dwMipMapCount];
 
@@ -1116,8 +1112,8 @@ Texture* Texture::createCompressedDDS(const std::string& path)
                     GP_ERROR("Failed to load bytes for RGB dds texture: %s", path);
 
                     // Cleanup mip data.
-                    for (unsigned int face = 0; face < facecount; ++face)
-                        for (unsigned int i = 0; i < header.dwMipMapCount; ++i)
+                    for (size_t face = 0; face < facecount; ++face)
+                        for (size_t i = 0; i < header.dwMipMapCount; ++i)
                             SAFE_DELETE_ARRAY(mipLevels[i + face * header.dwMipMapCount].data);
                     SAFE_DELETE_ARRAY(mipLevels);
                     return texture;
@@ -1143,9 +1139,9 @@ Texture* Texture::createCompressedDDS(const std::string& path)
             GLubyte *pixel, r, g, b, a;
             if (format == GL_RGB)
             {
-                for (unsigned int face = 0; face < facecount; ++face)
+                for (size_t face = 0; face < facecount; ++face)
                 {
-                    for (unsigned int i = 0; i < header.dwMipMapCount; ++i)
+                    for (size_t i = 0; i < header.dwMipMapCount; ++i)
                     {
                         dds_mip_level& level = mipLevels[i + face * header.dwMipMapCount];
                         for (int j = 0; j < level.size; j += 3)
@@ -1163,9 +1159,9 @@ Texture* Texture::createCompressedDDS(const std::string& path)
             }
             else if (format == GL_RGBA)
             {
-                for (unsigned int face = 0; face < facecount; ++face)
+                for (size_t face = 0; face < facecount; ++face)
                 {
-                    for (unsigned int i = 0; i < header.dwMipMapCount; ++i)
+                    for (size_t i = 0; i < header.dwMipMapCount; ++i)
                     {
                         dds_mip_level& level = mipLevels[i + face * header.dwMipMapCount];
                         for (int j = 0; j < level.size; j += 4)
@@ -1217,10 +1213,10 @@ Texture* Texture::createCompressedDDS(const std::string& path)
     texture->_minFilter = minFilter;
 
     // Load texture data.
-    for (unsigned int face = 0; face < facecount; ++face)
+    for (size_t face = 0; face < facecount; ++face)
     {
         GLenum texImageTarget = faces[face];
-        for (unsigned int i = 0; i < header.dwMipMapCount; ++i)
+        for (size_t i = 0; i < header.dwMipMapCount; ++i)
         {
             dds_mip_level& level = mipLevels[i + face * header.dwMipMapCount];
             if (compressed)
@@ -1261,18 +1257,6 @@ Texture* Texture::createCompressedDDS(const std::string& path)
     return texture;
 }
 
-Texture::Format Texture::getFormat() const { return _format; }
-
-Texture::Type Texture::getType() const { return _type; }
-
-const std::string& Texture::getPath() const { return _path; }
-
-unsigned int Texture::getWidth() const { return _width; }
-
-unsigned int Texture::getHeight() const { return _height; }
-
-TextureHandle Texture::getHandle() const { return _handle; }
-
 void Texture::generateMipmaps()
 {
     if (!_mipmapped)
@@ -1288,10 +1272,6 @@ void Texture::generateMipmaps()
         GL_ASSERT(glBindTexture((GLenum)__currentTextureType, __currentTextureId));
     }
 }
-
-bool Texture::isMipmapped() const { return _mipmapped; }
-
-bool Texture::isCompressed() const { return _compressed; }
 
 Texture::Sampler::Sampler(Texture* texture)
     : _texture(texture), _wrapS(Texture::REPEAT), _wrapT(Texture::REPEAT), _wrapR(Texture::REPEAT)

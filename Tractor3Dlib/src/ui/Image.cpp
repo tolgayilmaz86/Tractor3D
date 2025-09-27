@@ -100,7 +100,7 @@ Image* Image::create(const std::string& path)
 
     // Read rows into image data.
     png_bytepp rows = png_get_rows(png, info);
-    for (unsigned int i = 0; i < image->_height; ++i)
+    for (size_t i = 0; i < image->_height; ++i)
     {
         memcpy(image->_data + (stride * (image->_height - 1 - i)), rows[i], stride);
     }

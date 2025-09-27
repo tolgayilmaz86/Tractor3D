@@ -31,7 +31,7 @@ PhysicsCollisionShape::~PhysicsCollisionShape()
                 if (_shapeData.meshData)
                 {
                     SAFE_DELETE_ARRAY(_shapeData.meshData->vertexData);
-                    for (unsigned int i = 0; i < _shapeData.meshData->indexData.size(); i++)
+                    for (size_t i = 0; i < _shapeData.meshData->indexData.size(); i++)
                     {
                         SAFE_DELETE_ARRAY(_shapeData.meshData->indexData[i]);
                     }

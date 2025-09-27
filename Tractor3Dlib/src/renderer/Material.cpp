@@ -274,7 +274,7 @@ static bool isMaterialKeyword(const std::string& str)
     static std::string reservedKeywords[MATERIAL_KEYWORD_COUNT] = { "vertexShader",
                                                                     "fragmentShader",
                                                                     "defines" };
-    for (unsigned int i = 0; i < MATERIAL_KEYWORD_COUNT; ++i)
+    for (size_t i = 0; i < MATERIAL_KEYWORD_COUNT; ++i)
     {
         if (reservedKeywords[i] == str)
         {

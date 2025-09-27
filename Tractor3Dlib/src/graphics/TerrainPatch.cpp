@@ -88,7 +88,7 @@ TerrainPatch* TerrainPatch::create(Terrain* terrain,
     patch->_column = column;
 
     // Add patch lods
-    for (unsigned int step = 1; step <= maxStep; step *= 2)
+    for (size_t step = 1; step <= maxStep; step *= 2)
     {
         patch->addLOD(heights, width, height, x1, z1, x2, z2, xOffset, zOffset, step, verticalSkirtSize);
     }
@@ -158,6 +158,7 @@ void TerrainPatch::addLOD(float* heights,
     unsigned int vertexCount = patchHeight * patchWidth;
     unsigned int vertexElements = _terrain->_normalMap ? 5 : 8; //<x,y,z>[i,j,k]<u,v>
     float* vertices = new float[vertexCount * vertexElements];
+
     unsigned int index = 0;
     Vector3 min(FLT_MAX, FLT_MAX, FLT_MAX);
     Vector3 max(-FLT_MAX, -FLT_MAX, -FLT_MAX);
@@ -248,13 +249,9 @@ void TerrainPatch::addLOD(float* heights,
                     xskirt = true;
             }
             else if (xskirt)
-            {
                 xskirt = false;
-            }
             else
-            {
                 x = std::min(x + step, x2);
-            }
         }
 
         if (z == z2)
@@ -265,13 +262,9 @@ void TerrainPatch::addLOD(float* heights,
                 zskirt = true;
         }
         else if (zskirt)
-        {
             zskirt = false;
-        }
         else
-        {
             z = std::min(z + step, z2);
-        }
     }
     assert(index == vertexCount);
 
@@ -334,7 +327,7 @@ void TerrainPatch::addLOD(float* heights,
             }
 
             // Add row strip
-            for (unsigned int x = 0; x < patchWidth; ++x)
+            for (size_t x = 0; x < patchWidth; ++x)
             {
                 indices[index++] = i1 + x;
                 indices[index++] = i2 + x;
@@ -664,7 +657,7 @@ unsigned int TerrainPatch::computeLOD(Camera* camera, const BoundingBox& worldBo
     Vector2 min(FLT_MAX, FLT_MAX);
     Vector2 max(-FLT_MAX, -FLT_MAX);
     worldBounds.getCorners(corners);
-    for (unsigned int i = 0; i < 8; ++i)
+    for (size_t i = 0; i < 8; ++i)
     {
         const Vector3& corner = corners[i];
         float x, y;

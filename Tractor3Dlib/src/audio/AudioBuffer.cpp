@@ -53,7 +53,7 @@ AudioBuffer::~AudioBuffer()
     if (!_streamed)
     {
         // unsigned int bufferCount = (unsigned int)__buffers.size();
-        // for (unsigned int i = 0; i < bufferCount; i++)
+        // for (size_t i = 0; i < bufferCount; i++)
         //{
         //   if (this == __buffers[i])
         //   {
@@ -99,7 +99,7 @@ AudioBuffer* AudioBuffer::create(const std::string& path, bool streamed)
 
     // Create 1 buffer for non-streamed sounds or full queue for streamed ones.
     unsigned int queueSize = streamed ? STREAMING_BUFFER_QUEUE_SIZE : 1;
-    for (unsigned int i = 0; i < queueSize; i++)
+    for (size_t i = 0; i < queueSize; i++)
     {
         // Load audio data into a buffer.
         AL_CHECK(alGenBuffers(1, &alBuffer[i]));
@@ -174,7 +174,7 @@ AudioBuffer* AudioBuffer::create(const std::string& path, bool streamed)
     return buffer;
 
 cleanup:
-    for (unsigned int i = 0; i < STREAMING_BUFFER_QUEUE_SIZE; i++)
+    for (size_t i = 0; i < STREAMING_BUFFER_QUEUE_SIZE; i++)
     {
         if (alBuffer[i]) AL_CHECK(alDeleteBuffers(1, &alBuffer[i]));
     }

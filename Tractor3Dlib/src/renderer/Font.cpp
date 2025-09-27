@@ -1630,7 +1630,7 @@ unsigned int Font::getTokenWidth(const char* token, unsigned int length, unsigne
 
     // Calculate width of word or line.
     unsigned int tokenWidth = 0;
-    for (unsigned int i = 0; i < length; ++i)
+    for (size_t i = 0; i < length; ++i)
     {
         char c = token[i];
         switch (c)

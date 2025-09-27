@@ -115,7 +115,7 @@ Curve::Curve(unsigned int pointCount, unsigned int componentCount)
       _componentSize(sizeof(float) * componentCount), _quaternionOffset(nullptr), _points(nullptr)
 {
     _points = new Point[_pointCount];
-    for (unsigned int i = 0; i < _pointCount; i++)
+    for (size_t i = 0; i < _pointCount; i++)
     {
         _points[i].time = 0.0f;
         _points[i].value = new float[_componentCount];
@@ -868,7 +868,7 @@ void Curve::interpolateBezier(float s, Point* from, Point* to, float* dst) const
 
     if (!_quaternionOffset)
     {
-        for (unsigned int i = 0; i < _componentCount; i++)
+        for (size_t i = 0; i < _componentCount; i++)
         {
             if (fromValue[i] == toValue[i])
                 dst[i] = fromValue[i];
@@ -923,7 +923,7 @@ void Curve::interpolateBSpline(float s, Point* c0, Point* c1, Point* c2, Point* 
 
     if (!_quaternionOffset)
     {
-        for (unsigned int i = 0; i < _componentCount; i++)
+        for (size_t i = 0; i < _componentCount; i++)
         {
             if (c1Value[i] == c2Value[i])
                 dst[i] = c1Value[i];
@@ -982,7 +982,7 @@ void Curve::interpolateHermite(float s, Point* from, Point* to, float* dst) cons
 
     if (!_quaternionOffset)
     {
-        for (unsigned int i = 0; i < _componentCount; i++)
+        for (size_t i = 0; i < _componentCount; i++)
         {
             if (fromValue[i] == toValue[i])
                 dst[i] = fromValue[i];
@@ -1034,7 +1034,7 @@ void Curve::interpolateHermiteFlat(float s, Point* from, Point* to, float* dst) 
 
     if (!_quaternionOffset)
     {
-        for (unsigned int i = 0; i < _componentCount; i++)
+        for (size_t i = 0; i < _componentCount; i++)
         {
             if (fromValue[i] == toValue[i])
                 dst[i] = fromValue[i];
@@ -1088,7 +1088,7 @@ void Curve::interpolateHermiteSmooth(float s, unsigned int index, Point* from, P
 
     if (!_quaternionOffset)
     {
-        for (unsigned int i = 0; i < _componentCount; i++)
+        for (size_t i = 0; i < _componentCount; i++)
         {
             if (fromValue[i] == toValue[i])
             {
@@ -1227,7 +1227,7 @@ void Curve::interpolateLinear(float s, Point* from, Point* to, float* dst) const
 
     if (!_quaternionOffset)
     {
-        for (unsigned int i = 0; i < _componentCount; i++)
+        for (size_t i = 0; i < _componentCount; i++)
         {
             if (fromValue[i] == toValue[i])
                 dst[i] = fromValue[i];

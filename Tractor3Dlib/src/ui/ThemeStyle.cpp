@@ -48,7 +48,7 @@ Theme::Style::Style(const Style& copy)
 
 Theme::Style::~Style()
 {
-    for (unsigned int i = 0; i < OVERLAY_MAX; i++)
+    for (size_t i = 0; i < OVERLAY_MAX; i++)
     {
         SAFE_RELEASE(_overlays[i]);
     }

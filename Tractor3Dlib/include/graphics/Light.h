@@ -1,35 +1,34 @@
 #pragma once
 
-#include "utils/Ref.h"
 #include "math/Vector3.h"
 #include "scene/Properties.h"
+#include "utils/Ref.h"
 
 namespace tractor
 {
 
-  class Node;
-  class NodeCloneContext;
+class Node;
+class NodeCloneContext;
 
-  /**
-   * Defines a light.
-   *
-   * There are 3 types of lights that can be created
-   * directional, point and spot lights.
-   */
-  class Light : public Ref
-  {
+/**
+ * Defines a light.
+ *
+ * There are 3 types of lights that can be created
+ * directional, point and spot lights.
+ */
+class Light : public Ref
+{
     friend class Node;
 
   public:
-
     /**
      * Defines the supported light types.
      */
     enum Type
     {
-      DIRECTIONAL = 1,
-      POINT = 2,
-      SPOT = 3
+        DIRECTIONAL = 1,
+        POINT = 2,
+        SPOT = 3
     };
 
     /**
@@ -104,7 +103,12 @@ namespace tractor
      * @return The new spot light.
      * @script{create}
      */
-    static Light* createSpot(float red, float green, float blue, float range, float innerAngle, float outerAngle);
+    static Light* createSpot(float red,
+                             float green,
+                             float blue,
+                             float range,
+                             float innerAngle,
+                             float outerAngle);
 
     /**
      * Creates a light from a properties definition.
@@ -230,16 +234,15 @@ namespace tractor
     float getOuterAngleCos() const;
 
   private:
-
     /**
      * Directional light data.
      */
     class Directional
     {
-    public:
-      Vector3 color;
+      public:
+        Vector3 color;
 
-      Directional(const Vector3& color);
+        Directional(const Vector3& color);
     };
 
     /**
@@ -247,12 +250,12 @@ namespace tractor
      */
     class Point
     {
-    public:
-      Vector3 color;
-      float range;
-      float rangeInverse;
+      public:
+        Vector3 color;
+        float range;
+        float rangeInverse;
 
-      Point(const Vector3& color, float range);
+        Point(const Vector3& color, float range);
     };
 
     /**
@@ -260,16 +263,16 @@ namespace tractor
      */
     class Spot
     {
-    public:
-      Vector3 color;
-      float range;
-      float rangeInverse;
-      float innerAngle;
-      float innerAngleCos;
-      float outerAngle;
-      float outerAngleCos;
+      public:
+        Vector3 color;
+        float range;
+        float rangeInverse;
+        float innerAngle;
+        float innerAngleCos;
+        float outerAngle;
+        float outerAngleCos;
 
-      Spot(const Vector3& color, float range, float innerAngle, float outerAngle);
+        Spot(const Vector3& color, float range, float innerAngle, float outerAngle);
     };
 
     /**
@@ -306,14 +309,14 @@ namespace tractor
 
     union
     {
-      /** @script{ignore} */
-      Directional* _directional;
-      /** @script{ignore} */
-      Point* _point;
-      /** @script{ignore} */
-      Spot* _spot;
+        /** @script{ignore} */
+        Directional* _directional;
+        /** @script{ignore} */
+        Point* _point;
+        /** @script{ignore} */
+        Spot* _spot;
     };
     Node* _node;
-  };
+};
 
-}
+} // namespace tractor

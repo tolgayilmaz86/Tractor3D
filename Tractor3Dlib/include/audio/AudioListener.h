@@ -1,27 +1,26 @@
 #pragma once
 
-#include "math/Vector3.h"
 #include "math/Transform.h"
+#include "math/Vector3.h"
 #include "renderer/Camera.h"
 
 namespace tractor
 {
 
-  /**
-   * Defines an audio listener in 3D space.
-   *
-   * The audio listener represents where you are listening from.
-   * In a 3D scene this is usually the active camera.
-   *
-   * @see Scene::bindAudioListenerToCamera
-   */
-  class AudioListener : public Camera::Listener
-  {
+/**
+ * Defines an audio listener in 3D space.
+ *
+ * The audio listener represents where you are listening from.
+ * In a 3D scene this is usually the active camera.
+ *
+ * @see Scene::bindAudioListenerToCamera
+ */
+class AudioListener : public Camera::Listener
+{
     friend class AudioController;
     friend class Game;
 
   public:
-
     /**
      * Gets the single instance of the audio listener.
      *
@@ -147,20 +146,19 @@ namespace tractor
     void setCamera(Camera* camera);
 
     /**
-    * Constructor.
-    */
+     * Constructor.
+     */
     AudioListener();
 
     /**
-    * Destructor.
-    */
+     * Destructor.
+     */
     ~AudioListener();
 
   private:
-
     /**
-    * @see Camera::Listener::cameraChanged
-    */
+     * @see Camera::Listener::cameraChanged
+     */
     void cameraChanged(Camera* camera);
 
     float _gain;
@@ -168,6 +166,6 @@ namespace tractor
     Vector3 _velocity;
     Vector3 _orientation[2];
     Camera* _camera;
-  };
+};
 
-}
+} // namespace tractor

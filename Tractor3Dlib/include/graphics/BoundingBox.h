@@ -5,13 +5,12 @@
 namespace tractor
 {
 
-  /**
-   * Defines a 3-dimensional axis-aligned bounding box.
-   */
-  class BoundingBox
-  {
+/**
+ * Defines a 3-dimensional axis-aligned bounding box.
+ */
+class BoundingBox
+{
   public:
-
     /**
      * The minimum point.
      */
@@ -86,10 +85,10 @@ namespace tractor
     /**
      * Gets the corners of the bounding box in the specified array.
      *
-     * The corners are returned as follows: 0 to 3 specify the near face starting at the upper left point
-     * when looking towards the origin from the positive z-axis in a counter-clockwise fashion; 4 to 7
-     * specify the far face starting at the upper left point when looking towards the origin from the negative
-     * z-axis in a counter-clockwise fashion.
+     * The corners are returned as follows: 0 to 3 specify the near face starting at the upper left
+     * point when looking towards the origin from the positive z-axis in a counter-clockwise
+     * fashion; 4 to 7 specify the far face starting at the upper left point when looking towards
+     * the origin from the negative z-axis in a counter-clockwise fashion.
      *
      * @param dst The array to store the corners in. Must be size 8.
      */
@@ -127,9 +126,10 @@ namespace tractor
      *
      * @param plane The plane to test intersection with.
      *
-     * @return Plane::INTERSECTS_BACK INTERSECTS_BACK if this bounding box is in the negative half-space of
-     *  the plane, Plane::INTERSECTS_FRONT INTERSECTS_FRONT if it is in the positive half-space of the plane;
-     *  and Plane::INTERSECTS_INTERSECTING INTERSECTS_INTERSECTING if it intersects the plane.
+     * @return Plane::INTERSECTS_BACK INTERSECTS_BACK if this bounding box is in the negative
+     * half-space of the plane, Plane::INTERSECTS_FRONT INTERSECTS_FRONT if it is in the positive
+     * half-space of the plane; and Plane::INTERSECTS_INTERSECTING INTERSECTS_INTERSECTING if it
+     * intersects the plane.
      */
     float intersects(const Plane& plane) const;
 
@@ -214,17 +214,17 @@ namespace tractor
      * @return This bounding box, after the transformation occurs.
      */
     inline BoundingBox& operator*=(const Matrix& matrix);
-  };
+};
 
-  /**
-   * Transforms the given bounding box by the given matrix.
-   *
-   * @param matrix The matrix to transform by.
-   * @param box The bounding box to transform.
-   * @return The resulting transformed bounding box.
-   */
-  inline const BoundingBox operator*(const Matrix& matrix, const BoundingBox& box);
+/**
+ * Transforms the given bounding box by the given matrix.
+ *
+ * @param matrix The matrix to transform by.
+ * @param box The bounding box to transform.
+ * @return The resulting transformed bounding box.
+ */
+inline const BoundingBox operator*(const Matrix& matrix, const BoundingBox& box);
 
-}
+} // namespace tractor
 
 #include "graphics/BoundingBox.inl"

@@ -1,25 +1,24 @@
 #pragma once
 
+#include "math/Vector3.h"
 #include "physics/PhysicsConstraint.h"
 #include "physics/PhysicsRigidBody.h"
-#include "math/Vector3.h"
 
 namespace tractor
 {
 
-  /**
-   * Defines a ball-socket or point-to-point constraint
-   * between two rigid bodies (or one rigid body and the world)
-   * where rotation is unrestricted about the constraint joint (pivot point).
-   *
-   * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-Constraints
-   */
-  class PhysicsSocketConstraint : public PhysicsConstraint
-  {
+/**
+ * Defines a ball-socket or point-to-point constraint
+ * between two rigid bodies (or one rigid body and the world)
+ * where rotation is unrestricted about the constraint joint (pivot point).
+ *
+ * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-Constraints
+ */
+class PhysicsSocketConstraint : public PhysicsConstraint
+{
     friend class PhysicsController;
 
   private:
-
     /**
      * Creates a socket constraint so that the rigid body (or bodies) is
      * (are) constrained using its (their) current world position(s) for
@@ -42,13 +41,15 @@ namespace tractor
      * @param translationOffsetB The translation offset for the second rigid body
      *      (in its local space) with respect to the constraint joint (optional).
      */
-    PhysicsSocketConstraint(PhysicsRigidBody* a, const Vector3& translationOffsetA,
-      PhysicsRigidBody* b, const Vector3& translationOffsetB);
+    PhysicsSocketConstraint(PhysicsRigidBody* a,
+                            const Vector3& translationOffsetA,
+                            PhysicsRigidBody* b,
+                            const Vector3& translationOffsetB);
 
     /**
      * Destructor.
      */
     ~PhysicsSocketConstraint();
-  };
+};
 
-}
+} // namespace tractor

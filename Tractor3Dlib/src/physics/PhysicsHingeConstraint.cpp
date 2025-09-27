@@ -1,21 +1,27 @@
 #include "pch.h"
+
 #include "physics/PhysicsHingeConstraint.h"
+
 #include "scene/Node.h"
 
 namespace tractor
 {
 
-  void PhysicsHingeConstraint::setLimits(float minAngle, float maxAngle, float bounciness)
-  {
+void PhysicsHingeConstraint::setLimits(float minAngle, float maxAngle, float bounciness)
+{
     // Use the defaults for softness (0.9) and biasFactor (0.3).
     assert(_constraint);
     ((btHingeConstraint*)_constraint)->setLimit(minAngle, maxAngle, 0.9f, 0.3f, bounciness);
-  }
+}
 
-  PhysicsHingeConstraint::PhysicsHingeConstraint(PhysicsRigidBody* a, const Quaternion& rotationOffsetA, const Vector3& translationOffsetA,
-    PhysicsRigidBody* b, const Quaternion& rotationOffsetB, const Vector3& translationOffsetB)
+PhysicsHingeConstraint::PhysicsHingeConstraint(PhysicsRigidBody* a,
+                                               const Quaternion& rotationOffsetA,
+                                               const Vector3& translationOffsetA,
+                                               PhysicsRigidBody* b,
+                                               const Quaternion& rotationOffsetB,
+                                               const Vector3& translationOffsetB)
     : PhysicsConstraint(a, b)
-  {
+{
     assert(a && a->_body && a->getNode());
 
     // Take scale into account for the first node's translation offset.
@@ -25,28 +31,29 @@ namespace tractor
 
     if (b)
     {
-      assert(b->_body && b->getNode());
+        assert(b->_body && b->getNode());
 
-      // Take scale into account for the second node's translation offset.
-      Vector3 sB;
-      b->getNode()->getWorldMatrix().getScale(&sB);
-      Vector3 tB(translationOffsetB.x * sB.x, translationOffsetB.y * sB.y, translationOffsetB.z * sB.z);
+        // Take scale into account for the second node's translation offset.
+        Vector3 sB;
+        b->getNode()->getWorldMatrix().getScale(&sB);
+        Vector3 tB(translationOffsetB.x * sB.x,
+                   translationOffsetB.y * sB.y,
+                   translationOffsetB.z * sB.z);
 
-      btTransform frameInA(BQ(rotationOffsetA), BV(tA));
-      btTransform frameInB(BQ(rotationOffsetB), BV(tB));
-      _constraint = bullet_new<btHingeConstraint>(*a->_body, *b->_body, frameInA, frameInB);
+        btTransform frameInA(BQ(rotationOffsetA), BV(tA));
+        btTransform frameInB(BQ(rotationOffsetB), BV(tB));
+        _constraint = bullet_new<btHingeConstraint>(*a->_body, *b->_body, frameInA, frameInB);
     }
     else
     {
-      btTransform frameInA(BQ(rotationOffsetA), BV(tA));
-      _constraint = bullet_new<btHingeConstraint>(*a->_body, frameInA);
+        btTransform frameInA(BQ(rotationOffsetA), BV(tA));
+        _constraint = bullet_new<btHingeConstraint>(*a->_body, frameInA);
     }
-  }
-
-
-  PhysicsHingeConstraint::~PhysicsHingeConstraint()
-  {
-    // Unused
-  }
-
 }
+
+PhysicsHingeConstraint::~PhysicsHingeConstraint()
+{
+    // Unused
+}
+
+} // namespace tractor

@@ -5,15 +5,14 @@
 namespace tractor
 {
 
-  class Material;
+class Material;
 
-  /**
-   * Defines a class for rendering multiple mesh into a single draw call on the graphics device.
-   */
-  class MeshBatch
-  {
+/**
+ * Defines a class for rendering multiple mesh into a single draw call on the graphics device.
+ */
+class MeshBatch
+{
   public:
-
     /**
      * Creates a new mesh batch.
      *
@@ -27,7 +26,12 @@ namespace tractor
      * @return A new mesh batch.
      * @script{create}
      */
-    static MeshBatch* create(const VertexFormat& vertexFormat, Mesh::PrimitiveType primitiveType, const std::string& materialPath, bool indexed, unsigned int initialCapacity = 1024, unsigned int growSize = 1024);
+    static MeshBatch* create(const VertexFormat& vertexFormat,
+                             Mesh::PrimitiveType primitiveType,
+                             const std::string& materialPath,
+                             bool indexed,
+                             unsigned int initialCapacity = 1024,
+                             unsigned int growSize = 1024);
 
     /**
      * Creates a new mesh batch.
@@ -42,7 +46,12 @@ namespace tractor
      * @return A new mesh batch.
      * @script{create}
      */
-    static MeshBatch* create(const VertexFormat& vertexFormat, Mesh::PrimitiveType primitiveType, Material* material, bool indexed, unsigned int initialCapacity = 1024, unsigned int growSize = 1024);
+    static MeshBatch* create(const VertexFormat& vertexFormat,
+                             Mesh::PrimitiveType primitiveType,
+                             Material* material,
+                             bool indexed,
+                             unsigned int initialCapacity = 1024,
+                             unsigned int growSize = 1024);
 
     /**
      * Destructor.
@@ -90,7 +99,10 @@ namespace tractor
      * @param indexCount Number of indices (should be zero for non-indexed batches).
      */
     template <class T>
-    void add(const T* vertices, unsigned int vertexCount, const unsigned short* indices = nullptr, unsigned int indexCount = 0);
+    void add(const T* vertices,
+             unsigned int vertexCount,
+             const unsigned short* indices = nullptr,
+             unsigned int indexCount = 0);
 
     /**
      * Adds a group of primitives to the batch.
@@ -111,7 +123,10 @@ namespace tractor
      * @param indices Array of indices into the vertex array (should be nullptr for non-indexed batches).
      * @param indexCount Number of indices (should be zero for non-indexed batches).
      */
-    void add(const float* vertices, unsigned int vertexCount, const unsigned short* indices = nullptr, unsigned int indexCount = 0);
+    void add(const float* vertices,
+             unsigned int vertexCount,
+             const unsigned short* indices = nullptr,
+             unsigned int indexCount = 0);
 
     /**
      * Starts batching.
@@ -126,8 +141,8 @@ namespace tractor
     void start();
 
     /**
-    * Determines if the batch has been started and not yet finished.
-    */
+     * Determines if the batch has been started and not yet finished.
+     */
     bool isStarted() const;
 
     /**
@@ -141,11 +156,15 @@ namespace tractor
     void draw();
 
   private:
-
     /**
      * Constructor.
      */
-    MeshBatch(const VertexFormat& vertexFormat, Mesh::PrimitiveType primitiveType, Material* material, bool indexed, unsigned int initialCapacity, unsigned int growSize);
+    MeshBatch(const VertexFormat& vertexFormat,
+              Mesh::PrimitiveType primitiveType,
+              Material* material,
+              bool indexed,
+              unsigned int initialCapacity,
+              unsigned int growSize);
 
     /**
      * Hidden copy constructor.
@@ -157,7 +176,11 @@ namespace tractor
      */
     MeshBatch& operator=(const MeshBatch&);
 
-    void add(const void* vertices, size_t size, unsigned int vertexCount, const unsigned short* indices, unsigned int indexCount);
+    void add(const void* vertices,
+             size_t size,
+             unsigned int vertexCount,
+             const unsigned short* indices,
+             unsigned int indexCount);
 
     void updateVertexAttributeBinding();
 
@@ -178,9 +201,8 @@ namespace tractor
     unsigned short* _indices;
     unsigned short* _indicesPtr;
     bool _started;
+};
 
-  };
-
-}
+} // namespace tractor
 
 #include "graphics/MeshBatch.inl"

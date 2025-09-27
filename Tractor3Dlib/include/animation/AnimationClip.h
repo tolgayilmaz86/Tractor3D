@@ -1,22 +1,22 @@
 #pragma once
 
+#include "animation/Animation.h"
 #include "animation/AnimationValue.h"
 #include "graphics/Curve.h"
-#include "animation/Animation.h"
-#include "utils/ref.h"
 #include "scripting/ScriptTarget.h"
+#include "utils/ref.h"
 
 namespace tractor
 {
 
-  class Animation;
-  class AnimationValue;
+class Animation;
+class AnimationValue;
 
-  /**
-   * Defines the runtime session of an Animation to be played.
-   */
-  class AnimationClip : public Ref, public ScriptTarget
-  {
+/**
+ * Defines the runtime session of an Animation to be played.
+ */
+class AnimationClip : public Ref, public ScriptTarget
+{
     friend class AnimationController;
     friend class Animation;
 
@@ -27,7 +27,6 @@ namespace tractor
     GP_SCRIPT_EVENTS_END();
 
   public:
-
     /**
      * Defines a constant for indefinitely repeating an AnimationClip.
      */
@@ -38,47 +37,44 @@ namespace tractor
      */
     class Listener
     {
-      friend class AnimationClip;
+        friend class AnimationClip;
 
-    public:
-
-      /**
-       * Constructor.
-       */
-      Listener()
-      {
-      }
-
-      /**
-       * The type of animation event.
-       */
-      enum EventType
-      {
+      public:
         /**
-         * Event fired when the clip begins.
+         * Constructor.
          */
-        BEGIN,
+        Listener() {}
 
         /**
-         * Event fired when the clip ends.
+         * The type of animation event.
          */
-        END,
+        enum EventType
+        {
+            /**
+             * Event fired when the clip begins.
+             */
+            BEGIN,
+
+            /**
+             * Event fired when the clip ends.
+             */
+            END,
+
+            /**
+             * Event fired at a specified time during a clip update.
+             */
+            TIME
+        };
+
+        /*
+         * Destructor.
+         */
+        virtual ~Listener() {}
 
         /**
-         * Event fired at a specified time during a clip update.
+         * Handles when animation event occurs.
          */
-        TIME
-      };
-
-      /*
-       * Destructor.
-       */
-      virtual ~Listener() { }
-
-      /**
-       * Handles when animation event occurs.
-       */
-      virtual void animationEvent(AnimationClip* clip, EventType type) = 0;
+        virtual void animationEvent(AnimationClip* clip, EventType type) = 0;
     };
 
     /**
@@ -271,8 +267,8 @@ namespace tractor
      *
      * @param listener The listener to be called when the AnimationClip reaches the
      *      specified time in its playback.
-     * @param eventTime The time the listener will be called during the playback of the AnimationClip.
-     *      Must be between 0 and the duration of the AnimationClip.
+     * @param eventTime The time the listener will be called during the playback of the
+     * AnimationClip. Must be between 0 and the duration of the AnimationClip.
      */
     void addListener(AnimationClip::Listener* listener, unsigned long eventTime);
 
@@ -285,47 +281,59 @@ namespace tractor
     void removeListener(AnimationClip::Listener* listener, unsigned long eventTime);
 
   private:
-
-    static const unsigned char CLIP_IS_PLAYING_BIT = 0x01;             // Bit representing whether AnimationClip is a running clip in AnimationController
-    static const unsigned char CLIP_IS_STARTED_BIT = 0x02;             // Bit representing whether the AnimationClip has actually been started (ie: received first call to update())
-    static const unsigned char CLIP_IS_FADING_OUT_STARTED_BIT = 0x04;  // Bit representing that a cross fade has started.
-    static const unsigned char CLIP_IS_FADING_OUT_BIT = 0x08;          // Bit representing whether the clip is fading out.
-    static const unsigned char CLIP_IS_FADING_IN_BIT = 0x10;           // Bit representing whether the clip is fading out.
-    static const unsigned char CLIP_IS_MARKED_FOR_REMOVAL_BIT = 0x20;  // Bit representing whether the clip has ended and should be removed from the AnimationController.
-    static const unsigned char CLIP_IS_RESTARTED_BIT = 0x40;           // Bit representing if the clip should be restarted by the AnimationController.
-    static const unsigned char CLIP_IS_PAUSED_BIT = 0x80;              // Bit representing if the clip is currently paused.
-    static const unsigned char CLIP_ALL_BITS = 0xFF;                   // Bit mask for all the state bits.
+    static const unsigned char CLIP_IS_PLAYING_BIT =
+        0x01; // Bit representing whether AnimationClip is a running clip in AnimationController
+    static const unsigned char CLIP_IS_STARTED_BIT =
+        0x02; // Bit representing whether the AnimationClip has actually been started (ie: received first call to update())
+    static const unsigned char CLIP_IS_FADING_OUT_STARTED_BIT =
+        0x04; // Bit representing that a cross fade has started.
+    static const unsigned char CLIP_IS_FADING_OUT_BIT =
+        0x08; // Bit representing whether the clip is fading out.
+    static const unsigned char CLIP_IS_FADING_IN_BIT =
+        0x10; // Bit representing whether the clip is fading out.
+    static const unsigned char CLIP_IS_MARKED_FOR_REMOVAL_BIT =
+        0x20; // Bit representing whether the clip has ended and should be removed from the AnimationController.
+    static const unsigned char CLIP_IS_RESTARTED_BIT =
+        0x40; // Bit representing if the clip should be restarted by the AnimationController.
+    static const unsigned char CLIP_IS_PAUSED_BIT =
+        0x80; // Bit representing if the clip is currently paused.
+    static const unsigned char CLIP_ALL_BITS = 0xFF; // Bit mask for all the state bits.
 
     /**
      * ListenerEvent.
      *
-     * Internal structure used for storing the event time at which an AnimationClip::Listener should be called back.
+     * Internal structure used for storing the event time at which an AnimationClip::Listener should
+     * be called back.
      */
     struct ListenerEvent
     {
-      /**
-       * Constructor.
-       */
-      ListenerEvent(Listener* listener, unsigned long eventTime);
+        /**
+         * Constructor.
+         */
+        ListenerEvent(Listener* listener, unsigned long eventTime);
 
-      /**
-       * Destructor.
-       */
-      ~ListenerEvent();
+        /**
+         * Destructor.
+         */
+        ~ListenerEvent();
 
-      /**
-       * Hidden copy assignment operator.
-       */
-      ListenerEvent& operator=(const ListenerEvent&);
+        /**
+         * Hidden copy assignment operator.
+         */
+        ListenerEvent& operator=(const ListenerEvent&);
 
-      Listener* _listener;        // This listener to call back when this event is triggered.
-      unsigned long _eventTime;   // The time at which the listener will be called back at during the playback of the AnimationClip.
+        Listener* _listener;      // This listener to call back when this event is triggered.
+        unsigned long _eventTime; // The time at which the listener will be called back at during
+                                  // the playback of the AnimationClip.
     };
 
     /**
      * Constructor.
      */
-    AnimationClip(const std::string& id, Animation* animation, unsigned long startTime, unsigned long endTime);
+    AnimationClip(const std::string& id,
+                  Animation* animation,
+                  unsigned long startTime,
+                  unsigned long endTime);
 
     /**
      * Constructor.
@@ -386,27 +394,28 @@ namespace tractor
      */
     AnimationClip* clone(Animation* animation) const;
 
-    std::string _id;                                    // AnimationClip ID.
-    Animation* _animation;                              // The Animation this clip is created from.
-    unsigned long _startTime;                           // Start time of the clip.
-    unsigned long _endTime;                             // End time of the clip.
-    unsigned long _duration;                            // The total duration.
-    unsigned char _stateBits;                           // Bit flag used to keep track of the clip's current state.
-    float _repeatCount;                                 // The clip's repeat count.
-    unsigned int _loopBlendTime;                        // Time spent blending the last frame of animation with the first frame, when looping.
-    unsigned long _activeDuration;                      // The active duration of the clip.
-    float _speed;                                       // The speed that the clip is playing. Default is 1.0. Negative goes in reverse.
-    double _timeStarted;                                // The game time when this clip was actually started.
-    float _elapsedTime;                                 // Time elapsed while the clip is running.
-    AnimationClip* _crossFadeToClip;                    // The clip to cross fade to.
-    float _crossFadeOutElapsed;                         // The amount of time that has elapsed for the crossfade.
-    unsigned long _crossFadeOutDuration;                // The duration of the cross fade.
-    float _blendWeight;                                 // The clip's blendweight.
-    std::vector<AnimationValue*> _values;               // AnimationValue holder.
-    std::vector<Listener*>* _beginListeners;            // Collection of begin listeners on the clip.
-    std::vector<Listener*>* _endListeners;              // Collection of end listeners on the clip.
-    std::list<ListenerEvent*>* _listeners;              // Ordered collection of listeners on the clip.
-    std::list<ListenerEvent*>::iterator* _listenerItr;  // Iterator that points to the next listener event to be triggered.
-  };
+    std::string _id;          // AnimationClip ID.
+    Animation* _animation;    // The Animation this clip is created from.
+    unsigned long _startTime; // Start time of the clip.
+    unsigned long _endTime;   // End time of the clip.
+    unsigned long _duration;  // The total duration.
+    unsigned char _stateBits; // Bit flag used to keep track of the clip's current state.
+    float _repeatCount;       // The clip's repeat count.
+    unsigned int _loopBlendTime; // Time spent blending the last frame of animation with the first frame, when looping.
+    unsigned long _activeDuration; // The active duration of the clip.
+    float _speed; // The speed that the clip is playing. Default is 1.0. Negative goes in reverse.
+    double _timeStarted;                  // The game time when this clip was actually started.
+    float _elapsedTime;                   // Time elapsed while the clip is running.
+    AnimationClip* _crossFadeToClip;      // The clip to cross fade to.
+    float _crossFadeOutElapsed;           // The amount of time that has elapsed for the crossfade.
+    unsigned long _crossFadeOutDuration;  // The duration of the cross fade.
+    float _blendWeight;                   // The clip's blendweight.
+    std::vector<AnimationValue*> _values; // AnimationValue holder.
+    std::vector<Listener*>* _beginListeners; // Collection of begin listeners on the clip.
+    std::vector<Listener*>* _endListeners;   // Collection of end listeners on the clip.
+    std::list<ListenerEvent*>* _listeners;   // Ordered collection of listeners on the clip.
+    std::list<ListenerEvent*>::iterator*
+        _listenerItr; // Iterator that points to the next listener event to be triggered.
+};
 
-}
+} // namespace tractor

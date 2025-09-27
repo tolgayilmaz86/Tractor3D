@@ -1,16 +1,14 @@
 #pragma once
 
-
 namespace tractor
 {
 
-  /**
-   * Defines a rectangle.
-   */
-  class Rectangle
-  {
+/**
+ * Defines a rectangle.
+ */
+class Rectangle
+{
   public:
-
     /**
      * Specifies the x-coordinate of the rectangle.
      */
@@ -224,17 +222,17 @@ namespace tractor
     /**
      * operator =
      */
-    Rectangle& operator = (const Rectangle& r);
+    Rectangle& operator=(const Rectangle& r);
 
     /**
      * operator ==
      */
-    bool operator == (const Rectangle& r) const;
+    bool operator==(const Rectangle& r) const;
 
     /**
      * operator !=
      */
-    bool operator != (const Rectangle& r) const;
-  };
+    bool operator!=(const Rectangle& r) const;
+};
 
-}
+} // namespace tractor

@@ -1,16 +1,16 @@
 #pragma once
 
-#include "scripting/Script.h"
 #include "framework/Game.h"
+#include "scripting/Script.h"
 
 namespace tractor
 {
 
-  /**
-   * Controls and manages all scripts.
-   */
-  class ScriptController
-  {
+/**
+ * Controls and manages all scripts.
+ */
+class ScriptController
+{
     friend class Game;
     friend class Platform;
     friend class Script;
@@ -18,7 +18,6 @@ namespace tractor
     friend class ScriptTimeListener;
 
   public:
-
     /**
      * Loads the given script file and executes its code (if it is not
      * alreay loaded).
@@ -35,7 +34,9 @@ namespace tractor
      *
      * @return The loaded script, or nullptr if the script could not be loaded.
      */
-    Script* loadScript(const std::string& path, Script::Scope scope = Script::GLOBAL, bool forceReload = false);
+    Script* loadScript(const std::string& path,
+                       Script::Scope scope = Script::GLOBAL,
+                       bool forceReload = false);
 
     /**
      * Calls a zero-parameter global function.
@@ -47,7 +48,7 @@ namespace tractor
      *
      * @script{ignore}
      */
-    template<typename T> bool executeFunction(const char* func, T* out);
+    template <typename T> bool executeFunction(const char* func, T* out);
 
     /**
      * Calls a zero-parameter function.
@@ -60,13 +61,14 @@ namespace tractor
      *
      * @script{ignore}
      */
-    template<typename T> bool executeFunction(Script* script, const char* func, T* out);
+    template <typename T> bool executeFunction(Script* script, const char* func, T* out);
 
     /**
      * Calls a global function using the given parameters.
      *
      * @param func The name of the function to call.
-     * @param args The argument signature of the function. Of the form 'xxx', where each 'x' is a parameter type and must be one of:
+     * @param args The argument signature of the function. Of the form 'xxx', where each 'x' is a
+     * parameter type and must be one of:
      *      - 'b' - bool
      *      - 'c' - char
      *      - 'h' - short
@@ -80,8 +82,10 @@ namespace tractor
      *      - 'uh' - unsigned short
      *      - 's' - string
      *      - 'p' - pointer
-     *      - '<object-type>' - a <b>pointer</b> to an object of the given type (where the qualified type name is enclosed by angle brackets).
-     *      - '[enum-type]' - an enumerated value of the given type (where the qualified type name is enclosed by square brackets).
+     *      - '<object-type>' - a <b>pointer</b> to an object of the given type (where the qualified
+     * type name is enclosed by angle brackets).
+     *      - '[enum-type]' - an enumerated value of the given type (where the qualified type name
+     * is enclosed by square brackets).
      * @param out Pointer to populate with the return value if the function succeeds, or nullptr.
      * @param ... Parameters to pass to the script fucntion, as specified by the args parameter.
      *
@@ -89,14 +93,15 @@ namespace tractor
      *
      * @script{ignore}
      */
-    template<typename T> bool executeFunction(const char* func, const char* args, T* out, ...);
+    template <typename T> bool executeFunction(const char* func, const char* args, T* out, ...);
 
     /**
      * Calls the a function from the specified script, using the given parameters.
      *
      * @param script The script to execute the function on, or nullptr for the global script environment.
      * @param func The name of the function to call.
-     * @param args The argument signature of the function. Of the form 'xxx', where each 'x' is a parameter type and must be one of:
+     * @param args The argument signature of the function. Of the form 'xxx', where each 'x' is a parameter
+     * type and must be one of:
      *      - 'b' - bool
      *      - 'c' - char
      *      - 'h' - short
@@ -110,8 +115,10 @@ namespace tractor
      *      - 'uh' - unsigned short
      *      - 's' - string
      *      - 'p' - pointer
-     *      - '<object-type>' - a <b>pointer</b> to an object of the given type (where the qualified type name is enclosed by angle brackets).
-     *      - '[enum-type]' - an enumerated value of the given type (where the qualified type name is enclosed by square brackets).
+     *      - '<object-type>' - a <b>pointer</b> to an object of the given type (where the qualified
+     * type name is enclosed by angle brackets).
+     *      - '[enum-type]' - an enumerated value of the given type (where the qualified type name
+     * is enclosed by square brackets).
      * @param out Pointer to populate with the return value if the function succeeds, or nullptr.
      * @param ... Parameters to pass to the script fucntion, as specified by the args parameter.
      *
@@ -119,13 +126,15 @@ namespace tractor
      *
      * @script{ignore}
      */
-    template<typename T> bool executeFunction(Script* script, const char* func, const char* args, T* out, ...);
+    template <typename T>
+    bool executeFunction(Script* script, const char* func, const char* args, T* out, ...);
 
     /**
      * Calls the specified global Lua function using the given parameters.
      *
      * @param func The name of the function to call.
-     * @param args The optional argument signature of the function. Of the form 'xxx', where each 'x' is a parameter type and must be one of:
+     * @param args The optional argument signature of the function. Of the form 'xxx', where each
+     * 'x' is a parameter type and must be one of:
      *      - 'b' - bool
      *      - 'c' - char
      *      - 'h' - short
@@ -139,23 +148,28 @@ namespace tractor
      *      - 'uh' - unsigned short
      *      - 's' - string
      *      - 'p' - pointer
-     *      - '<object-type>' - a <b>pointer</b> to an object of the given type (where the qualified type name is enclosed by angle brackets).
-     *      - '[enum-type]' - an enumerated value of the given type (where the qualified type name is enclosed by square brackets).
+     *      - '<object-type>' - a <b>pointer</b> to an object of the given type (where the qualified
+     * type name is enclosed by angle brackets).
+     *      - '[enum-type]' - an enumerated value of the given type (where the qualified type name
+     * is enclosed by square brackets).
      * @param out Pointer to populate with the return value if the function succeeds, or nullptr.
-     * @param list The variable argument list containing the function's parameters, or nullptr for an empty parameter list.
+     * @param list The variable argument list containing the function's parameters, or nullptr for
+     * an empty parameter list.
      *
      * @return True if the function is successfully executed, false otherwise.
      *
      * @script{ignore}
      */
-    template<typename T> bool executeFunction(const char* func, const char* args, T* out, va_list* list);
+    template <typename T>
+    bool executeFunction(const char* func, const char* args, T* out, va_list* list);
 
     /**
      * Calls the specified global Lua function using the given parameters.
      *
      * @param script Optional script to use, or nullptr for the global script environment.
      * @param func The name of the function to call.
-     * @param args The optional argument signature of the function. Of the form 'xxx', where each 'x' is a parameter type and must be one of:
+     * @param args The optional argument signature of the function. Of the form 'xxx', where each
+     * 'x' is a parameter type and must be one of:
      *      - 'b' - bool
      *      - 'c' - char
      *      - 'h' - short
@@ -169,16 +183,20 @@ namespace tractor
      *      - 'uh' - unsigned short
      *      - 's' - string
      *      - 'p' - pointer
-     *      - '<object-type>' - a <b>pointer</b> to an object of the given type (where the qualified type name is enclosed by angle brackets).
-     *      - '[enum-type]' - an enumerated value of the given type (where the qualified type name is enclosed by square brackets).
+     *      - '<object-type>' - a <b>pointer</b> to an object of the given type (where the qualified
+     * type name is enclosed by angle brackets).
+     *      - '[enum-type]' - an enumerated value of the given type (where the qualified type name
+     * is enclosed by square brackets).
      * @param out Pointer to populate with the return value if the function succeeds, or nullptr.
-     * @param list The variable argument list containing the function's parameters, or nullptr for an empty parameter list.
+     * @param list The variable argument list containing the function's parameters, or nullptr for
+     * an empty parameter list.
      *
      * @return True if the function is successfully executed, false otherwise.
      *
      * @script{ignore}
      */
-    template<typename T> bool executeFunction(Script* script, const char* func, const char* args, T* out, va_list* list);
+    template <typename T>
+    bool executeFunction(Script* script, const char* func, const char* args, T* out, va_list* list);
 
     /**
      * Gets the global boolean script variable with the given name.
@@ -256,7 +274,9 @@ namespace tractor
      *
      * @script{ignore}
      */
-    unsigned char getUnsignedChar(const char* name, unsigned char defaultValue = 0, Script* script = nullptr);
+    unsigned char getUnsignedChar(const char* name,
+                                  unsigned char defaultValue = 0,
+                                  Script* script = nullptr);
 
     /**
      * Gets the global unsigned short script variable with the given name.
@@ -269,7 +289,9 @@ namespace tractor
      *
      * @script{ignore}
      */
-    unsigned short getUnsignedShort(const char* name, unsigned short defaultValue = 0, Script* script = nullptr);
+    unsigned short getUnsignedShort(const char* name,
+                                    unsigned short defaultValue = 0,
+                                    Script* script = nullptr);
 
     /**
      * Gets the global unsigned int script variable with the given name.
@@ -282,7 +304,9 @@ namespace tractor
      *
      * @script{ignore}
      */
-    unsigned int getUnsignedInt(const char* name, unsigned int defaultValue = 0, Script* script = nullptr);
+    unsigned int getUnsignedInt(const char* name,
+                                unsigned int defaultValue = 0,
+                                Script* script = nullptr);
 
     /**
      * Gets the global unsigned long script variable with the given name.
@@ -295,7 +319,9 @@ namespace tractor
      *
      * @script{ignore}
      */
-    unsigned long getUnsignedLong(const char* name, unsigned long defaultValue = 0, Script* script = nullptr);
+    unsigned long getUnsignedLong(const char* name,
+                                  unsigned long defaultValue = 0,
+                                  Script* script = nullptr);
 
     /**
      * Gets the global float script variable with the given name.
@@ -326,9 +352,9 @@ namespace tractor
     /**
      * Gets the global string variable with the given name.
      *
-     * The returned character string is temporary and is not gauranteed to live forever, therefore you
-     * should not store a pointer to the returned value. If long-term access to the returned string is
-     * required, it should be copied into another string for storage.
+     * The returned character string is temporary and is not gauranteed to live forever, therefore
+     * you should not store a pointer to the returned value. If long-term access to the returned
+     * string is required, it should be copied into another string for storage.
      *
      * @param name The name of the variable.
      * @param script Optional script to use, or nullptr for the global script environment.
@@ -552,31 +578,30 @@ namespace tractor
     ~ScriptController();
 
   private:
-
     /**
      * Allows time listener interaction from Lua scripts.
      */
     struct ScriptTimeListener : public TimeListener
     {
-      /**
-       * Constructor.
-       */
-      ScriptTimeListener(Script* script, const char* function);
+        /**
+         * Constructor.
+         */
+        ScriptTimeListener(Script* script, const char* function);
 
-      /**
-       * Destructor.
-       */
-      ~ScriptTimeListener();
+        /**
+         * Destructor.
+         */
+        ~ScriptTimeListener();
 
-      /**
-       * @see TimeListener#timeEvent(long, void*)
-       */
-      void timeEvent(long timeDiff, void* cookie);
+        /**
+         * @see TimeListener#timeEvent(long, void*)
+         */
+        void timeEvent(long timeDiff, void* cookie);
 
-      /** Holds the script to execute the function within. */
-      Script* script;
-      /** Holds the name of the Lua script function to call back. */
-      std::string function;
+        /** Holds the script to execute the function within. */
+        Script* script;
+        /** Holds the name of the Lua script function to call back. */
+        std::string function;
     };
 
     /**
@@ -646,17 +671,26 @@ namespace tractor
      *      - 'uh' - unsigned short
      *      - 's' - string
      *      - 'p' - pointer
-     *      - '<object-type>' - a <b>pointer</b> to an object of the given type (where the qualified type name is enclosed by angle brackets).
-     *      - '[enum-type]' - an enumerated value of the given type (where the qualified type name is enclosed by square brackets).
+     *      - '<object-type>' - a <b>pointer</b> to an object of the given type (where the qualified
+     * type name is enclosed by angle brackets).
+     *      - '[enum-type]' - an enumerated value of the given type (where the qualified type name
+     * is enclosed by square brackets).
      * @param list The variable argument list.
-     * @param script Optional script to execute the function in, or nullptr for to execute it in the global environment.
-     * @return True if the function is executed and results were pushed, false if an error occurred (in which case nothing is pushed).
+     * @param script Optional script to execute the function in, or nullptr for to execute it in the
+     * global environment.
+     * @return True if the function is executed and results were pushed, false if an error occurred
+     * (in which case nothing is pushed).
      */
-    bool executeFunctionHelper(int resultCount, const char* func, const char* args, va_list* list, Script* script = nullptr);
+    bool executeFunctionHelper(int resultCount,
+                               const char* func,
+                               const char* args,
+                               va_list* list,
+                               Script* script = nullptr);
 
     /**
      * Converts a Gameplay userdata value to the type with the given class name.
-     * This function will change the metatable of the userdata value to the metatable that matches the given string.
+     * This function will change the metatable of the userdata value to the metatable that matches
+     * the given string.
      *
      * Example:
      * <code>
@@ -668,8 +702,8 @@ namespace tractor
      * <code>
      * -- The signature of the lua function:
      * -- param: object    A userdata object that represents a Gameplay object.
-     * -- param: className The name of the class to convert the object to. (Examples: "Button", "PhysicsRigidBody")
-     * function convert(object, className)
+     * -- param: className The name of the class to convert the object to. (Examples: "Button",
+     * "PhysicsRigidBody") function convert(object, className)
      * </code>
      *
      * @param state The Lua state.
@@ -696,185 +730,415 @@ namespace tractor
 
     lua_State* _lua;
     unsigned int _returnCount;
-    std::map<std::string, std::vector<Script*> > _scripts;
+    std::map<std::string, std::vector<Script*>> _scripts;
     std::vector<Script*> _envStack;
     std::list<ScriptTimeListener*> _timeListeners;
-  };
+};
 
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<void>(const char* func, void* out);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<bool>(const char* func, bool* out);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<char>(const char* func, char* out);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<short>(const char* func, short* out);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<int>(const char* func, int* out);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<long>(const char* func, long* out);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<unsigned char>(const char* func, unsigned char* out);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<unsigned short>(const char* func, unsigned short* out);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<unsigned int>(const char* func, unsigned int* out);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<unsigned long>(const char* func, unsigned long* out);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<float>(const char* func, float* out);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<double>(const char* func, double* out);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<std::string>(const char* func, std::string* out);
+/** Template specialization. */
+template <> bool ScriptController::executeFunction<void>(const char* func, void* out);
+/** Template specialization. */
+template <> bool ScriptController::executeFunction<bool>(const char* func, bool* out);
+/** Template specialization. */
+template <> bool ScriptController::executeFunction<char>(const char* func, char* out);
+/** Template specialization. */
+template <> bool ScriptController::executeFunction<short>(const char* func, short* out);
+/** Template specialization. */
+template <> bool ScriptController::executeFunction<int>(const char* func, int* out);
+/** Template specialization. */
+template <> bool ScriptController::executeFunction<long>(const char* func, long* out);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<unsigned char>(const char* func, unsigned char* out);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<unsigned short>(const char* func, unsigned short* out);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<unsigned int>(const char* func, unsigned int* out);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<unsigned long>(const char* func, unsigned long* out);
+/** Template specialization. */
+template <> bool ScriptController::executeFunction<float>(const char* func, float* out);
+/** Template specialization. */
+template <> bool ScriptController::executeFunction<double>(const char* func, double* out);
+/** Template specialization. */
+template <> bool ScriptController::executeFunction<std::string>(const char* func, std::string* out);
 
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<void>(Script* script, const char* func, void* out);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<bool>(Script* script, const char* func, bool* out);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<char>(Script* script, const char* func, char* out);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<short>(Script* script, const char* func, short* out);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<int>(Script* script, const char* func, int* out);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<long>(Script* script, const char* func, long* out);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<unsigned char>(Script* script, const char* func, unsigned char* out);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<unsigned short>(Script* script, const char* func, unsigned short* out);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<unsigned int>(Script* script, const char* func, unsigned int* out);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<unsigned long>(Script* script, const char* func, unsigned long* out);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<float>(Script* script, const char* func, float* out);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<double>(Script* script, const char* func, double* out);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<std::string>(Script* script, const char* func, std::string* out);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<void>(Script* script, const char* func, void* out);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<bool>(Script* script, const char* func, bool* out);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<char>(Script* script, const char* func, char* out);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<short>(Script* script, const char* func, short* out);
+/** Template specialization. */
+template <> bool ScriptController::executeFunction<int>(Script* script, const char* func, int* out);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<long>(Script* script, const char* func, long* out);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<unsigned char>(Script* script,
+                                                      const char* func,
+                                                      unsigned char* out);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<unsigned short>(Script* script,
+                                                       const char* func,
+                                                       unsigned short* out);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<unsigned int>(Script* script,
+                                                     const char* func,
+                                                     unsigned int* out);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<unsigned long>(Script* script,
+                                                      const char* func,
+                                                      unsigned long* out);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<float>(Script* script, const char* func, float* out);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<double>(Script* script, const char* func, double* out);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<std::string>(Script* script, const char* func, std::string* out);
 
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<void>(const char* func, const char* args, void* out, ...);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<bool>(const char* func, const char* args, bool* out, ...);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<char>(const char* func, const char* args, char* out, ...);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<short>(const char* func, const char* args, short* out, ...);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<int>(const char* func, const char* args, int* out, ...);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<long>(const char* func, const char* args, long* out, ...);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<unsigned char>(const char* func, const char* args, unsigned char* out, ...);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<unsigned short>(const char* func, const char* args, unsigned short* out, ...);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<unsigned int>(const char* func, const char* args, unsigned int* out, ...);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<unsigned long>(const char* func, const char* args, unsigned long* out, ...);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<float>(const char* func, const char* args, float* out, ...);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<double>(const char* func, const char* args, double* out, ...);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<std::string>(const char* func, const char* args, std::string* out, ...);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<void>(const char* func, const char* args, void* out, ...);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<bool>(const char* func, const char* args, bool* out, ...);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<char>(const char* func, const char* args, char* out, ...);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<short>(const char* func, const char* args, short* out, ...);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<int>(const char* func, const char* args, int* out, ...);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<long>(const char* func, const char* args, long* out, ...);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<unsigned char>(const char* func,
+                                                      const char* args,
+                                                      unsigned char* out,
+                                                      ...);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<unsigned short>(const char* func,
+                                                       const char* args,
+                                                       unsigned short* out,
+                                                       ...);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<unsigned int>(const char* func,
+                                                     const char* args,
+                                                     unsigned int* out,
+                                                     ...);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<unsigned long>(const char* func,
+                                                      const char* args,
+                                                      unsigned long* out,
+                                                      ...);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<float>(const char* func, const char* args, float* out, ...);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<double>(const char* func, const char* args, double* out, ...);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<std::string>(const char* func,
+                                                    const char* args,
+                                                    std::string* out,
+                                                    ...);
 
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<void>(Script* script, const char* func, const char* args, void* out, ...);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<bool>(Script* script, const char* func, const char* args, bool* out, ...);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<char>(Script* script, const char* func, const char* args, char* out, ...);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<short>(Script* script, const char* func, const char* args, short* out, ...);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<int>(Script* script, const char* func, const char* args, int* out, ...);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<long>(Script* script, const char* func, const char* args, long* out, ...);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<unsigned char>(Script* script, const char* func, const char* args, unsigned char* out, ...);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<unsigned short>(Script* script, const char* func, const char* args, unsigned short* out, ...);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<unsigned int>(Script* script, const char* func, const char* args, unsigned int* out, ...);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<unsigned long>(Script* script, const char* func, const char* args, unsigned long* out, ...);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<float>(Script* script, const char* func, const char* args, float* out, ...);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<double>(Script* script, const char* func, const char* args, double* out, ...);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<std::string>(Script* script, const char* func, const char* args, std::string* out, ...);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<void>(Script* script,
+                                             const char* func,
+                                             const char* args,
+                                             void* out,
+                                             ...);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<bool>(Script* script,
+                                             const char* func,
+                                             const char* args,
+                                             bool* out,
+                                             ...);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<char>(Script* script,
+                                             const char* func,
+                                             const char* args,
+                                             char* out,
+                                             ...);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<short>(Script* script,
+                                              const char* func,
+                                              const char* args,
+                                              short* out,
+                                              ...);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<int>(Script* script,
+                                            const char* func,
+                                            const char* args,
+                                            int* out,
+                                            ...);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<long>(Script* script,
+                                             const char* func,
+                                             const char* args,
+                                             long* out,
+                                             ...);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<unsigned char>(Script* script,
+                                                      const char* func,
+                                                      const char* args,
+                                                      unsigned char* out,
+                                                      ...);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<unsigned short>(Script* script,
+                                                       const char* func,
+                                                       const char* args,
+                                                       unsigned short* out,
+                                                       ...);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<unsigned int>(Script* script,
+                                                     const char* func,
+                                                     const char* args,
+                                                     unsigned int* out,
+                                                     ...);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<unsigned long>(Script* script,
+                                                      const char* func,
+                                                      const char* args,
+                                                      unsigned long* out,
+                                                      ...);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<float>(Script* script,
+                                              const char* func,
+                                              const char* args,
+                                              float* out,
+                                              ...);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<double>(Script* script,
+                                               const char* func,
+                                               const char* args,
+                                               double* out,
+                                               ...);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<std::string>(Script* script,
+                                                    const char* func,
+                                                    const char* args,
+                                                    std::string* out,
+                                                    ...);
 
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<void>(const char* func, const char* args, void* out, va_list* list);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<bool>(const char* func, const char* args, bool* out, va_list* list);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<char>(const char* func, const char* args, char* out, va_list* list);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<short>(const char* func, const char* args, short* out, va_list* list);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<int>(const char* func, const char* args, int* out, va_list* list);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<long>(const char* func, const char* args, long* out, va_list* list);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<unsigned char>(const char* func, const char* args, unsigned char* out, va_list* list);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<unsigned short>(const char* func, const char* args, unsigned short* out, va_list* list);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<unsigned int>(const char* func, const char* args, unsigned int* out, va_list* list);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<unsigned long>(const char* func, const char* args, unsigned long* out, va_list* list);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<float>(const char* func, const char* args, float* out, va_list* list);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<double>(const char* func, const char* args, double* out, va_list* list);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<std::string>(const char* func, const char* args, std::string* out, va_list* list);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<void>(const char* func,
+                                             const char* args,
+                                             void* out,
+                                             va_list* list);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<bool>(const char* func,
+                                             const char* args,
+                                             bool* out,
+                                             va_list* list);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<char>(const char* func,
+                                             const char* args,
+                                             char* out,
+                                             va_list* list);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<short>(const char* func,
+                                              const char* args,
+                                              short* out,
+                                              va_list* list);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<int>(const char* func, const char* args, int* out, va_list* list);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<long>(const char* func,
+                                             const char* args,
+                                             long* out,
+                                             va_list* list);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<unsigned char>(const char* func,
+                                                      const char* args,
+                                                      unsigned char* out,
+                                                      va_list* list);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<unsigned short>(const char* func,
+                                                       const char* args,
+                                                       unsigned short* out,
+                                                       va_list* list);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<unsigned int>(const char* func,
+                                                     const char* args,
+                                                     unsigned int* out,
+                                                     va_list* list);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<unsigned long>(const char* func,
+                                                      const char* args,
+                                                      unsigned long* out,
+                                                      va_list* list);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<float>(const char* func,
+                                              const char* args,
+                                              float* out,
+                                              va_list* list);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<double>(const char* func,
+                                               const char* args,
+                                               double* out,
+                                               va_list* list);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<std::string>(const char* func,
+                                                    const char* args,
+                                                    std::string* out,
+                                                    va_list* list);
 
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<void>(Script* script, const char* func, const char* args, void* out, va_list* list);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<bool>(Script* script, const char* func, const char* args, bool* out, va_list* list);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<char>(Script* script, const char* func, const char* args, char* out, va_list* list);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<short>(Script* script, const char* func, const char* args, short* out, va_list* list);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<int>(Script* script, const char* func, const char* args, int* out, va_list* list);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<long>(Script* script, const char* func, const char* args, long* out, va_list* list);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<unsigned char>(Script* script, const char* func, const char* args, unsigned char* out, va_list* list);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<unsigned short>(Script* script, const char* func, const char* args, unsigned short* out, va_list* list);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<unsigned int>(Script* script, const char* func, const char* args, unsigned int* out, va_list* list);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<unsigned long>(Script* script, const char* func, const char* args, unsigned long* out, va_list* list);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<float>(Script* script, const char* func, const char* args, float* out, va_list* list);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<double>(Script* script, const char* func, const char* args, double* out, va_list* list);
-  /** Template specialization. */
-  template<> bool ScriptController::executeFunction<std::string>(Script* script, const char* func, const char* args, std::string* out, va_list* list);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<void>(Script* script,
+                                             const char* func,
+                                             const char* args,
+                                             void* out,
+                                             va_list* list);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<bool>(Script* script,
+                                             const char* func,
+                                             const char* args,
+                                             bool* out,
+                                             va_list* list);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<char>(Script* script,
+                                             const char* func,
+                                             const char* args,
+                                             char* out,
+                                             va_list* list);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<short>(Script* script,
+                                              const char* func,
+                                              const char* args,
+                                              short* out,
+                                              va_list* list);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<int>(Script* script,
+                                            const char* func,
+                                            const char* args,
+                                            int* out,
+                                            va_list* list);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<long>(Script* script,
+                                             const char* func,
+                                             const char* args,
+                                             long* out,
+                                             va_list* list);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<unsigned char>(Script* script,
+                                                      const char* func,
+                                                      const char* args,
+                                                      unsigned char* out,
+                                                      va_list* list);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<unsigned short>(Script* script,
+                                                       const char* func,
+                                                       const char* args,
+                                                       unsigned short* out,
+                                                       va_list* list);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<unsigned int>(Script* script,
+                                                     const char* func,
+                                                     const char* args,
+                                                     unsigned int* out,
+                                                     va_list* list);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<unsigned long>(Script* script,
+                                                      const char* func,
+                                                      const char* args,
+                                                      unsigned long* out,
+                                                      va_list* list);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<float>(Script* script,
+                                              const char* func,
+                                              const char* args,
+                                              float* out,
+                                              va_list* list);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<double>(Script* script,
+                                               const char* func,
+                                               const char* args,
+                                               double* out,
+                                               va_list* list);
+/** Template specialization. */
+template <>
+bool ScriptController::executeFunction<std::string>(Script* script,
+                                                    const char* func,
+                                                    const char* args,
+                                                    std::string* out,
+                                                    va_list* list);
 
-  /**
-   * Functions and structures used by the generated Lua script bindings.
-   *
-   * This class is used internally by the generated script bindings and is not intended
-   * to be used directly.
-   *
-   * @script{ignore}
-   */
-  class ScriptUtil
-  {
+/**
+ * Functions and structures used by the generated Lua script bindings.
+ *
+ * This class is used internally by the generated script bindings and is not intended
+ * to be used directly.
+ *
+ * @script{ignore}
+ */
+class ScriptUtil
+{
   public:
-
     /**
      * Represents a C++ object from within Lua.
      *
@@ -882,10 +1146,10 @@ namespace tractor
      */
     struct LuaObject
     {
-      /** The actual object instance. */
-      void* instance;
-      /** Whether object is owned by Lua. */
-      bool owns;
+        /** The actual object instance. */
+        void* instance;
+        /** Whether object is owned by Lua. */
+        bool owns;
     };
 
     /**
@@ -894,67 +1158,64 @@ namespace tractor
      *
      * @script{ignore}
      */
-    template <typename T>
-    class LuaArray
+    template <typename T> class LuaArray
     {
-    public:
+      public:
+        /**
+         * Creates a LuaArray to store a single pointer value.
+         */
+        LuaArray(T* param);
 
-      /**
-       * Creates a LuaArray to store a single pointer value.
-       */
-      LuaArray(T* param);
+        /**
+         * Allocates a LuaArray to store an array of values.
+         *
+         * Individual items in the array can be set using the
+         * set(unsigned int, const T&) method.
+         *
+         * @param count Number of elements to store in the parameter.
+         */
+        LuaArray(int count);
 
-      /**
-       * Allocates a LuaArray to store an array of values.
-       *
-       * Individual items in the array can be set using the
-       * set(unsigned int, const T&) method.
-       *
-       * @param count Number of elements to store in the parameter.
-       */
-      LuaArray(int count);
+        /**
+         * Copy constructor.
+         */
+        LuaArray(const LuaArray<T>& copy);
 
-      /**
-       * Copy constructor.
-       */
-      LuaArray(const LuaArray<T>& copy);
+        /**
+         * Destructor.
+         */
+        ~LuaArray();
 
-      /**
-       * Destructor.
-       */
-      ~LuaArray();
+        /**
+         * Assignment operator.
+         */
+        LuaArray<T>& operator=(const LuaArray<T>& p);
 
-      /**
-       * Assignment operator.
-       */
-      LuaArray<T>& operator = (const LuaArray<T>& p);
+        /**
+         * Copies the value of the object pointed to by itemPtr into the specified
+         * index of this LuaArray's array.
+         */
+        void set(unsigned int index, const T* itemPtr);
 
-      /**
-       * Copies the value of the object pointed to by itemPtr into the specified
-       * index of this LuaArray's array.
-       */
-      void set(unsigned int index, const T* itemPtr);
+        /**
+         * Conversion operator from LuaArray to T*.
+         */
+        operator T*() const;
 
-      /**
-       * Conversion operator from LuaArray to T*.
-       */
-      operator T* () const;
+        /**
+         * Overloads [] operator to get/set item value at index.
+         */
+        T& operator[](int index);
 
-      /**
-       * Overloads [] operator to get/set item value at index.
-       */
-      T& operator[] (int index);
+      private:
+        struct Data
+        {
+            Data() : value(nullptr), refCount(0) {}
+            T* value;
+            int refCount;
+        };
 
-    private:
-
-      struct Data
-      {
-        Data() : value(nullptr), refCount(0) { }
-        T* value;
-        int refCount;
-      };
-
-      Data* _data;
+        Data* _data;
     };
 
     /**
@@ -972,7 +1233,9 @@ namespace tractor
      * @param value The constant's value.
      * @param scopePath The list of containing classes, going inward from the most outer class.
      */
-    static void registerConstantBool(const std::string& name, bool value, const std::vector<std::string>& scopePath);
+    static void registerConstantBool(const std::string& name,
+                                     bool value,
+                                     const std::vector<std::string>& scopePath);
 
     /**
      * Registers the given number constant as valid for the given scope path.
@@ -981,7 +1244,9 @@ namespace tractor
      * @param value The constant's value.
      * @param scopePath The list of containing classes, going inward from the most outer class.
      */
-    static void registerConstantNumber(const std::string& name, double value, const std::vector<std::string>& scopePath);
+    static void registerConstantNumber(const std::string& name,
+                                       double value,
+                                       const std::vector<std::string>& scopePath);
 
     /**
      * Registers the given string constant as valid for the given scope path.
@@ -990,7 +1255,9 @@ namespace tractor
      * @param value The constant's value.
      * @param scopePath The list of containing classes, going inward from the most outer class.
      */
-    static void registerConstantString(const std::string& name, const std::string& value, const std::vector<std::string>& scopePath);
+    static void registerConstantString(const std::string& name,
+                                       const std::string& value,
+                                       const std::vector<std::string>& scopePath);
 
     /**
      * Registers the given enum value as valid for the given scope path.
@@ -999,20 +1266,29 @@ namespace tractor
      * @param enumValueString The string representation of the enum value (what the user would use from Lua).
      * @param scopePath The list of containing classes, going inward from the most outer class.
      */
-    static void registerEnumValue(int enumValue, const std::string& enumValueString, const std::vector<std::string>& scopePath);
+    static void registerEnumValue(int enumValue,
+                                  const std::string& enumValueString,
+                                  const std::vector<std::string>& scopePath);
 
     /**
      * Registers the given class type with Lua.
      *
      * @param name The name of the class from within Lua.
-     * @param members The library function mapping for all the member functions (Lua function names to C++ functions).
+     * @param members The library function mapping for all the member functions (Lua function names
+     * to C++ functions).
      * @param newFunction The function to call that creates an instance of the class.
      * @param deleteFunction The function to call that destroys an instance of the class.
-     * @param statics The library function mapping for all the static functions (Lua function names to C++ functions).
-     * @param scopePath For an inner class, this is a list of its containing classes, going inward from the most outer class.
+     * @param statics The library function mapping for all the static functions (Lua function names
+     * to C++ functions).
+     * @param scopePath For an inner class, this is a list of its containing classes, going inward
+     * from the most outer class.
      */
-    static void registerClass(const char* name, const luaL_Reg* members, lua_CFunction newFunction, lua_CFunction deleteFunction, const luaL_Reg* statics,
-      const std::vector<std::string>& scopePath);
+    static void registerClass(const char* name,
+                              const luaL_Reg* members,
+                              lua_CFunction newFunction,
+                              lua_CFunction deleteFunction,
+                              const luaL_Reg* statics,
+                              const std::vector<std::string>& scopePath);
 
     /**
      * Register a function with Lua.
@@ -1059,7 +1335,8 @@ namespace tractor
     static LuaArray<long> getLongPointer(int index);
 
     /**
-     * Gets a pointer to an unsigned char (as an array-use SAFE_DELETE_ARRAY to clean up) for the given stack index.
+     * Gets a pointer to an unsigned char (as an array-use SAFE_DELETE_ARRAY to clean up) for the
+     * given stack index.
      *
      * @param index The stack index.
      *
@@ -1068,7 +1345,8 @@ namespace tractor
     static LuaArray<unsigned char> getUnsignedCharPointer(int index);
 
     /**
-     * Gets a pointer to an unsigned short (as an array-use SAFE_DELETE_ARRAY to clean up) for the given stack index.
+     * Gets a pointer to an unsigned short (as an array-use SAFE_DELETE_ARRAY to clean up) for the
+     * given stack index.
      *
      * @param index The stack index.
      *
@@ -1077,7 +1355,8 @@ namespace tractor
     static LuaArray<unsigned short> getUnsignedShortPointer(int index);
 
     /**
-     * Gets a pointer to an unsigned int (as an array-use SAFE_DELETE_ARRAY to clean up) for the given stack index.
+     * Gets a pointer to an unsigned int (as an array-use SAFE_DELETE_ARRAY to clean up) for the
+     * given stack index.
      *
      * @param index The stack index.
      *
@@ -1086,7 +1365,8 @@ namespace tractor
     static LuaArray<unsigned int> getUnsignedIntPointer(int index);
 
     /**
-     * Gets a pointer to an unsigned long (as an array-use SAFE_DELETE_ARRAY to clean up) for the given stack index.
+     * Gets a pointer to an unsigned long (as an array-use SAFE_DELETE_ARRAY to clean up) for the
+     * given stack index.
      *
      * @param index The stack index.
      *
@@ -1164,9 +1444,8 @@ namespace tractor
      * @return The boolean (if successful; otherwise it logs an error).
      */
     static bool luaCheckBool(lua_State* state, int n);
+};
 
-  };
-
-}
+} // namespace tractor
 
 #include "ScriptController.inl"

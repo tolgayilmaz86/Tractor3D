@@ -7,7 +7,6 @@
 #include "framework/Game.h"
 #include "graphics/Drawable.h"
 #include "graphics/Terrain.h"
-#include "pch.h"
 #include "physics/PhysicsCharacter.h"
 #include "physics/PhysicsGhostObject.h"
 #include "physics/PhysicsRigidBody.h"
@@ -36,10 +35,8 @@ Node::Node(const std::string& id) : _id(id), _dirtyBits(NODE_DIRTY_ALL)
 Node::~Node()
 {
     removeAllChildren();
-    if (_drawable)
-        _drawable->setNode(nullptr);
-    if (_audioSource)
-        _audioSource->setNode(nullptr);
+    if (_drawable) _drawable->setNode(nullptr);
+    if (_audioSource) _audioSource->setNode(nullptr);
     Ref* ref = dynamic_cast<Ref*>(_drawable);
     SAFE_RELEASE(ref);
     SAFE_RELEASE(_camera);
@@ -50,10 +47,7 @@ Node::~Node()
     setAgent(nullptr);
 }
 
-Node* Node::create(const std::string& id)
-{
-    return new Node(id);
-}
+Node* Node::create(const std::string& id) { return new Node(id); }
 
 void Node::addChild(Node* child)
 {
@@ -282,15 +276,13 @@ unsigned int Node::findNodes(const std::string& id,
 //-----------------------------------------------------------------------------
 Scene* Node::getScene() const
 {
-    if (_scene)
-        return _scene;
+    if (_scene) return _scene;
 
     // Search our parent for the scene
     if (_parent)
     {
         Scene* scene = _parent->getScene();
-        if (scene)
-            return scene;
+        if (scene) return scene;
     }
     return nullptr;
 }
@@ -304,8 +296,7 @@ bool Node::hasTag(const std::string& name) const
 //-----------------------------------------------------------------------------
 const std::string& Node::getTag(const std::string& name) const
 {
-    if (!_tags)
-        return EMPTY_STRING;
+    if (!_tags) return EMPTY_STRING;
 
     std::map<std::string, std::string>::const_iterator itr = _tags->find(name);
     return (itr == _tags->end() ? EMPTY_STRING : itr->second);
@@ -348,15 +339,11 @@ void Node::setEnabled(bool enabled)
     }
 }
 
-bool Node::isEnabled() const
-{
-    return _enabled;
-}
+bool Node::isEnabled() const { return _enabled; }
 
 bool Node::isEnabledInHierarchy() const
 {
-    if (!_enabled)
-        return false;
+    if (!_enabled) return false;
 
     Node* node = _parent;
     while (node)
@@ -379,14 +366,10 @@ void Node::update(float elapsedTime)
             node->update(elapsedTime);
         }
     }
-    fireScriptEvent<void>(
-        GP_GET_SCRIPT_EVENT(Node, update), dynamic_cast<void*>(this), elapsedTime);
+    fireScriptEvent<void>(GP_GET_SCRIPT_EVENT(Node, update), dynamic_cast<void*>(this), elapsedTime);
 }
 
-bool Node::isStatic() const
-{
-    return (_collisionObject && _collisionObject->isStatic());
-}
+bool Node::isStatic() const { return (_collisionObject && _collisionObject->isStatic()); }
 
 const Matrix& Node::getWorldMatrix() const
 {
@@ -537,10 +520,7 @@ Vector3 Node::getTranslationView() const
     return translation;
 }
 
-Vector3 Node::getForwardVectorWorld() const
-{
-    return getWorldMatrix().getForwardVector();
-}
+Vector3 Node::getForwardVectorWorld() const { return getWorldMatrix().getForwardVector(); }
 
 Vector3 Node::getForwardVectorView() const
 {
@@ -549,15 +529,9 @@ Vector3 Node::getForwardVectorView() const
     return vector;
 }
 
-Vector3 Node::getRightVectorWorld() const
-{
-    return getWorldMatrix().getRightVector();
-}
+Vector3 Node::getRightVectorWorld() const { return getWorldMatrix().getRightVector(); }
 
-Vector3 Node::getUpVectorWorld() const
-{
-    return getWorldMatrix().getUpVector();
-}
+Vector3 Node::getUpVectorWorld() const { return getWorldMatrix().getUpVector(); }
 
 Vector3 Node::getActiveCameraTranslationWorld() const
 {
@@ -607,7 +581,8 @@ void Node::transformChanged()
     // Our local transform was changed, so mark our world matrices dirty.
     _dirtyBits |= NODE_DIRTY_WORLD | NODE_DIRTY_BOUNDS;
 
-    // Notify our children that their transform has also changed (since transforms are inherited).
+    // Notify our children that their transform has also changed (since transforms are
+    // inherited).
     for (Node* n = getFirstChild(); n != nullptr; n = n->getNextSibling())
     {
         if (Transform::isTransformChangedSuspended())
@@ -633,15 +608,13 @@ void Node::setBoundsDirty()
     _dirtyBits |= NODE_DIRTY_BOUNDS;
 
     // Mark our parent bounds as dirty as well
-    if (_parent)
-        _parent->setBoundsDirty();
+    if (_parent) _parent->setBoundsDirty();
 }
 
 Animation* Node::getAnimation(const std::string& id) const
 {
     Animation* animation = ((AnimationTarget*)this)->getAnimation(id);
-    if (animation)
-        return animation;
+    if (animation) return animation;
 
     // See if this node has a model, then drill down.
     Model* model = dynamic_cast<Model*>(_drawable);
@@ -655,8 +628,7 @@ Animation* Node::getAnimation(const std::string& id) const
             if (rootNode)
             {
                 animation = rootNode->getAnimation(id);
-                if (animation)
-                    return animation;
+                if (animation) return animation;
             }
         }
 
@@ -674,8 +646,7 @@ Animation* Node::getAnimation(const std::string& id) const
                                                 return animation != nullptr;
                                             });
 
-            if (itr != material->_parameters.end())
-                return animation;
+            if (itr != material->_parameters.end()) return animation;
         }
     }
 
@@ -684,16 +655,14 @@ Animation* Node::getAnimation(const std::string& id) const
     if (form)
     {
         animation = form->getAnimation(id);
-        if (animation)
-            return animation;
+        if (animation) return animation;
     }
 
     // Look through this node's children for an animation with the specified ID.
     for (Node* child = getFirstChild(); child != nullptr; child = child->getNextSibling())
     {
         animation = child->getAnimation(id);
-        if (animation)
-            return animation;
+        if (animation) return animation;
     }
 
     return nullptr;
@@ -701,8 +670,7 @@ Animation* Node::getAnimation(const std::string& id) const
 
 void Node::setCamera(Camera* camera)
 {
-    if (_camera == camera)
-        return;
+    if (_camera == camera) return;
 
     if (_camera)
     {
@@ -721,8 +689,7 @@ void Node::setCamera(Camera* camera)
 
 void Node::setLight(Light* light)
 {
-    if (_light == light)
-        return;
+    if (_light == light) return;
 
     if (_light)
     {
@@ -749,8 +716,7 @@ void Node::setDrawable(Drawable* drawable)
         {
             _drawable->setNode(nullptr);
             Ref* ref = dynamic_cast<Ref*>(_drawable);
-            if (ref)
-                ref->release();
+            if (ref) ref->release();
         }
 
         _drawable = drawable;
@@ -758,8 +724,7 @@ void Node::setDrawable(Drawable* drawable)
         if (_drawable)
         {
             Ref* ref = dynamic_cast<Ref*>(_drawable);
-            if (ref)
-                ref->addRef();
+            if (ref) ref->addRef();
             _drawable->setNode(this);
         }
     }
@@ -845,8 +810,7 @@ const BoundingSphere& Node::getBoundingSphere() const
                     // TODO: Should we protect against the case where joints are nested directly
                     // in the node hierachy of the model (this is normally not the case)?
                     Matrix boundsMatrix;
-                    Matrix::multiply(
-                        getWorldMatrix(), jointParent->getWorldMatrix(), &boundsMatrix);
+                    Matrix::multiply(getWorldMatrix(), jointParent->getWorldMatrix(), &boundsMatrix);
                     _bounds.transform(boundsMatrix);
                     applyWorldTransform = false;
                 }
@@ -921,32 +885,28 @@ void Node::cloneInto(Node* node, NodeCloneContext& context) const
         Drawable* clone = drawable->clone(context);
         node->setDrawable(clone);
         Ref* ref = dynamic_cast<Ref*>(clone);
-        if (ref)
-            ref->release();
+        if (ref) ref->release();
     }
     if (Camera* camera = getCamera())
     {
         Camera* clone = camera->clone(context);
         node->setCamera(clone);
         Ref* ref = dynamic_cast<Ref*>(clone);
-        if (ref)
-            ref->release();
+        if (ref) ref->release();
     }
     if (Light* light = getLight())
     {
         Light* clone = light->clone(context);
         node->setLight(clone);
         Ref* ref = dynamic_cast<Ref*>(clone);
-        if (ref)
-            ref->release();
+        if (ref) ref->release();
     }
     if (AudioSource* audio = getAudioSource())
     {
         AudioSource* clone = audio->clone(context);
         node->setAudioSource(clone);
         Ref* ref = dynamic_cast<Ref*>(clone);
-        if (ref)
-            ref->release();
+        if (ref) ref->release();
     }
     if (_tags)
     {
@@ -961,8 +921,7 @@ void Node::cloneInto(Node* node, NodeCloneContext& context) const
 
 void Node::setAudioSource(AudioSource* audio)
 {
-    if (_audioSource == audio)
-        return;
+    if (_audioSource == audio) return;
 
     if (_audioSource)
     {
@@ -991,12 +950,13 @@ PhysicsCollisionObject* Node::setCollisionObject(PhysicsCollisionObject::Type ty
     {
         case PhysicsCollisionObject::RIGID_BODY:
         {
-            _collisionObject = new PhysicsRigidBody(
-                this,
-                shape,
-                rigidBodyParameters ? *rigidBodyParameters : PhysicsRigidBody::Parameters(),
-                group,
-                mask);
+            _collisionObject =
+                new PhysicsRigidBody(this,
+                                     shape,
+                                     rigidBodyParameters ? *rigidBodyParameters
+                                                         : PhysicsRigidBody::Parameters(),
+                                     group,
+                                     mask);
         }
         break;
 
@@ -1008,37 +968,41 @@ PhysicsCollisionObject* Node::setCollisionObject(PhysicsCollisionObject::Type ty
 
         case PhysicsCollisionObject::CHARACTER:
         {
-            _collisionObject = new PhysicsCharacter(
-                this, shape, rigidBodyParameters ? rigidBodyParameters->mass : 1.0f);
+            _collisionObject =
+                new PhysicsCharacter(this,
+                                     shape,
+                                     rigidBodyParameters ? rigidBodyParameters->mass : 1.0f);
         }
         break;
 
         case PhysicsCollisionObject::VEHICLE:
         {
-            _collisionObject = new PhysicsVehicle(
-                this,
-                shape,
-                rigidBodyParameters ? *rigidBodyParameters : PhysicsRigidBody::Parameters());
+            _collisionObject =
+                new PhysicsVehicle(this,
+                                   shape,
+                                   rigidBodyParameters ? *rigidBodyParameters
+                                                       : PhysicsRigidBody::Parameters());
         }
         break;
 
         case PhysicsCollisionObject::VEHICLE_WHEEL:
         {
             //
-            // PhysicsVehicleWheel is special because this call will traverse up the scene graph for
-            // the first ancestor node that is shared with another node of collision type VEHICLE,
-            // and then proceed to add itself as a wheel onto that vehicle. This is by design, and
-            // allows the visual scene hierarchy to be the sole representation of the relationship
-            // between physics objects rather than forcing that upon the otherwise-flat ".physics"
-            // (properties) file.
+            // PhysicsVehicleWheel is special because this call will traverse up the scene graph
+            // for the first ancestor node that is shared with another node of collision type
+            // VEHICLE, and then proceed to add itself as a wheel onto that vehicle. This is by
+            // design, and allows the visual scene hierarchy to be the sole representation of
+            // the relationship between physics objects rather than forcing that upon the
+            // otherwise-flat ".physics" (properties) file.
             //
             // IMPORTANT: The VEHICLE must come before the VEHICLE_WHEEL in the ".scene"
             // (properties) file!
             //
-            _collisionObject = new PhysicsVehicleWheel(
-                this,
-                shape,
-                rigidBodyParameters ? *rigidBodyParameters : PhysicsRigidBody::Parameters());
+            _collisionObject =
+                new PhysicsVehicleWheel(this,
+                                        shape,
+                                        rigidBodyParameters ? *rigidBodyParameters
+                                                            : PhysicsRigidBody::Parameters());
         }
         break;
 
@@ -1099,12 +1063,12 @@ PhysicsCollisionObject* Node::setCollisionObject(Properties* properties)
         else if (type == "VEHICLE_WHEEL")
         {
             //
-            // PhysicsVehicleWheel is special because this call will traverse up the scene graph for
-            // the first ancestor node that is shared with another node of collision type VEHICLE,
-            // and then proceed to add itself as a wheel onto that vehicle. This is by design, and
-            // allows the visual scene hierarchy to be the sole representation of the relationship
-            // between physics objects rather than forcing that upon the otherwise-flat ".physics"
-            // (properties) file.
+            // PhysicsVehicleWheel is special because this call will traverse up the scene graph
+            // for the first ancestor node that is shared with another node of collision type
+            // VEHICLE, and then proceed to add itself as a wheel onto that vehicle. This is by
+            // design, and allows the visual scene hierarchy to be the sole representation of
+            // the relationship between physics objects rather than forcing that upon the
+            // otherwise-flat ".physics" (properties) file.
             //
             // IMPORTANT: The VEHICLE must come before the VEHICLE_WHEEL in the ".scene"
             // (properties) file!
@@ -1144,8 +1108,7 @@ AIAgent* Node::getAgent() const
 
 void Node::setAgent(AIAgent* agent)
 {
-    if (agent == _agent)
-        return;
+    if (agent == _agent) return;
 
     if (_agent)
     {
@@ -1164,13 +1127,9 @@ void Node::setAgent(AIAgent* agent)
     }
 }
 
-NodeCloneContext::NodeCloneContext()
-{
-}
+NodeCloneContext::NodeCloneContext() {}
 
-NodeCloneContext::~NodeCloneContext()
-{
-}
+NodeCloneContext::~NodeCloneContext() {}
 
 Animation* NodeCloneContext::findClonedAnimation(const Animation* animation)
 {

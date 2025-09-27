@@ -1,7 +1,7 @@
 #pragma once
 
-#include "tractor.h"
 #include "Sample.h"
+#include "tractor.h"
 
 using namespace tractor;
 
@@ -10,26 +10,23 @@ using namespace tractor;
  */
 class TriangleSample : public Sample
 {
-public:
+  public:
+    TriangleSample();
 
-  TriangleSample();
+    void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
 
-  void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
+  protected:
+    void initialize();
 
-protected:
+    void finalize();
 
-  void initialize();
+    void update(float elapsedTime);
 
-  void finalize();
+    void render(float elapsedTime);
 
-  void update(float elapsedTime);
-
-  void render(float elapsedTime);
-
-private:
-
-  Font* _font;
-  Model* _model;
-  float _spinDirection;
-  Matrix _worldViewProjectionMatrix;
+  private:
+    Font* _font;
+    Model* _model;
+    float _spinDirection;
+    Matrix _worldViewProjectionMatrix;
 };

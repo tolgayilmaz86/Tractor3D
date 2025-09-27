@@ -1,34 +1,34 @@
 #pragma once
 
 #include "pch.h"
+
 #include "renderer/Texture.h"
 
 namespace tractor
 {
 
-  /**
-   * Defines a container for depth and stencil targets in a frame buffer object.
-   */
-  class DepthStencilTarget : public Ref
-  {
+/**
+ * Defines a container for depth and stencil targets in a frame buffer object.
+ */
+class DepthStencilTarget : public Ref
+{
     friend class FrameBuffer;
 
   public:
-
     /**
      * Defines the accepted formats for DepthStencilTargets.
      */
     enum Format
     {
-      /**
-       * A target with depth data.
-       */
-      DEPTH,
+        /**
+         * A target with depth data.
+         */
+        DEPTH,
 
-      /**
-       * A target with depth data and stencil data.
-       */
-      DEPTH_STENCIL
+        /**
+         * A target with depth data and stencil data.
+         */
+        DEPTH_STENCIL
     };
 
     /**
@@ -42,7 +42,10 @@ namespace tractor
      * @return A newly created DepthStencilTarget.
      * @script{create}
      */
-    static DepthStencilTarget* create(const std::string& id, Format format, unsigned int width, unsigned int height);
+    static DepthStencilTarget* create(const std::string& id,
+                                      Format format,
+                                      unsigned int width,
+                                      unsigned int height);
 
     /**
      * Get a named DepthStencilTarget from its ID.
@@ -89,7 +92,6 @@ namespace tractor
     bool isPacked() const;
 
   private:
-
     /**
      * Constructor.
      */
@@ -112,6 +114,6 @@ namespace tractor
     unsigned int _width;
     unsigned int _height;
     bool _packed;
-  };
+};
 
-}
+} // namespace tractor

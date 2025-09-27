@@ -3,17 +3,16 @@
 namespace tractor
 {
 
-  /**
-   * Defines a stream for reading and writing a sequence of bytes.
-   *
-   * Use FileSystem::open() to create a stream.
-   *
-   * @script{ignore}
-   */
-  class Stream
-  {
+/**
+ * Defines a stream for reading and writing a sequence of bytes.
+ *
+ * Use FileSystem::open() to create a stream.
+ *
+ * @script{ignore}
+ */
+class Stream
+{
   public:
-
     /**
      * Destructor. The stream should be closed when it is destroyed.
      */
@@ -156,9 +155,10 @@ namespace tractor
 
   protected:
     Stream() {};
+
   private:
     Stream(const Stream&);            // Hidden copy constructor.
     Stream& operator=(const Stream&); // Hidden copy assignment operator.
-  };
+};
 
-}
+} // namespace tractor

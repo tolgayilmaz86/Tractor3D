@@ -5,22 +5,21 @@
 namespace tractor
 {
 
-  /**
-   * Defines a constraint where two rigid bodies
-   * (or one rigid body and the world) are bound together.
-   *
-   * This is similar in concept to parenting one node to another,
-   * but can be used in specific situations for a more appropriate effect
-   * Ex. for implementing sticky projectiles, etc.
-   *
-   * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-Constraints
-   */
-  class PhysicsFixedConstraint : public PhysicsGenericConstraint
-  {
+/**
+ * Defines a constraint where two rigid bodies
+ * (or one rigid body and the world) are bound together.
+ *
+ * This is similar in concept to parenting one node to another,
+ * but can be used in specific situations for a more appropriate effect
+ * Ex. for implementing sticky projectiles, etc.
+ *
+ * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-Constraints
+ */
+class PhysicsFixedConstraint : public PhysicsGenericConstraint
+{
     friend class PhysicsController;
 
   protected:
-
     /**
      * @see PhysicsGenericConstraint
      */
@@ -53,8 +52,8 @@ namespace tractor
      * Protected to prevent usage.
      */
     inline void setLinearUpperLimit(const Vector3& limit);
-  };
+};
 
-}
+} // namespace tractor
 
 #include "physics/PhysicsFixedConstraint.inl"

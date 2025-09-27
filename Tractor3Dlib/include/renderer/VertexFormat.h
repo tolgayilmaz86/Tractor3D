@@ -3,35 +3,34 @@
 namespace tractor
 {
 
-  /**
-   * Defines the format of a vertex layout used by a mesh.
-   *
-   * A VertexFormat is immutable and cannot be changed once created.
-   */
-  class VertexFormat
-  {
+/**
+ * Defines the format of a vertex layout used by a mesh.
+ *
+ * A VertexFormat is immutable and cannot be changed once created.
+ */
+class VertexFormat
+{
   public:
-
     /**
      * Defines a set of usages for vertex elements.
      */
     enum Usage
     {
-      POSITION = 1,
-      NORMAL = 2,
-      COLOR = 3,
-      TANGENT = 4,
-      BINORMAL = 5,
-      BLENDWEIGHTS = 6,
-      BLENDINDICES = 7,
-      TEXCOORD0 = 8,
-      TEXCOORD1 = 9,
-      TEXCOORD2 = 10,
-      TEXCOORD3 = 11,
-      TEXCOORD4 = 12,
-      TEXCOORD5 = 13,
-      TEXCOORD6 = 14,
-      TEXCOORD7 = 15
+        POSITION = 1,
+        NORMAL = 2,
+        COLOR = 3,
+        TANGENT = 4,
+        BINORMAL = 5,
+        BLENDWEIGHTS = 6,
+        BLENDINDICES = 7,
+        TEXCOORD0 = 8,
+        TEXCOORD1 = 9,
+        TEXCOORD2 = 10,
+        TEXCOORD3 = 11,
+        TEXCOORD4 = 12,
+        TEXCOORD5 = 13,
+        TEXCOORD6 = 14,
+        TEXCOORD7 = 15
     };
 
     /**
@@ -44,47 +43,47 @@ namespace tractor
      */
     class Element
     {
-    public:
-      /**
-       * The vertex element usage semantic.
-       */
-      Usage usage;
+      public:
+        /**
+         * The vertex element usage semantic.
+         */
+        Usage usage;
 
-      /**
-       * The number of values in the vertex element.
-       */
-      unsigned int size;
+        /**
+         * The number of values in the vertex element.
+         */
+        unsigned int size;
 
-      /**
-       * Constructor.
-       */
-      Element();
+        /**
+         * Constructor.
+         */
+        Element();
 
-      /**
-       * Constructor.
-       *
-       * @param usage The vertex element usage semantic.
-       * @param size The number of float values in the vertex element.
-       */
-      Element(Usage usage, unsigned int size);
+        /**
+         * Constructor.
+         *
+         * @param usage The vertex element usage semantic.
+         * @param size The number of float values in the vertex element.
+         */
+        Element(Usage usage, unsigned int size);
 
-      /**
-       * Compares two vertex elements for equality.
-       *
-       * @param e The vertex element to compare.
-       *
-       * @return true if this element matches the specified one, false otherwise.
-       */
-      bool operator == (const Element& e) const;
+        /**
+         * Compares two vertex elements for equality.
+         *
+         * @param e The vertex element to compare.
+         *
+         * @return true if this element matches the specified one, false otherwise.
+         */
+        bool operator==(const Element& e) const;
 
-      /**
-       * Compares to vertex elements for inequality.
-       *
-       * @param e The vertex element to compare.
-       *
-       * @return true if this element does not match the specified one, false otherwise.
-       */
-      bool operator != (const Element& e) const;
+        /**
+         * Compares to vertex elements for inequality.
+         *
+         * @param e The vertex element to compare.
+         *
+         * @return true if this element does not match the specified one, false otherwise.
+         */
+        bool operator!=(const Element& e) const;
     };
 
     /**
@@ -128,7 +127,7 @@ namespace tractor
      *
      * @return true if the elements in this VertexFormat matches the specified one, false otherwise.
      */
-    bool operator == (const VertexFormat& f) const;
+    bool operator==(const VertexFormat& f) const;
 
     /**
      * Compares to vertex formats for inequality.
@@ -137,7 +136,7 @@ namespace tractor
      *
      * @return true if the elements in this VertexFormat are not equal to the specified one, false otherwise.
      */
-    bool operator != (const VertexFormat& f) const;
+    bool operator!=(const VertexFormat& f) const;
 
     /**
      * Returns a string representation of a Usage enumeration value.
@@ -145,9 +144,8 @@ namespace tractor
     static const char* toString(Usage usage);
 
   private:
-
     std::vector<Element> _elements;
     unsigned int _vertexSize;
-  };
+};
 
-}
+} // namespace tractor

@@ -1,26 +1,25 @@
 #pragma once
 
-#include "physics/PhysicsConstraint.h"
-#include "physics/PhysicsRigidBody.h"
 #include "math/Quaternion.h"
 #include "math/Vector3.h"
+#include "physics/PhysicsConstraint.h"
+#include "physics/PhysicsRigidBody.h"
 
 namespace tractor
 {
 
-  /**
-   * Defines a hinge constraint between two rigid bodies
-   * (or one rigid body and the world) where movement is
-   * restricted to rotation about one axis.
-   *
-   * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-Constraints
-   */
-  class PhysicsHingeConstraint : public PhysicsConstraint
-  {
+/**
+ * Defines a hinge constraint between two rigid bodies
+ * (or one rigid body and the world) where movement is
+ * restricted to rotation about one axis.
+ *
+ * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-Constraints
+ */
+class PhysicsHingeConstraint : public PhysicsConstraint
+{
     friend class PhysicsController;
 
   public:
-
     /**
      * Sets the limits (and optionally, some properties) for the hinge.
      *
@@ -50,13 +49,17 @@ namespace tractor
      * @param translationOffsetB The translation offset for the second rigid body
      *      (in its local space) with respect to the constraint joint (optional).
      */
-    PhysicsHingeConstraint(PhysicsRigidBody* a, const Quaternion& rotationOffsetA, const Vector3& translationOffsetA,
-      PhysicsRigidBody* b, const Quaternion& rotationOffsetB, const Vector3& translationOffsetB);
+    PhysicsHingeConstraint(PhysicsRigidBody* a,
+                           const Quaternion& rotationOffsetA,
+                           const Vector3& translationOffsetA,
+                           PhysicsRigidBody* b,
+                           const Quaternion& rotationOffsetB,
+                           const Vector3& translationOffsetB);
 
     /**
      * Destructor.
      */
     ~PhysicsHingeConstraint();
-  };
+};
 
-}
+} // namespace tractor

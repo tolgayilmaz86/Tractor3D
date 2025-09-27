@@ -3,28 +3,27 @@
 namespace tractor
 {
 
-  /**
-   * Defines a class providing a basic logging system for a game.
-   *
-   * By default, this class logs messages using the tractor::print function, which
-   * is implemented in a platform dependent manner and typically prints to stderr
-   * as well as to other possibly platform specific locations. Logging behavior
-   * can be modified for a specific log level by passing a custom C or Lua logging
-   * function to the Logger::set method. Logging can also be toggled using the
-   * setEnabled method.
-   */
-  class Logger
-  {
+/**
+ * Defines a class providing a basic logging system for a game.
+ *
+ * By default, this class logs messages using the tractor::print function, which
+ * is implemented in a platform dependent manner and typically prints to stderr
+ * as well as to other possibly platform specific locations. Logging behavior
+ * can be modified for a specific log level by passing a custom C or Lua logging
+ * function to the Logger::set method. Logging can also be toggled using the
+ * setEnabled method.
+ */
+class Logger
+{
   public:
-
     /**
      * Enumeration of valid log levels.
      */
     enum Level
     {
-      LEVEL_INFO = 0,
-      LEVEL_WARN = 1,
-      LEVEL_ERROR = 2
+        LEVEL_INFO = 0,
+        LEVEL_WARN = 1,
+        LEVEL_ERROR = 2
     };
 
     /**
@@ -69,7 +68,7 @@ namespace tractor
      * @param logFunction Pointer to a C function to call for each log request at the given log level.
      * @script{ignore}
      */
-    static void set(Level level, void (*logFunction) (Level, const char*));
+    static void set(Level level, void (*logFunction)(Level, const char*));
 
     /**
      * Sets a Lua function as the log handler for the specified log level.
@@ -85,13 +84,12 @@ namespace tractor
     static void set(Level level, const char* logFunction);
 
   private:
-
     struct State
     {
-      State();
-      void (*logFunctionC) (Level, const char*);
-      const char* logFunctionLua;
-      bool enabled;
+        State();
+        void (*logFunctionC)(Level, const char*);
+        const char* logFunctionLua;
+        bool enabled;
     };
 
     /**
@@ -115,7 +113,6 @@ namespace tractor
     Logger& operator=(const Logger&);
 
     static State _state[3];
+};
 
-  };
-
-}
+} // namespace tractor

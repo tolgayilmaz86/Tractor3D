@@ -1,15 +1,17 @@
 #pragma once
 
+#include <string>
+
 #include "utils/Ref.h"
 
 namespace tractor
 {
 
-  /**
-   * Defines an n-dimensional curve.
-   */
-  class Curve : public Ref
-  {
+/**
+ * Defines an n-dimensional curve.
+ */
+class Curve : public Ref
+{
     friend class AnimationTarget;
     friend class Animation;
     friend class AnimationClip;
@@ -17,7 +19,6 @@ namespace tractor
     friend class MeshSkin;
 
   public:
-
     /**
      * Types of interpolation.
      *
@@ -27,251 +28,253 @@ namespace tractor
      */
     enum InterpolationType
     {
-      /**
-       * Bezier Interpolation.
-       *
-       * Requires that two control points are set for each segment.
-       */
-      BEZIER,
+        /**
+         * Bezier Interpolation.
+         *
+         * Requires that two control points are set for each segment.
+         */
+        BEZIER,
 
-      /**
-       * B-Spline Interpolation.
-       *
-       * Uses the points as control points, and the curve is guaranteed to only pass through the
-       * first and last point.
-       */
-      BSPLINE,
+        /**
+         * B-Spline Interpolation.
+         *
+         * Uses the points as control points, and the curve is guaranteed to only pass through the
+         * first and last point.
+         */
+        BSPLINE,
 
-      /**
-       * Flat Interpolation.
-       *
-       * A form of Hermite interpolation that generates flat tangents for you. The tangents have a value equal to 0.
-       */
-      FLAT,
+        /**
+         * Flat Interpolation.
+         *
+         * A form of Hermite interpolation that generates flat tangents for you. The tangents have a
+         * value equal to 0.
+         */
+        FLAT,
 
-      /**
-       * Hermite Interpolation.
-       *
-       * Requires that two tangents for each segment.
-       */
-      HERMITE,
+        /**
+         * Hermite Interpolation.
+         *
+         * Requires that two tangents for each segment.
+         */
+        HERMITE,
 
-      /**
-       * Linear Interpolation.
-       */
-      LINEAR,
+        /**
+         * Linear Interpolation.
+         */
+        LINEAR,
 
-      /**
-       * Smooth Interpolation.
-       *
-       * A form of Hermite interpolation that generates tangents for each segment based on the points prior to and after the segment.
-       */
-      SMOOTH,
+        /**
+         * Smooth Interpolation.
+         *
+         * A form of Hermite interpolation that generates tangents for each segment based on the
+         * points prior to and after the segment.
+         */
+        SMOOTH,
 
-      /**
-       * Discrete Interpolation.
-       */
-      STEP,
+        /**
+         * Discrete Interpolation.
+         */
+        STEP,
 
-      /**
-       * Quadratic-In Interpolation.
-       */
-      QUADRATIC_IN,
+        /**
+         * Quadratic-In Interpolation.
+         */
+        QUADRATIC_IN,
 
-      /**
-       * Quadratic-Out Interpolation.
-       */
-      QUADRATIC_OUT,
+        /**
+         * Quadratic-Out Interpolation.
+         */
+        QUADRATIC_OUT,
 
-      /**
-       * Quadratic-In-Out Interpolation.
-       */
-      QUADRATIC_IN_OUT,
+        /**
+         * Quadratic-In-Out Interpolation.
+         */
+        QUADRATIC_IN_OUT,
 
-      /**
-       * Quadratic-Out-In Interpolation.
-       */
-      QUADRATIC_OUT_IN,
+        /**
+         * Quadratic-Out-In Interpolation.
+         */
+        QUADRATIC_OUT_IN,
 
-      /**
-       * Cubic-In Interpolation.
-       */
-      CUBIC_IN,
+        /**
+         * Cubic-In Interpolation.
+         */
+        CUBIC_IN,
 
-      /**
-       * Cubic-Out Interpolation.
-       */
-      CUBIC_OUT,
+        /**
+         * Cubic-Out Interpolation.
+         */
+        CUBIC_OUT,
 
-      /**
-       * Cubic-In-Out Interpolation.
-       */
-      CUBIC_IN_OUT,
+        /**
+         * Cubic-In-Out Interpolation.
+         */
+        CUBIC_IN_OUT,
 
-      /**
-       * Cubic-Out-In Interpolation.
-       */
-      CUBIC_OUT_IN,
+        /**
+         * Cubic-Out-In Interpolation.
+         */
+        CUBIC_OUT_IN,
 
-      /**
-       * Quartic-In Interpolation.
-       */
-      QUARTIC_IN,
+        /**
+         * Quartic-In Interpolation.
+         */
+        QUARTIC_IN,
 
-      /**
-       * Quartic-Out Interpolation.
-       */
-      QUARTIC_OUT,
+        /**
+         * Quartic-Out Interpolation.
+         */
+        QUARTIC_OUT,
 
-      /**
-       * Quartic-In-Out Interpolation.
-       */
-      QUARTIC_IN_OUT,
+        /**
+         * Quartic-In-Out Interpolation.
+         */
+        QUARTIC_IN_OUT,
 
-      /**
-       * Quartic-Out-In Interpolation.
-       */
-      QUARTIC_OUT_IN,
+        /**
+         * Quartic-Out-In Interpolation.
+         */
+        QUARTIC_OUT_IN,
 
-      /**
-       * Quintic-In Interpolation.
-       */
-      QUINTIC_IN,
+        /**
+         * Quintic-In Interpolation.
+         */
+        QUINTIC_IN,
 
-      /**
-       * Quintic-Out Interpolation.
-       */
-      QUINTIC_OUT,
+        /**
+         * Quintic-Out Interpolation.
+         */
+        QUINTIC_OUT,
 
-      /**
-       * Quintic-In-Out Interpolation.
-       */
-      QUINTIC_IN_OUT,
+        /**
+         * Quintic-In-Out Interpolation.
+         */
+        QUINTIC_IN_OUT,
 
-      /**
-       * Quintic-Out-In Interpolation.
-       */
-      QUINTIC_OUT_IN,
+        /**
+         * Quintic-Out-In Interpolation.
+         */
+        QUINTIC_OUT_IN,
 
-      /**
-       * Sine-In Interpolation.
-       */
-      SINE_IN,
+        /**
+         * Sine-In Interpolation.
+         */
+        SINE_IN,
 
-      /**
-       * Sine-Out Interpolation.
-       */
-      SINE_OUT,
+        /**
+         * Sine-Out Interpolation.
+         */
+        SINE_OUT,
 
-      /**
-       * Sine-In-Out Interpolation.
-       */
-      SINE_IN_OUT,
+        /**
+         * Sine-In-Out Interpolation.
+         */
+        SINE_IN_OUT,
 
-      /**
-       * Sine-Out-In Interpolation.
-       */
-      SINE_OUT_IN,
+        /**
+         * Sine-Out-In Interpolation.
+         */
+        SINE_OUT_IN,
 
-      /**
-       * Exponential-In Interpolation.
-       */
-      EXPONENTIAL_IN,
+        /**
+         * Exponential-In Interpolation.
+         */
+        EXPONENTIAL_IN,
 
-      /**
-       * Exponential-Out Interpolation.
-       */
-      EXPONENTIAL_OUT,
+        /**
+         * Exponential-Out Interpolation.
+         */
+        EXPONENTIAL_OUT,
 
-      /**
-       * Exponential-In-Out Interpolation.
-       */
-      EXPONENTIAL_IN_OUT,
+        /**
+         * Exponential-In-Out Interpolation.
+         */
+        EXPONENTIAL_IN_OUT,
 
-      /**
-       * Exponential-Out-In Interpolation.
-       */
-      EXPONENTIAL_OUT_IN,
+        /**
+         * Exponential-Out-In Interpolation.
+         */
+        EXPONENTIAL_OUT_IN,
 
-      /**
-       * Circular-In Interpolation.
-       */
-      CIRCULAR_IN,
+        /**
+         * Circular-In Interpolation.
+         */
+        CIRCULAR_IN,
 
-      /**
-       * Circular-Out Interpolation.
-       */
-      CIRCULAR_OUT,
+        /**
+         * Circular-Out Interpolation.
+         */
+        CIRCULAR_OUT,
 
-      /**
-       * Circular-In-Out Interpolation.
-       */
-      CIRCULAR_IN_OUT,
+        /**
+         * Circular-In-Out Interpolation.
+         */
+        CIRCULAR_IN_OUT,
 
-      /**
-       * Circular-Out-In Interpolation.
-       */
-      CIRCULAR_OUT_IN,
+        /**
+         * Circular-Out-In Interpolation.
+         */
+        CIRCULAR_OUT_IN,
 
-      /**
-       * Elastic-In Interpolation.
-       */
-      ELASTIC_IN,
+        /**
+         * Elastic-In Interpolation.
+         */
+        ELASTIC_IN,
 
-      /**
-       * Elastic-Out Interpolation.
-       */
-      ELASTIC_OUT,
+        /**
+         * Elastic-Out Interpolation.
+         */
+        ELASTIC_OUT,
 
-      /**
-       * Elastic-In-Out Interpolation.
-       */
-      ELASTIC_IN_OUT,
+        /**
+         * Elastic-In-Out Interpolation.
+         */
+        ELASTIC_IN_OUT,
 
-      /**
-       * Elastic-Out-In Interpolation.
-       */
-      ELASTIC_OUT_IN,
+        /**
+         * Elastic-Out-In Interpolation.
+         */
+        ELASTIC_OUT_IN,
 
-      /**
-       * Overshoot-In Interpolation.
-       */
-      OVERSHOOT_IN,
+        /**
+         * Overshoot-In Interpolation.
+         */
+        OVERSHOOT_IN,
 
-      /**
-       * Overshoot-Out Interpolation.
-       */
-      OVERSHOOT_OUT,
+        /**
+         * Overshoot-Out Interpolation.
+         */
+        OVERSHOOT_OUT,
 
-      /**
-       * Overshoot-In-Out Interpolation.
-       */
-      OVERSHOOT_IN_OUT,
+        /**
+         * Overshoot-In-Out Interpolation.
+         */
+        OVERSHOOT_IN_OUT,
 
-      /**
-       * Overshoot-Out-In Interpolation.
-       */
-      OVERSHOOT_OUT_IN,
+        /**
+         * Overshoot-Out-In Interpolation.
+         */
+        OVERSHOOT_OUT_IN,
 
-      /**
-       * Bounce-In Interpolation.
-       */
-      BOUNCE_IN,
+        /**
+         * Bounce-In Interpolation.
+         */
+        BOUNCE_IN,
 
-      /**
-       * Bounce-Out Interpolation.
-       */
-      BOUNCE_OUT,
+        /**
+         * Bounce-Out Interpolation.
+         */
+        BOUNCE_OUT,
 
-      /**
-       * Bounce-In-Out Interpolation.
-       */
-      BOUNCE_IN_OUT,
+        /**
+         * Bounce-In-Out Interpolation.
+         */
+        BOUNCE_IN_OUT,
 
-      /**
-       * Bounce-Out-In Interpolation.
-       */
-      BOUNCE_OUT_IN
+        /**
+         * Bounce-Out-In Interpolation.
+         */
+        BOUNCE_OUT_IN
     };
 
     /**
@@ -331,8 +334,12 @@ namespace tractor
      * @param inValue The tangent approaching the point.
      * @param outValue The tangent leaving the point.
      */
-    void setPoint(unsigned int index, float time, float* value, InterpolationType type,
-      float* inValue, float* outValue);
+    void setPoint(unsigned int index,
+                  float time,
+                  float* value,
+                  InterpolationType type,
+                  float* inValue,
+                  float* outValue);
 
     /**
      * Sets the tangents for a point on the curve specified by the index.
@@ -419,39 +426,37 @@ namespace tractor
     static float lerp(float t, float from, float to);
 
   private:
-
     /**
      * Defines a single point within a curve.
      */
     class Point
     {
-    public:
+      public:
+        /** The time of the point within the curve. */
+        float time;
+        /** The value of the point. */
+        float* value;
+        /** The value of the tangent when approaching this point (from the previous point in the curve). */
+        float* inValue;
+        /** The value of the tangent when leaving this point (towards the next point in the curve). */
+        float* outValue;
+        /** The type of interpolation to use between this point and the next point. */
+        InterpolationType type;
 
-      /** The time of the point within the curve. */
-      float time;
-      /** The value of the point. */
-      float* value;
-      /** The value of the tangent when approaching this point (from the previous point in the curve). */
-      float* inValue;
-      /** The value of the tangent when leaving this point (towards the next point in the curve). */
-      float* outValue;
-      /** The type of interpolation to use between this point and the next point. */
-      InterpolationType type;
+        /**
+         * Constructor.
+         */
+        Point();
 
-      /**
-       * Constructor.
-       */
-      Point();
+        /**
+         * Destructor.
+         */
+        ~Point();
 
-      /**
-       * Destructor.
-       */
-      ~Point();
-
-      /**
-       * Hidden copy assignment operator.
-       */
-      Point& operator=(const Point&);
+        /**
+         * Hidden copy assignment operator.
+         */
+        Point& operator=(const Point&);
     };
 
     /**
@@ -523,10 +528,11 @@ namespace tractor
     int determineIndex(float time, unsigned int min, unsigned int max) const;
 
     /**
-     * Sets the offset for the beginning of a Quaternion piece of data within the curve's value span at the specified
-     * index. The next four components of data starting at the given index will be interpolated as a Quaternion.
-     * This function will assert an error if the given index is greater than the component size subtracted by the four components required
-     * to store a quaternion.
+     * Sets the offset for the beginning of a Quaternion piece of data within the curve's value span
+     * at the specified index. The next four components of data starting at the given index will be
+     * interpolated as a Quaternion. This function will assert an error if the given index is
+     * greater than the component size subtracted by the four components required to store a
+     * quaternion.
      *
      * @param index The index of the Quaternion rotation data.
      */
@@ -540,11 +546,11 @@ namespace tractor
      */
     static int getInterpolationType(const std::string& interpolationId);
 
-    unsigned int _pointCount;           // Number of points on the curve.
-    unsigned int _componentCount;       // Number of components on the curve.
-    unsigned int _componentSize;        // The component size (in bytes).
-    unsigned int* _quaternionOffset;    // Offset for the rotation component.
-    Point* _points;                     // The points on the curve.
-  };
+    unsigned int _pointCount;        // Number of points on the curve.
+    unsigned int _componentCount;    // Number of components on the curve.
+    unsigned int _componentSize;     // The component size (in bytes).
+    unsigned int* _quaternionOffset; // Offset for the rotation component.
+    Point* _points;                  // The points on the curve.
+};
 
-}
+} // namespace tractor

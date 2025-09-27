@@ -1,33 +1,32 @@
 #pragma once
 
-#include "math/Matrix.h"
-#include "graphics/Ray.h"
 #include "graphics/Plane.h"
+#include "graphics/Ray.h"
+#include "math/Matrix.h"
 
 namespace tractor
 {
 
-  /**
-   * Defines a 3-dimensional frustum.
-   *
-   * A frustum in computer graphics is generally a volume of 3D space,
-   * defined as the part of a rectangular pyramid that lies between
-   * two planes perpendicular to its center line. A frustum is often used
-   * to represent what a "camera" sees in your 3D space.
-   *
-   * The Frustum class allows you to define a bounding frustum using a combined
-   * matrix that is generally the product of a view matrix and a projection matrix.
-   *
-   * You can query a Frustum object for any one of its bounding planes,
-   * for its corners, and for whether it intersects with a given object.
-   * Since objects that don't intersect with your view frustum generally
-   * don't need to be rendered, culling them quickly can save you a lot of
-   * rendering time.
-   */
-  class Frustum
-  {
+/**
+ * Defines a 3-dimensional frustum.
+ *
+ * A frustum in computer graphics is generally a volume of 3D space,
+ * defined as the part of a rectangular pyramid that lies between
+ * two planes perpendicular to its center line. A frustum is often used
+ * to represent what a "camera" sees in your 3D space.
+ *
+ * The Frustum class allows you to define a bounding frustum using a combined
+ * matrix that is generally the product of a view matrix and a projection matrix.
+ *
+ * You can query a Frustum object for any one of its bounding planes,
+ * for its corners, and for whether it intersects with a given object.
+ * Since objects that don't intersect with your view frustum generally
+ * don't need to be rendered, culling them quickly can save you a lot of
+ * rendering time.
+ */
+class Frustum
+{
   public:
-
     /**
      * Constructs the default frustum (corresponds to the identity matrix).
      */
@@ -207,7 +206,6 @@ namespace tractor
     void set(const Matrix& matrix);
 
   private:
-
     /**
      * Updates the planes of the frustum.
      */
@@ -220,6 +218,6 @@ namespace tractor
     Plane _left;
     Plane _right;
     Matrix _matrix;
-  };
+};
 
-}
+} // namespace tractor

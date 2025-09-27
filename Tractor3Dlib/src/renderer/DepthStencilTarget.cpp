@@ -1,4 +1,5 @@
 #include "pch.h"
+
 #include "renderer/DepthStencilTarget.h"
 
 #ifndef GL_DEPTH24_STENCIL8_OES
@@ -11,115 +12,109 @@
 namespace tractor
 {
 
-	static std::vector<DepthStencilTarget*> __depthStencilTargets;
+static std::vector<DepthStencilTarget*> __depthStencilTargets;
 
-	DepthStencilTarget::DepthStencilTarget(const std::string& id, Format format, unsigned int width, unsigned int height)
-		: _id(id), _format(format), _depthBuffer(0), _stencilBuffer(0), _width(width), _height(height), _packed(false)
-	{
-	}
-
-	DepthStencilTarget::~DepthStencilTarget()
-	{
-		// Destroy GL resources.
-		if (_depthBuffer)
-			GL_ASSERT(glDeleteRenderbuffers(1, &_depthBuffer));
-		if (_stencilBuffer)
-			GL_ASSERT(glDeleteRenderbuffers(1, &_stencilBuffer));
-
-		// Remove from vector.
-		std::vector<DepthStencilTarget*>::iterator it = std::find(__depthStencilTargets.begin(), __depthStencilTargets.end(), this);
-		if (it != __depthStencilTargets.end())
-		{
-			__depthStencilTargets.erase(it);
-		}
-	}
-
-	DepthStencilTarget* DepthStencilTarget::create(const std::string& id, Format format, unsigned int width, unsigned int height)
-	{
-		// Create and add the depth stencil target in place.
-		const auto& depthStencilTarget = __depthStencilTargets.emplace_back(new DepthStencilTarget(id, format, width, height));
-
-		// Create a render buffer for this new depth+stencil target
-		GL_ASSERT(glGenRenderbuffers(1, &depthStencilTarget->_depthBuffer));
-		GL_ASSERT(glBindRenderbuffer(GL_RENDERBUFFER, depthStencilTarget->_depthBuffer));
-
-		// First try to add storage for the most common standard GL_DEPTH24_STENCIL8 
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
-
-		// Fall back to less common GLES2 extension combination for seperate depth24 + stencil8 or depth16 + stencil8
-		__gl_error_code = glGetError();
-		if (__gl_error_code != GL_NO_ERROR)
-		{
-			const char* extString = (const char*)glGetString(GL_EXTENSIONS);
-
-			if (strstr(extString, "GL_OES_packed_depth_stencil") != 0)
-			{
-				GL_ASSERT(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8_OES, width, height));
-				depthStencilTarget->_packed = true;
-			}
-			else
-			{
-				if (strstr(extString, "GL_OES_depth24") != 0)
-				{
-					GL_ASSERT(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height));
-				}
-				else
-				{
-					GL_ASSERT(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, width, height));
-				}
-				if (format == DepthStencilTarget::DEPTH_STENCIL)
-				{
-					GL_ASSERT(glGenRenderbuffers(1, &depthStencilTarget->_stencilBuffer));
-					GL_ASSERT(glBindRenderbuffer(GL_RENDERBUFFER, depthStencilTarget->_stencilBuffer));
-					GL_ASSERT(glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX8, width, height));
-				}
-			}
-		}
-		else
-		{
-			// Packed format GL_DEPTH24_STENCIL8 is used mark format as packed.
-			depthStencilTarget->_packed = true;
-		}
-
-		return depthStencilTarget;
-	}
-
-	DepthStencilTarget* DepthStencilTarget::getDepthStencilTarget(const std::string& id)
-	{
-		if (auto target = std::ranges::find_if(__depthStencilTargets,
-			[id](const DepthStencilTarget* dst) {
-				assert(dst);
-				return id == dst->getId();
-			}); target != __depthStencilTargets.end())
-		{
-			return *target;
-		}
-
-		return nullptr;
-	}
-
-	const std::string& DepthStencilTarget::getId() const
-	{
-		return _id;
-	}
-
-	DepthStencilTarget::Format DepthStencilTarget::getFormat() const
-	{
-		return _format;
-	}
-
-	unsigned int DepthStencilTarget::getWidth() const
-	{
-		return _width;
-	}
-
-	unsigned int DepthStencilTarget::getHeight() const
-	{
-		return _height;
-	}
-
-	bool DepthStencilTarget::isPacked() const
-	{
-		return _packed;
-	}
+DepthStencilTarget::DepthStencilTarget(const std::string& id,
+                                       Format format,
+                                       unsigned int width,
+                                       unsigned int height)
+    : _id(id), _format(format), _depthBuffer(0), _stencilBuffer(0), _width(width), _height(height),
+      _packed(false)
+{
 }
+
+DepthStencilTarget::~DepthStencilTarget()
+{
+    // Destroy GL resources.
+    if (_depthBuffer) GL_ASSERT(glDeleteRenderbuffers(1, &_depthBuffer));
+    if (_stencilBuffer) GL_ASSERT(glDeleteRenderbuffers(1, &_stencilBuffer));
+
+    // Remove from vector.
+    std::vector<DepthStencilTarget*>::iterator it =
+        std::find(__depthStencilTargets.begin(), __depthStencilTargets.end(), this);
+    if (it != __depthStencilTargets.end())
+    {
+        __depthStencilTargets.erase(it);
+    }
+}
+
+DepthStencilTarget* DepthStencilTarget::create(const std::string& id,
+                                               Format format,
+                                               unsigned int width,
+                                               unsigned int height)
+{
+    // Create and add the depth stencil target in place.
+    const auto& depthStencilTarget =
+        __depthStencilTargets.emplace_back(new DepthStencilTarget(id, format, width, height));
+
+    // Create a render buffer for this new depth+stencil target
+    GL_ASSERT(glGenRenderbuffers(1, &depthStencilTarget->_depthBuffer));
+    GL_ASSERT(glBindRenderbuffer(GL_RENDERBUFFER, depthStencilTarget->_depthBuffer));
+
+    // First try to add storage for the most common standard GL_DEPTH24_STENCIL8
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+
+    // Fall back to less common GLES2 extension combination for seperate depth24 + stencil8 or depth16 + stencil8
+    __gl_error_code = glGetError();
+    if (__gl_error_code != GL_NO_ERROR)
+    {
+        const char* extString = (const char*)glGetString(GL_EXTENSIONS);
+
+        if (strstr(extString, "GL_OES_packed_depth_stencil") != 0)
+        {
+            GL_ASSERT(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8_OES, width, height));
+            depthStencilTarget->_packed = true;
+        }
+        else
+        {
+            if (strstr(extString, "GL_OES_depth24") != 0)
+            {
+                GL_ASSERT(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height));
+            }
+            else
+            {
+                GL_ASSERT(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, width, height));
+            }
+            if (format == DepthStencilTarget::DEPTH_STENCIL)
+            {
+                GL_ASSERT(glGenRenderbuffers(1, &depthStencilTarget->_stencilBuffer));
+                GL_ASSERT(glBindRenderbuffer(GL_RENDERBUFFER, depthStencilTarget->_stencilBuffer));
+                GL_ASSERT(glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX8, width, height));
+            }
+        }
+    }
+    else
+    {
+        // Packed format GL_DEPTH24_STENCIL8 is used mark format as packed.
+        depthStencilTarget->_packed = true;
+    }
+
+    return depthStencilTarget;
+}
+
+DepthStencilTarget* DepthStencilTarget::getDepthStencilTarget(const std::string& id)
+{
+    if (auto target = std::ranges::find_if(__depthStencilTargets,
+                                           [id](const DepthStencilTarget* dst)
+                                           {
+                                               assert(dst);
+                                               return id == dst->getId();
+                                           });
+        target != __depthStencilTargets.end())
+    {
+        return *target;
+    }
+
+    return nullptr;
+}
+
+const std::string& DepthStencilTarget::getId() const { return _id; }
+
+DepthStencilTarget::Format DepthStencilTarget::getFormat() const { return _format; }
+
+unsigned int DepthStencilTarget::getWidth() const { return _width; }
+
+unsigned int DepthStencilTarget::getHeight() const { return _height; }
+
+bool DepthStencilTarget::isPacked() const { return _packed; }
+} // namespace tractor

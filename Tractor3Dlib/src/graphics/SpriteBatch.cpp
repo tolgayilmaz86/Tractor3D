@@ -1,5 +1,7 @@
 #include "pch.h"
+
 #include "graphics/SpriteBatch.h"
+
 #include "framework/Game.h"
 #include "renderer/Material.h"
 
@@ -10,10 +12,16 @@
 #define SPRITE_BATCH_GROW_FACTOR 2.0f
 
 // Macro for adding a sprite to the batch
-#define SPRITE_ADD_VERTEX(vtx, vx, vy, vz, vu, vv, vr, vg, vb, va) \
-    vtx.x = vx; vtx.y = vy; vtx.z = vz; \
-    vtx.u = vu; vtx.v = vv; \
-    vtx.r = vr; vtx.g = vg; vtx.b = vb; vtx.a = va
+#define SPRITE_ADD_VERTEX(vtx, vx, vy, vz, vu, vv, vr, vg, vb, va)                                 \
+    vtx.x = vx;                                                                                    \
+    vtx.y = vy;                                                                                    \
+    vtx.z = vz;                                                                                    \
+    vtx.u = vu;                                                                                    \
+    vtx.v = vv;                                                                                    \
+    vtx.r = vr;                                                                                    \
+    vtx.g = vg;                                                                                    \
+    vtx.b = vb;                                                                                    \
+    vtx.a = va
 
 // Default sprite shaders
 #define SPRITE_VSH "res/shaders/sprite.vert"
@@ -22,82 +30,84 @@
 namespace tractor
 {
 
-  static Effect* __spriteEffect = nullptr;
+static Effect* __spriteEffect = nullptr;
 
-  SpriteBatch::SpriteBatch()
+SpriteBatch::SpriteBatch()
     : _batch(nullptr), _sampler(nullptr), _textureWidthRatio(0.0f), _textureHeightRatio(0.0f)
-  {
-  }
+{
+}
 
-  SpriteBatch::~SpriteBatch()
-  {
+SpriteBatch::~SpriteBatch()
+{
     SAFE_DELETE(_batch);
     SAFE_RELEASE(_sampler);
 
     if (!_customEffect)
     {
-      if (__spriteEffect && __spriteEffect->getRefCount() == 1)
-      {
-        __spriteEffect->release();
-        __spriteEffect = NULL;
-      }
-      else
-      {
-        __spriteEffect->release();
-      }
+        if (__spriteEffect && __spriteEffect->getRefCount() == 1)
+        {
+            __spriteEffect->release();
+            __spriteEffect = NULL;
+        }
+        else
+        {
+            __spriteEffect->release();
+        }
     }
-  }
+}
 
-  SpriteBatch* SpriteBatch::create(const std::string& texturePath, Effect* effect, unsigned int initialCapacity)
-  {
+SpriteBatch* SpriteBatch::create(const std::string& texturePath,
+                                 Effect* effect,
+                                 unsigned int initialCapacity)
+{
     Texture* texture = Texture::create(texturePath);
     SpriteBatch* batch = SpriteBatch::create(texture, effect, initialCapacity);
     SAFE_RELEASE(texture);
     return batch;
-  }
+}
 
-  SpriteBatch* SpriteBatch::create(Texture* texture, Effect* effect, unsigned int initialCapacity)
-  {
+SpriteBatch* SpriteBatch::create(Texture* texture, Effect* effect, unsigned int initialCapacity)
+{
     assert(texture != nullptr);
     assert(texture->getType() == Texture::TEXTURE_2D);
 
     bool customEffect = (effect != nullptr);
     if (!customEffect)
     {
-      // Create our static sprite effect.
-      if (__spriteEffect == nullptr)
-      {
-        __spriteEffect = Effect::createFromFile(SPRITE_VSH, SPRITE_FSH);
+        // Create our static sprite effect.
         if (__spriteEffect == nullptr)
         {
-          GP_ERROR("Unable to load sprite effect.");
-          return nullptr;
+            __spriteEffect = Effect::createFromFile(SPRITE_VSH, SPRITE_FSH);
+            if (__spriteEffect == nullptr)
+            {
+                GP_ERROR("Unable to load sprite effect.");
+                return nullptr;
+            }
+            effect = __spriteEffect;
         }
-        effect = __spriteEffect;
-      }
-      else
-      {
-        effect = __spriteEffect;
-        __spriteEffect->addRef();
-      }
+        else
+        {
+            effect = __spriteEffect;
+            __spriteEffect->addRef();
+        }
     }
 
     // Search for the first sampler uniform in the effect.
     Uniform* samplerUniform = nullptr;
     for (unsigned int i = 0, count = effect->getUniformCount(); i < count; ++i)
     {
-      Uniform* uniform = effect->getUniform(i);
-      if (uniform && uniform->getType() == GL_SAMPLER_2D)
-      {
-        samplerUniform = uniform;
-        break;
-      }
+        Uniform* uniform = effect->getUniform(i);
+        if (uniform && uniform->getType() == GL_SAMPLER_2D)
+        {
+            samplerUniform = uniform;
+            break;
+        }
     }
     if (!samplerUniform)
     {
-      GP_ERROR("No uniform of type GL_SAMPLER_2D found in sprite effect.");
-      SAFE_RELEASE(effect);
-      return nullptr;
+        GP_ERROR("No uniform of type GL_SAMPLER_2D found in sprite effect.");
+        SAFE_RELEASE(effect);
+        return nullptr;
     }
 
     // Wrap the effect in a material
@@ -113,16 +123,18 @@ namespace tractor
     material->getParameter(samplerUniform->getName())->setValue(sampler);
 
     // Define the vertex format for the batch
-    VertexFormat::Element vertexElements[] =
-    {
-        VertexFormat::Element(VertexFormat::POSITION, 3),
-        VertexFormat::Element(VertexFormat::TEXCOORD0, 2),
-        VertexFormat::Element(VertexFormat::COLOR, 4)
-    };
+    VertexFormat::Element vertexElements[] = { VertexFormat::Element(VertexFormat::POSITION, 3),
+                                               VertexFormat::Element(VertexFormat::TEXCOORD0, 2),
+                                               VertexFormat::Element(VertexFormat::COLOR, 4) };
     VertexFormat vertexFormat(vertexElements, 3);
 
     // Create the mesh batch
-    MeshBatch* meshBatch = MeshBatch::create(vertexFormat, Mesh::TRIANGLE_STRIP, material, true, initialCapacity > 0 ? initialCapacity : SPRITE_BATCH_DEFAULT_SIZE);
+    MeshBatch* meshBatch =
+        MeshBatch::create(vertexFormat,
+                          Mesh::TRIANGLE_STRIP,
+                          material,
+                          true,
+                          initialCapacity > 0 ? initialCapacity : SPRITE_BATCH_DEFAULT_SIZE);
     material->release(); // don't call SAFE_RELEASE since material is used below
 
     // Create the batch
@@ -135,24 +147,23 @@ namespace tractor
 
     // Bind an ortho projection to the material by default (user can override with setProjectionMatrix)
     Game* game = Game::getInstance();
-    batch->_projectionMatrix = Matrix::createOrthographicOffCenter(0, game->getViewport().width, game->getViewport().height, 0, 0, 1);
+    batch->_projectionMatrix = Matrix::createOrthographicOffCenter(0,
+                                                                   game->getViewport().width,
+                                                                   game->getViewport().height,
+                                                                   0,
+                                                                   0,
+                                                                   1);
     material->getParameter("u_projectionMatrix")->bindValue(batch, &SpriteBatch::getProjectionMatrix);
 
     return batch;
-  }
+}
 
-  void SpriteBatch::start()
-  {
-    _batch->start();
-  }
+void SpriteBatch::start() { _batch->start(); }
 
-  bool SpriteBatch::isStarted() const
-  {
-    return _batch->isStarted();
-  }
+bool SpriteBatch::isStarted() const { return _batch->isStarted(); }
 
-  void SpriteBatch::draw(const Rectangle& dst, const Rectangle& src, const Vector4& color)
-  {
+void SpriteBatch::draw(const Rectangle& dst, const Rectangle& src, const Vector4& color)
+{
     // Calculate uvs.
     float u1 = _textureWidthRatio * src.x;
     float v1 = 1.0f - _textureHeightRatio * src.y;
@@ -160,10 +171,13 @@ namespace tractor
     float v2 = v1 - _textureHeightRatio * src.height;
 
     draw(dst.x, dst.y, dst.width, dst.height, u1, v1, u2, v2, color);
-  }
+}
 
-  void SpriteBatch::draw(const Vector3& dst, const Rectangle& src, const Vector2& scale, const Vector4& color)
-  {
+void SpriteBatch::draw(const Vector3& dst,
+                       const Rectangle& src,
+                       const Vector2& scale,
+                       const Vector4& color)
+{
     // Calculate uvs.
     float u1 = _textureWidthRatio * src.x;
     float v1 = 1.0f - _textureHeightRatio * src.y;
@@ -171,11 +185,15 @@ namespace tractor
     float v2 = v1 - _textureHeightRatio * src.height;
 
     draw(dst.x, dst.y, dst.z, scale.x, scale.y, u1, v1, u2, v2, color);
-  }
+}
 
-  void SpriteBatch::draw(const Vector3& dst, const Rectangle& src, const Vector2& scale, const Vector4& color,
-    const Vector2& rotationPoint, float rotationAngle)
-  {
+void SpriteBatch::draw(const Vector3& dst,
+                       const Rectangle& src,
+                       const Vector2& scale,
+                       const Vector4& color,
+                       const Vector2& rotationPoint,
+                       float rotationAngle)
+{
     // Calculate uvs.
     float u1 = _textureWidthRatio * src.x;
     float v1 = 1.0f - _textureHeightRatio * src.y;
@@ -183,22 +201,42 @@ namespace tractor
     float v2 = v1 - _textureHeightRatio * src.height;
 
     draw(dst, scale.x, scale.y, u1, v1, u2, v2, color, rotationPoint, rotationAngle);
-  }
+}
 
-  void SpriteBatch::draw(const Vector3& dst, float width, float height, float u1, float v1, float u2, float v2, const Vector4& color,
-    const Vector2& rotationPoint, float rotationAngle, bool positionIsCenter)
-  {
+void SpriteBatch::draw(const Vector3& dst,
+                       float width,
+                       float height,
+                       float u1,
+                       float v1,
+                       float u2,
+                       float v2,
+                       const Vector4& color,
+                       const Vector2& rotationPoint,
+                       float rotationAngle,
+                       bool positionIsCenter)
+{
     draw(dst.x, dst.y, dst.z, width, height, u1, v1, u2, v2, color, rotationPoint, rotationAngle, positionIsCenter);
-  }
+}
 
-  void SpriteBatch::draw(float x, float y, float z, float width, float height, float u1, float v1, float u2, float v2, const Vector4& color,
-    const Vector2& rotationPoint, float rotationAngle, bool positionIsCenter)
-  {
+void SpriteBatch::draw(float x,
+                       float y,
+                       float z,
+                       float width,
+                       float height,
+                       float u1,
+                       float v1,
+                       float u2,
+                       float v2,
+                       const Vector4& color,
+                       const Vector2& rotationPoint,
+                       float rotationAngle,
+                       bool positionIsCenter)
+{
     // Treat the given position as the center if the user specified it as such.
     if (positionIsCenter)
     {
-      x -= 0.5f * width;
-      y -= 0.5f * height;
+        x -= 0.5f * width;
+        y -= 0.5f * height;
     }
 
     // Expand the destination position by scale into 4 points.
@@ -213,15 +251,15 @@ namespace tractor
     // Rotate points around rotationAxis by rotationAngle.
     if (rotationAngle != 0)
     {
-      Vector2 pivotPoint(rotationPoint);
-      pivotPoint.x *= width;
-      pivotPoint.y *= height;
-      pivotPoint.x += x;
-      pivotPoint.y += y;
-      upLeft.rotate(pivotPoint, rotationAngle);
-      upRight.rotate(pivotPoint, rotationAngle);
-      downLeft.rotate(pivotPoint, rotationAngle);
-      downRight.rotate(pivotPoint, rotationAngle);
+        Vector2 pivotPoint(rotationPoint);
+        pivotPoint.x *= width;
+        pivotPoint.y *= height;
+        pivotPoint.x += x;
+        pivotPoint.y += y;
+        upLeft.rotate(pivotPoint, rotationAngle);
+        upRight.rotate(pivotPoint, rotationAngle);
+        downLeft.rotate(pivotPoint, rotationAngle);
+        downRight.rotate(pivotPoint, rotationAngle);
     }
 
     // Write sprite vertex data.
@@ -234,11 +272,21 @@ namespace tractor
     static unsigned short indices[4] = { 0, 1, 2, 3 };
 
     _batch->add(v, 4, indices, 4);
-  }
+}
 
-  void SpriteBatch::draw(const Vector3& position, const Vector3& right, const Vector3& forward, float width, float height,
-    float u1, float v1, float u2, float v2, const Vector4& color, const Vector2& rotationPoint, float rotationAngle)
-  {
+void SpriteBatch::draw(const Vector3& position,
+                       const Vector3& right,
+                       const Vector3& forward,
+                       float width,
+                       float height,
+                       float u1,
+                       float v1,
+                       float u2,
+                       float v2,
+                       const Vector4& color,
+                       const Vector2& rotationPoint,
+                       float rotationAngle)
+{
     // Calculate the vertex positions.
     Vector3 tRight(right);
     tRight *= width * 0.5f;
@@ -263,31 +311,30 @@ namespace tractor
     // Calculate the rotation point.
     if (rotationAngle != 0)
     {
-      Vector3 rp = p0;
-      tRight = right;
-      tRight *= width * rotationPoint.x;
-      tForward *= rotationPoint.y;
-      rp += tRight;
-      rp += tForward;
+        Vector3 rp = p0;
+        tRight = right;
+        tRight *= width * rotationPoint.x;
+        tForward *= rotationPoint.y;
+        rp += tRight;
+        rp += tForward;
 
-      // Rotate all points the specified amount about the given point (about the up vector).
-      static Vector3 u;
-      Vector3::cross(right, forward, &u);
-      static Matrix rotation = Matrix::createRotation(u, rotationAngle);
-      p0 -= rp;
-      p0 *= rotation;
-      p0 += rp;
-      p1 -= rp;
-      p1 *= rotation;
-      p1 += rp;
-      p2 -= rp;
-      p2 *= rotation;
-      p2 += rp;
-      p3 -= rp;
-      p3 *= rotation;
-      p3 += rp;
+        // Rotate all points the specified amount about the given point (about the up vector).
+        static Vector3 u;
+        Vector3::cross(right, forward, &u);
+        static Matrix rotation = Matrix::createRotation(u, rotationAngle);
+        p0 -= rp;
+        p0 *= rotation;
+        p0 += rp;
+        p1 -= rp;
+        p1 *= rotation;
+        p1 += rp;
+        p2 -= rp;
+        p2 *= rotation;
+        p2 += rp;
+        p3 -= rp;
+        p3 *= rotation;
+        p3 += rp;
     }
-
 
     // Add the sprite vertex data to the batch.
     static SpriteVertex v[4];
@@ -298,29 +345,65 @@ namespace tractor
 
     static const unsigned short indices[4] = { 0, 1, 2, 3 };
     _batch->add(v, 4, const_cast<unsigned short*>(indices), 4);
-  }
+}
 
-  void SpriteBatch::draw(float x, float y, float width, float height, float u1, float v1, float u2, float v2, const Vector4& color)
-  {
+void SpriteBatch::draw(float x,
+                       float y,
+                       float width,
+                       float height,
+                       float u1,
+                       float v1,
+                       float u2,
+                       float v2,
+                       const Vector4& color)
+{
     draw(x, y, 0, width, height, u1, v1, u2, v2, color);
-  }
+}
 
-  void SpriteBatch::draw(float x, float y, float width, float height, float u1, float v1, float u2, float v2, const Vector4& color, const Rectangle& clip)
-  {
+void SpriteBatch::draw(float x,
+                       float y,
+                       float width,
+                       float height,
+                       float u1,
+                       float v1,
+                       float u2,
+                       float v2,
+                       const Vector4& color,
+                       const Rectangle& clip)
+{
     draw(x, y, 0, width, height, u1, v1, u2, v2, color, clip);
-  }
+}
 
-  void SpriteBatch::draw(float x, float y, float z, float width, float height, float u1, float v1, float u2, float v2, const Vector4& color, const Rectangle& clip)
-  {
+void SpriteBatch::draw(float x,
+                       float y,
+                       float z,
+                       float width,
+                       float height,
+                       float u1,
+                       float v1,
+                       float u2,
+                       float v2,
+                       const Vector4& color,
+                       const Rectangle& clip)
+{
     // TODO: Perform software clipping instead of culling the entire sprite.
 
     // Only draw if at least part of the sprite is within the clip region.
     if (clipSprite(clip, x, y, width, height, u1, v1, u2, v2))
-      draw(x, y, z, width, height, u1, v1, u2, v2, color);
-  }
+        draw(x, y, z, width, height, u1, v1, u2, v2, color);
+}
 
-  void SpriteBatch::addSprite(float x, float y, float width, float height, float u1, float v1, float u2, float v2, const Vector4& color, SpriteBatch::SpriteVertex* vertices)
-  {
+void SpriteBatch::addSprite(float x,
+                            float y,
+                            float width,
+                            float height,
+                            float u1,
+                            float v1,
+                            float u2,
+                            float v2,
+                            const Vector4& color,
+                            SpriteBatch::SpriteVertex* vertices)
+{
     assert(vertices);
 
     const float x2 = x + width;
@@ -329,39 +412,62 @@ namespace tractor
     SPRITE_ADD_VERTEX(vertices[1], x, y2, 0, u1, v2, color.x, color.y, color.z, color.w);
     SPRITE_ADD_VERTEX(vertices[2], x2, y, 0, u2, v1, color.x, color.y, color.z, color.w);
     SPRITE_ADD_VERTEX(vertices[3], x2, y2, 0, u2, v2, color.x, color.y, color.z, color.w);
-  }
+}
 
-  void SpriteBatch::addSprite(float x, float y, float width, float height, float u1, float v1, float u2, float v2, const Vector4& color, const Rectangle& clip, SpriteBatch::SpriteVertex* vertices)
-  {
+void SpriteBatch::addSprite(float x,
+                            float y,
+                            float width,
+                            float height,
+                            float u1,
+                            float v1,
+                            float u2,
+                            float v2,
+                            const Vector4& color,
+                            const Rectangle& clip,
+                            SpriteBatch::SpriteVertex* vertices)
+{
     assert(vertices);
 
     // Only add a sprite if at least part of the sprite is within the clip region.
     if (clipSprite(clip, x, y, width, height, u1, v1, u2, v2))
     {
-      const float x2 = x + width;
-      const float y2 = y + height;
-      SPRITE_ADD_VERTEX(vertices[0], x, y, 0, u1, v1, color.x, color.y, color.z, color.w);
-      SPRITE_ADD_VERTEX(vertices[1], x, y2, 0, u1, v2, color.x, color.y, color.z, color.w);
-      SPRITE_ADD_VERTEX(vertices[2], x2, y, 0, u2, v1, color.x, color.y, color.z, color.w);
-      SPRITE_ADD_VERTEX(vertices[3], x2, y2, 0, u2, v2, color.x, color.y, color.z, color.w);
+        const float x2 = x + width;
+        const float y2 = y + height;
+        SPRITE_ADD_VERTEX(vertices[0], x, y, 0, u1, v1, color.x, color.y, color.z, color.w);
+        SPRITE_ADD_VERTEX(vertices[1], x, y2, 0, u1, v2, color.x, color.y, color.z, color.w);
+        SPRITE_ADD_VERTEX(vertices[2], x2, y, 0, u2, v1, color.x, color.y, color.z, color.w);
+        SPRITE_ADD_VERTEX(vertices[3], x2, y2, 0, u2, v2, color.x, color.y, color.z, color.w);
     }
-  }
+}
 
-  void SpriteBatch::draw(SpriteBatch::SpriteVertex* vertices, unsigned int vertexCount, unsigned short* indices, unsigned int indexCount)
-  {
+void SpriteBatch::draw(SpriteBatch::SpriteVertex* vertices,
+                       unsigned int vertexCount,
+                       unsigned short* indices,
+                       unsigned int indexCount)
+{
     assert(vertices);
     assert(indices);
 
     _batch->add(vertices, vertexCount, indices, indexCount);
-  }
+}
 
-  void SpriteBatch::draw(float x, float y, float z, float width, float height, float u1, float v1, float u2, float v2, const Vector4& color, bool positionIsCenter)
-  {
+void SpriteBatch::draw(float x,
+                       float y,
+                       float z,
+                       float width,
+                       float height,
+                       float u1,
+                       float v1,
+                       float u2,
+                       float v2,
+                       const Vector4& color,
+                       bool positionIsCenter)
+{
     // Treat the given position as the center if the user specified it as such.
     if (positionIsCenter)
     {
-      x -= 0.5f * width;
-      y -= 0.5f * height;
+        x -= 0.5f * width;
+        y -= 0.5f * height;
     }
 
     // Write sprite vertex data.
@@ -376,50 +482,46 @@ namespace tractor
     static unsigned short indices[4] = { 0, 1, 2, 3 };
 
     _batch->add(v, 4, indices, 4);
-  }
+}
 
-  void SpriteBatch::finish()
-  {
+void SpriteBatch::finish()
+{
     // Finish and draw the batch
     _batch->finish();
     _batch->draw();
-  }
+}
 
-  RenderState::StateBlock* SpriteBatch::getStateBlock() const
-  {
+RenderState::StateBlock* SpriteBatch::getStateBlock() const
+{
     return _batch->getMaterial()->getStateBlock();
-  }
+}
 
-  Texture::Sampler* SpriteBatch::getSampler() const
-  {
-    return _sampler;
-  }
+Texture::Sampler* SpriteBatch::getSampler() const { return _sampler; }
 
-  Material* SpriteBatch::getMaterial() const
-  {
-    return _batch->getMaterial();
-  }
+Material* SpriteBatch::getMaterial() const { return _batch->getMaterial(); }
 
-  void SpriteBatch::setProjectionMatrix(const Matrix& matrix)
-  {
-    _projectionMatrix = matrix;
-  }
+void SpriteBatch::setProjectionMatrix(const Matrix& matrix) { _projectionMatrix = matrix; }
 
-  const Matrix& SpriteBatch::getProjectionMatrix() const
-  {
-    return _projectionMatrix;
-  }
+const Matrix& SpriteBatch::getProjectionMatrix() const { return _projectionMatrix; }
 
-  bool SpriteBatch::clipSprite(const Rectangle& clip, float& x, float& y, float& width, float& height, float& u1, float& v1, float& u2, float& v2)
-  {
+bool SpriteBatch::clipSprite(const Rectangle& clip,
+                             float& x,
+                             float& y,
+                             float& width,
+                             float& height,
+                             float& u1,
+                             float& v1,
+                             float& u2,
+                             float& v2)
+{
     // Clip the rectangle given by { x, y, width, height } into clip.
     // We need to scale the uvs accordingly as we do this.
 
     // First check to see if we need to draw at all.
-    if (x + width < clip.x || x > clip.x + clip.width ||
-      y + height < clip.y || y > clip.y + clip.height)
+    if (x + width < clip.x || x > clip.x + clip.width || y + height < clip.y
+        || y > clip.y + clip.height)
     {
-      return false;
+        return false;
     }
 
     float uvWidth = u2 - u1;
@@ -428,25 +530,25 @@ namespace tractor
     // Moving x to the right.
     if (x < clip.x)
     {
-      const float percent = (clip.x - x) / width;
-      const float dx = clip.x - x;
-      const float du = uvWidth * percent;
-      x = clip.x;
-      width -= dx;
-      u1 += du;
-      uvWidth -= du;
+        const float percent = (clip.x - x) / width;
+        const float dx = clip.x - x;
+        const float du = uvWidth * percent;
+        x = clip.x;
+        width -= dx;
+        u1 += du;
+        uvWidth -= du;
     }
 
     // Moving y down.
     if (y < clip.y)
     {
-      const float percent = (clip.y - y) / height;
-      const float dy = clip.y - y;
-      const float dv = uvHeight * percent;
-      y = clip.y;
-      height -= dy;
-      v1 += dv;
-      uvHeight -= dv;
+        const float percent = (clip.y - y) / height;
+        const float dy = clip.y - y;
+        const float dv = uvHeight * percent;
+        y = clip.y;
+        height -= dy;
+        v1 += dv;
+        uvHeight -= dv;
     }
 
     // Moving width to the left.
@@ -454,9 +556,9 @@ namespace tractor
     float x2 = x + width;
     if (x2 > clipX2)
     {
-      const float percent = (x2 - clipX2) / width;
-      width = clipX2 - x;
-      u2 -= uvWidth * percent;
+        const float percent = (x2 - clipX2) / width;
+        width = clipX2 - x;
+        u2 -= uvWidth * percent;
     }
 
     // Moving height up.
@@ -464,12 +566,12 @@ namespace tractor
     float y2 = y + height;
     if (y2 > clipY2)
     {
-      const float percent = (y2 - clipY2) / height;
-      height = clipY2 - y;
-      v2 -= uvHeight * percent;
+        const float percent = (y2 - clipY2) / height;
+        height = clipY2 - y;
+        v2 -= uvHeight * percent;
     }
 
     return true;
-  }
-
 }
+
+} // namespace tractor

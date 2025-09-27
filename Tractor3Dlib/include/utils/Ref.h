@@ -3,20 +3,19 @@
 namespace tractor
 {
 
-  /**
-   * Defines the base class for game objects that require lifecycle management.
-   *
-   * This class provides reference counting support for game objects that
-   * contain system resources or data that is normally long lived and
-   * referenced from possibly several sources at the same time. The built-in
-   * reference counting eliminates the need for programmers to manually
-   * keep track of object ownership and having to worry about when to
-   * safely delete such objects.
-   */
-  class Ref
-  {
+/**
+ * Defines the base class for game objects that require lifecycle management.
+ *
+ * This class provides reference counting support for game objects that
+ * contain system resources or data that is normally long lived and
+ * referenced from possibly several sources at the same time. The built-in
+ * reference counting eliminates the need for programmers to manually
+ * keep track of object ownership and having to worry about when to
+ * safely delete such objects.
+ */
+class Ref
+{
   public:
-
     /**
      * Increments the reference count of this object.
      *
@@ -43,7 +42,6 @@ namespace tractor
     unsigned int getRefCount() const;
 
   protected:
-
     /**
      * Constructor.
      */
@@ -62,7 +60,6 @@ namespace tractor
     virtual ~Ref();
 
   private:
-
     unsigned int _refCount;
 
     // Memory leak diagnostic data (only included when GP_USE_MEM_LEAK_DETECTION is defined)
@@ -71,6 +68,6 @@ namespace tractor
     static void printLeaks();
     void* __record;
 #endif
-  };
+};
 
-}
+} // namespace tractor

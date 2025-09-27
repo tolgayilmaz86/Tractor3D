@@ -1,66 +1,56 @@
 #include "pch.h"
-#include "ui/Control.h"
+
 #include "ui/FlowLayout.h"
+
 #include "ui/Container.h"
+#include "ui/Control.h"
 
 namespace tractor
 {
 
-  static FlowLayout* __instance;
+static FlowLayout* __instance;
 
-  FlowLayout::FlowLayout() : _horizontalSpacing(0), _verticalSpacing(0)
-  {
-  }
+FlowLayout::FlowLayout() : _horizontalSpacing(0), _verticalSpacing(0) {}
 
-  FlowLayout::~FlowLayout()
-  {
-    __instance = nullptr;
-  }
+FlowLayout::~FlowLayout() { __instance = nullptr; }
 
-  FlowLayout* FlowLayout::create()
-  {
+FlowLayout* FlowLayout::create()
+{
     if (!__instance)
     {
-      __instance = new FlowLayout();
+        __instance = new FlowLayout();
     }
     else
     {
-      __instance->addRef();
+        __instance->addRef();
     }
 
     return __instance;
-  }
+}
 
-  Layout::Type FlowLayout::getType()
-  {
-    return Layout::LAYOUT_FLOW;
-  }
+Layout::Type FlowLayout::getType() { return Layout::LAYOUT_FLOW; }
 
-  int FlowLayout::getHorizontalSpacing() const
-  {
-    return _horizontalSpacing;
-  }
+int FlowLayout::getHorizontalSpacing() const { return _horizontalSpacing; }
 
-  int FlowLayout::getVerticalSpacing() const
-  {
-    return _verticalSpacing;
-  }
+int FlowLayout::getVerticalSpacing() const { return _verticalSpacing; }
 
-  void FlowLayout::setSpacing(int horizontalSpacing, int verticalSpacing)
-  {
+void FlowLayout::setSpacing(int horizontalSpacing, int verticalSpacing)
+{
     _horizontalSpacing = horizontalSpacing;
     _verticalSpacing = verticalSpacing;
-  }
+}
 
-  void FlowLayout::update(const Container* container)
-  {
+void FlowLayout::update(const Container* container)
+{
     assert(container);
     const Rectangle& containerBounds = container->getBounds();
     const Theme::Border& containerBorder = container->getBorder(container->getState());
     const Theme::Padding& containerPadding = container->getPadding();
 
-    float clipWidth = containerBounds.width - containerBorder.left - containerBorder.right - containerPadding.left - containerPadding.right;
-    float clipHeight = containerBounds.height - containerBorder.top - containerBorder.bottom - containerPadding.top - containerPadding.bottom;
+    float clipWidth = containerBounds.width - containerBorder.left - containerBorder.right
+                      - containerPadding.left - containerPadding.right;
+    float clipHeight = containerBounds.height - containerBorder.top - containerBorder.bottom
+                       - containerPadding.top - containerPadding.bottom;
 
     float xPosition = 0;
     float yPosition = 0;
@@ -70,37 +60,36 @@ namespace tractor
     std::vector<Control*> controls = container->getControls();
     for (size_t i = 0, controlsCount = controls.size(); i < controlsCount; i++)
     {
-      Control* control = controls.at(i);
-      assert(control);
+        Control* control = controls.at(i);
+        assert(control);
 
-      if (!control->isVisible())
-        continue;
+        if (!control->isVisible()) continue;
 
-      const Rectangle& bounds = control->getBounds();
-      const Theme::Margin& margin = control->getMargin();
+        const Rectangle& bounds = control->getBounds();
+        const Theme::Margin& margin = control->getMargin();
 
-      xPosition += margin.left;
+        xPosition += margin.left;
 
-      // Wrap to next row if we've gone past the edge of the container.
-      if (xPosition + bounds.width >= clipWidth)
-      {
-        xPosition = margin.left;
-        rowY += tallestHeight + _verticalSpacing;
-        tallestHeight = 0;
-      }
+        // Wrap to next row if we've gone past the edge of the container.
+        if (xPosition + bounds.width >= clipWidth)
+        {
+            xPosition = margin.left;
+            rowY += tallestHeight + _verticalSpacing;
+            tallestHeight = 0;
+        }
 
-      yPosition = rowY + margin.top;
+        yPosition = rowY + margin.top;
 
-      control->setPosition(xPosition, yPosition);
+        control->setPosition(xPosition, yPosition);
 
-      xPosition += bounds.width + margin.right + _horizontalSpacing;
+        xPosition += bounds.width + margin.right + _horizontalSpacing;
 
-      float height = bounds.height + margin.top + margin.bottom;
-      if (height > tallestHeight)
-      {
-        tallestHeight = height;
-      }
+        float height = bounds.height + margin.top + margin.bottom;
+        if (height > tallestHeight)
+        {
+            tallestHeight = height;
+        }
     }
-  }
-
 }
+
+} // namespace tractor

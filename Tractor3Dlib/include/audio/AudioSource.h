@@ -1,25 +1,24 @@
 #pragma once
 
+#include "math/Transform.h"
 #include "math/Vector3.h"
 #include "utils/Ref.h"
-#include "math/Transform.h"
 
 namespace tractor
 {
 
-  class AudioBuffer;
-  class Node;
-  class NodeCloneContext;
+class AudioBuffer;
+class Node;
+class NodeCloneContext;
 
-  /**
-   * Defines an audio source in 3D space.
-   *
-   * This can be attached to a Node for applying its 3D transformation.
-   */
-  class AudioSource : public Ref, public Transform::Listener
-  {
+/**
+ * Defines an audio source in 3D space.
+ *
+ * This can be attached to a Node for applying its 3D transformation.
+ */
+class AudioSource : public Ref, public Transform::Listener
+{
   public:
-
     friend class Node;
     friend class AudioController;
 
@@ -28,10 +27,10 @@ namespace tractor
      */
     enum State
     {
-      INITIAL,
-      PLAYING,
-      PAUSED,
-      STOPPED
+        INITIAL,
+        PLAYING,
+        PAUSED,
+        STOPPED
     };
 
     /**
@@ -45,12 +44,16 @@ namespace tractor
     virtual ~AudioSource();
 
     /**
-     * Create an audio source. This is used to instantiate an Audio Source. Currently only wav, au, and raw files are supported.
-     * Alternately, a URL specifying a Properties object that defines an audio source can be used (where the URL is of the format
-     * "<file-path>.<extension>#<namespace-id>/<namespace-id>/.../<namespace-id>" and "#<namespace-id>/<namespace-id>/.../<namespace-id>" is optional).
+     * Create an audio source. This is used to instantiate an Audio Source. Currently only wav, au,
+     * and raw files are supported. Alternately, a URL specifying a Properties object that defines
+     * an audio source can be used (where the URL is of the format
+     * "<file-path>.<extension>#<namespace-id>/<namespace-id>/.../<namespace-id>" and
+     * "#<namespace-id>/<namespace-id>/.../<namespace-id>" is optional).
      *
-     * @param url The relative location on disk of the sound file or a URL specifying a Properties object defining an audio source.
-     * @param streamed Don't read the entire audio buffer first before playing, instead play immediately from a stream that is read on demand.
+     * @param url The relative location on disk of the sound file or a URL specifying a Properties
+     * object defining an audio source.
+     * @param streamed Don't read the entire audio buffer first before playing, instead play
+     * immediately from a stream that is read on demand.
      * @return The newly created audio source, or nullptr if an audio source cannot be created.
      * @script{create}
      */
@@ -93,7 +96,8 @@ namespace tractor
     /**
      * Gets the current state of the audio source.
      *
-     * @return PLAYING if the source is playing, STOPPED if the source is stopped, PAUSED if the source is paused and INITIAL otherwise.
+     * @return PLAYING if the source is playing, STOPPED if the source is stopped, PAUSED if the
+     * source is paused and INITIAL otherwise.
      */
     AudioSource::State getState() const;
 
@@ -177,7 +181,6 @@ namespace tractor
     Node* getNode() const;
 
   private:
-
     /**
      * Hidden copy assignment operator.
      */
@@ -211,6 +214,6 @@ namespace tractor
     Vector3 _velocity;
     Node* _node;
     std::mutex _mtx;
-  };
+};
 
-}
+} // namespace tractor

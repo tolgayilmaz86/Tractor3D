@@ -1,37 +1,28 @@
 #include "pch.h"
+
 #include "graphics/BoundingSphere.h"
+
 #include "graphics/BoundingBox.h"
 
 namespace tractor
 {
 
-  BoundingSphere::BoundingSphere()
-    : radius(0)
-  {
-  }
+BoundingSphere::BoundingSphere() : radius(0) {}
 
-  BoundingSphere::BoundingSphere(const Vector3& center, float radius)
-  {
-    set(center, radius);
-  }
+BoundingSphere::BoundingSphere(const Vector3& center, float radius) { set(center, radius); }
 
-  BoundingSphere::BoundingSphere(const BoundingSphere& copy)
-  {
-    set(copy);
-  }
+BoundingSphere::BoundingSphere(const BoundingSphere& copy) { set(copy); }
 
-  BoundingSphere::~BoundingSphere()
-  {
-  }
+BoundingSphere::~BoundingSphere() {}
 
-  const BoundingSphere& BoundingSphere::empty()
-  {
+const BoundingSphere& BoundingSphere::empty()
+{
     static BoundingSphere s;
     return s;
-  }
+}
 
-  bool BoundingSphere::intersects(const BoundingSphere& sphere) const
-  {
+bool BoundingSphere::intersects(const BoundingSphere& sphere) const
+{
     // If the distance between the spheres' centers is less than or equal
     // to the sum of their radii, then the spheres intersect.
     float vx = sphere.center.x - center.x;
@@ -39,10 +30,10 @@ namespace tractor
     float vz = sphere.center.z - center.z;
 
     return sqrt(vx * vx + vy * vy + vz * vz) <= (radius + sphere.radius);
-  }
+}
 
-  bool BoundingSphere::intersects(const BoundingBox& box) const
-  {
+bool BoundingSphere::intersects(const BoundingBox& box) const
+{
     // Determine what point is closest; if the distance to that
     // point is less than the radius, then this sphere intersects.
 
@@ -52,39 +43,39 @@ namespace tractor
     float distZ = std::clamp(center.z, box.min.z, box.max.z) - center.z;
 
     return sqrt(distX * distX + distY * distY + distZ * distZ) <= radius;
-  }
+}
 
-  bool BoundingSphere::intersects(const Frustum& frustum) const
-  {
+bool BoundingSphere::intersects(const Frustum& frustum) const
+{
     // The sphere must either intersect or be in the positive half-space of all six planes of the frustum.
-    return (intersects(frustum.getNear()) != Plane::INTERSECTS_BACK &&
-      intersects(frustum.getFar()) != Plane::INTERSECTS_BACK &&
-      intersects(frustum.getLeft()) != Plane::INTERSECTS_BACK &&
-      intersects(frustum.getRight()) != Plane::INTERSECTS_BACK &&
-      intersects(frustum.getBottom()) != Plane::INTERSECTS_BACK &&
-      intersects(frustum.getTop()) != Plane::INTERSECTS_BACK);
-  }
+    return (intersects(frustum.getNear()) != Plane::INTERSECTS_BACK
+            && intersects(frustum.getFar()) != Plane::INTERSECTS_BACK
+            && intersects(frustum.getLeft()) != Plane::INTERSECTS_BACK
+            && intersects(frustum.getRight()) != Plane::INTERSECTS_BACK
+            && intersects(frustum.getBottom()) != Plane::INTERSECTS_BACK
+            && intersects(frustum.getTop()) != Plane::INTERSECTS_BACK);
+}
 
-  float BoundingSphere::intersects(const Plane& plane) const
-  {
+float BoundingSphere::intersects(const Plane& plane) const
+{
     float distance = plane.distance(center);
 
     if (fabsf(distance) <= radius)
     {
-      return Plane::INTERSECTS_INTERSECTING;
+        return Plane::INTERSECTS_INTERSECTING;
     }
     else if (distance > 0.0f)
     {
-      return Plane::INTERSECTS_FRONT;
+        return Plane::INTERSECTS_FRONT;
     }
     else
     {
-      return Plane::INTERSECTS_BACK;
+        return Plane::INTERSECTS_BACK;
     }
-  }
+}
 
-  float BoundingSphere::intersects(const Ray& ray) const
-  {
+float BoundingSphere::intersects(const Ray& ray) const
+{
     const Vector3& origin = ray.getOrigin();
     const Vector3& direction = ray.getDirection();
 
@@ -104,27 +95,23 @@ namespace tractor
     // If the discriminant is negative, then there is no intersection.
     if (discriminant < 0.0f)
     {
-      return Ray::INTERSECTS_NONE;
+        return Ray::INTERSECTS_NONE;
     }
     else
     {
-      // The intersection is at the smaller positive root.
-      float sqrtDisc = sqrt(discriminant);
-      float t0 = (-B - sqrtDisc) * 0.5f;
-      float t1 = (-B + sqrtDisc) * 0.5f;
-      return (t0 > 0.0f && t0 < t1) ? t0 : t1;
+        // The intersection is at the smaller positive root.
+        float sqrtDisc = sqrt(discriminant);
+        float t0 = (-B - sqrtDisc) * 0.5f;
+        float t1 = (-B + sqrtDisc) * 0.5f;
+        return (t0 > 0.0f && t0 < t1) ? t0 : t1;
     }
-  }
+}
 
-  bool BoundingSphere::isEmpty() const
-  {
-    return radius == 0.0f;
-  }
+bool BoundingSphere::isEmpty() const { return radius == 0.0f; }
 
-  void BoundingSphere::merge(const BoundingSphere& sphere)
-  {
-    if (sphere.isEmpty())
-      return;
+void BoundingSphere::merge(const BoundingSphere& sphere)
+{
+    if (sphere.isEmpty()) return;
 
     // Calculate the distance between the two centers.
     float vx = center.x - sphere.center.x;
@@ -135,13 +122,13 @@ namespace tractor
     // If one sphere is contained inside the other, set to the larger sphere.
     if (d <= (sphere.radius - radius))
     {
-      center = sphere.center;
-      radius = sphere.radius;
-      return;
+        center = sphere.center;
+        radius = sphere.radius;
+        return;
     }
     else if (d <= (radius - sphere.radius))
     {
-      return;
+        return;
     }
 
     // Calculate the unit vector between the two centers.
@@ -165,12 +152,11 @@ namespace tractor
     center.y = vy;
     center.z = vz;
     radius = r;
-  }
+}
 
-  void BoundingSphere::merge(const BoundingBox& box)
-  {
-    if (box.isEmpty())
-      return;
+void BoundingSphere::merge(const BoundingBox& box)
+{
+    if (box.isEmpty()) return;
 
     const Vector3& min = box.min;
     const Vector3& max = box.max;
@@ -188,15 +174,15 @@ namespace tractor
 
     if (v2x > v1x)
     {
-      fx = max.x;
+        fx = max.x;
     }
     if (v2y > v1y)
     {
-      fy = max.y;
+        fy = max.y;
     }
     if (v2z > v1z)
     {
-      fz = max.z;
+        fz = max.z;
     }
 
     // Calculate the unit vector and the distance between the center and the farthest point.
@@ -208,7 +194,7 @@ namespace tractor
     // If the box is inside the sphere, we are done.
     if (distance <= radius)
     {
-      return;
+        return;
     }
 
     // Calculate the unit vector between the center and the farthest point.
@@ -231,30 +217,30 @@ namespace tractor
     center.y = v1y;
     center.z = v1z;
     radius = r;
-  }
+}
 
-  void BoundingSphere::set(const Vector3& center, float radius)
-  {
+void BoundingSphere::set(const Vector3& center, float radius)
+{
     this->center = center;
     this->radius = radius;
-  }
+}
 
-  void BoundingSphere::set(const BoundingSphere& sphere)
-  {
+void BoundingSphere::set(const BoundingSphere& sphere)
+{
     center = sphere.center;
     radius = sphere.radius;
-  }
+}
 
-  void BoundingSphere::set(const BoundingBox& box)
-  {
+void BoundingSphere::set(const BoundingBox& box)
+{
     center.x = (box.min.x + box.max.x) * 0.5f;
     center.y = (box.min.y + box.max.y) * 0.5f;
     center.z = (box.min.z + box.max.z) * 0.5f;
     radius = center.distance(box.max);
-  }
+}
 
-  void BoundingSphere::transform(const Matrix& matrix)
-  {
+void BoundingSphere::transform(const Matrix& matrix)
+{
     // Translate the center point.
     matrix.transformPoint(center, &center);
 
@@ -265,25 +251,25 @@ namespace tractor
     r = max(r, radius * scale.y);
     r = max(r, radius * scale.z);
     radius = r;
-  }
+}
 
-  float BoundingSphere::distance(const BoundingSphere& sphere, const Vector3& point)
-  {
-    return sqrt((point.x - sphere.center.x) * (point.x - sphere.center.x) +
-      (point.y - sphere.center.y) * (point.y - sphere.center.x) +
-      (point.z - sphere.center.z) * (point.z - sphere.center.x));
-  }
+float BoundingSphere::distance(const BoundingSphere& sphere, const Vector3& point)
+{
+    return sqrt((point.x - sphere.center.x) * (point.x - sphere.center.x)
+                + (point.y - sphere.center.y) * (point.y - sphere.center.x)
+                + (point.z - sphere.center.z) * (point.z - sphere.center.x));
+}
 
-  bool BoundingSphere::contains(const BoundingSphere& sphere, Vector3* points, unsigned int count)
-  {
+bool BoundingSphere::contains(const BoundingSphere& sphere, Vector3* points, unsigned int count)
+{
     for (unsigned int i = 0; i < count; i++)
     {
-      if (distance(sphere, points[i]) > sphere.radius)
-      {
-        return false;
-      }
+        if (distance(sphere, points[i]) > sphere.radius)
+        {
+            return false;
+        }
     }
     return true;
-  }
-
 }
+
+} // namespace tractor

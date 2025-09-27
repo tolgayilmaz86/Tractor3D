@@ -6,21 +6,21 @@
 namespace tractor
 {
 
-  class Bundle;
-  class Model;
-  class Node;
-  class Joint;
+class Bundle;
+class Model;
+class Node;
+class Joint;
 
-  /**
-   * Defines the skin for a mesh.
-   *
-   * A skin is used to support skinning otherwise known as
-   * vertex blending. This allows for a Model's mesh to support
-   * a skeleton on joints that will influence the vertex position
-   * and which the joints can be animated.
-   */
-  class MeshSkin : public Transform::Listener
-  {
+/**
+ * Defines the skin for a mesh.
+ *
+ * A skin is used to support skinning otherwise known as
+ * vertex blending. This allows for a Model's mesh to support
+ * a skeleton on joints that will influence the vertex position
+ * and which the joints can be animated.
+ */
+class MeshSkin : public Transform::Listener
+{
     friend class Bundle;
     friend class Model;
     friend class Joint;
@@ -28,7 +28,6 @@ namespace tractor
     friend class Scene;
 
   public:
-
     /**
      * Returns the bind shape matrix.
      *
@@ -116,7 +115,6 @@ namespace tractor
     void transformChanged(Transform* transform, long cookie);
 
   private:
-
     /**
      * Constructor.
      */
@@ -189,6 +187,6 @@ namespace tractor
     // The number of Vector4's is (_joints.size() * 3).
     Vector4* _matrixPalette;
     Model* _model;
-  };
+};
 
-}
+} // namespace tractor

@@ -1,26 +1,25 @@
 #pragma once
 
-#include "physics/PhysicsConstraint.h"
 #include "math/Quaternion.h"
 #include "math/Vector3.h"
+#include "physics/PhysicsConstraint.h"
 
 namespace tractor
 {
-  class PhysicsRigidBody;
+class PhysicsRigidBody;
 
-  /**
-   * Defines a completely generic constraint between two
-   * rigid bodies (or one rigid body and the world) where the
-   * limits for all six degrees of freedom can be set individually.
-   *
-   * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-Constraints
-   */
-  class PhysicsGenericConstraint : public PhysicsConstraint
-  {
+/**
+ * Defines a completely generic constraint between two
+ * rigid bodies (or one rigid body and the world) where the
+ * limits for all six degrees of freedom can be set individually.
+ *
+ * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-Constraints
+ */
+class PhysicsGenericConstraint : public PhysicsConstraint
+{
     friend class PhysicsController;
 
   public:
-
     /**
      * Gets the rotation offset for the first rigid body in the constraint.
      *
@@ -110,7 +109,6 @@ namespace tractor
     inline void setTranslationOffsetB(const Vector3& translationOffset);
 
   protected:
-
     /**
      * Constructor.
      *
@@ -144,8 +142,12 @@ namespace tractor
      * @param translationOffsetB The translation offset for the second rigid body
      *      (in its local space) with respect to the constraint joint (optional).
      */
-    PhysicsGenericConstraint(PhysicsRigidBody* a, const Quaternion& rotationOffsetA, const Vector3& translationOffsetA,
-      PhysicsRigidBody* b, const Quaternion& rotationOffsetB, const Vector3& translationOffsetB);
+    PhysicsGenericConstraint(PhysicsRigidBody* a,
+                             const Quaternion& rotationOffsetA,
+                             const Vector3& translationOffsetA,
+                             PhysicsRigidBody* b,
+                             const Quaternion& rotationOffsetB,
+                             const Vector3& translationOffsetB);
 
     /**
      * Destructor.
@@ -153,13 +155,12 @@ namespace tractor
     virtual ~PhysicsGenericConstraint();
 
   private:
-
     mutable Quaternion* _rotationOffsetA;
     mutable Quaternion* _rotationOffsetB;
     mutable Vector3* _translationOffsetA;
     mutable Vector3* _translationOffsetB;
-  };
+};
 
-}
+} // namespace tractor
 
 #include "physics/PhysicsGenericConstraint.inl"

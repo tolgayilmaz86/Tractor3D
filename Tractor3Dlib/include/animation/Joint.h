@@ -5,24 +5,23 @@
 namespace tractor
 {
 
-  class MeshSkin;
-  class Bundle;
+class MeshSkin;
+class Bundle;
 
-  /**
-   * Defines a joint node.
-   *
-   * This represent a joint in a skeleton that is hierarchially part of
-   * a MeshSkin. This allows the vertices in the mesh to be blended and
-   * animated using the sum of the blend weight that must add up to 1.0.
-   */
-  class Joint : public Node
-  {
+/**
+ * Defines a joint node.
+ *
+ * This represent a joint in a skeleton that is hierarchially part of
+ * a MeshSkin. This allows the vertices in the mesh to be blended and
+ * animated using the sum of the blend weight that must add up to 1.0.
+ */
+class Joint : public Node
+{
     friend class Node;
     friend class MeshSkin;
     friend class Bundle;
 
   public:
-
     /**
      * @see Node::getType()
      */
@@ -49,7 +48,6 @@ namespace tractor
     const Matrix& getInverseBindPose() const;
 
   protected:
-
     /**
      * Constructor.
      */
@@ -100,17 +98,16 @@ namespace tractor
     void transformChanged();
 
   private:
-
     /**
      * Internal structure to track mesh skins referencing a joint.
      */
     struct SkinReference
     {
-      MeshSkin* skin;
-      SkinReference* next;
+        MeshSkin* skin;
+        SkinReference* next;
 
-      SkinReference();
-      ~SkinReference();
+        SkinReference();
+        ~SkinReference();
     };
 
     /**
@@ -141,6 +138,6 @@ namespace tractor
      * Linked list of mesh skins that are referenced by this joint.
      */
     SkinReference _skin;
-  };
+};
 
-}
+} // namespace tractor

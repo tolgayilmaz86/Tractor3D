@@ -1,50 +1,49 @@
 #pragma once
 
-#include <memory>
 #include <functional>
+#include <memory>
 
+#include "ai/AIController.h"
+#include "animation/AnimationController.h"
+#include "audio/AudioController.h"
+#include "graphics/Rectangle.h"
+#include "input/Gamepad.h"
+#include "input/Gesture.h"
 #include "input/Keyboard.h"
 #include "input/Mouse.h"
 #include "input/Touch.h"
-#include "input/Gesture.h"
-#include "input/Gamepad.h"
-#include "audio/AudioController.h"
-#include "animation/AnimationController.h"
-#include "physics/PhysicsController.h"
-#include "ai/AIController.h"
-#include "graphics/Rectangle.h"
 #include "math/Vector4.h"
+#include "physics/PhysicsController.h"
 #include "utils/TimeListener.h"
 
 namespace tractor
 {
 
-  class ScriptController;
+class ScriptController;
 
-  /**
-   * Defines the base class your game will extend for game initialization, logic and platform delegates.
-   *
-   * This represents a running cross-platform game application and provides an abstraction
-   * to most typical platform functionality and events.
-   *
-   * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-Game_Config
-   */
-  class Game
-  {
+/**
+ * Defines the base class your game will extend for game initialization, logic and platform delegates.
+ *
+ * This represents a running cross-platform game application and provides an abstraction
+ * to most typical platform functionality and events.
+ *
+ * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-Game_Config
+ */
+class Game
+{
     friend class Platform;
     friend class Gamepad;
     friend class ShutdownListener;
 
   public:
-
     /**
      * The game states.
      */
     enum State
     {
-      UNINITIALIZED,
-      RUNNING,
-      PAUSED
+        UNINITIALIZED,
+        RUNNING,
+        PAUSED
     };
 
     /**
@@ -52,13 +51,13 @@ namespace tractor
      */
     enum ClearFlags
     {
-      CLEAR_COLOR = GL_COLOR_BUFFER_BIT,
-      CLEAR_DEPTH = GL_DEPTH_BUFFER_BIT,
-      CLEAR_STENCIL = GL_STENCIL_BUFFER_BIT,
-      CLEAR_COLOR_DEPTH = CLEAR_COLOR | CLEAR_DEPTH,
-      CLEAR_COLOR_STENCIL = CLEAR_COLOR | CLEAR_STENCIL,
-      CLEAR_DEPTH_STENCIL = CLEAR_DEPTH | CLEAR_STENCIL,
-      CLEAR_COLOR_DEPTH_STENCIL = CLEAR_COLOR | CLEAR_DEPTH | CLEAR_STENCIL
+        CLEAR_COLOR = GL_COLOR_BUFFER_BIT,
+        CLEAR_DEPTH = GL_DEPTH_BUFFER_BIT,
+        CLEAR_STENCIL = GL_STENCIL_BUFFER_BIT,
+        CLEAR_COLOR_DEPTH = CLEAR_COLOR | CLEAR_DEPTH,
+        CLEAR_COLOR_STENCIL = CLEAR_COLOR | CLEAR_STENCIL,
+        CLEAR_DEPTH_STENCIL = CLEAR_DEPTH | CLEAR_STENCIL,
+        CLEAR_COLOR_DEPTH_STENCIL = CLEAR_COLOR | CLEAR_DEPTH | CLEAR_STENCIL
     };
 
     /**
@@ -228,7 +227,13 @@ namespace tractor
      * @param clearDepth The depth value to clear to when the flags includes the color buffer.
      * @param clearStencil The stencil value to clear to when the flags includes the color buffer.
      */
-    void clear(ClearFlags flags, float red, float green, float blue, float alpha, float clearDepth, int clearStencil);
+    void clear(ClearFlags flags,
+               float red,
+               float green,
+               float blue,
+               float alpha,
+               float clearDepth,
+               int clearStencil);
 
     /**
      * Gets the audio controller for managing control of audio
@@ -309,13 +314,14 @@ namespace tractor
     virtual void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
 
     /**
-     * Mouse callback on mouse events. If the game does not consume the mouse move event or left mouse click event
-     * then it is interpreted as a touch event instead.
+     * Mouse callback on mouse events. If the game does not consume the mouse move event or left
+     * mouse click event then it is interpreted as a touch event instead.
      *
      * @param evt The mouse event that occurred.
      * @param x The x position of the mouse in pixels. Left edge is zero.
      * @param y The y position of the mouse in pixels. Top edge is zero.
-     * @param wheelDelta The number of mouse wheel ticks. Positive is up (forward), negative is down (backward).
+     * @param wheelDelta The number of mouse wheel ticks. Positive is up (forward), negative is down
+     * (backward).
      *
      * @return True if the mouse event is consumed or false if it is not consumed.
      *
@@ -571,7 +577,12 @@ namespace tractor
      * @param gyroY The y-coordinate of the raw gyroscope data.
      * @param gyroZ The z-coordinate of the raw gyroscope data.
      */
-    inline void getSensorValues(float* accelX, float* accelY, float* accelZ, float* gyroX, float* gyroY, float* gyroZ);
+    inline void getSensorValues(float* accelX,
+                                float* accelY,
+                                float* accelZ,
+                                float* gyroX,
+                                float* gyroY,
+                                float* gyroZ);
 
     /**
      * Gets the command line arguments.
@@ -583,10 +594,12 @@ namespace tractor
     void getArguments(int* argc, char*** argv) const;
 
     /**
-     * Schedules a time event to be sent to the given TimeListener a given number of game milliseconds from now.
-     * Game time stops while the game is paused. A time offset of zero will fire the time event in the next frame.
+     * Schedules a time event to be sent to the given TimeListener a given number of game
+     * milliseconds from now. Game time stops while the game is paused. A time offset of zero will
+     * fire the time event in the next frame.
      *
-     * @param timeOffset The number of game milliseconds in the future to schedule the event to be fired.
+     * @param timeOffset The number of game milliseconds in the future to schedule the event to be
+     * fired.
      * @param timeListener The TimeListener that will receive the event.
      * @param cookie The cookie data that the time event will contain.
      * @script{ignore}
@@ -594,14 +607,17 @@ namespace tractor
     void schedule(float timeOffset, TimeListener* timeListener, void* cookie = 0);
 
     /**
-     * Schedules a time event to be sent to the given TimeListener a given number of game milliseconds from now.
-     * Game time stops while the game is paused. A time offset of zero will fire the time event in the next frame.
+     * Schedules a time event to be sent to the given TimeListener a given number of game
+     * milliseconds from now. Game time stops while the game is paused. A time offset of zero will
+     * fire the time event in the next frame.
      *
-     * The given script function must take a single floating point number, which is the difference between the
-     * current game time and the target time (see TimeListener::timeEvent). The function will be executed
-     * in the context of the script envionrment that the schedule function was called from.
+     * The given script function must take a single floating point number, which is the difference
+     * between the current game time and the target time (see TimeListener::timeEvent). The function
+     * will be executed in the context of the script envionrment that the schedule function was
+     * called from.
      *
-     * @param timeOffset The number of game milliseconds in the future to schedule the event to be fired.
+     * @param timeOffset The number of game milliseconds in the future to schedule the event to be
+     * fired.
      * @param function The script function that will receive the event.
      */
     void schedule(float timeOffset, const char* function);
@@ -621,7 +637,6 @@ namespace tractor
     bool launchURL(const std::string& url) const;
 
   protected:
-
     /**
      * Initialize callback that is called just before the first frame when the game starts.
      */
@@ -657,8 +672,7 @@ namespace tractor
      *
      * This is useful for rendering splash screens.
      */
-    template <class T>
-    void renderOnce(T* instance, std::function<void(void*)>, void* cookie);
+    template <class T> void renderOnce(T* instance, std::function<void(void*)>, void* cookie);
 
     /**
      * Renders a single frame once and then swaps it to the display.
@@ -678,10 +692,9 @@ namespace tractor
     void updateOnce();
 
   private:
-
     struct ShutdownListener : public TimeListener
     {
-      void timeEvent(long timeDiff, void* cookie);
+        void timeEvent(long timeDiff, void* cookie);
     };
 
     /**
@@ -689,13 +702,12 @@ namespace tractor
      */
     class TimeEvent
     {
-    public:
-
-      TimeEvent(double time, TimeListener* timeListener, void* cookie);
-      bool operator<(const TimeEvent& v) const;
-      double time;
-      TimeListener* listener;
-      void* cookie;
+      public:
+        TimeEvent(double time, TimeListener* timeListener, void* cookie);
+        bool operator<(const TimeEvent& v) const;
+        double time;
+        TimeListener* listener;
+        void* cookie;
     };
 
     /**
@@ -744,35 +756,36 @@ namespace tractor
     void gestureDropEventInternal(int x, int y);
     void gamepadEventInternal(Gamepad::GamepadEvent evt, Gamepad* gamepad);
 
-    bool _initialized;                          // If game has initialized yet.
-    State _state;                               // The game state.
-    unsigned int _pausedCount;                  // Number of times pause() has been called.
-    static double _pausedTimeLast;              // The last time paused.
-    static double _pausedTimeTotal;             // The total time paused.
-    double _frameLastFPS;                       // The last time the frame count was updated.
-    unsigned int _frameCount;                   // The current frame count.
-    unsigned int _frameRate;                    // The current frame rate.
-    unsigned int _width;                        // The game's display width.
-    unsigned int _height;                       // The game's display height.
-    Rectangle _viewport;                        // the games's current viewport.
-    Vector4 _clearColor;                        // The clear color value last used for clearing the color buffer.
-    float _clearDepth;                          // The clear depth value last used for clearing the depth buffer.
-    int _clearStencil;                          // The clear stencil value last used for clearing the stencil buffer.
-    Properties* _properties;                    // Game configuration properties object.
-    AnimationController* _animationController;  // Controls the scheduling and running of animations.
-    AudioController* _audioController;          // Controls audio sources that are playing in the game.
-    PhysicsController* _physicsController;      // Controls the simulation of a physics scene and entities.
-    AIController* _aiController;                // Controls AI simulation.
-    AudioListener* _audioListener;              // The audio listener in 3D space.
-    std::priority_queue<TimeEvent, std::vector<TimeEvent>, std::less<TimeEvent> >* _timeEvents;     // Contains the scheduled time events.
-    ScriptController* _scriptController;            // Controls the scripting engine.
-    ScriptTarget* _scriptTarget;                // Script target for the game
+    bool _initialized;              // If game has initialized yet.
+    State _state;                   // The game state.
+    unsigned int _pausedCount;      // Number of times pause() has been called.
+    static double _pausedTimeLast;  // The last time paused.
+    static double _pausedTimeTotal; // The total time paused.
+    double _frameLastFPS;           // The last time the frame count was updated.
+    unsigned int _frameCount;       // The current frame count.
+    unsigned int _frameRate;        // The current frame rate.
+    unsigned int _width;            // The game's display width.
+    unsigned int _height;           // The game's display height.
+    Rectangle _viewport;            // the games's current viewport.
+    Vector4 _clearColor;     // The clear color value last used for clearing the color buffer.
+    float _clearDepth;       // The clear depth value last used for clearing the depth buffer.
+    int _clearStencil;       // The clear stencil value last used for clearing the stencil buffer.
+    Properties* _properties; // Game configuration properties object.
+    AnimationController* _animationController; // Controls the scheduling and running of animations.
+    AudioController* _audioController;     // Controls audio sources that are playing in the game.
+    PhysicsController* _physicsController; // Controls the simulation of a physics scene and entities.
+    AIController* _aiController;           // Controls AI simulation.
+    AudioListener* _audioListener;         // The audio listener in 3D space.
+    std::priority_queue<TimeEvent, std::vector<TimeEvent>, std::less<TimeEvent>>*
+        _timeEvents;                     // Contains the scheduled time events.
+    ScriptController* _scriptController; // Controls the scripting engine.
+    ScriptTarget* _scriptTarget;         // Script target for the game
 
     // Note: Do not add STL object member variables on the stack; this will cause false memory leaks to be reported.
 
     friend class ScreenDisplayer;
-  };
+};
 
-}
+} // namespace tractor
 
 #include "Game.inl"

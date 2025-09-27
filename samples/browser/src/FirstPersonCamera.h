@@ -9,78 +9,76 @@ using namespace tractor;
  */
 class FirstPersonCamera
 {
-public:
+  public:
+    /**
+     * Constructor.
+     */
+    FirstPersonCamera();
 
-  /**
-   * Constructor.
-   */
-  FirstPersonCamera();
+    /**
+     * Destructor.
+     */
+    ~FirstPersonCamera();
 
-  /**
-   * Destructor.
-   */
-  ~FirstPersonCamera();
+    /**
+     * Initializes the first person camera. Should be called after the Game has been initialized.
+     */
+    void initialize(float nearPlane = 1.0f, float farPlane = 1000.0f, float fov = 45.0f);
 
-  /**
-   * Initializes the first person camera. Should be called after the Game has been initialized.
-   */
-  void initialize(float nearPlane = 1.0f, float farPlane = 1000.0f, float fov = 45.0f);
+    /**
+     * Gets root node. May be nullptr if not initialized.
+     *
+     * @return Root node or nullptr.
+     */
+    Node* getRootNode();
 
-  /**
-   * Gets root node. May be nullptr if not initialized.
-   *
-   * @return Root node or nullptr.
-   */
-  Node* getRootNode();
+    /**
+     * Gets the camera. May be nullptr.
+     *
+     * @return Camera or nullptr.
+     */
+    Camera* getCamera();
 
-  /**
-   * Gets the camera. May be nullptr.
-   *
-   * @return Camera or nullptr.
-   */
-  Camera* getCamera();
+    /**
+     * Sets the position of the camera.
+     *
+     * @param position The position to move to.
+     */
+    void setPosition(const Vector3& position);
 
-  /**
-   * Sets the position of the camera.
-   *
-   * @param position The position to move to.
-   */
-  void setPosition(const Vector3& position);
+    /**
+     * Moves the camera forward in the direction that it is pointing. (Fly mode)
+     */
+    void moveForward(float amount);
 
-  /**
-   * Moves the camera forward in the direction that it is pointing. (Fly mode)
-   */
-  void moveForward(float amount);
+    /**
+     * Moves the camera in the opposite direction that it is pointing.
+     */
+    void moveBackward(float amount);
 
-  /**
-   * Moves the camera in the opposite direction that it is pointing.
-   */
-  void moveBackward(float amount);
+    /**
+     * Strafes that camera left, which is perpendicular to the direction it is facing.
+     */
+    void moveLeft(float amount);
 
-  /**
-   * Strafes that camera left, which is perpendicular to the direction it is facing.
-   */
-  void moveLeft(float amount);
+    /**
+     * Strafes that camera right, which is perpendicular to the direction it is facing.
+     */
+    void moveRight(float amount);
 
-  /**
-   * Strafes that camera right, which is perpendicular to the direction it is facing.
-   */
-  void moveRight(float amount);
+    void moveUp(float amount);
 
-  void moveUp(float amount);
+    void moveDown(float amount);
 
-  void moveDown(float amount);
+    /**
+     * Rotates the camera in place in order to change the direction it is looking.
+     *
+     * @param yaw Rotates the camera around the yaw axis in radians. Positive looks right, negative looks left.
+     * @param pitch Rotates the camera around the ptich axis in radians. Positive looks up, negative looks down.
+     */
+    void rotate(float yaw, float pitch);
 
-  /**
-   * Rotates the camera in place in order to change the direction it is looking.
-   *
-   * @param yaw Rotates the camera around the yaw axis in radians. Positive looks right, negative looks left.
-   * @param pitch Rotates the camera around the ptich axis in radians. Positive looks up, negative looks down.
-   */
-  void rotate(float yaw, float pitch);
-
-private:
-
-  Node* _pitchNode;
-  Node* _rootNode;
+  private:
+    Node* _pitchNode;
+    Node* _rootNode;
 };

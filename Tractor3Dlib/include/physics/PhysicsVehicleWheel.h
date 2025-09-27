@@ -7,22 +7,21 @@
 namespace tractor
 {
 
-  class PhysicsVehicle;
+class PhysicsVehicle;
 
-  /**
-   * Defines a class for vehicle wheel physics which represents the individual wheel
-   * itself as well as the tire and suspension.
-   *
-   * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-Collision_Objects
-   */
+/**
+ * Defines a class for vehicle wheel physics which represents the individual wheel
+ * itself as well as the tire and suspension.
+ *
+ * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-Collision_Objects
+ */
 
-  class PhysicsVehicleWheel : public PhysicsCollisionObject
-  {
+class PhysicsVehicleWheel : public PhysicsCollisionObject
+{
     friend class Node;
     friend class PhysicsVehicle;
 
   public:
-
     /**
      * @see PhysicsCollisionObject#getType
      */
@@ -241,26 +240,26 @@ namespace tractor
     void setRollInfluence(float rollInfluence);
 
   protected:
-
     /**
      * @see PhysicsCollisionObject::getCollisionObject
      */
     btCollisionObject* getCollisionObject() const;
 
   private:
-
     /**
-     * Creates a vehicle wheel based on the specified rigid body parameters and some 'safe' defaults.
-     * Also, traverse up the scene graph until we find the first common ancestor with another node
-     * of collision type VEHICLE and add ourself as a wheel onto that vehicle. This assumes that the
-     * VEHICLE comes before the VEHICLE_WHEEL in the ".scene" (properties) file.
+     * Creates a vehicle wheel based on the specified rigid body parameters and some 'safe'
+     * defaults. Also, traverse up the scene graph until we find the first common ancestor with
+     * another node of collision type VEHICLE and add ourself as a wheel onto that vehicle. This
+     * assumes that the VEHICLE comes before the VEHICLE_WHEEL in the ".scene" (properties) file.
      *
      * @param node The node to create a rigid body for; note that the node must have
      *      a model attached to it prior to creating a rigid body for it.
      * @param shape The rigid body shape construction information.
      * @param parameters The rigid body construction parameters.
      */
-    PhysicsVehicleWheel(Node* node, const PhysicsCollisionShape::Definition& shape, const PhysicsRigidBody::Parameters& parameters);
+    PhysicsVehicleWheel(Node* node,
+                        const PhysicsCollisionShape::Definition& shape,
+                        const PhysicsRigidBody::Parameters& parameters);
 
     /**
      * Creates a vehicle wheel based on some 'safe' defaults.
@@ -290,7 +289,8 @@ namespace tractor
      *
      * @param node The node to create a wheel for; note that the node must have
      *      a model attached to it prior to creating a vehicle wheel for it.
-     * @param properties The properties object defining the vehicle wheel (must have type equal to 'VEHICLE_WHEEL').
+     * @param properties The properties object defining the vehicle wheel (must have type equal to
+     * 'VEHICLE_WHEEL').
      * @return The newly created wheel, or <code>nullptr</code> if the vehicle wheel failed to load.
      */
     static PhysicsVehicleWheel* create(Node* node, Properties* properties);
@@ -304,7 +304,7 @@ namespace tractor
      * Traverse up the visual scene graph. Upon finding the first ancestor node with an
      * advertised descendant of collision type VEHICLE, add this wheel onto the vehicle.
      */
-     // Note: Currently this method is silent on failure to find a host.
+    // Note: Currently this method is silent on failure to find a host.
     void findAncestorAndBind();
 
     /**
@@ -361,6 +361,6 @@ namespace tractor
     Vector3 _initialOffset;
     Vector3 _positionDelta;
     Quaternion _orientation;
-  };
+};
 
-}
+} // namespace tractor

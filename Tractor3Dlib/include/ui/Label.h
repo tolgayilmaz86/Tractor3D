@@ -6,18 +6,17 @@
 namespace tractor
 {
 
-  /**
-   * Defines a label control.
-   *
-   * This is capable of rendering text within its border.
-   */
-  class Label : public Control
-  {
+/**
+ * Defines a label control.
+ *
+ * This is capable of rendering text within its border.
+ */
+class Label : public Control
+{
     friend class Container;
     friend class ControlFactory;
 
   public:
-
     /**
      * Creates a new label.
      *
@@ -66,7 +65,6 @@ namespace tractor
     virtual void addListener(Control::Listener* listener, int eventFlags);
 
   protected:
-
     /**
      * Constructor.
      */
@@ -78,14 +76,14 @@ namespace tractor
     virtual ~Label();
 
     /**
-    * Create a new label control.
-    *
-    * @param style The control's custom style.
-    * @param properties A properties object containing a definition of the label (optional).
-    *
-    * @return The new label.
-    * @script{create}
-    */
+     * Create a new label control.
+     *
+     * @param style The control's custom style.
+     * @param properties A properties object containing a definition of the label (optional).
+     *
+     * @return The new label.
+     * @script{create}
+     */
     static Control* create(Theme::Style* style, Properties* properties);
 
     /**
@@ -139,11 +137,10 @@ namespace tractor
     Rectangle _textBounds;
 
   private:
-
     /**
      * Constructor.
      */
     Label(const Label& copy);
-  };
+};
 
-}
+} // namespace tractor

@@ -1,28 +1,27 @@
 #pragma once
 
-#include "utils/Ref.h"
 #include "animation/AnimationTarget.h"
-#include "scene/Properties.h"
-#include "renderer/Font.h"
+#include "graphics/Drawable.h"
+#include "graphics/Effect.h"
 #include "math/Vector2.h"
 #include "math/Vector4.h"
-#include "graphics/Effect.h"
-#include "graphics/Drawable.h"
+#include "renderer/Font.h"
+#include "scene/Properties.h"
+#include "utils/Ref.h"
 
 namespace tractor
 {
 
-  /**
-   * Defines a text block of characters to be drawn.
-   *
-   * Text can be attached to a node.
-   */
-  class Text : public Ref, public Drawable, public AnimationTarget
-  {
+/**
+ * Defines a text block of characters to be drawn.
+ *
+ * Text can be attached to a node.
+ */
+class Text : public Ref, public Drawable, public AnimationTarget
+{
     friend class Node;
 
   public:
-
     /**
      * Opacity property. Data=opacity
      */
@@ -46,7 +45,10 @@ namespace tractor
      *
      * @return A Text object.
      */
-    static Text* create(const std::string& fontPath, const std::string& str, const Vector4& color = Vector4::one(), unsigned int size = 0);
+    static Text* create(const std::string& fontPath,
+                        const std::string& str,
+                        const Vector4& color = Vector4::one(),
+                        unsigned int size = 0);
 
     /**
      * Creates text from a properties object.
@@ -209,7 +211,6 @@ namespace tractor
     unsigned int draw(bool wireframe = false);
 
   protected:
-
     /**
      * Constructor
      */
@@ -251,7 +252,6 @@ namespace tractor
     void setAnimationPropertyValue(int propertyId, AnimationValue* value, float blendWeight = 1.0f);
 
   private:
-
     Font* _font;
     Font* _drawFont;
     std::string _text;
@@ -264,6 +264,6 @@ namespace tractor
     Rectangle _clip;
     float _opacity;
     Vector4 _color;
-  };
+};
 
-}
+} // namespace tractor

@@ -1,37 +1,38 @@
 #pragma once
 
+#include <cstdint>
+#include <string>
+
 #include "math/Vector2.h"
 
 namespace tractor
 {
+class Button;
+class Container;
+class Form;
+class JoystickControl;
+class Platform;
 
-  class Button;
-  class Container;
-  class Form;
-  class JoystickControl;
-  class Platform;
-
-  /**
-   * Defines a gamepad interface for handling input from joysticks and buttons.
-   *
-   * A gamepad can be either physical or virtual. Most platform support up to 4
-   * gamepad controllers connected simulataneously.
-   */
-  class Gamepad
-  {
+/**
+ * Defines a gamepad interface for handling input from joysticks and buttons.
+ *
+ * A gamepad can be either physical or virtual. Most platform support up to 4
+ * gamepad controllers connected simulataneously.
+ */
+class Gamepad
+{
     friend class Platform;
     friend class Game;
     friend class Button;
 
   public:
-
     /**
      *  Gamepad events.
      */
     enum GamepadEvent
     {
-      CONNECTED_EVENT,
-      DISCONNECTED_EVENT
+        CONNECTED_EVENT,
+        DISCONNECTED_EVENT
     };
 
     /**
@@ -39,23 +40,23 @@ namespace tractor
      */
     enum ButtonMapping
     {
-      BUTTON_A,
-      BUTTON_B,
-      BUTTON_X,
-      BUTTON_Y,
-      BUTTON_L1,
-      BUTTON_L2,
-      BUTTON_L3,
-      BUTTON_R1,
-      BUTTON_R2,
-      BUTTON_R3,
-      BUTTON_UP,
-      BUTTON_DOWN,
-      BUTTON_LEFT,
-      BUTTON_RIGHT,
-      BUTTON_MENU1,
-      BUTTON_MENU2,
-      BUTTON_MENU3
+        BUTTON_A,
+        BUTTON_B,
+        BUTTON_X,
+        BUTTON_Y,
+        BUTTON_L1,
+        BUTTON_L2,
+        BUTTON_L3,
+        BUTTON_R1,
+        BUTTON_R2,
+        BUTTON_R3,
+        BUTTON_UP,
+        BUTTON_DOWN,
+        BUTTON_LEFT,
+        BUTTON_RIGHT,
+        BUTTON_MENU1,
+        BUTTON_MENU2,
+        BUTTON_MENU3
     };
 
     /**
@@ -144,7 +145,6 @@ namespace tractor
     void draw();
 
   private:
-
     /**
      * Constructs a gamepad from the specified .form file.
      *
@@ -161,7 +161,11 @@ namespace tractor
      * @param triggerCount the number of triggers on the gamepad.
      * @param name The product/device name.
      */
-    Gamepad(GamepadHandle handle, unsigned int buttonCount, unsigned int joystickCount, unsigned int triggerCount, const std::string& name);
+    Gamepad(GamepadHandle handle,
+            unsigned int buttonCount,
+            unsigned int joystickCount,
+            unsigned int triggerCount,
+            const std::string& name);
 
     /**
      * Copy constructor.
@@ -175,7 +179,11 @@ namespace tractor
 
     static void updateInternal(float elapsedTime);
 
-    static Gamepad* add(GamepadHandle handle, unsigned int buttonCount, unsigned int joystickCount, unsigned int triggerCount, const std::string& name);
+    static Gamepad* add(GamepadHandle handle,
+                        unsigned int buttonCount,
+                        unsigned int joystickCount,
+                        unsigned int triggerCount,
+                        const std::string& name);
 
     static Gamepad* add(const std::string& formPath);
 
@@ -200,16 +208,16 @@ namespace tractor
     void bindGamepadControls(Container* container);
 
     GamepadHandle _handle;
-    unsigned int _buttonCount;
-    unsigned int _joystickCount;
-    unsigned int _triggerCount;
+    size_t _buttonCount;
+    size_t _joystickCount;
+    size_t _triggerCount;
     std::string _name;
     Form* _form;
     JoystickControl* _uiJoysticks[2];
     Button* _uiButtons[20];
-    unsigned int _buttons;
+    size_t _buttons;
     Vector2 _joysticks[2];
     float _triggers[2];
-  };
+};
 
-}
+} // namespace tractor

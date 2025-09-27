@@ -1,56 +1,56 @@
 #pragma once
 
 #include "pch.h"
+
 #include "utils/Ref.h"
 
 namespace tractor
 {
 
-  /**
-   * Represents a script that has been loaded by the scripting system.
-   */
-  class Script : public Ref
-  {
+/**
+ * Represents a script that has been loaded by the scripting system.
+ */
+class Script : public Ref
+{
     friend class ScriptController;
 
   public:
-
     /**
      * Defines the scope of a script environment.
      */
     enum Scope
     {
-      /**
-       * Global scripts execute in a single shared environment that is accessible to
-       * all other scripts in the system. Global scripts can use code from other global
-       * scripts and other scripts can use code from a global script.
-       *
-       * Scripts that execute in the global environment must be careful to not override
-       * other variables or functions that already exist in the global environment (unless
-       * this is intended). Because of this, script naming conventions and the use of
-       * unique namespaces is important to prevent naming collisions with other global code.
-       */
-      GLOBAL,
+        /**
+         * Global scripts execute in a single shared environment that is accessible to
+         * all other scripts in the system. Global scripts can use code from other global
+         * scripts and other scripts can use code from a global script.
+         *
+         * Scripts that execute in the global environment must be careful to not override
+         * other variables or functions that already exist in the global environment (unless
+         * this is intended). Because of this, script naming conventions and the use of
+         * unique namespaces is important to prevent naming collisions with other global code.
+         */
+        GLOBAL,
 
-      /**
-       * Protected scripts execute in a more limited sandbox environment that by default does
-       * not allow other scripts to see their variables or functions. Variables and functions
-       * in a protected script can be named the same as those in other scripts without
-       * collision issues.
-       *
-       * Although global code cannot access protected scripts, protected scripts can acceess
-       * global code. Similarly, protected scripts can expose variables and functions to the
-       * global environment using explicit notation, although the same precautions noted
-       * for the GLOBAL scope should be used when doing this, to prevent naming collisions.
-       *
-       * Protected scripts are best used when associated with a single game object, since
-       * these scripts are not cached the same way global scripts are. Each time a protected
-       * script is loaded, a new instance of the script is loaded. This allows protected
-       * scripts to store per-instance state, since it will not be shared by multiple instances.
-       *
-       * @see ScriptTarget
-       */
-      PROTECTED
+        /**
+         * Protected scripts execute in a more limited sandbox environment that by default does
+         * not allow other scripts to see their variables or functions. Variables and functions
+         * in a protected script can be named the same as those in other scripts without
+         * collision issues.
+         *
+         * Although global code cannot access protected scripts, protected scripts can acceess
+         * global code. Similarly, protected scripts can expose variables and functions to the
+         * global environment using explicit notation, although the same precautions noted
+         * for the GLOBAL scope should be used when doing this, to prevent naming collisions.
+         *
+         * Protected scripts are best used when associated with a single game object, since
+         * these scripts are not cached the same way global scripts are. Each time a protected
+         * script is loaded, a new instance of the script is loaded. This allows protected
+         * scripts to store per-instance state, since it will not be shared by multiple instances.
+         *
+         * @see ScriptTarget
+         */
+        PROTECTED
     };
 
     /**
@@ -91,7 +91,6 @@ namespace tractor
     bool reload();
 
   private:
-
     /**
      * Constructor.
      */
@@ -110,7 +109,6 @@ namespace tractor
     std::string _path;
     Scope _scope;
     int _env;
+};
 
-  };
-
-}
+} // namespace tractor

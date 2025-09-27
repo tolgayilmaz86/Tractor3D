@@ -5,22 +5,21 @@
 namespace tractor
 {
 
-  /**
-   * Defines an image buffer of RGB or RGBA color data.
-   *
-   * Currently only supports loading from .png image files.
-   */
-  class Image : public Ref
-  {
+/**
+ * Defines an image buffer of RGB or RGBA color data.
+ *
+ * Currently only supports loading from .png image files.
+ */
+class Image : public Ref
+{
   public:
-
     /**
      * Defines the set of supported color formats.
      */
     enum Format
     {
-      RGB,
-      RGBA
+        RGB,
+        RGBA
     };
 
     /**
@@ -42,7 +41,10 @@ namespace tractor
      * @return The newly created image.
      * @script{create}
      */
-    static Image* create(unsigned int width, unsigned int height, Format format, unsigned char* data = nullptr);
+    static Image* create(unsigned int width,
+                         unsigned int height,
+                         Format format,
+                         unsigned char* data = nullptr);
 
     /**
      * Gets the image's raw pixel data.
@@ -74,7 +76,6 @@ namespace tractor
     inline unsigned int getWidth() const;
 
   private:
-
     /**
      * Constructor.
      */
@@ -94,8 +95,8 @@ namespace tractor
     Format _format;
     unsigned int _width;
     unsigned int _height;
-  };
+};
 
-}
+} // namespace tractor
 
 #include "Image.inl"

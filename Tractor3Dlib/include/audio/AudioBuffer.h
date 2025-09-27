@@ -1,83 +1,90 @@
 #pragma once
 
-#include "utils/Ref.h"
-#include "framework/Stream.h"
 #include <AL/al.h>
 #include <vorbis/vorbisfile.h>
+
+#include "framework/Stream.h"
+#include "utils/Ref.h"
 
 namespace tractor
 {
 
-	class AudioSource;
+class AudioSource;
 
-	/**
-	 * Defines the actual audio buffer data.
-	 *
-	 * Currently only supports supported formats: .ogg, .wav, .au and .raw files.
-	 */
-	class AudioBuffer : public Ref
-	{
-		friend class AudioSource;
-	public:
-		/**
-		 * Constructor.
-		 */
-		AudioBuffer(const std::string& path, ALuint* buffers, bool streamed);
+/**
+ * Defines the actual audio buffer data.
+ *
+ * Currently only supports supported formats: .ogg, .wav, .au and .raw files.
+ */
+class AudioBuffer : public Ref
+{
+    friend class AudioSource;
 
-		/**
-		 * Destructor.
-		 */
-		~AudioBuffer();
+  public:
+    /**
+     * Constructor.
+     */
+    AudioBuffer(const std::string& path, ALuint* buffers, bool streamed);
 
-	private:
+    /**
+     * Destructor.
+     */
+    ~AudioBuffer();
 
-		/**
-		 * Hidden copy assignment operator.
-		 */
-		AudioBuffer& operator=(const AudioBuffer&);
+  private:
+    /**
+     * Hidden copy assignment operator.
+     */
+    AudioBuffer& operator=(const AudioBuffer&);
 
-		/**
-		 * Creates an audio buffer from a file.
-		 *
-		 * @param path The path to the audio buffer on the filesystem.
-		 *
-		 * @return The buffer from a file.
-		 */
-		static AudioBuffer* create(const std::string& path, bool streamed);
+    /**
+     * Creates an audio buffer from a file.
+     *
+     * @param path The path to the audio buffer on the filesystem.
+     *
+     * @return The buffer from a file.
+     */
+    static AudioBuffer* create(const std::string& path, bool streamed);
 
-		struct AudioStreamStateWav
-		{
-			long dataStart;
-			unsigned int dataSize;
-			ALuint format;
-			ALuint frequency;
-		};
+    struct AudioStreamStateWav
+    {
+        long dataStart;
+        unsigned int dataSize;
+        ALuint format;
+        ALuint frequency;
+    };
 
-		struct AudioStreamStateOgg
-		{
-			long dataStart;
-			unsigned int dataSize;
-			ALuint format;
-			ALuint frequency;
-			OggVorbis_File oggFile;
-		};
+    struct AudioStreamStateOgg
+    {
+        long dataStart;
+        unsigned int dataSize;
+        ALuint format;
+        ALuint frequency;
+        OggVorbis_File oggFile;
+    };
 
-		enum { STREAMING_BUFFER_QUEUE_SIZE = 3 };
-		enum { STREAMING_BUFFER_SIZE = 48000 };
+    enum
+    {
+        STREAMING_BUFFER_QUEUE_SIZE = 3
+    };
+    enum
+    {
+        STREAMING_BUFFER_SIZE = 48000
+    };
 
-		static bool loadWav(Stream* stream, ALuint buffer, bool streamed, AudioStreamStateWav* streamState);
+    static bool loadWav(Stream* stream, ALuint buffer, bool streamed, AudioStreamStateWav* streamState);
 
-		static bool loadOgg(Stream* stream, ALuint buffer, bool streamed, AudioStreamStateOgg* streamState);
+    static bool loadOgg(Stream* stream, ALuint buffer, bool streamed, AudioStreamStateOgg* streamState);
 
-		bool streamData(ALuint buffer, bool looped);
+    bool streamData(ALuint buffer, bool looped);
 
-		ALuint _alBufferQueue[STREAMING_BUFFER_QUEUE_SIZE];
-		std::string _filePath;
-		bool _streamed;
-		std::unique_ptr<Stream> _fileStream;
-		std::unique_ptr<AudioStreamStateWav> _streamStateWav;
-		std::unique_ptr<AudioStreamStateOgg> _streamStateOgg;
-		int _buffersNeededCount;
-	};
+    ALuint _alBufferQueue[STREAMING_BUFFER_QUEUE_SIZE];
+    std::string _filePath;
+    bool _streamed;
+    std::unique_ptr<Stream> _fileStream;
+    std::unique_ptr<AudioStreamStateWav> _streamStateWav;
+    std::unique_ptr<AudioStreamStateOgg> _streamStateOgg;
+    int _buffersNeededCount;
+};
 
-}
+} // namespace tractor

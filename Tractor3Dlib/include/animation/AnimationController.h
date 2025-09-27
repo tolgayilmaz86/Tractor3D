@@ -1,25 +1,24 @@
 #pragma once
 
-#include "animation/AnimationClip.h"
 #include "animation/Animation.h"
+#include "animation/AnimationClip.h"
 #include "animation/AnimationTarget.h"
 #include "scene/Properties.h"
 
 namespace tractor
 {
 
-  /**
-   * Defines a class for controlling game animation.
-   */
-  class AnimationController
-  {
+/**
+ * Defines a class for controlling game animation.
+ */
+class AnimationController
+{
     friend class Game;
     friend class Animation;
     friend class AnimationClip;
     friend class SceneLoader;
 
   public:
-
     /**
      * Constructor.
      */
@@ -36,16 +35,15 @@ namespace tractor
     void stopAllAnimations();
 
   private:
-
     /**
      * The states that the AnimationController may be in.
      */
     enum State
     {
-      RUNNING,
-      IDLE,
-      PAUSED,
-      STOPPED
+        RUNNING,
+        IDLE,
+        PAUSED,
+        STOPPED
     };
 
     /**
@@ -95,9 +93,8 @@ namespace tractor
      */
     void update(float elapsedTime);
 
-    State _state;                                 // The current state of the AnimationController.
-    std::list<AnimationClip*> _runningClips;      // A list of running AnimationClips.
-  };
+    State _state;                            // The current state of the AnimationController.
+    std::list<AnimationClip*> _runningClips; // A list of running AnimationClips.
+};
 
-}
-
+} // namespace tractor

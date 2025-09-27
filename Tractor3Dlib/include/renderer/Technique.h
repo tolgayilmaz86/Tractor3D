@@ -4,28 +4,27 @@
 
 namespace tractor
 {
-  class Pass;
-  class Material;
-  class NodeCloneContext;
+class Pass;
+class Material;
+class NodeCloneContext;
 
-  /**
-   * Defines a technique for how an object to be rendered.
-   *
-   * You should use techniques to support different sets of
-   * shader + definitions that will be all loaded when a material
-   * is loaded. You can then change the rendering technique at
-   * runtime without having to first load the shaders.
-   *
-   * A technique has one or more passes for supporting multi pass rendering.
-   */
-  class Technique : public RenderState
-  {
+/**
+ * Defines a technique for how an object to be rendered.
+ *
+ * You should use techniques to support different sets of
+ * shader + definitions that will be all loaded when a material
+ * is loaded. You can then change the rendering technique at
+ * runtime without having to first load the shaders.
+ *
+ * A technique has one or more passes for supporting multi pass rendering.
+ */
+class Technique : public RenderState
+{
     friend class Material;
     friend class Pass;
     friend class RenderState;
 
   public:
-
     /**
      * Gets the id of this technique.
      *
@@ -60,7 +59,6 @@ namespace tractor
     void setNodeBinding(Node* node);
 
   private:
-
     /**
      * Constructor.
      */
@@ -86,6 +84,6 @@ namespace tractor
     std::string _id;
     Material* _material;
     std::vector<Pass*> _passes;
-  };
+};
 
-}
+} // namespace tractor

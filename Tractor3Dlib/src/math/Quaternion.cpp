@@ -1,67 +1,42 @@
 #include "pch.h"
+
 #include "math/Quaternion.h"
 
 namespace tractor
 {
 
-  Quaternion::Quaternion()
-    : x(0.0f), y(0.0f), z(0.0f), w(1.0f)
-  {
-  }
+Quaternion::Quaternion() : x(0.0f), y(0.0f), z(0.0f), w(1.0f) {}
 
-  Quaternion::Quaternion(float x, float y, float z, float w)
-    : x(x), y(y), z(z), w(w)
-  {
-  }
+Quaternion::Quaternion(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
 
-  Quaternion::Quaternion(float* array)
-  {
-    set(array);
-  }
+Quaternion::Quaternion(float* array) { set(array); }
 
-  Quaternion::Quaternion(const Matrix& m)
-  {
-    set(m);
-  }
+Quaternion::Quaternion(const Matrix& m) { set(m); }
 
-  Quaternion::Quaternion(const Vector3& axis, float angle)
-  {
-    set(axis, angle);
-  }
+Quaternion::Quaternion(const Vector3& axis, float angle) { set(axis, angle); }
 
-  Quaternion::Quaternion(const Quaternion& copy)
-  {
-    set(copy);
-  }
+Quaternion::Quaternion(const Quaternion& copy) { set(copy); }
 
-  Quaternion::~Quaternion()
-  {
-  }
+Quaternion::~Quaternion() {}
 
-  const Quaternion& Quaternion::identity()
-  {
+const Quaternion& Quaternion::identity()
+{
     static Quaternion value(0.0f, 0.0f, 0.0f, 1.0f);
     return value;
-  }
+}
 
-  const Quaternion& Quaternion::zero()
-  {
+const Quaternion& Quaternion::zero()
+{
     static Quaternion value(0.0f, 0.0f, 0.0f, 0.0f);
     return value;
-  }
+}
 
-  bool Quaternion::isIdentity() const
-  {
-    return x == 0.0f && y == 0.0f && z == 0.0f && w == 1.0f;
-  }
+bool Quaternion::isIdentity() const { return x == 0.0f && y == 0.0f && z == 0.0f && w == 1.0f; }
 
-  bool Quaternion::isZero() const
-  {
-    return x == 0.0f && y == 0.0f && z == 0.0f && w == 0.0f;
-  }
+bool Quaternion::isZero() const { return x == 0.0f && y == 0.0f && z == 0.0f && w == 0.0f; }
 
-  void Quaternion::createFromEuler(float yaw, float pitch, float roll, Quaternion* dst)
-  {
+void Quaternion::createFromEuler(float yaw, float pitch, float roll, Quaternion* dst)
+{
     assert(dst);
 
     pitch *= 0.5f;
@@ -79,15 +54,12 @@ namespace tractor
     dst->x = sinp * cosy * cosr - cosp * siny * sinr;
     dst->y = cosp * siny * cosr + sinp * cosy * sinr;
     dst->z = cosp * cosy * sinr - sinp * siny * cosr;
-  }
+}
 
-  void Quaternion::createFromRotationMatrix(const Matrix& m, Quaternion* dst)
-  {
-    m.getRotation(dst);
-  }
+void Quaternion::createFromRotationMatrix(const Matrix& m, Quaternion* dst) { m.getRotation(dst); }
 
-  void Quaternion::createFromAxisAngle(const Vector3& axis, float angle, Quaternion* dst)
-  {
+void Quaternion::createFromAxisAngle(const Vector3& axis, float angle, Quaternion* dst)
+{
     assert(dst);
 
     float halfAngle = angle * 0.5f;
@@ -99,10 +71,10 @@ namespace tractor
     dst->y = normal.y * sinHalfAngle;
     dst->z = normal.z * sinHalfAngle;
     dst->w = cosf(halfAngle);
-  }
+}
 
-  void Quaternion::computeEuler(float* yaw, float* pitch, float* roll)
-  {
+void Quaternion::computeEuler(float* yaw, float* pitch, float* roll)
+{
     assert(yaw);
     assert(pitch);
     assert(roll);
@@ -110,46 +82,39 @@ namespace tractor
     *pitch = std::atan2(2 * (w * x + y * z), 1 - 2 * (x * x + y * y));
     *yaw = std::asin(2 * (w * y - z * x));
     *roll = std::atan2(2 * (w * z + x * y), 1 - 2 * (y * y + z * z));
-  }
+}
 
-  void Quaternion::conjugate()
-  {
-    conjugate(this);
-  }
+void Quaternion::conjugate() { conjugate(this); }
 
-  void Quaternion::conjugate(Quaternion* dst) const
-  {
+void Quaternion::conjugate(Quaternion* dst) const
+{
     assert(dst);
 
     dst->x = -x;
     dst->y = -y;
     dst->z = -z;
     dst->w = w;
-  }
+}
 
-  bool Quaternion::inverse()
-  {
-    return inverse(this);
-  }
+bool Quaternion::inverse() { return inverse(this); }
 
-  bool Quaternion::inverse(Quaternion* dst) const
-  {
+bool Quaternion::inverse(Quaternion* dst) const
+{
     assert(dst);
 
     float n = x * x + y * y + z * z + w * w;
     if (n == 1.0f)
     {
-      dst->x = -x;
-      dst->y = -y;
-      dst->z = -z;
-      dst->w = w;
+        dst->x = -x;
+        dst->y = -y;
+        dst->z = -z;
+        dst->w = w;
 
-      return true;
+        return true;
     }
 
     // Too close to zero.
-    if (n < 0.000001f)
-      return false;
+    if (n < 0.000001f) return false;
 
     n = 1.0f / n;
     dst->x = -x * n;
@@ -158,15 +123,12 @@ namespace tractor
     dst->w = w * n;
 
     return true;
-  }
+}
 
-  void Quaternion::multiply(const Quaternion& q)
-  {
-    multiply(*this, q, this);
-  }
+void Quaternion::multiply(const Quaternion& q) { multiply(*this, q, this); }
 
-  void Quaternion::multiply(const Quaternion& q1, const Quaternion& q2, Quaternion* dst)
-  {
+void Quaternion::multiply(const Quaternion& q1, const Quaternion& q2, Quaternion* dst)
+{
     assert(dst);
 
     float x = q1.w * q2.x + q1.x * q2.w + q1.y * q2.z - q1.z * q2.y;
@@ -178,45 +140,40 @@ namespace tractor
     dst->y = y;
     dst->z = z;
     dst->w = w;
-  }
+}
 
-  void Quaternion::normalize()
-  {
-    normalize(this);
-  }
+void Quaternion::normalize() { normalize(this); }
 
-  void Quaternion::normalize(Quaternion* dst) const
-  {
+void Quaternion::normalize(Quaternion* dst) const
+{
     assert(dst);
 
     if (this != dst)
     {
-      dst->x = x;
-      dst->y = y;
-      dst->z = z;
-      dst->w = w;
+        dst->x = x;
+        dst->y = y;
+        dst->z = z;
+        dst->w = w;
     }
 
     float n = x * x + y * y + z * z + w * w;
 
     // Already normalized.
-    if (n == 1.0f)
-      return;
+    if (n == 1.0f) return;
 
     n = sqrt(n);
     // Too close to zero.
-    if (n < 0.000001f)
-      return;
+    if (n < 0.000001f) return;
 
     n = 1.0f / n;
     dst->x *= n;
     dst->y *= n;
     dst->z *= n;
     dst->w *= n;
-  }
+}
 
-  void Quaternion::rotatePoint(const Vector3& point, Vector3* dst) const
-  {
+void Quaternion::rotatePoint(const Vector3& point, Vector3* dst) const
+{
     Quaternion vecQuat;
     Quaternion resQuat;
     vecQuat.x = point.x;
@@ -231,80 +188,77 @@ namespace tractor
     resQuat = (*this) * resQuat;
 
     dst->set(resQuat.x, resQuat.y, resQuat.z);
-  }
+}
 
-  void Quaternion::set(float x, float y, float z, float w)
-  {
+void Quaternion::set(float x, float y, float z, float w)
+{
     this->x = x;
     this->y = y;
     this->z = z;
     this->w = w;
-  }
+}
 
-  void Quaternion::set(float* array)
-  {
+void Quaternion::set(float* array)
+{
     assert(array);
 
     x = array[0];
     y = array[1];
     z = array[2];
     w = array[3];
-  }
+}
 
-  void Quaternion::set(const Matrix& m)
-  {
-    Quaternion::createFromRotationMatrix(m, this);
-  }
+void Quaternion::set(const Matrix& m) { Quaternion::createFromRotationMatrix(m, this); }
 
-  void Quaternion::set(const Vector3& axis, float angle)
-  {
+void Quaternion::set(const Vector3& axis, float angle)
+{
     Quaternion::createFromAxisAngle(axis, angle, this);
-  }
+}
 
-  void Quaternion::set(const Quaternion& q)
-  {
+void Quaternion::set(const Quaternion& q)
+{
     this->x = q.x;
     this->y = q.y;
     this->z = q.z;
     this->w = q.w;
-  }
+}
 
-  void Quaternion::setIdentity()
-  {
+void Quaternion::setIdentity()
+{
     x = 0.0f;
     y = 0.0f;
     z = 0.0f;
     w = 1.0f;
-  }
+}
 
-  float Quaternion::toAxisAngle(Vector3* axis) const
-  {
+float Quaternion::toAxisAngle(Vector3* axis) const
+{
     Quaternion q(x, y, z, w);
     q.normalize();
     if (axis)
     {
-      axis->x = q.x;
-      axis->y = q.y;
-      axis->z = q.z;
-      axis->normalize();
+        axis->x = q.x;
+        axis->y = q.y;
+        axis->z = q.z;
+        axis->normalize();
     }
     return (2.0f * acos(q.w));
-  }
+}
 
-  void Quaternion::lerp(const Quaternion& q1, const Quaternion& q2, float t, Quaternion* dst)
-  {
+void Quaternion::lerp(const Quaternion& q1, const Quaternion& q2, float t, Quaternion* dst)
+{
     assert(dst);
     assert(!(t < 0.0f || t > 1.0f));
 
     if (t == 0.0f)
     {
-      memcpy(dst, &q1, sizeof(float) * 4);
-      return;
+        memcpy(dst, &q1, sizeof(float) * 4);
+        return;
     }
     else if (t == 1.0f)
     {
-      memcpy(dst, &q2, sizeof(float) * 4);
-      return;
+        memcpy(dst, &q2, sizeof(float) * 4);
+        return;
     }
 
     float t1 = 1.0f - t;
@@ -313,16 +267,21 @@ namespace tractor
     dst->y = t1 * q1.y + t * q2.y;
     dst->z = t1 * q1.z + t * q2.z;
     dst->w = t1 * q1.w + t * q2.w;
-  }
+}
 
-  void Quaternion::slerp(const Quaternion& q1, const Quaternion& q2, float t, Quaternion* dst)
-  {
+void Quaternion::slerp(const Quaternion& q1, const Quaternion& q2, float t, Quaternion* dst)
+{
     assert(dst);
     slerp(q1.x, q1.y, q1.z, q1.w, q2.x, q2.y, q2.z, q2.w, t, &dst->x, &dst->y, &dst->z, &dst->w);
-  }
+}
 
-  void Quaternion::squad(const Quaternion& q1, const Quaternion& q2, const Quaternion& s1, const Quaternion& s2, float t, Quaternion* dst)
-  {
+void Quaternion::squad(const Quaternion& q1,
+                       const Quaternion& q2,
+                       const Quaternion& s1,
+                       const Quaternion& s2,
+                       float t,
+                       Quaternion* dst)
+{
     assert(!(t < 0.0f || t > 1.0f));
 
     Quaternion dstQ(0.0f, 0.0f, 0.0f, 1.0f);
@@ -331,10 +290,22 @@ namespace tractor
     slerpForSquad(q1, q2, t, &dstQ);
     slerpForSquad(s1, s2, t, &dstS);
     slerpForSquad(dstQ, dstS, 2.0f * t * (1.0f - t), dst);
-  }
+}
 
-  void Quaternion::slerp(float q1x, float q1y, float q1z, float q1w, float q2x, float q2y, float q2z, float q2w, float t, float* dstx, float* dsty, float* dstz, float* dstw)
-  {
+void Quaternion::slerp(float q1x,
+                       float q1y,
+                       float q1z,
+                       float q1w,
+                       float q2x,
+                       float q2y,
+                       float q2z,
+                       float q2w,
+                       float t,
+                       float* dstx,
+                       float* dsty,
+                       float* dstz,
+                       float* dstw)
+{
     // Fast slerp implementation by kwhatmough:
     // It contains no division operations, no trig, no inverse trig
     // and no sqrt. Not only does this code tolerate small constraint
@@ -344,28 +315,28 @@ namespace tractor
 
     if (t == 0.0f)
     {
-      *dstx = q1x;
-      *dsty = q1y;
-      *dstz = q1z;
-      *dstw = q1w;
-      return;
+        *dstx = q1x;
+        *dsty = q1y;
+        *dstz = q1z;
+        *dstw = q1w;
+        return;
     }
     else if (t == 1.0f)
     {
-      *dstx = q2x;
-      *dsty = q2y;
-      *dstz = q2z;
-      *dstw = q2w;
-      return;
+        *dstx = q2x;
+        *dsty = q2y;
+        *dstz = q2z;
+        *dstw = q2w;
+        return;
     }
 
     if (q1x == q2x && q1y == q2y && q1z == q2z && q1w == q2w)
     {
-      *dstx = q1x;
-      *dsty = q1y;
-      *dstz = q1z;
-      *dstw = q1w;
-      return;
+        *dstx = q1x;
+        *dsty = q1y;
+        *dstz = q1z;
+        *dstw = q1w;
+        return;
     }
 
     float halfY, alpha, beta;
@@ -430,10 +401,10 @@ namespace tractor
     *dstx = x * f1;
     *dsty = y * f1;
     *dstz = z * f1;
-  }
+}
 
-  void Quaternion::slerpForSquad(const Quaternion& q1, const Quaternion& q2, float t, Quaternion* dst)
-  {
+void Quaternion::slerpForSquad(const Quaternion& q1, const Quaternion& q2, float t, Quaternion* dst)
+{
     assert(dst);
 
     // cos(omega) = q1 * q2;
@@ -444,22 +415,22 @@ namespace tractor
 
     if (fabs(c) >= 1.0f)
     {
-      dst->x = q1.x;
-      dst->y = q1.y;
-      dst->z = q1.z;
-      dst->w = q1.w;
-      return;
+        dst->x = q1.x;
+        dst->y = q1.y;
+        dst->z = q1.z;
+        dst->w = q1.w;
+        return;
     }
 
     float omega = acos(c);
     float s = sqrt(1.0f - c * c);
     if (fabs(s) <= 0.00001f)
     {
-      dst->x = q1.x;
-      dst->y = q1.y;
-      dst->z = q1.z;
-      dst->w = q1.w;
-      return;
+        dst->x = q1.x;
+        dst->y = q1.y;
+        dst->z = q1.z;
+        dst->w = q1.w;
+        return;
     }
 
     float r1 = sin((1 - t) * omega) / s;
@@ -468,6 +439,6 @@ namespace tractor
     dst->y = (q1.y * r1 + q2.y * r2);
     dst->z = (q1.z * r1 + q2.z * r2);
     dst->w = (q1.w * r1 + q2.w * r2);
-  }
-
 }
+
+} // namespace tractor

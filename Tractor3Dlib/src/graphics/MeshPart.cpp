@@ -1,24 +1,30 @@
 #include "pch.h"
+
 #include "graphics/MeshPart.h"
 
 namespace tractor
 {
 
-  MeshPart::MeshPart() : _meshIndex(0), _primitiveType(Mesh::TRIANGLES), _indexCount(0), _indexBuffer(0), _dynamic(false)
-  {
-  }
+MeshPart::MeshPart()
+    : _meshIndex(0), _primitiveType(Mesh::TRIANGLES), _indexCount(0), _indexBuffer(0),
+      _dynamic(false)
+{
+}
 
-  MeshPart::~MeshPart()
-  {
+MeshPart::~MeshPart()
+{
     if (_indexBuffer)
     {
-      glDeleteBuffers(1, &_indexBuffer);
+        glDeleteBuffers(1, &_indexBuffer);
     }
-  }
+}
 
-  std::unique_ptr<MeshPart> MeshPart::create(unsigned int meshIndex, Mesh::PrimitiveType primitiveType,
-    Mesh::IndexFormat indexFormat, unsigned int indexCount, bool dynamic)
-  {
+std::unique_ptr<MeshPart> MeshPart::create(unsigned int meshIndex,
+                                           Mesh::PrimitiveType primitiveType,
+                                           Mesh::IndexFormat indexFormat,
+                                           unsigned int indexCount,
+                                           bool dynamic)
+{
     // Create a VBO for our index buffer.
     GLuint vbo;
     GL_ASSERT(glGenBuffers(1, &vbo));
@@ -27,22 +33,25 @@ namespace tractor
     unsigned int indexSize = 0;
     switch (indexFormat)
     {
-    case Mesh::INDEX8:
-      indexSize = 1;
-      break;
-    case Mesh::INDEX16:
-      indexSize = 2;
-      break;
-    case Mesh::INDEX32:
-      indexSize = 4;
-      break;
-    default:
-      GP_ERROR("Unsupported index format (%d).", indexFormat);
-      glDeleteBuffers(1, &vbo);
-      return nullptr;
+        case Mesh::INDEX8:
+            indexSize = 1;
+            break;
+        case Mesh::INDEX16:
+            indexSize = 2;
+            break;
+        case Mesh::INDEX32:
+            indexSize = 4;
+            break;
+        default:
+            GP_ERROR("Unsupported index format (%d).", indexFormat);
+            glDeleteBuffers(1, &vbo);
+            return nullptr;
     }
 
-    GL_ASSERT(glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexSize * indexCount, nullptr, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW));
+    GL_ASSERT(glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                           indexSize * indexCount,
+                           nullptr,
+                           dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW));
 
     auto part = std::make_unique<MeshPart>();
     part->_meshIndex = meshIndex;
@@ -53,84 +62,69 @@ namespace tractor
     part->_dynamic = dynamic;
 
     return std::move(part);
-  }
+}
 
-  unsigned int MeshPart::getMeshIndex() const
-  {
-    return _meshIndex;
-  }
+unsigned int MeshPart::getMeshIndex() const { return _meshIndex; }
 
-  Mesh::PrimitiveType MeshPart::getPrimitiveType() const
-  {
-    return _primitiveType;
-  }
+Mesh::PrimitiveType MeshPart::getPrimitiveType() const { return _primitiveType; }
 
-  unsigned int MeshPart::getIndexCount() const
-  {
-    return _indexCount;
-  }
+unsigned int MeshPart::getIndexCount() const { return _indexCount; }
 
-  Mesh::IndexFormat MeshPart::getIndexFormat() const
-  {
-    return _indexFormat;
-  }
+Mesh::IndexFormat MeshPart::getIndexFormat() const { return _indexFormat; }
 
-  IndexBufferHandle MeshPart::getIndexBuffer() const
-  {
-    return _indexBuffer;
-  }
+IndexBufferHandle MeshPart::getIndexBuffer() const { return _indexBuffer; }
 
-  void* MeshPart::mapIndexBuffer()
-  {
+void* MeshPart::mapIndexBuffer()
+{
     GL_ASSERT(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer));
 
     return (void*)glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY);
-  }
+}
 
-  bool MeshPart::unmapIndexBuffer()
-  {
-    return glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
-  }
+bool MeshPart::unmapIndexBuffer() { return glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER); }
 
-  void MeshPart::setIndexData(const void* indexData, unsigned int indexStart, unsigned int indexCount)
-  {
+void MeshPart::setIndexData(const void* indexData, unsigned int indexStart, unsigned int indexCount)
+{
     GL_ASSERT(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer));
 
     unsigned int indexSize = 0;
     switch (_indexFormat)
     {
-    case Mesh::INDEX8:
-      indexSize = 1;
-      break;
-    case Mesh::INDEX16:
-      indexSize = 2;
-      break;
-    case Mesh::INDEX32:
-      indexSize = 4;
-      break;
-    default:
-      GP_ERROR("Unsupported index format (%d).", _indexFormat);
-      return;
+        case Mesh::INDEX8:
+            indexSize = 1;
+            break;
+        case Mesh::INDEX16:
+            indexSize = 2;
+            break;
+        case Mesh::INDEX32:
+            indexSize = 4;
+            break;
+        default:
+            GP_ERROR("Unsupported index format (%d).", _indexFormat);
+            return;
     }
 
     if (indexStart == 0 && indexCount == 0)
     {
-      GL_ASSERT(glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexSize * _indexCount, indexData, _dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW));
+        GL_ASSERT(glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                               indexSize * _indexCount,
+                               indexData,
+                               _dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW));
     }
     else
     {
-      if (indexCount == 0)
-      {
-        indexCount = _indexCount - indexStart;
-      }
+        if (indexCount == 0)
+        {
+            indexCount = _indexCount - indexStart;
+        }
 
-      GL_ASSERT(glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indexStart * indexSize, indexCount * indexSize, indexData));
+        GL_ASSERT(glBufferSubData(GL_ELEMENT_ARRAY_BUFFER,
+                                  indexStart * indexSize,
+                                  indexCount * indexSize,
+                                  indexData));
     }
-  }
-
-  bool MeshPart::isDynamic() const
-  {
-    return _dynamic;
-  }
-
 }
+
+bool MeshPart::isDynamic() const { return _dynamic; }
+
+} // namespace tractor

@@ -1,34 +1,33 @@
 #pragma once
 
-#include "renderer/Texture.h"
 #include "graphics/Effect.h"
 #include "graphics/Mesh.h"
+#include "graphics/MeshBatch.h"
 #include "graphics/Rectangle.h"
 #include "math/Matrix.h"
 #include "renderer/RenderState.h"
-#include "graphics/MeshBatch.h"
+#include "renderer/Texture.h"
 
 namespace tractor
 {
 
-  /**
-   * Defines a class for drawing groups of sprites.
-   *
-   * This class provides efficient rendering and sorting of two-dimensional
-   * sprites. Only a single texture and effect can be used with a SpriteBatch.
-   * This limitation promotes efficient batching by using texture atlases and
-   * implicit sorting to minimize state changes. Therefore, it is highly
-   * recommended to combine multiple small textures into larger texture atlases
-   * where possible when drawing sprites.
-   */
-  class SpriteBatch
-  {
+/**
+ * Defines a class for drawing groups of sprites.
+ *
+ * This class provides efficient rendering and sorting of two-dimensional
+ * sprites. Only a single texture and effect can be used with a SpriteBatch.
+ * This limitation promotes efficient batching by using texture atlases and
+ * implicit sorting to minimize state changes. Therefore, it is highly
+ * recommended to combine multiple small textures into larger texture atlases
+ * where possible when drawing sprites.
+ */
+class SpriteBatch
+{
     friend class Bundle;
     friend class Font;
     friend class Text;
 
   public:
-
     /**
      * Creates a new SpriteBatch for drawing sprites with the given texture.
      *
@@ -54,7 +53,9 @@ namespace tractor
      * @return A new SpriteBatch for drawing sprites using the given texture.
      * @script{create}
      */
-    static SpriteBatch* create(const std::string& texturePath, Effect* effect = nullptr, unsigned int initialCapacity = 0);
+    static SpriteBatch* create(const std::string& texturePath,
+                               Effect* effect = nullptr,
+                               unsigned int initialCapacity = 0);
 
     /**
      * Creates a new SpriteBatch for drawing sprites with the given texture.
@@ -81,7 +82,9 @@ namespace tractor
      * @return A new SpriteBatch for drawing sprites using the given texture.
      * @script{create}
      */
-    static SpriteBatch* create(Texture* texture, Effect* effect = nullptr, unsigned int initialCapacity = 0);
+    static SpriteBatch* create(Texture* texture,
+                               Effect* effect = nullptr,
+                               unsigned int initialCapacity = 0);
 
     /**
      * Destructor.
@@ -120,7 +123,10 @@ namespace tractor
      * @param scale The X and Y scale.
      * @param color The color to tint the sprite. Use white for no tint.
      */
-    void draw(const Vector3& dst, const Rectangle& src, const Vector2& scale, const Vector4& color = Vector4::one());
+    void draw(const Vector3& dst,
+              const Rectangle& src,
+              const Vector2& scale,
+              const Vector4& color = Vector4::one());
 
     /**
      * Draws a single sprite, rotated around rotationPoint by rotationAngle.
@@ -133,8 +139,12 @@ namespace tractor
      *                      (e.g. Use Vector2(0.5f, 0.5f) to rotate around the quad's center.)
      * @param rotationAngle The rotation angle in radians.
      */
-    void draw(const Vector3& dst, const Rectangle& src, const Vector2& scale, const Vector4& color,
-      const Vector2& rotationPoint, float rotationAngle);
+    void draw(const Vector3& dst,
+              const Rectangle& src,
+              const Vector2& scale,
+              const Vector4& color,
+              const Vector2& rotationPoint,
+              float rotationAngle);
 
     /**
      * Draws a single sprite, rotated around rotationPoint by rotationAngle.
@@ -150,10 +160,20 @@ namespace tractor
      * @param rotationPoint The point to rotate around, relative to dst's x and y values.
      *                      (e.g. Use Vector2(0.5f, 0.5f) to rotate around the quad's center.)
      * @param rotationAngle The rotation angle in radians.
-     * @param positionIsCenter Specified whether the given destination is to be the center of the sprite or not (if not, it is treated as the bottom-left).
+     * @param positionIsCenter Specified whether the given destination is to be the center of the
+     * sprite or not (if not, it is treated as the bottom-left).
      */
-    void draw(const Vector3& dst, float width, float height, float u1, float v1, float u2, float v2, const Vector4& color,
-      const Vector2& rotationPoint, float rotationAngle, bool positionIsCenter = false);
+    void draw(const Vector3& dst,
+              float width,
+              float height,
+              float u1,
+              float v1,
+              float u2,
+              float v2,
+              const Vector4& color,
+              const Vector2& rotationPoint,
+              float rotationAngle,
+              bool positionIsCenter = false);
 
     /**
      * Draws a single sprite, rotated around rotationPoint by rotationAngle.
@@ -171,10 +191,22 @@ namespace tractor
      * @param rotationPoint The point to rotate around, relative to dst's x and y values.
      *                      (e.g. Use Vector2(0.5f, 0.5f) to rotate around the quad's center.)
      * @param rotationAngle The rotation angle in radians.
-     * @param positionIsCenter Specified whether the given destination is to be the center of the sprite or not (if not, it is treated as the bottom-left).
+     * @param positionIsCenter Specified whether the given destination is to be the center of the
+     * sprite or not (if not, it is treated as the bottom-left).
      */
-    void draw(float x, float y, float z, float width, float height, float u1, float v1, float u2, float v2, const Vector4& color,
-      const Vector2& rotationPoint, float rotationAngle, bool positionIsCenter = false);
+    void draw(float x,
+              float y,
+              float z,
+              float width,
+              float height,
+              float u1,
+              float v1,
+              float u2,
+              float v2,
+              const Vector4& color,
+              const Vector2& rotationPoint,
+              float rotationAngle,
+              bool positionIsCenter = false);
 
     /**
      * Draws a single sprite, rotated about the implied up vector.
@@ -193,8 +225,18 @@ namespace tractor
      *                      (e.g. Use Vector2(0.5f, 0.5f) to rotate around the quad's center.)
      * @param rotationAngle The rotation angle in radians.
      */
-    void draw(const Vector3& position, const Vector3& right, const Vector3& forward, float width, float height,
-      float u1, float v1, float u2, float v2, const Vector4& color, const Vector2& rotationPoint, float rotationAngle);
+    void draw(const Vector3& position,
+              const Vector3& right,
+              const Vector3& forward,
+              float width,
+              float height,
+              float u1,
+              float v1,
+              float u2,
+              float v2,
+              const Vector4& color,
+              const Vector2& rotationPoint,
+              float rotationAngle);
 
     /**
      * Draws a single sprite.
@@ -209,7 +251,15 @@ namespace tractor
      * @param v2 Texture coordinate.
      * @param color The color to tint the sprite. Use white for no tint.
      */
-    void draw(float x, float y, float width, float height, float u1, float v1, float u2, float v2, const Vector4& color);
+    void draw(float x,
+              float y,
+              float width,
+              float height,
+              float u1,
+              float v1,
+              float u2,
+              float v2,
+              const Vector4& color);
 
     /**
      * Draws a single sprite, clipped within a rectangle.
@@ -225,7 +275,16 @@ namespace tractor
      * @param color The color to tint the sprite. Use white for no tint.
      * @param clip The clip rectangle.
      */
-    void draw(float x, float y, float width, float height, float u1, float v1, float u2, float v2, const Vector4& color, const Rectangle& clip);
+    void draw(float x,
+              float y,
+              float width,
+              float height,
+              float u1,
+              float v1,
+              float u2,
+              float v2,
+              const Vector4& color,
+              const Rectangle& clip);
 
     /**
      * Draws a single sprite, clipped within a rectangle.
@@ -242,7 +301,17 @@ namespace tractor
      * @param color The color to tint the sprite. Use white for no tint.
      * @param clip The clip rectangle.
      */
-    void draw(float x, float y, float z, float width, float height, float u1, float v1, float u2, float v2, const Vector4& color, const Rectangle& clip);
+    void draw(float x,
+              float y,
+              float z,
+              float width,
+              float height,
+              float u1,
+              float v1,
+              float u2,
+              float v2,
+              const Vector4& color,
+              const Rectangle& clip);
 
     /**
      * Draws a single sprite.
@@ -257,33 +326,44 @@ namespace tractor
      * @param u2 Texture coordinate.
      * @param v2 Texture coordinate.
      * @param color The color to tint the sprite. Use white for no tint.
-     * @param positionIsCenter Specified whether the given destination is to be the center of the sprite or not (if not, it is treated as the bottom-left).
+     * @param positionIsCenter Specified whether the given destination is to be the center of the
+     * sprite or not (if not, it is treated as the bottom-left).
      */
-    void draw(float x, float y, float z, float width, float height, float u1, float v1, float u2, float v2, const Vector4& color, bool positionIsCenter = false);
+    void draw(float x,
+              float y,
+              float z,
+              float width,
+              float height,
+              float u1,
+              float v1,
+              float u2,
+              float v2,
+              const Vector4& color,
+              bool positionIsCenter = false);
 
     /**
      * Sprite vertex structure used for batching.
      */
     struct SpriteVertex
     {
-      /** Vertex position x */
-      float x;
-      /** Vertex position y */
-      float y;
-      /** Vertex position z */
-      float z;
-      /** Vertex texture u */
-      float u;
-      /** Vertex texture v */
-      float v;
-      /** Vertex color red component */
-      float r;
-      /** Vertex color green component */
-      float g;
-      /** Vertex color blue component */
-      float b;
-      /** Vertex color alpha component */
-      float a;
+        /** Vertex position x */
+        float x;
+        /** Vertex position y */
+        float y;
+        /** Vertex position z */
+        float z;
+        /** Vertex texture u */
+        float u;
+        /** Vertex texture v */
+        float v;
+        /** Vertex color red component */
+        float r;
+        /** Vertex color green component */
+        float g;
+        /** Vertex color blue component */
+        float b;
+        /** Vertex color alpha component */
+        float a;
     };
 
     /**
@@ -296,7 +376,10 @@ namespace tractor
      * @param indices The vertex indices.
      * @param indexCount The number of indices within the index array.
      */
-    void draw(SpriteBatch::SpriteVertex* vertices, unsigned int vertexCount, unsigned short* indices, unsigned int indexCount);
+    void draw(SpriteBatch::SpriteVertex* vertices,
+              unsigned int vertexCount,
+              unsigned short* indices,
+              unsigned int indexCount);
 
     /**
      * Finishes sprite drawing.
@@ -353,7 +436,6 @@ namespace tractor
     const Matrix& getProjectionMatrix() const;
 
   private:
-
     /**
      * Constructor.
      */
@@ -380,7 +462,16 @@ namespace tractor
      * @param color The color to tint the sprite. Use white for no tint.
      * @param vertices The vertices to draw.
      */
-    void addSprite(float x, float y, float width, float height, float u1, float v1, float u2, float v2, const Vector4& color, SpriteBatch::SpriteVertex* vertices);
+    void addSprite(float x,
+                   float y,
+                   float width,
+                   float height,
+                   float u1,
+                   float v1,
+                   float u2,
+                   float v2,
+                   const Vector4& color,
+                   SpriteBatch::SpriteVertex* vertices);
 
     /**
      * Adds a single sprite to a SpriteVertex array, clipped within a rectangle.
@@ -397,9 +488,27 @@ namespace tractor
      * @param clip The clip rectangle.
      * @param vertices The vertices to draw.
      */
-    void addSprite(float x, float y, float width, float height, float u1, float v1, float u2, float v2, const Vector4& color, const Rectangle& clip, SpriteBatch::SpriteVertex* vertices);
+    void addSprite(float x,
+                   float y,
+                   float width,
+                   float height,
+                   float u1,
+                   float v1,
+                   float u2,
+                   float v2,
+                   const Vector4& color,
+                   const Rectangle& clip,
+                   SpriteBatch::SpriteVertex* vertices);
 
-    bool clipSprite(const Rectangle& clip, float& x, float& y, float& width, float& height, float& u1, float& v1, float& u2, float& v2);
+    bool clipSprite(const Rectangle& clip,
+                    float& x,
+                    float& y,
+                    float& width,
+                    float& height,
+                    float& u1,
+                    float& v1,
+                    float& u2,
+                    float& v2);
 
     MeshBatch* _batch;
     Texture::Sampler* _sampler;
@@ -407,6 +516,6 @@ namespace tractor
     float _textureWidthRatio;
     float _textureHeightRatio;
     mutable Matrix _projectionMatrix;
-  };
+};
 
-}
+} // namespace tractor

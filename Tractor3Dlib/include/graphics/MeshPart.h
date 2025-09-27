@@ -5,17 +5,16 @@
 namespace tractor
 {
 
-  /**
-   * Defines a part of a mesh describing the way the
-   * mesh's vertices are connected together.
-   */
-  class MeshPart
-  {
+/**
+ * Defines a part of a mesh describing the way the
+ * mesh's vertices are connected together.
+ */
+class MeshPart
+{
     friend class Mesh;
     friend class Model;
 
   public:
-
     /**
      * Constructor.
      */
@@ -111,7 +110,6 @@ namespace tractor
     bool isDynamic() const;
 
   private:
-
     /**
      * Constructor.
      */
@@ -128,7 +126,11 @@ namespace tractor
      * @param dynamic true if the part if dynamic; false otherwise.
      */
     [[nodiscard]]
-    static std::unique_ptr<MeshPart> create(unsigned int meshIndex, Mesh::PrimitiveType primitiveType, Mesh::IndexFormat indexFormat, unsigned int indexCount, bool dynamic = false);
+    static std::unique_ptr<MeshPart> create(unsigned int meshIndex,
+                                            Mesh::PrimitiveType primitiveType,
+                                            Mesh::IndexFormat indexFormat,
+                                            unsigned int indexCount,
+                                            bool dynamic = false);
 
     unsigned int _meshIndex;
     Mesh::PrimitiveType _primitiveType;
@@ -136,6 +138,6 @@ namespace tractor
     unsigned int _indexCount;
     IndexBufferHandle _indexBuffer;
     bool _dynamic;
-  };
+};
 
-}
+} // namespace tractor

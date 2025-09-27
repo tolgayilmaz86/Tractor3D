@@ -1,57 +1,55 @@
 #pragma once
 
-#include "utils/Ref.h"
-#include "ai/AIStateMachine.h"
 #include "ai/AIMessage.h"
+#include "ai/AIStateMachine.h"
+#include "utils/Ref.h"
 
 namespace tractor
 {
 
-  class Node;
+class Node;
 
-  /**
-   * Defines an AI agent that can be added to nodes in a scene.
-   *
-   * Agents represent a unit of intelligence in a game and can be used
-   * to program logic for a character or object in a game, using constructs
-   * such as state machines. By default, an AIAgent has an empty state
-   * machine.
-   */
-  class AIAgent : public Ref
-  {
+/**
+ * Defines an AI agent that can be added to nodes in a scene.
+ *
+ * Agents represent a unit of intelligence in a game and can be used
+ * to program logic for a character or object in a game, using constructs
+ * such as state machines. By default, an AIAgent has an empty state
+ * machine.
+ */
+class AIAgent : public Ref
+{
     friend class Node;
     friend class AIState;
     friend class AIController;
 
   public:
-
     /**
      * Interface for listening to AIAgent events.
      */
     class Listener
     {
-    public:
+      public:
+        /**
+         * Virtual destructor.
+         */
+        virtual ~Listener() {};
 
-      /**
-       * Virtual destructor.
-       */
-      virtual ~Listener() { };
-
-      /**
-       * Called when a new message is sent to the AIAgent.
-       *
-       * Both global/broadcast messages and messages sent explicitly to the
-       * AIAgent are sent through this method. Returning true from this method
-       * will mark the message as handled and it will dispose of the message
-       * and prevent any other possible recipients from receiving the message.
-       * Alternatively, returning false allows the message to continue being
-       * routed though the AI system.
-       *
-       * @param message The message received.
-       *
-       * @return true to mark the message as handled, false otherwise.
-       */
-      virtual bool messageReceived(AIMessage* message) = 0;
+        /**
+         * Called when a new message is sent to the AIAgent.
+         *
+         * Both global/broadcast messages and messages sent explicitly to the
+         * AIAgent are sent through this method. Returning true from this method
+         * will mark the message as handled and it will dispose of the message
+         * and prevent any other possible recipients from receiving the message.
+         * Alternatively, returning false allows the message to continue being
+         * routed though the AI system.
+         *
+         * @param message The message received.
+         *
+         * @return true to mark the message as handled, false otherwise.
+         */
+        virtual bool messageReceived(AIMessage* message) = 0;
     };
 
     /**
@@ -118,7 +116,6 @@ namespace tractor
     void setListener(Listener* listener);
 
   private:
-
     /**
      * Constructor.
      */
@@ -165,7 +162,6 @@ namespace tractor
     bool _enabled;
     Listener* _listener;
     AIAgent* _next;
+};
 
-  };
-
-}
+} // namespace tractor

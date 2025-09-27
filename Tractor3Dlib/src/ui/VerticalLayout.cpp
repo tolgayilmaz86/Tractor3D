@@ -1,49 +1,28 @@
 #include "pch.h"
+
 #include "ui/VerticalLayout.h"
 
 namespace tractor
 {
 
-  VerticalLayout::VerticalLayout() : _bottomToTop(false), _spacing(0)
-  {
-  }
+VerticalLayout::VerticalLayout() : _bottomToTop(false), _spacing(0) {}
 
-  VerticalLayout::~VerticalLayout()
-  {
-  }
+VerticalLayout::~VerticalLayout() {}
 
-  VerticalLayout* VerticalLayout::create()
-  {
-    return new VerticalLayout();
-  }
+VerticalLayout* VerticalLayout::create() { return new VerticalLayout(); }
 
-  void VerticalLayout::setBottomToTop(bool bottomToTop)
-  {
-    _bottomToTop = bottomToTop;
-  }
+void VerticalLayout::setBottomToTop(bool bottomToTop) { _bottomToTop = bottomToTop; }
 
-  bool VerticalLayout::getBottomToTop()
-  {
-    return _bottomToTop;
-  }
+bool VerticalLayout::getBottomToTop() { return _bottomToTop; }
 
-  Layout::Type VerticalLayout::getType()
-  {
-    return Layout::LAYOUT_VERTICAL;
-  }
+Layout::Type VerticalLayout::getType() { return Layout::LAYOUT_VERTICAL; }
 
-  int VerticalLayout::getSpacing() const
-  {
-    return _spacing;
-  }
+int VerticalLayout::getSpacing() const { return _spacing; }
 
-  void VerticalLayout::setSpacing(int spacing)
-  {
-    _spacing = spacing;
-  }
+void VerticalLayout::setSpacing(int spacing) { _spacing = spacing; }
 
-  void VerticalLayout::update(const Container* container)
-  {
+void VerticalLayout::update(const Container* container)
+{
     assert(container);
 
     // Need border, padding.
@@ -57,36 +36,36 @@ namespace tractor
     int i, end, iter;
     if (_bottomToTop)
     {
-      i = (int)controls.size() - 1;
-      end = -1;
-      iter = -1;
+        i = (int)controls.size() - 1;
+        end = -1;
+        iter = -1;
     }
     else
     {
-      i = 0;
-      end = (int)controls.size();
-      iter = 1;
+        i = 0;
+        end = (int)controls.size();
+        iter = 1;
     }
 
     while (i != end)
     {
-      Control* control = controls.at(i);
-      assert(control);
+        Control* control = controls.at(i);
+        assert(control);
 
-      if (control->isVisible())
-      {
-        const Rectangle& bounds = control->getBounds();
-        const Theme::Margin& margin = control->getMargin();
+        if (control->isVisible())
+        {
+            const Rectangle& bounds = control->getBounds();
+            const Theme::Margin& margin = control->getMargin();
 
-        yPosition += margin.top;
+            yPosition += margin.top;
 
-        control->setPosition(margin.left, yPosition);
+            control->setPosition(margin.left, yPosition);
 
-        yPosition += bounds.height + margin.bottom + _spacing;
-      }
+            yPosition += bounds.height + margin.bottom + _spacing;
+        }
 
-      i += iter;
+        i += iter;
     }
-  }
-
 }
+
+} // namespace tractor

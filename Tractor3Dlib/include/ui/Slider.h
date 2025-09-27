@@ -1,28 +1,28 @@
 #pragma once
 
 #include "pch.h"
-#include "ui/Theme.h"
+
+#include "input/Touch.h"
 #include "scene/Properties.h"
 #include "ui/Button.h"
-#include "input/Touch.h"
+#include "ui/Theme.h"
 
 namespace tractor
 {
 
-  /**
-   * Defines a slider control.
-   *
-   * A slider consists of a marker (grabber) that can slide along a track between two end-caps.
-   *
-   * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-UI_Forms
-   */
-  class Slider : public Label
-  {
+/**
+ * Defines a slider control.
+ *
+ * A slider consists of a marker (grabber) that can slide along a track between two end-caps.
+ *
+ * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-UI_Forms
+ */
+class Slider : public Label
+{
     friend class Container;
     friend class ControlFactory;
 
   public:
-
     /**
      * Creates a new Slider.
      *
@@ -157,7 +157,6 @@ namespace tractor
     void addListener(Control::Listener* listener, int eventFlags);
 
   protected:
-
     /**
      * Constructor.
      */
@@ -289,7 +288,6 @@ namespace tractor
     unsigned int _valueTextPrecision;
 
   private:
-
     /**
      * Constructor.
      */
@@ -305,6 +303,6 @@ namespace tractor
     float _trackHeight;
 
     float _gamepadValue;
-  };
+};
 
-}
+} // namespace tractor

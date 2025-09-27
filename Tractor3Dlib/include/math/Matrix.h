@@ -6,44 +6,43 @@
 namespace tractor
 {
 
-  class Plane;
-  class Quaternion;
+class Plane;
+class Quaternion;
 
-  /**
-   * Defines a 4 x 4 floating point matrix representing a 3D transformation.
-   *
-   * Vectors are treated as columns, resulting in a matrix that is represented as follows,
-   * where x, y and z are the translation components of the matrix:
-   *
-   * 1  0  0  x
-   * 0  1  0  y
-   * 0  0  1  z
-   * 0  0  0  1
-   *
-   * This matrix class is directly compatible with OpenGL since its elements are
-   * laid out in memory exactly as they are expected by OpenGL.
-   * The matrix uses column-major format such that array indices increase down column first.
-   * Since matrix multiplication is not commutative, multiplication must be done in the
-   * correct order when combining transformations. Suppose we have a translation
-   * matrix T and a rotation matrix R. To first rotate an object around the origin
-   * and then translate it, you would multiply the two matrices as TR.
-   *
-   * Likewise, to first translate the object and then rotate it, you would do RT.
-   * So generally, matrices must be multiplied in the reverse order in which you
-   * want the transformations to take place (this also applies to
-   * the scale, rotate, and translate methods below; these methods are convenience
-   * methods for post-multiplying by a matrix representing a scale, rotation, or translation).
-   *
-   * In the case of repeated local transformations (i.e. rotate around the Z-axis by 0.76 radians,
-   * then translate by 2.1 along the X-axis, then ...), it is better to use the Transform class
-   * (which is optimized for that kind of usage).
-   *
-   * @see Transform
-   */
-  class Matrix
-  {
+/**
+ * Defines a 4 x 4 floating point matrix representing a 3D transformation.
+ *
+ * Vectors are treated as columns, resulting in a matrix that is represented as follows,
+ * where x, y and z are the translation components of the matrix:
+ *
+ * 1  0  0  x
+ * 0  1  0  y
+ * 0  0  1  z
+ * 0  0  0  1
+ *
+ * This matrix class is directly compatible with OpenGL since its elements are
+ * laid out in memory exactly as they are expected by OpenGL.
+ * The matrix uses column-major format such that array indices increase down column first.
+ * Since matrix multiplication is not commutative, multiplication must be done in the
+ * correct order when combining transformations. Suppose we have a translation
+ * matrix T and a rotation matrix R. To first rotate an object around the origin
+ * and then translate it, you would multiply the two matrices as TR.
+ *
+ * Likewise, to first translate the object and then rotate it, you would do RT.
+ * So generally, matrices must be multiplied in the reverse order in which you
+ * want the transformations to take place (this also applies to
+ * the scale, rotate, and translate methods below; these methods are convenience
+ * methods for post-multiplying by a matrix representing a scale, rotation, or translation).
+ *
+ * In the case of repeated local transformations (i.e. rotate around the Z-axis by 0.76 radians,
+ * then translate by 2.1 along the X-axis, then ...), it is better to use the Transform class
+ * (which is optimized for that kind of usage).
+ *
+ * @see Transform
+ */
+class Matrix
+{
   public:
-
     /**
      * Stores the columns of this 4x4 matrix.
      * */
@@ -79,8 +78,22 @@ namespace tractor
      * @param m43 The third element of the fourth row.
      * @param m44 The fourth element of the fourth row.
      */
-    Matrix(float m11, float m12, float m13, float m14, float m21, float m22, float m23, float m24,
-      float m31, float m32, float m33, float m34, float m41, float m42, float m43, float m44);
+    Matrix(float m11,
+           float m12,
+           float m13,
+           float m14,
+           float m21,
+           float m22,
+           float m23,
+           float m24,
+           float m31,
+           float m32,
+           float m33,
+           float m34,
+           float m41,
+           float m42,
+           float m43,
+           float m44);
 
     /**
      * Creates a matrix initialized to the specified column-major array.
@@ -135,7 +148,9 @@ namespace tractor
      * @param up The up vector.
      * @param dst A matrix to store the result in.
      */
-    static Matrix createLookAt(const Vector3& eyePosition, const Vector3& targetPosition, const Vector3& up);
+    static Matrix createLookAt(const Vector3& eyePosition,
+                               const Vector3& targetPosition,
+                               const Vector3& up);
 
     /**
      * Creates a view matrix based on the specified input parameters.
@@ -151,9 +166,15 @@ namespace tractor
      * @param upZ The up vector z-coordinate value.
      * @param dst A matrix to store the result in.
      */
-    static Matrix createLookAt(float eyePositionX, float eyePositionY, float eyePositionZ,
-      float targetCenterX, float targetCenterY, float targetCenterZ,
-      float upX, float upY, float upZ);
+    static Matrix createLookAt(float eyePositionX,
+                               float eyePositionY,
+                               float eyePositionZ,
+                               float targetCenterX,
+                               float targetCenterY,
+                               float targetCenterZ,
+                               float upX,
+                               float upY,
+                               float upZ);
 
     /**
      * Builds a perspective projection matrix based on a field of view and returns by value.
@@ -169,7 +190,10 @@ namespace tractor
      * @param zFarPlane The distance to the far view plane.
      * @param dst A matrix to store the result in.
      */
-    static Matrix createPerspective(float fieldOfView, float aspectRatio, float zNearPlane, float zFarPlane);
+    static Matrix createPerspective(float fieldOfView,
+                                    float aspectRatio,
+                                    float zNearPlane,
+                                    float zFarPlane);
 
     /**
      * Creates an orthographic projection matrix.
@@ -210,8 +234,12 @@ namespace tractor
      * @param zFarPlane The maximum z-value of the view volume.
      * @param dst A matrix to store the result in.
      */
-    static Matrix createOrthographicOffCenter(float left, float right, float bottom, float top,
-      float zNearPlane, float zFarPlane);
+    static Matrix createOrthographicOffCenter(float left,
+                                              float right,
+                                              float bottom,
+                                              float top,
+                                              float zNearPlane,
+                                              float zFarPlane);
 
     /**
      * Creates a spherical billboard that rotates around a specified object position.
@@ -227,8 +255,9 @@ namespace tractor
      * @param cameraUpVector The up vector of the camera.
      * @param dst A matrix to store the result in.
      */
-    static Matrix createBillboard(const Vector3& objectPosition, const Vector3& cameraPosition,
-      const Vector3& cameraUpVector);
+    static Matrix createBillboard(const Vector3& objectPosition,
+                                  const Vector3& cameraPosition,
+                                  const Vector3& cameraUpVector);
 
     /**
      * Creates a spherical billboard that rotates around a specified object position with
@@ -246,8 +275,10 @@ namespace tractor
      * @param cameraForwardVector The forward vector of the camera, used if the positions are too close.
      * @param dst A matrix to store the result in.
      */
-    static Matrix createBillboard(const Vector3& objectPosition, const Vector3& cameraPosition,
-      const Vector3& cameraUpVector, const Vector3& cameraForwardVector);
+    static Matrix createBillboard(const Vector3& objectPosition,
+                                  const Vector3& cameraPosition,
+                                  const Vector3& cameraUpVector,
+                                  const Vector3& cameraForwardVector);
 
     /**
      * Fills in an existing Matrix so that it reflects the coordinate system about a specified Plane.
@@ -317,15 +348,14 @@ namespace tractor
     static Matrix createRotationZ(float angle);
 
     /**
-    * Creates a matrix describing the yaw, pitch and roll rotations
-    *
-    * @param yaw The yaw angle (in radians)
-    * @param pitch The pitch angle (in radians)
-    * @param roll The roll angle (in radians)
-    * @param dst A matrix to store the result in.
-    */
+     * Creates a matrix describing the yaw, pitch and roll rotations
+     *
+     * @param yaw The yaw angle (in radians)
+     * @param pitch The pitch angle (in radians)
+     * @param roll The roll angle (in radians)
+     * @param dst A matrix to store the result in.
+     */
     static Matrix createFromEuler(float yaw, float pitch, float roll);
-
 
     /**
      * Creates a translation matrix.
@@ -699,8 +729,22 @@ namespace tractor
      * @param m43 The third element of the fourth row.
      * @param m44 The fourth element of the fourth row.
      */
-    void set(float m11, float m12, float m13, float m14, float m21, float m22, float m23, float m24,
-      float m31, float m32, float m33, float m34, float m41, float m42, float m43, float m44);
+    void set(float m11,
+             float m12,
+             float m13,
+             float m14,
+             float m21,
+             float m22,
+             float m23,
+             float m24,
+             float m31,
+             float m32,
+             float m33,
+             float m34,
+             float m41,
+             float m42,
+             float m43,
+             float m44);
 
     /**
      * Sets the values of this matrix to those in the specified column-major array.
@@ -922,55 +966,56 @@ namespace tractor
     inline Matrix& operator*=(const Matrix& m);
 
   private:
+    static Matrix createBillboardHelper(const Vector3& objectPosition,
+                                        const Vector3& cameraPosition,
+                                        const Vector3& cameraUpVector,
+                                        const Vector3* cameraForwardVector);
+};
 
-    static Matrix createBillboardHelper(const Vector3& objectPosition, const Vector3& cameraPosition,
-      const Vector3& cameraUpVector, const Vector3* cameraForwardVector);
-  };
+/**
+ * Transforms the given vector by the given matrix.
+ *
+ * Note: this treats the given vector as a vector and not as a point.
+ *
+ * @param v The vector to transform.
+ * @param m The matrix to transform by.
+ * @return This vector, after the transformation occurs.
+ */
+inline Vector3& operator*=(Vector3& v, const Matrix& m);
 
-  /**
-   * Transforms the given vector by the given matrix.
-   *
-   * Note: this treats the given vector as a vector and not as a point.
-   *
-   * @param v The vector to transform.
-   * @param m The matrix to transform by.
-   * @return This vector, after the transformation occurs.
-   */
-  inline Vector3& operator*=(Vector3& v, const Matrix& m);
+/**
+ * Transforms the given vector by the given matrix.
+ *
+ * Note: this treats the given vector as a vector and not as a point.
+ *
+ * @param m The matrix to transform by.
+ * @param v The vector to transform.
+ * @return The resulting transformed vector.
+ */
+inline const Vector3 operator*(const Matrix& m, const Vector3& v);
 
-  /**
-   * Transforms the given vector by the given matrix.
-   *
-   * Note: this treats the given vector as a vector and not as a point.
-   *
-   * @param m The matrix to transform by.
-   * @param v The vector to transform.
-   * @return The resulting transformed vector.
-   */
-  inline const Vector3 operator*(const Matrix& m, const Vector3& v);
+/**
+ * Transforms the given vector by the given matrix.
+ *
+ * Note: this treats the given vector as a vector and not as a point.
+ *
+ * @param v The vector to transform.
+ * @param m The matrix to transform by.
+ * @return This vector, after the transformation occurs.
+ */
+inline Vector4& operator*=(Vector4& v, const Matrix& m);
 
-  /**
-   * Transforms the given vector by the given matrix.
-   *
-   * Note: this treats the given vector as a vector and not as a point.
-   *
-   * @param v The vector to transform.
-   * @param m The matrix to transform by.
-   * @return This vector, after the transformation occurs.
-   */
-  inline Vector4& operator*=(Vector4& v, const Matrix& m);
+/**
+ * Transforms the given vector by the given matrix.
+ *
+ * Note: this treats the given vector as a vector and not as a point.
+ *
+ * @param m The matrix to transform by.
+ * @param v The vector to transform.
+ * @return The resulting transformed vector.
+ */
+inline const Vector4 operator*(const Matrix& m, const Vector4& v);
 
-  /**
-   * Transforms the given vector by the given matrix.
-   *
-   * Note: this treats the given vector as a vector and not as a point.
-   *
-   * @param m The matrix to transform by.
-   * @param v The vector to transform.
-   * @return The resulting transformed vector.
-   */
-  inline const Vector4 operator*(const Matrix& m, const Vector4& v);
-
-}
+} // namespace tractor
 
 #include "math/Matrix.inl"

@@ -5,15 +5,14 @@
 namespace tractor
 {
 
-  /**
-   * Defines a running animation value which can have one or more floats.
-   */
-  class AnimationValue
-  {
+/**
+ * Defines a running animation value which can have one or more floats.
+ */
+class AnimationValue
+{
     friend class AnimationClip;
 
   public:
-
     /**
      * Gets the value at the specified index.
      *
@@ -50,7 +49,6 @@ namespace tractor
     void setFloats(unsigned int index, float* values, unsigned int count);
 
   private:
-
     /**
      * Constructor.
      */
@@ -76,10 +74,9 @@ namespace tractor
      */
     AnimationValue& operator=(const AnimationValue& v);
 
-    unsigned int _componentCount;   // The number of float values for the property.
-    unsigned int _componentSize;    // The number of bytes of memory the property is.
-    float* _value;                  // The current value of the property.
+    unsigned int _componentCount; // The number of float values for the property.
+    unsigned int _componentSize;  // The number of bytes of memory the property is.
+    float* _value;                // The current value of the property.
+};
 
-  };
-
-}
+} // namespace tractor

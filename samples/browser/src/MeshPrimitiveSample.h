@@ -1,7 +1,7 @@
 #pragma once
 
-#include "tractor.h"
 #include "Sample.h"
+#include "tractor.h"
 
 using namespace tractor;
 
@@ -10,36 +10,33 @@ using namespace tractor;
  */
 class MeshPrimitiveSample : public Sample
 {
-public:
+  public:
+    MeshPrimitiveSample();
 
-  MeshPrimitiveSample();
+    void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
 
-  void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
+  protected:
+    void initialize();
 
-protected:
+    void finalize();
 
-  void initialize();
+    void update(float elapsedTime);
 
-  void finalize();
+    void render(float elapsedTime);
 
-  void update(float elapsedTime);
+  private:
+    static Material* createMaterial();
 
-  void render(float elapsedTime);
+    static MeshBatch* createMeshBatch(Mesh::PrimitiveType primitiveType);
 
-private:
-
-  static Material* createMaterial();
-
-  static MeshBatch* createMeshBatch(Mesh::PrimitiveType primitiveType);
-
-  Font* _font;
-  Model* _triangles;
-  Model* _triangleStrip;
-  Model* _lineStrip;
-  Model* _lines;
-  Model* _points;
-  Matrix _viewProjectionMatrix;
-  Vector2 _touchPoint;
-  Vector2 _tilt;
-  std::list<Text*> _text;
+    Font* _font;
+    Model* _triangles;
+    Model* _triangleStrip;
+    Model* _lineStrip;
+    Model* _lines;
+    Model* _points;
+    Matrix _viewProjectionMatrix;
+    Vector2 _touchPoint;
+    Vector2 _tilt;
+    std::list<Text*> _text;
 };

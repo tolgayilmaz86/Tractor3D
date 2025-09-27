@@ -1,27 +1,26 @@
 #pragma once
 
-#include "ui/Theme.h"
-#include "scene/Properties.h"
 #include "input/Touch.h"
+#include "scene/Properties.h"
 #include "ui/Button.h"
+#include "ui/Theme.h"
 
 namespace tractor
 {
 
-  /**
-   * Defines a checkbox control.
-   *
-   * This is a button that can be enabled or disabled.
-   *
-   * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-UI_Forms
-   */
-  class CheckBox : public Button
-  {
+/**
+ * Defines a checkbox control.
+ *
+ * This is a button that can be enabled or disabled.
+ *
+ * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-UI_Forms
+ */
+class CheckBox : public Button
+{
     friend class Container;
     friend class ControlFactory;
 
   public:
-
     /**
      * Creates a new CheckBox.
      *
@@ -70,7 +69,6 @@ namespace tractor
     virtual void addListener(Control::Listener* listener, int eventFlags);
 
   protected:
-
     /**
      * Constructor.
      */
@@ -92,8 +90,8 @@ namespace tractor
     static Control* create(Theme::Style* style, Properties* properties = nullptr);
 
     /**
-    * @see Control::initialize
-    */
+     * @see Control::initialize
+     */
     void initialize(const std::string& typeName, Theme::Style* style, Properties* properties);
 
     /**
@@ -140,11 +138,10 @@ namespace tractor
     Theme::ThemeImage* _image;
 
   private:
-
     /*
      * Constructor.
      */
     CheckBox(const CheckBox& copy);
-  };
+};
 
-}
+} // namespace tractor

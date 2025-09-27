@@ -1,28 +1,27 @@
 #pragma once
 
-#include "ui/Control.h"
-#include "ui/Theme.h"
-#include "ui/Image.h"
-#include "graphics/SpriteBatch.h"
 #include "graphics/Rectangle.h"
+#include "graphics/SpriteBatch.h"
+#include "ui/Control.h"
+#include "ui/Image.h"
+#include "ui/Theme.h"
 
 namespace tractor
 {
 
-  /**
-   * Defines an image control.
-   *
-   * This allows forms to display seperate images from arbitrary files not specified in the theme.
-   *
-   * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-UI_Forms
-   */
-  class ImageControl : public Control
-  {
+/**
+ * Defines an image control.
+ *
+ * This allows forms to display seperate images from arbitrary files not specified in the theme.
+ *
+ * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-UI_Forms
+ */
+class ImageControl : public Control
+{
     friend class Container;
     friend class ControlFactory;
 
   public:
-
     /**
      * Creates a new ImageControl.
      *
@@ -104,7 +103,6 @@ namespace tractor
     const Rectangle& getRegionDst() const;
 
   protected:
-
     ImageControl();
 
     virtual ~ImageControl();
@@ -117,8 +115,8 @@ namespace tractor
      *
      * @return The new ImageControl.
      * @script{create}
-      *
-      */
+     *
+     */
     static Control* create(Theme::Style* style, Properties* properties = nullptr);
 
     void initialize(const std::string& typeName, Theme::Style* style, Properties* properties);
@@ -134,7 +132,6 @@ namespace tractor
     void updateBounds();
 
   private:
-
     ImageControl(const ImageControl& copy);
 
     // Source region.
@@ -149,6 +146,6 @@ namespace tractor
 
     // Calculated UVs.
     Theme::UVs _uvs;
-  };
+};
 
-}
+} // namespace tractor

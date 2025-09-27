@@ -6,24 +6,23 @@
 namespace tractor
 {
 
-  class Technique;
-  class NodeCloneContext;
+class Technique;
+class NodeCloneContext;
 
-  /**
-   * Defines a pass for an object to be rendered.
-   *
-   * This class encapsulates the parameters and logic required to apply a shader
-   * to an object to be rendered. This includes specifying both a vertex and fragment
-   * shader, as well as any uniforms and vertex attributes to be applied to these.
-   */
-  class Pass : public RenderState
-  {
+/**
+ * Defines a pass for an object to be rendered.
+ *
+ * This class encapsulates the parameters and logic required to apply a shader
+ * to an object to be rendered. This includes specifying both a vertex and fragment
+ * shader, as well as any uniforms and vertex attributes to be applied to these.
+ */
+class Pass : public RenderState
+{
     friend class Technique;
     friend class Material;
     friend class RenderState;
 
   public:
-
     /**
      * Returns the Id of this pass.
      */
@@ -68,7 +67,6 @@ namespace tractor
     void unbind();
 
   private:
-
     /**
      * Constructor.
      */
@@ -77,11 +75,11 @@ namespace tractor
     /**
      * Constructor.
      */
-     //Pass(const char* id, Technique* technique, Effect* effect);
+    // Pass(const char* id, Technique* technique, Effect* effect);
 
-     /**
-      * Hidden copy constructor.
-      */
+    /**
+     * Hidden copy constructor.
+     */
     Pass(const Pass& copy);
 
     /**
@@ -113,6 +111,6 @@ namespace tractor
     Technique* _technique;
     Effect* _effect;
     VertexAttributeBinding* _vaBinding;
-  };
+};
 
-}
+} // namespace tractor

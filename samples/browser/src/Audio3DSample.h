@@ -1,8 +1,8 @@
 #pragma once
 
-#include "tractor.h"
-#include "Sample.h"
 #include "FirstPersonCamera.h"
+#include "Sample.h"
+#include "tractor.h"
 
 using namespace tractor;
 
@@ -11,49 +11,46 @@ using namespace tractor;
  */
 class Audio3DSample : public Sample
 {
-public:
+  public:
+    Audio3DSample();
 
-  Audio3DSample();
+    void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
 
-  void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
+    void keyEvent(Keyboard::KeyEvent evt, int key);
 
-  void keyEvent(Keyboard::KeyEvent evt, int key);
+    bool mouseEvent(Mouse::MouseEvent evt, int x, int y, int wheelDelta);
 
-  bool mouseEvent(Mouse::MouseEvent evt, int x, int y, int wheelDelta);
+    void gamepadEvent(Gamepad::GamepadEvent evt, Gamepad* gamepad);
 
-  void gamepadEvent(Gamepad::GamepadEvent evt, Gamepad* gamepad);
+  protected:
+    void initialize();
 
-protected:
+    void finalize();
 
-  void initialize();
+    void update(float elapsedTime);
 
-  void finalize();
+    void render(float elapsedTime);
 
-  void update(float elapsedTime);
+  private:
+    bool drawScene(Node* node);
 
-  void render(float elapsedTime);
+    void addSound(const std::string& file);
 
-private:
-  bool drawScene(Node* node);
+    void drawDebugText(int x, int y, unsigned int fontSize);
 
-  void addSound(const std::string& file);
+    void drawVector3(const char* str, const Vector3& vector, int x, int y);
 
-  void drawDebugText(int x, int y, unsigned int fontSize);
+    void loadGrid(Scene* scene);
 
-  void drawVector3(const char* str, const Vector3& vector, int x, int y);
-
-  void loadGrid(Scene* scene);
-
-private:
-
-  FirstPersonCamera _fpCamera;
-  std::map<std::string, Node*> _audioNodes;
-  Font* _font;
-  Scene* _scene;
-  Node* _cubeNode;
-  Gamepad* _gamepad;
-  unsigned int _moveFlags;
-  int _prevX;
-  int _prevY;
-  bool _buttonPressed;
+  private:
+    FirstPersonCamera _fpCamera;
+    std::map<std::string, Node*> _audioNodes;
+    Font* _font;
+    Scene* _scene;
+    Node* _cubeNode;
+    Gamepad* _gamepad;
+    unsigned int _moveFlags;
+    int _prevX;
+    int _prevY;
+    bool _buttonPressed;
 };

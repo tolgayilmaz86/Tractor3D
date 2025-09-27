@@ -1,8 +1,8 @@
 #pragma once
 
-#include "utils/Ref.h"
-#include "scene/Properties.h"
 #include "graphics/Curve.h"
+#include "scene/Properties.h"
+#include "utils/Ref.h"
 
 namespace tractor
 {
@@ -27,8 +27,7 @@ class Animation : public Ref
     friend class AnimationTarget;
     friend class Bundle;
 
-public:
-
+  public:
     /**
      * Gets the Animation's ID.
      *
@@ -69,7 +68,8 @@ public:
      *
      * @param clipId The ID of the AnimationClip to get.
      *
-     * @return The AnimationClip with the specified ID; nullptr if an AnimationClip with the given ID is not found.
+     * @return The AnimationClip with the specified ID; nullptr if an AnimationClip with the given
+     * ID is not found.
      */
     AnimationClip* getClip(const std::string& clipId = EMPTY_STRING);
 
@@ -111,8 +111,7 @@ public:
      */
     bool targets(AnimationTarget* target) const;
 
-private:
-
+  private:
     /**
      * Defines a channel which holds the target, target property, curve values, and duration.
      *
@@ -125,20 +124,23 @@ private:
         friend class Animation;
         friend class AnimationTarget;
 
-    private:
-
-        Channel(Animation* animation, AnimationTarget* target, int propertyId, Curve* curve, unsigned long duration);
+      private:
+        Channel(Animation* animation,
+                AnimationTarget* target,
+                int propertyId,
+                Curve* curve,
+                unsigned long duration);
         Channel(const Channel& copy, Animation* animation, AnimationTarget* target);
         Channel(const Channel&); // Hidden copy constructor.
         ~Channel();
         Channel& operator=(const Channel&); // Hidden copy assignment operator.
         Curve* getCurve() const;
 
-        Animation* _animation;                // Reference to the animation this channel belongs to.
-        AnimationTarget* _target;             // The target of this channel.
-        int _propertyId;                      // The target property this channel targets.
-        Curve* _curve;                        // The curve used to represent the animation data.
-        unsigned long _duration;              // The length of the animation (in milliseconds).
+        Animation* _animation;    // Reference to the animation this channel belongs to.
+        AnimationTarget* _target; // The target of this channel.
+        int _propertyId;          // The target property this channel targets.
+        Curve* _curve;            // The curve used to represent the animation data.
+        unsigned long _duration;  // The length of the animation (in milliseconds).
     };
 
     /**
@@ -149,12 +151,26 @@ private:
     /**
      * Constructor.
      */
-    Animation(const std::string& id, AnimationTarget* target, int propertyId, unsigned int keyCount, unsigned int* keyTimes, float* keyValues, float* keyInValue, float* keyOutValue, unsigned int type);
+    Animation(const std::string& id,
+              AnimationTarget* target,
+              int propertyId,
+              unsigned int keyCount,
+              unsigned int* keyTimes,
+              float* keyValues,
+              float* keyInValue,
+              float* keyOutValue,
+              unsigned int type);
 
     /**
      * Constructor.
      */
-    Animation(const std::string& id, AnimationTarget* target, int propertyId, unsigned int keyCount, unsigned int* keyTimes, float* keyValues, unsigned int type);
+    Animation(const std::string& id,
+              AnimationTarget* target,
+              int propertyId,
+              unsigned int keyCount,
+              unsigned int* keyTimes,
+              float* keyValues,
+              unsigned int type);
 
     /**
      * Constructor.
@@ -194,12 +210,24 @@ private:
     /**
      * Creates a channel within this animation.
      */
-    Channel* createChannel(AnimationTarget* target, int propertyId, unsigned int keyCount, unsigned int* keyTimes, float* keyValues, unsigned int type);
+    Channel* createChannel(AnimationTarget* target,
+                           int propertyId,
+                           unsigned int keyCount,
+                           unsigned int* keyTimes,
+                           float* keyValues,
+                           unsigned int type);
 
     /**
      * Creates a channel within this animation.
      */
-    Channel* createChannel(AnimationTarget* target, int propertyId, unsigned int keyCount, unsigned int* keyTimes, float* keyValues, float* keyInValue, float* keyOutValue, unsigned int type);
+    Channel* createChannel(AnimationTarget* target,
+                           int propertyId,
+                           unsigned int keyCount,
+                           unsigned int* keyTimes,
+                           float* keyValues,
+                           float* keyInValue,
+                           float* keyOutValue,
+                           unsigned int type);
 
     /**
      * Adds a channel to the animation.
@@ -226,13 +254,12 @@ private:
      */
     Animation* clone(Channel* channel, AnimationTarget* target);
 
-    AnimationController* _controller;       // The AnimationController that this Animation will run on.
-    std::string _id;                        // The Animation's ID.
-    unsigned long _duration;                // the length of the animation (in milliseconds).
-    std::vector<Channel*> _channels;        // The channels within this Animation.
-    AnimationClip* _defaultClip;            // The Animation's default clip.
-    std::vector<AnimationClip*>* _clips;    // All the clips created from this Animation.
-
+    AnimationController* _controller;    // The AnimationController that this Animation will run on.
+    std::string _id;                     // The Animation's ID.
+    unsigned long _duration;             // the length of the animation (in milliseconds).
+    std::vector<Channel*> _channels;     // The channels within this Animation.
+    AnimationClip* _defaultClip;         // The Animation's default clip.
+    std::vector<AnimationClip*>* _clips; // All the clips created from this Animation.
 };
 
-}
+} // namespace tractor

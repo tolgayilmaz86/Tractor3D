@@ -1,27 +1,26 @@
 #pragma once
 
-#include "math/Vector2.h"
+#include "framework/FileSystem.h"
+#include "input/Gamepad.h"
+#include "input/Gesture.h"
 #include "input/Keyboard.h"
 #include "input/Mouse.h"
 #include "input/Touch.h"
-#include "input/Gesture.h"
-#include "input/Gamepad.h"
-#include "framework/FileSystem.h"
+#include "math/Vector2.h"
 
 namespace tractor
 {
 
-  class Game;
+class Game;
 
-  /**
-   * Defines a platform abstraction.
-   *
-   * This class has only a few public methods for creating a platform
-   */
-  class Platform
-  {
+/**
+ * Defines a platform abstraction.
+ *
+ * This class has only a few public methods for creating a platform
+ */
+class Platform
+{
   public:
-
     friend class Game;
     friend class Gamepad;
     friend class ScreenDisplayer;
@@ -61,7 +60,6 @@ namespace tractor
     static void swapBuffers();
 
   private:
-
     /**
      * This method informs the platform that the game is shutting down
      * and anything platform specific should be shutdown as well or halted
@@ -228,7 +226,12 @@ namespace tractor
      * @param gyroY The y-coordinate of the raw gyroscope data.
      * @param gyroZ The z-coordinate of the raw gyroscope data.
      */
-    static void getSensorValues(float* accelX, float* accelY, float* accelZ, float* gyroX, float* gyroY, float* gyroZ);
+    static void getSensorValues(float* accelX,
+                                float* accelY,
+                                float* accelZ,
+                                float* gyroX,
+                                float* gyroY,
+                                float* gyroZ);
 
     /**
      * Gets the command line arguments.
@@ -293,13 +296,16 @@ namespace tractor
     Platform(const Platform& copy);
 
   public:
-
     /**
      * Internal method used only from static code in various platform implementation.
      *
      * @script{ignore}
      */
-    static void touchEventInternal(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex, bool actuallyMouse = false);
+    static void touchEventInternal(Touch::TouchEvent evt,
+                                   int x,
+                                   int y,
+                                   unsigned int contactIndex,
+                                   bool actuallyMouse = false);
 
     /**
      * Internal method used only from static code in various platform implementation.
@@ -309,10 +315,10 @@ namespace tractor
     static void keyEventInternal(Keyboard::KeyEvent evt, int key);
 
     /**
-      * Internal method used only from static code in various platform implementation.
-      *
-      * @script{ignore}
-      */
+     * Internal method used only from static code in various platform implementation.
+     *
+     * @script{ignore}
+     */
     static bool mouseEventInternal(Mouse::MouseEvent evt, int x, int y, int wheelDelta);
 
     /**
@@ -369,7 +375,11 @@ namespace tractor
      *
      * @script{ignore}
      */
-    static void gamepadEventConnectedInternal(GamepadHandle handle, unsigned int buttonCount, unsigned int joystickCount, unsigned int triggerCount, const char* name);
+    static void gamepadEventConnectedInternal(GamepadHandle handle,
+                                              unsigned int buttonCount,
+                                              unsigned int joystickCount,
+                                              unsigned int triggerCount,
+                                              const char* name);
 
     /**
      * Internal method used only from static code in various platform implementation.
@@ -383,28 +393,35 @@ namespace tractor
      *
      * @script{ignore}
      */
-    static void gamepadButtonPressedEventInternal(GamepadHandle handle, Gamepad::ButtonMapping mapping);
+    static void gamepadButtonPressedEventInternal(GamepadHandle handle,
+                                                  Gamepad::ButtonMapping mapping);
 
     /**
      * Internal method used only from static code in various platform implementation.
      *
      * @script{ignore}
      */
-    static void gamepadButtonReleasedEventInternal(GamepadHandle handle, Gamepad::ButtonMapping button);
+    static void gamepadButtonReleasedEventInternal(GamepadHandle handle,
+                                                   Gamepad::ButtonMapping button);
 
     /**
      * Internal method used only from static code in various platform implementation.
      *
      * @script{ignore}
      */
-    static void gamepadTriggerChangedEventInternal(GamepadHandle handle, unsigned int index, float value);
+    static void gamepadTriggerChangedEventInternal(GamepadHandle handle,
+                                                   unsigned int index,
+                                                   float value);
 
     /**
      * Internal method used only from static code in various platform implementation.
      *
      * @script{ignore}
      */
-    static void gamepadJoystickChangedEventInternal(GamepadHandle handle, unsigned int index, float x, float y);
+    static void gamepadJoystickChangedEventInternal(GamepadHandle handle,
+                                                    unsigned int index,
+                                                    float x,
+                                                    float y);
 
     /**
      * Internal method used to poll the platform for the updated Gamepad
@@ -424,12 +441,17 @@ namespace tractor
      * @param title The title of the dialog. (Ex. Select File or Save File)
      * @param filterDescription The file filter description. (Ex. Image Files)
      * @param filterExtensions The semi-colon delimited list of filtered file extensions. (Ex. png;jpg;bmp)
-     * @param initialDirectory The initial directory to open or save files from. (Ex. "res") If nullptr this will use the executable directory.
+     * @param initialDirectory The initial directory to open or save files from. (Ex. "res") If nullptr
+     * this will use the executable directory.
      * @return The file that is opened or saved, or an empty string if canceled.
      *
      * @script{ignore}
      */
-    static std::string displayFileDialog(size_t mode, const std::string& title, const std::string& filterDescription, const std::string& filterExtensions, const std::string& initialDirectory);
+    static std::string displayFileDialog(size_t mode,
+                                         const std::string& title,
+                                         const std::string& filterDescription,
+                                         const std::string& filterExtensions,
+                                         const std::string& initialDirectory);
 
     /**
      * Internal method used only from static code in various platform implementation.
@@ -439,10 +461,9 @@ namespace tractor
     static void shutdownInternal();
 
   private:
+    Game* _game; // The game this platform is interfacing with.
+};
 
-    Game* _game;                // The game this platform is interfacing with.
-  };
-
-}
+} // namespace tractor
 
 #include "framework/Game.h"

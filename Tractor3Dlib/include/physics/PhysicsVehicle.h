@@ -6,24 +6,23 @@
 namespace tractor
 {
 
-  class PhysicsVehicleWheel;
+class PhysicsVehicleWheel;
 
-  /**
-   * Defines a class for vehicle physics.
-   *
-   * In addition to its own properties defined below, a vehicle has available
-   * to it all of the properties of a rigid body such as shape, mass, friction,
-   * etc which correspond to the vehicle body:
-   *
-   * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-Collision_Objects
-   */
-  class PhysicsVehicle : public PhysicsCollisionObject
-  {
+/**
+ * Defines a class for vehicle physics.
+ *
+ * In addition to its own properties defined below, a vehicle has available
+ * to it all of the properties of a rigid body such as shape, mass, friction,
+ * etc which correspond to the vehicle body:
+ *
+ * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-Collision_Objects
+ */
+class PhysicsVehicle : public PhysicsCollisionObject
+{
     friend class Node;
     friend class PhysicsVehicleWheel;
 
   public:
-
     /**
      * @see PhysicsCollisionObject#getType
      */
@@ -279,14 +278,12 @@ namespace tractor
     void setDownforce(float downforce);
 
   protected:
-
     /**
      * @see PhysicsCollisionObject::getCollisionObject
      */
     btCollisionObject* getCollisionObject() const;
 
   private:
-
     /**
      * Creates a vehicle based on the specified rigid body parameters and some 'safe' defaults.
      *
@@ -295,7 +292,9 @@ namespace tractor
      * @param shape The rigid body shape construction information.
      * @param parameters The rigid body construction parameters.
      */
-    PhysicsVehicle(Node* node, const PhysicsCollisionShape::Definition& shape, const PhysicsRigidBody::Parameters& parameters);
+    PhysicsVehicle(Node* node,
+                   const PhysicsCollisionShape::Definition& shape,
+                   const PhysicsRigidBody::Parameters& parameters);
 
     /**
      * Creates a vehicle based on the given rigid body and some 'safe' defaults.
@@ -384,6 +383,6 @@ namespace tractor
     btVehicleRaycaster* _vehicleRaycaster;
     btRaycastVehicle* _vehicle;
     std::vector<PhysicsVehicleWheel*> _wheels;
-  };
+};
 
-}
+} // namespace tractor

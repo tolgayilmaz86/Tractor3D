@@ -9,127 +9,124 @@ using namespace tractor;
  */
 class RacerGame : public Game, Control::Listener
 {
-public:
+  public:
+    /**
+     * Constructor.
+     */
+    RacerGame();
 
-  /**
-   * Constructor.
-   */
-  RacerGame();
+    /**
+     * @see Game::keyEvent
+     */
+    void keyEvent(Keyboard::KeyEvent evt, int key);
 
-  /**
-   * @see Game::keyEvent
-   */
-  void keyEvent(Keyboard::KeyEvent evt, int key);
+    /**
+     * @see Game::touchEvent
+     */
+    void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
 
-  /**
-   * @see Game::touchEvent
-   */
-  void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
+    /**
+     * @see Game::mouseEvent
+     */
+    bool mouseEvent(Mouse::MouseEvent evt, int x, int y, int wheelDelta);
 
-  /**
-   * @see Game::mouseEvent
-   */
-  bool mouseEvent(Mouse::MouseEvent evt, int x, int y, int wheelDelta);
+    /**
+     * @see Game::gamepadEvent
+     */
+    void gamepadEvent(Gamepad::GamepadEvent evt, Gamepad* gamepad);
 
-  /**
-   * @see Game::gamepadEvent
-   */
-  void gamepadEvent(Gamepad::GamepadEvent evt, Gamepad* gamepad);
+    /**
+     * @see Game::menuEvent
+     */
+    void menuEvent();
 
-  /**
-   * @see Game::menuEvent
-   */
-  void menuEvent();
+    /**
+     * @see Control::controlEvent
+     */
+    void controlEvent(Control* control, EventType evt);
 
-  /**
-   * @see Control::controlEvent
-   */
-  void controlEvent(Control* control, EventType evt);
+  protected:
+    /**
+     * @see Game::initialize
+     */
+    void initialize();
 
-protected:
+    /**
+     * @see Game::finalize
+     */
+    void finalize();
 
-  /**
-   * @see Game::initialize
-   */
-  void initialize();
+    /**
+     * @see Game::update
+     */
+    void update(float elapsedTime);
 
-  /**
-   * @see Game::finalize
-   */
-  void finalize();
+    /**
+     * @see Game::render
+     */
+    void render(float elapsedTime);
 
-  /**
-   * @see Game::update
-   */
-  void update(float elapsedTime);
+  private:
+    /**
+     * Initializes the scene.
+     */
+    bool initializeScene(Node* node);
 
-  /**
-   * @see Game::render
-   */
-  void render(float elapsedTime);
+    /**
+     * Visits the scene to build render queues for a single frame.
+     */
+    bool buildRenderQueues(Node* node);
 
-private:
+    /**
+     * Draws the scene.
+     */
+    void drawScene();
 
-  /**
-   * Initializes the scene.
-   */
-  bool initializeScene(Node* node);
+    /**
+     * Draws the splash screen.
+     */
+    void drawSplash(void* param);
 
-  /**
-   * Visits the scene to build render queues for a single frame.
-   */
-  bool buildRenderQueues(Node* node);
+    /**
+     * Reset vehicle to its initial state.
+     */
+    void resetToStart();
 
-  /**
-   * Draws the scene.
-   */
-  void drawScene();
+    /**
+     * Upright vehicle at its current location.
+     */
+    void resetInPlace();
 
-  /**
-   * Draws the splash screen.
-   */
-  void drawSplash(void* param);
+    /**
+     * Generic helper function for resets.
+     *
+     * @param pos desired position.
+     * @param rot desired rotation.
+     */
+    void reset(const Vector3& pos, const Quaternion& rot);
 
-  /**
-   * Reset vehicle to its initial state.
-   */
-  void resetToStart();
+    /**
+     * Indicates that the vehicle may be over-turned.
+     */
+    bool isUpset() const;
 
-  /**
-   * Upright vehicle at its current location.
-   */
-  void resetInPlace();
+    Scene* _scene;
+    Font* _font;
+    Form* _menu;
+    Form* _overlay;
+    std::vector<Node*> _renderQueues[2];
+    unsigned int _keyFlags;
+    unsigned int _mouseFlags;
+    float _steering;
+    Gamepad* _gamepad;
+    Gamepad* _physicalGamepad;
+    Gamepad* _virtualGamepad;
+    AnimationClip* _virtualGamepadClip;
+    PhysicsVehicle* _carVehicle;
+    float _upsetTimer;
 
-  /**
-   * Generic helper function for resets.
-   *
-   * @param pos desired position.
-   * @param rot desired rotation.
-   */
-  void reset(const Vector3& pos, const Quaternion& rot);
-
-  /**
-   * Indicates that the vehicle may be over-turned.
-   */
-  bool isUpset() const;
-
-  Scene* _scene;
-  Font* _font;
-  Form* _menu;
-  Form* _overlay;
-  std::vector<Node*> _renderQueues[2];
-  unsigned int _keyFlags;
-  unsigned int _mouseFlags;
-  float _steering;
-  Gamepad* _gamepad;
-  Gamepad* _physicalGamepad;
-  Gamepad* _virtualGamepad;
-  AnimationClip* _virtualGamepadClip;
-  PhysicsVehicle* _carVehicle;
-  float _upsetTimer;
-
-  // Music and Sounds
-  AudioSource* _backgroundMusic;
-  AudioSource* _engineSound;
-  AudioSource* _brakingSound;
+    // Music and Sounds
+    AudioSource* _backgroundMusic;
+    AudioSource* _engineSound;
+    AudioSource* _brakingSound;
 };

@@ -1,9 +1,11 @@
 #pragma once
 
-#include "tractor.h"
-#include "Sample.h"
-#include "renderer/Material.h"
+#include "SamplesGame.h"
+
 #include "graphics/Model.h"
+#include "renderer/Material.h"
+#include "Sample.h"
+#include "tractor.h"
 
 using namespace tractor;
 
@@ -12,79 +14,76 @@ using namespace tractor;
  */
 class LightSample : public Sample, Control::Listener
 {
-public:
+  public:
+    LightSample();
 
-  LightSample();
+    void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
 
-  void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
+    bool mouseEvent(Mouse::MouseEvent evt, int x, int y, int wheelDelta);
 
-  bool mouseEvent(Mouse::MouseEvent evt, int x, int y, int wheelDelta);
+    void keyEvent(Keyboard::KeyEvent evt, int key);
 
-  void keyEvent(Keyboard::KeyEvent evt, int key);
+    void controlEvent(Control* control, EventType evt);
 
-  void controlEvent(Control* control, EventType evt);
+  protected:
+    void initialize();
 
-protected:
+    void finalize();
 
-  void initialize();
+    void update(float elapsedTime);
 
-  void finalize();
+    void render(float elapsedTime);
 
-  void update(float elapsedTime);
+  private:
+    void initializeDirectionalTechnique(const std::string& technique);
 
-  void render(float elapsedTime);
+    void initializeSpotTechnique(const std::string& technique);
 
-private:
+    void initializePointTechnique(const std::string& technique);
 
-  void initializeDirectionalTechnique(const std::string& technique);
+    void setUnlitMaterialTexture(Model* model, const std::string& texturePath, bool mipmap = true);
 
-  void initializeSpotTechnique(const std::string& technique);
+    void setColorValue(const Vector3& value);
 
-  void initializePointTechnique(const std::string& technique);
+    void setSpecularValue(float);
 
-  void setUnlitMaterialTexture(Model* model, const std::string& texturePath, bool mipmap = true);
+    bool drawScene(Node* node);
 
-  void setColorValue(const Vector3& value);
+    Font* _font;
+    Scene* _scene;
+    Node* _modelNode;
+    Node* _directionalLightNode;
+    Node* _pointLightNode;
+    Node* _spotLightNode;
+    Node* _usedForMoving;
 
-  void setSpecularValue(float);
+    Model* _model;
+    Model* _directionalLightQuadModel;
+    Model* _spotLightQuadModel;
+    Model* _pointLightQuadModel;
 
-  bool drawScene(Node* node);
+    Material* _unlitMaterial;
+    Material* _texturedMaterial;
+    Material* _bumpedMaterial;
+    Material* _bumpedSpecularMaterial;
 
-  Font* _font;
-  Scene* _scene;
-  Node* _modelNode;
-  Node* _directionalLightNode;
-  Node* _pointLightNode;
-  Node* _spotLightNode;
-  Node* _usedForMoving;
+    Material* _lighting;
 
-  Model* _model;
-  Model* _directionalLightQuadModel;
-  Model* _spotLightQuadModel;
-  Model* _pointLightQuadModel;
+    RadioButton* _noLight;
+    RadioButton* _directional;
+    RadioButton* _spot;
+    RadioButton* _point;
 
-  Material* _unlitMaterial;
-  Material* _texturedMaterial;
-  Material* _bumpedMaterial;
-  Material* _bumpedSpecularMaterial;
+    Container* _properties;
+    Slider* _redSlider;
+    Slider* _greenSlider;
+    Slider* _blueSlider;
+    Slider* _specularSlider;
+    CheckBox* _addSpecular;
+    CheckBox* _addBumped;
 
-  Material* _lighting;
+    Form* _form;
 
-  RadioButton* _noLight;
-  RadioButton* _directional;
-  RadioButton* _spot;
-  RadioButton* _point;
-
-  Container* _properties;
-  Slider* _redSlider;
-  Slider* _greenSlider;
-  Slider* _blueSlider;
-  Slider* _specularSlider;
-  CheckBox* _addSpecular;
-  CheckBox* _addBumped;
-
-  Form* _form;
-
-  bool _touched;
-  int _touchX, _touchY;
+    bool _touched;
+    int _touchX, _touchY;
 };

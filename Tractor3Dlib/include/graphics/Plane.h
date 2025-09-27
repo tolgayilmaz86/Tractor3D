@@ -5,21 +5,20 @@
 namespace tractor
 {
 
-  class BoundingSphere;
-  class BoundingBox;
-  class Frustum;
-  class Ray;
+class BoundingSphere;
+class BoundingBox;
+class Frustum;
+class Ray;
 
-  /**
-   * Defines a plane which is a flat surface with 2 sides.
-   *
-   * The plane is represented as a plane using a 3D vector normal and a
-   * distance value (stored as a negative value).
-   */
-  class Plane
-  {
+/**
+ * Defines a plane which is a flat surface with 2 sides.
+ *
+ * The plane is represented as a plane using a 3D vector normal and a
+ * distance value (stored as a negative value).
+ */
+class Plane
+{
   public:
-
     /**
      * Represents when a 3D entity intersects a plane.
      */
@@ -221,25 +220,24 @@ namespace tractor
     inline Plane& operator*=(const Matrix& matrix);
 
   private:
-
     /**
      * Normalizes this plane.
      */
     void normalize();
 
-    Vector3 _normal;    // The normal vector of the Plane.
-    float _distance;    // The distance of the Plane along its normal from the origin.
-  };
+    Vector3 _normal; // The normal vector of the Plane.
+    float _distance; // The distance of the Plane along its normal from the origin.
+};
 
-  /**
-   * Transforms the given plane by the given matrix.
-   *
-   * @param matrix The matrix to transform by.
-   * @param plane The plane to transform.
-   * @return The resulting transformed plane.
-   */
-  inline const Plane operator*(const Matrix& matrix, const Plane& plane);
+/**
+ * Transforms the given plane by the given matrix.
+ *
+ * @param matrix The matrix to transform by.
+ * @param plane The plane to transform.
+ * @return The resulting transformed plane.
+ */
+inline const Plane operator*(const Matrix& matrix, const Plane& plane);
 
-}
+} // namespace tractor
 
 #include "graphics/Plane.inl"

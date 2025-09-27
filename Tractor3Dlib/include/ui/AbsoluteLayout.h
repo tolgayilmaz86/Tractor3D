@@ -5,17 +5,16 @@
 namespace tractor
 {
 
-  /**
-   * Defines a Layout for forms and containers that requires the user
-   * to specify absolute positions for all contained controls.
-   */
-  class AbsoluteLayout : public Layout
-  {
+/**
+ * Defines a Layout for forms and containers that requires the user
+ * to specify absolute positions for all contained controls.
+ */
+class AbsoluteLayout : public Layout
+{
     friend class Form;
     friend class Container;
 
   public:
-
     /**
      * Get the type of this Layout.
      *
@@ -24,7 +23,6 @@ namespace tractor
     Layout::Type getType();
 
   protected:
-
     /**
      * Update the controls contained by the specified container.
      *
@@ -36,7 +34,6 @@ namespace tractor
     void update(const Container* container);
 
   private:
-
     /*
      * Constructor.
      */
@@ -58,7 +55,6 @@ namespace tractor
      * @return An AbsoluteLayout object.
      */
     static AbsoluteLayout* create();
+};
 
-  };
-
-}
+} // namespace tractor

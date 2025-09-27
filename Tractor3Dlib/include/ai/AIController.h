@@ -6,99 +6,96 @@
 namespace tractor
 {
 
-	/**
-	 * Defines and facilitates the state machine execution and message passing
-	 * between AI objects in the game. This class is generally not interfaced
-	 * with directly.
-	 */
-	class AIController
-	{
-		friend class Game;
-		friend class Node;
+/**
+ * Defines and facilitates the state machine execution and message passing
+ * between AI objects in the game. This class is generally not interfaced
+ * with directly.
+ */
+class AIController
+{
+    friend class Game;
+    friend class Node;
 
-	public:
+  public:
+    /**
+     * Routes the specified message to its intended recipient(s).
+     *
+     * Messages are arbitrary packets of data that are sent either to a single or to multiple
+     * recipients in the game.
+     *
+     * Once the specified message has been delivered, it is automatically destroyed by the
+     * AIController. For this reason, AIMessage pointers should NOT be held or explicitly destroyed
+     * by any code after they are sent through the AIController.
+     *
+     * @param message The message to send.
+     * @param delay The delay (in milliseconds) to wait before sending the message.
+     */
+    void sendMessage(AIMessage* message, float delay = 0);
 
-		/**
-		 * Routes the specified message to its intended recipient(s).
-		 *
-		 * Messages are arbitrary packets of data that are sent either to a single or to multiple
-		 * recipients in the game.
-		 *
-		 * Once the specified message has been delivered, it is automatically destroyed by the AIController.
-		 * For this reason, AIMessage pointers should NOT be held or explicitly destroyed by any code after
-		 * they are sent through the AIController.
-		 *
-		 * @param message The message to send.
-		 * @param delay The delay (in milliseconds) to wait before sending the message.
-		 */
-		void sendMessage(AIMessage* message, float delay = 0);
+    /**
+     * Searches for an AIAgent that is registered with the AIController with the specified ID.
+     *
+     * @param id ID of the agent to find.
+     *
+     * @return The first agent matching the specified ID, or nullptr if no matching agent could be found.
+     */
+    AIAgent* findAgent(const std::string& id) const;
 
-		/**
-		 * Searches for an AIAgent that is registered with the AIController with the specified ID.
-		 *
-		 * @param id ID of the agent to find.
-		 *
-		 * @return The first agent matching the specified ID, or nullptr if no matching agent could be found.
-		 */
-		AIAgent* findAgent(const std::string& id) const;
+    /**
+     * Constructor.
+     */
+    AIController();
 
-		/**
-		 * Constructor.
-		 */
-		AIController();
+    /**
+     * Destructor.
+     */
+    ~AIController() = default;
 
-		/**
-		 * Destructor.
-		 */
-		~AIController() = default;
+  private:
+    /**
+     * Hidden copy constructor.
+     */
+    AIController(const AIController&);
 
-	private:
+    /**
+     * Hidden copy assignment operator.
+     */
+    AIController& operator=(const AIController&);
 
-		/**
-		 * Hidden copy constructor.
-		 */
-		AIController(const AIController&);
+    /**
+     * Called during startup to initialize the AIController.
+     */
+    void initialize();
 
-		/**
-		 * Hidden copy assignment operator.
-		 */
-		AIController& operator=(const AIController&);
+    /**
+     * Called during shutdown to finalize the AIController.
+     */
+    void finalize();
 
-		/**
-		 * Called during startup to initialize the AIController.
-		 */
-		void initialize();
+    /**
+     * Pauses the AIController.
+     */
+    void pause();
 
-		/**
-		 * Called during shutdown to finalize the AIController.
-		 */
-		void finalize();
+    /**
+     * Resumes the AIController.
+     */
+    void resume();
 
-		/**
-		 * Pauses the AIController.
-		 */
-		void pause();
+    /**
+     * Called each frame to update the AIController.
+     *
+     * @param elapsedTime The elapsed time, in milliseconds.
+     */
+    void update(float elapsedTime);
 
-		/**
-		 * Resumes the AIController.
-		 */
-		void resume();
+    void addAgent(AIAgent* agent);
 
-		/**
-		 * Called each frame to update the AIController.
-		 *
-		 * @param elapsedTime The elapsed time, in milliseconds.
-		 */
-		void update(float elapsedTime);
+    void removeAgent(AIAgent* agent);
 
-		void addAgent(AIAgent* agent);
+    bool _paused;
+    AIMessage* _firstMessage;
+    AIAgent* _firstAgent;
+};
 
-		void removeAgent(AIAgent* agent);
-
-		bool _paused;
-		AIMessage* _firstMessage;
-		AIAgent* _firstAgent;
-
-	};
-
-}
+} // namespace tractor

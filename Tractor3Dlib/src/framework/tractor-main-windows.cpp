@@ -12,10 +12,10 @@ using namespace tractor;
  */
 extern "C" int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR cmdLine, int cmdShow)
 {
-	Game* game = Game::getInstance();
-	Platform* platform = Platform::create(game);
-	assert(platform);
-	int result = platform->enterMessagePump();
-	delete platform;
-	return result;
+    Game* game = Game::getInstance();
+    Platform* platform = Platform::create(game);
+    assert(platform);
+    int result = platform->enterMessagePump();
+    delete platform;
+    return result;
 }

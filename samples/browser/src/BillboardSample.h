@@ -1,8 +1,8 @@
 #pragma once
 
-#include "tractor.h"
-#include "Sample.h"
 #include "FirstPersonCamera.h"
+#include "Sample.h"
+#include "tractor.h"
 
 using namespace tractor;
 
@@ -11,46 +11,42 @@ using namespace tractor;
  */
 class BillboardSample : public Sample
 {
-public:
+  public:
+    BillboardSample();
 
-  BillboardSample();
+    void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
 
-  void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
+    void keyEvent(Keyboard::KeyEvent evt, int key);
 
-  void keyEvent(Keyboard::KeyEvent evt, int key);
+    bool mouseEvent(Mouse::MouseEvent evt, int x, int y, int wheelDelta);
 
-  bool mouseEvent(Mouse::MouseEvent evt, int x, int y, int wheelDelta);
+    void gamepadEvent(Gamepad::GamepadEvent evt, Gamepad* gamepad);
 
-  void gamepadEvent(Gamepad::GamepadEvent evt, Gamepad* gamepad);
+  protected:
+    void initialize();
 
-protected:
+    void finalize();
 
-  void initialize();
+    void update(float elapsedTime);
 
-  void finalize();
+    void render(float elapsedTime);
 
-  void update(float elapsedTime);
+  private:
+    void loadGround();
 
-  void render(float elapsedTime);
+    void loadBillboards();
 
-private:
+    bool drawScene(Node* node);
 
-  void loadGround();
-
-  void loadBillboards();
-
-  bool drawScene(Node* node);
-
-private:
-
-  FirstPersonCamera _camera;
-  std::vector<Node*> _billboards;
-  Font* _font;
-  Scene* _scene;
-  Model* _ground;
-  Gamepad* _gamepad;
-  unsigned int _moveFlags;
-  int _prevX;
-  int _prevY;
-  bool _buttonPressed;
+  private:
+    FirstPersonCamera _camera;
+    std::vector<Node*> _billboards;
+    Font* _font;
+    Scene* _scene;
+    Model* _ground;
+    Gamepad* _gamepad;
+    unsigned int _moveFlags;
+    int _prevX;
+    int _prevY;
+    bool _buttonPressed;
 };

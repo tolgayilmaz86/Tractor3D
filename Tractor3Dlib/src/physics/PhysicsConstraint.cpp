@@ -1,33 +1,33 @@
 #include "pch.h"
+
 #include "physics/PhysicsConstraint.h"
+
 #include "framework/Game.h"
-#include "scene/Node.h"
 #include "physics/PhysicsRigidBody.h"
+#include "scene/Node.h"
 
 namespace tractor
 {
 
-  PhysicsConstraint::PhysicsConstraint(PhysicsRigidBody* a, PhysicsRigidBody* b)
+PhysicsConstraint::PhysicsConstraint(PhysicsRigidBody* a, PhysicsRigidBody* b)
     : _a(a), _b(b), _constraint(nullptr)
-  {
-  }
+{
+}
 
-  PhysicsConstraint::~PhysicsConstraint()
-  {
+PhysicsConstraint::~PhysicsConstraint()
+{
     // Remove the physics rigid bodies' references to this constraint.
-    if (_a)
-      _a->removeConstraint(this);
-    if (_b)
-      _b->removeConstraint(this);
+    if (_a) _a->removeConstraint(this);
+    if (_b) _b->removeConstraint(this);
 
     // Remove the constraint from the physics world and delete the Bullet object.
     assert(Game::getInstance()->getPhysicsController());
     Game::getInstance()->getPhysicsController()->removeConstraint(this);
     SAFE_DELETE(_constraint);
-  }
+}
 
-  Vector3 PhysicsConstraint::centerOfMassMidpoint(const Node* a, const Node* b)
-  {
+Vector3 PhysicsConstraint::centerOfMassMidpoint(const Node* a, const Node* b)
+{
     assert(a);
     assert(b);
 
@@ -44,17 +44,17 @@ namespace tractor
     c.add(d);
 
     return c;
-  }
+}
 
-  Quaternion PhysicsConstraint::getRotationOffset(const Node* node, const Vector3& point)
-  {
+Quaternion PhysicsConstraint::getRotationOffset(const Node* node, const Vector3& point)
+{
     assert(node);
 
     // Create a translation matrix that translates to the given origin.
     Matrix m = Matrix::createTranslation(point);
 
-    // Calculate the rotation offset to the rigid body by transforming 
-    // the translation matrix above into the rigid body's local space 
+    // Calculate the rotation offset to the rigid body by transforming
+    // the translation matrix above into the rigid body's local space
     // (multiply by the inverse world matrix) and extracting the rotation.
     Matrix mi;
     node->getWorldMatrix().invert(&mi);
@@ -64,17 +64,17 @@ namespace tractor
     mi.getRotation(&r);
 
     return r;
-  }
+}
 
-  Vector3 PhysicsConstraint::getTranslationOffset(const Node* node, const Vector3& point)
-  {
+Vector3 PhysicsConstraint::getTranslationOffset(const Node* node, const Vector3& point)
+{
     assert(node);
 
     // Create a translation matrix that translates to the given origin.
     Matrix m = Matrix::createTranslation(point);
 
-    // Calculate the translation offset to the rigid body by transforming 
-    // the translation matrix above into the rigid body's local space 
+    // Calculate the translation offset to the rigid body by transforming
+    // the translation matrix above into the rigid body's local space
     // (multiply by the inverse world matrix) and extracting the translation.
     Matrix mi;
     node->getWorldMatrix().invert(&mi);
@@ -93,10 +93,10 @@ namespace tractor
     t = offsetByCenterOfMass(node, t);
 
     return t;
-  }
+}
 
-  btTransform PhysicsConstraint::getTransformOffset(const Node* node, const Vector3& origin)
-  {
+btTransform PhysicsConstraint::getTransformOffset(const Node* node, const Vector3& origin)
+{
     assert(node);
 
     // Create a translation matrix that translates to the given origin.
@@ -125,32 +125,37 @@ namespace tractor
     t = offsetByCenterOfMass(node, t);
 
     return btTransform(BQ(r), BV(t));
-  }
+}
 
-  Vector3 PhysicsConstraint::getWorldCenterOfMass(const Node* node)
-  {
+Vector3 PhysicsConstraint::getWorldCenterOfMass(const Node* node)
+{
     assert(node);
 
     const BoundingSphere& sphere = node->getBoundingSphere();
     if (!(sphere.center.isZero() && sphere.radius == 0))
     {
-      // The world-space center of mass is the sphere's center.
-      return sphere.center;
+        // The world-space center of mass is the sphere's center.
+        return sphere.center;
     }
 
     // Warn the user that the node has no bounding volume.
-    GP_WARN("Node %s' has no bounding volume - center of mass is defaulting to local coordinate origin.", node->getId());
+    GP_WARN("Node %s' has no bounding volume - center of mass is defaulting to local coordinate "
+            "origin.",
+            node->getId());
 
     Vector3 center;
     node->getWorldMatrix().transformPoint(&center);
     return center;
-  }
-
-  Vector3 PhysicsConstraint::offsetByCenterOfMass(const Node* node, const Vector3& v)
-  {
-    assert(node && node->getCollisionObject() && node->getCollisionObject()->_motionState);
-    btVector3 centerOfMassOffset = node->getCollisionObject()->_motionState->_centerOfMassOffset.getOrigin();
-    return Vector3(v.x + centerOfMassOffset.x(), v.y + centerOfMassOffset.y(), v.z + centerOfMassOffset.z());
-  }
-
 }
+
+Vector3 PhysicsConstraint::offsetByCenterOfMass(const Node* node, const Vector3& v)
+{
+    assert(node && node->getCollisionObject() && node->getCollisionObject()->_motionState);
+    btVector3 centerOfMassOffset =
+        node->getCollisionObject()->_motionState->_centerOfMassOffset.getOrigin();
+    return Vector3(v.x + centerOfMassOffset.x(),
+                   v.y + centerOfMassOffset.y(),
+                   v.z + centerOfMassOffset.z());
+}
+
+} // namespace tractor

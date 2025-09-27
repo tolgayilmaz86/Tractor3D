@@ -1,36 +1,35 @@
 #pragma once
 
-#include "utils/Ref.h"
-#include "graphics/Drawable.h"
 #include "animation/AnimationTarget.h"
-#include "scene/Properties.h"
-#include "graphics/Rectangle.h"
-#include "math/Vector4.h"
-#include "graphics/SpriteBatch.h"
+#include "graphics/Drawable.h"
 #include "graphics/Effect.h"
+#include "graphics/Rectangle.h"
+#include "graphics/SpriteBatch.h"
+#include "math/Vector4.h"
+#include "scene/Properties.h"
+#include "utils/Ref.h"
 
 namespace tractor
 {
 
-  /**
-   * Defines a sprite for rendering a 2D region.
-   *
-   * A sprite has alignment for controlling the local offset bounds.
-   * A sprite has an anchor for controlling the origin for rotation and physics.
-   *
-   * You can add transformation and hierarchial by attaching sprites to Nodes within a Scene.
-   *
-   * The active camera in a scene effects the rendering location in the viewport for each sprite.
-   *
-   * Sprites can be animated using the animation system.
-   * Sprites can have physics applied to them via their node binding.
-   */
-  class Sprite : public Ref, public Drawable, public AnimationTarget
-  {
+/**
+ * Defines a sprite for rendering a 2D region.
+ *
+ * A sprite has alignment for controlling the local offset bounds.
+ * A sprite has an anchor for controlling the origin for rotation and physics.
+ *
+ * You can add transformation and hierarchial by attaching sprites to Nodes within a Scene.
+ *
+ * The active camera in a scene effects the rendering location in the viewport for each sprite.
+ *
+ * Sprites can be animated using the animation system.
+ * Sprites can have physics applied to them via their node binding.
+ */
+class Sprite : public Ref, public Drawable, public AnimationTarget
+{
     friend class Node;
 
   public:
-
     /**
      * Opacity property. Data=opacity
      */
@@ -51,22 +50,22 @@ namespace tractor
      */
     enum Offset
     {
-      OFFSET_LEFT = 0x01,
-      OFFSET_HCENTER = 0x02,
-      OFFSET_RIGHT = 0x04,
-      OFFSET_TOP = 0x10,
-      OFFSET_VCENTER = 0x20,
-      OFFSET_BOTTOM = 0x40,
-      OFFSET_ANCHOR = 0x80,
-      OFFSET_TOP_LEFT = OFFSET_TOP | OFFSET_LEFT,
-      OFFSET_VCENTER_LEFT = OFFSET_VCENTER | OFFSET_LEFT,
-      OFFSET_BOTTOM_LEFT = OFFSET_BOTTOM | OFFSET_LEFT,
-      OFFSET_TOP_HCENTER = OFFSET_TOP | OFFSET_HCENTER,
-      OFFSET_VCENTER_HCENTER = OFFSET_VCENTER | OFFSET_HCENTER,
-      OFFSET_BOTTOM_HCENTER = OFFSET_BOTTOM | OFFSET_HCENTER,
-      OFFSET_TOP_RIGHT = OFFSET_TOP | OFFSET_RIGHT,
-      OFFSET_VCENTER_RIGHT = OFFSET_VCENTER | OFFSET_RIGHT,
-      OFFSET_BOTTOM_RIGHT = OFFSET_BOTTOM | OFFSET_RIGHT
+        OFFSET_LEFT = 0x01,
+        OFFSET_HCENTER = 0x02,
+        OFFSET_RIGHT = 0x04,
+        OFFSET_TOP = 0x10,
+        OFFSET_VCENTER = 0x20,
+        OFFSET_BOTTOM = 0x40,
+        OFFSET_ANCHOR = 0x80,
+        OFFSET_TOP_LEFT = OFFSET_TOP | OFFSET_LEFT,
+        OFFSET_VCENTER_LEFT = OFFSET_VCENTER | OFFSET_LEFT,
+        OFFSET_BOTTOM_LEFT = OFFSET_BOTTOM | OFFSET_LEFT,
+        OFFSET_TOP_HCENTER = OFFSET_TOP | OFFSET_HCENTER,
+        OFFSET_VCENTER_HCENTER = OFFSET_VCENTER | OFFSET_HCENTER,
+        OFFSET_BOTTOM_HCENTER = OFFSET_BOTTOM | OFFSET_HCENTER,
+        OFFSET_TOP_RIGHT = OFFSET_TOP | OFFSET_RIGHT,
+        OFFSET_VCENTER_RIGHT = OFFSET_VCENTER | OFFSET_RIGHT,
+        OFFSET_BOTTOM_RIGHT = OFFSET_BOTTOM | OFFSET_RIGHT
     };
 
     /**
@@ -74,9 +73,9 @@ namespace tractor
      */
     enum FlipFlags
     {
-      FLIP_NONE,
-      FLIP_VERTICAL,
-      FLIP_HORIZONTAL
+        FLIP_NONE,
+        FLIP_VERTICAL,
+        FLIP_HORIZONTAL
     };
 
     /**
@@ -84,10 +83,10 @@ namespace tractor
      */
     enum BlendMode
     {
-      BLEND_NONE,
-      BLEND_ALPHA,
-      BLEND_ADDITIVE,
-      BLEND_MULTIPLIED
+        BLEND_NONE,
+        BLEND_ALPHA,
+        BLEND_ADDITIVE,
+        BLEND_MULTIPLIED
     };
 
     /**
@@ -99,8 +98,10 @@ namespace tractor
      * @param effect The custom effect to render with.
      * @return The new sprite.
      */
-    static Sprite* create(const std::string& imagePath, float width = -1, float height = -1,
-      Effect* = nullptr);
+    static Sprite* create(const std::string& imagePath,
+                          float width = -1,
+                          float height = -1,
+                          Effect* = nullptr);
 
     /**
      * Creates a sprite from a user specified source region within the image.
@@ -116,9 +117,12 @@ namespace tractor
      * @param effect The custom effect to render with.
      * @return The new sprite.
      */
-    static Sprite* create(const std::string& imagePath, float width, float height,
-      const Rectangle& source, unsigned int frameCount = 1,
-      Effect* = nullptr);
+    static Sprite* create(const std::string& imagePath,
+                          float width,
+                          float height,
+                          const Rectangle& source,
+                          unsigned int frameCount = 1,
+                          Effect* = nullptr);
 
     /**
      * Creates a sprite from properties.
@@ -336,7 +340,6 @@ namespace tractor
     unsigned int draw(bool wireframe = false);
 
   protected:
-
     /**
      * Constructor.
      */
@@ -378,7 +381,6 @@ namespace tractor
     void setAnimationPropertyValue(int propertyId, AnimationValue* value, float blendWeight = 1.0f);
 
   private:
-
     float _width;
     float _height;
     Offset _offset;
@@ -393,6 +395,6 @@ namespace tractor
     float _opacity;
     Vector4 _color;
     BlendMode _blendMode;
-  };
+};
 
-}
+} // namespace tractor

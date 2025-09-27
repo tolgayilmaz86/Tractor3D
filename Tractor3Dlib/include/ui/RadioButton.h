@@ -1,28 +1,27 @@
 #pragma once
 
+#include "scene/Properties.h"
 #include "ui/Button.h"
 #include "ui/Theme.h"
-#include "scene/Properties.h"
 
 namespace tractor
 {
 
-  /**
-   * Defines a radio button control.
-   *
-   * Radio buttons can be toggled between two states.
-   * A radio button can belong to a group, and only one radio button
-   * from a group can be selected at one time.
-   *
-   * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-UI_Forms
-   */
-  class RadioButton : public Button
-  {
+/**
+ * Defines a radio button control.
+ *
+ * Radio buttons can be toggled between two states.
+ * A radio button can belong to a group, and only one radio button
+ * from a group can be selected at one time.
+ *
+ * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-UI_Forms
+ */
+class RadioButton : public Button
+{
     friend class Container;
     friend class ControlFactory;
 
   public:
-
     /**
      * Creates a new RadioButton.
      *
@@ -82,7 +81,6 @@ namespace tractor
     const std::string& getGroupId() const;
 
   protected:
-
     /**
      * Constructor.
      */
@@ -164,8 +162,7 @@ namespace tractor
     Theme::ThemeImage* _image;
 
   private:
-
     RadioButton(const RadioButton& copy);
-  };
+};
 
-}
+} // namespace tractor

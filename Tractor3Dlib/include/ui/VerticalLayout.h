@@ -1,24 +1,23 @@
 #pragma once
 
-#include "ui/Layout.h"
 #include "ui/Container.h"
+#include "ui/Layout.h"
 
 namespace tractor
 {
 
-  /**
-   * Defines a vertical layout.
-   *
-   * Controls are placed next to one another vertically until
-   * the bottom-most edge of the container is reached.
-   */
-  class VerticalLayout : public Layout
-  {
+/**
+ * Defines a vertical layout.
+ *
+ * Controls are placed next to one another vertically until
+ * the bottom-most edge of the container is reached.
+ */
+class VerticalLayout : public Layout
+{
     friend class Form;
     friend class Container;
 
   public:
-
     /**
      * Set whether this layout will start laying out controls from the bottom of the container.
      * This setting defaults to 'false', meaning controls will start at the top.
@@ -56,7 +55,6 @@ namespace tractor
     void setSpacing(int spacing);
 
   protected:
-
     /**
      * Constructor.
      */
@@ -78,8 +76,8 @@ namespace tractor
     void update(const Container* container);
 
     /**
-     * Flag determining whether this layout will start laying out controls from the bottom of the container.
-     * The default is 'false' meaning controls will start at the top.
+     * Flag determining whether this layout will start laying out controls from the bottom of the
+     * container. The default is 'false' meaning controls will start at the top.
      */
     bool _bottomToTop;
 
@@ -89,7 +87,6 @@ namespace tractor
     int _spacing;
 
   private:
-
     /**
      * Constructor.
      */
@@ -101,7 +98,6 @@ namespace tractor
      * @return a VerticalLayout object.
      */
     static VerticalLayout* create();
+};
 
-  };
-
-}
+} // namespace tractor

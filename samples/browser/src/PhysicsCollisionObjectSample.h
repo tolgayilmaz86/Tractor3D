@@ -1,7 +1,7 @@
 #pragma once
 
-#include "tractor.h"
 #include "Sample.h"
+#include "tractor.h"
 
 using namespace tractor;
 
@@ -10,56 +10,53 @@ using namespace tractor;
  */
 class PhysicsCollisionObjectSample : public Sample, Control::Listener
 {
-public:
+  public:
+    PhysicsCollisionObjectSample();
 
-  PhysicsCollisionObjectSample();
+    void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
 
-  void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
+    void keyEvent(Keyboard::KeyEvent evt, int key);
 
-  void keyEvent(Keyboard::KeyEvent evt, int key);
+    void controlEvent(Control* control, EventType evt);
 
-  void controlEvent(Control* control, EventType evt);
+  protected:
+    void initialize();
 
-protected:
+    void finalize();
 
-  void initialize();
+    void update(float elapsedTime);
 
-  void finalize();
+    void render(float elapsedTime);
 
-  void update(float elapsedTime);
+  private:
+    bool drawScene(Node* node);
 
-  void render(float elapsedTime);
+    bool bindLights(Node* node);
 
-private:
+    void fireProjectile(const Ray& ray);
 
-  bool drawScene(Node* node);
+    void incrementDebugDraw();
 
-  bool bindLights(Node* node);
+    void toggleWireframe();
 
-  void fireProjectile(const Ray& ray);
+    enum ObjectsTypes
+    {
+        SPHERE = 0,
+        BOX = 1,
+        CAPSULE = 2,
+        DUCK = 3
+    };
 
-  void incrementDebugDraw();
-
-  void toggleWireframe();
-
-  enum ObjectsTypes
-  {
-    SPHERE = 0,
-    BOX = 1,
-    CAPSULE = 2,
-    DUCK = 3
-  };
-
-  Font* _font;
-  Scene* _scene;
-  Node* _lightNode;
-  Form* _form;
-  int _objectType;
-  bool _throw;
-  int _drawDebug;
-  bool _wireFrame;
-  std::vector<std::string> _collisionObjectPaths;
-  std::vector<std::string> _nodeIds;
-  std::vector<std::string> _nodeNames;
-  std::vector<Vector4> _colors;
+    Font* _font;
+    Scene* _scene;
+    Node* _lightNode;
+    Form* _form;
+    int _objectType;
+    bool _throw;
+    int _drawDebug;
+    bool _wireFrame;
+    std::vector<std::string> _collisionObjectPaths;
+    std::vector<std::string> _nodeIds;
+    std::vector<std::string> _nodeNames;
+    std::vector<Vector4> _colors;
 };

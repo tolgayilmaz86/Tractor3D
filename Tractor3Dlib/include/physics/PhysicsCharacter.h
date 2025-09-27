@@ -1,28 +1,27 @@
 #pragma once
 
-#include <scene/Node.h>
 #include <physics/PhysicsGhostObject.h>
+#include <scene/Node.h>
 #include <scene/Properties.h>
 
 namespace tractor
 {
-  /**
-   * Defines a physics controller class for a game character.
-   *
-   * This can be used to control the movements and collisions of a character
-   * in a game. It interacts with the Physics system to apply gravity and handle
-   * collisions, however dynamics are not applied to the character directly by the
-   * physics system. Instead, the character's movement is controlled directly by the
-   * PhysicsCharacter class. This results in a more responsive and typical game
-   * character than would be possible if trying to move a character by applying
-   * physical simulation with forces.
-   */
-  class PhysicsCharacter : public PhysicsGhostObject
-  {
+/**
+ * Defines a physics controller class for a game character.
+ *
+ * This can be used to control the movements and collisions of a character
+ * in a game. It interacts with the Physics system to apply gravity and handle
+ * collisions, however dynamics are not applied to the character directly by the
+ * physics system. Instead, the character's movement is controlled directly by the
+ * PhysicsCharacter class. This results in a more responsive and typical game
+ * character than would be possible if trying to move a character by applying
+ * physical simulation with forces.
+ */
+class PhysicsCharacter : public PhysicsGhostObject
+{
     friend class Node;
 
   public:
-
     /**
      * @see PhysicsCollisionObject::getType
      */
@@ -112,7 +111,7 @@ namespace tractor
     /**
      * Resets the internal velocity state which brings the character to an immediate stop
      *
-    */
+     */
     void resetVelocityState();
 
     /**
@@ -185,14 +184,12 @@ namespace tractor
     void jump(float height, bool force = false);
 
   protected:
-
     /**
      * @see PhysicsCollisionObject::getCollisionObject
      */
     btCollisionObject* getCollisionObject() const;
 
   private:
-
     /**
      * Creates a new PhysicsCharacter.
      *
@@ -204,7 +201,11 @@ namespace tractor
      * @param group Group identifier
      * @param mask Bitmask field for filtering collisions with this object.
      */
-    PhysicsCharacter(Node* node, const PhysicsCollisionShape::Definition& shape, float mass, int group = PHYSICS_COLLISION_GROUP_DEFAULT, int mask = PHYSICS_COLLISION_MASK_DEFAULT);
+    PhysicsCharacter(Node* node,
+                     const PhysicsCollisionShape::Definition& shape,
+                     float mass,
+                     int group = PHYSICS_COLLISION_GROUP_DEFAULT,
+                     int mask = PHYSICS_COLLISION_MASK_DEFAULT);
 
     /**
      * Destructor.
@@ -218,8 +219,10 @@ namespace tractor
      *
      * @param node The node to create a physics character for; note that the node must have
      *      a model attached to it prior to creating a physics character for it.
-     * @param properties The properties object defining the physics character (must have namespace equal to 'character').
-     * @return The newly created physics character, or <code>nullptr</code> if the physics character failed to load.
+     * @param properties The properties object defining the physics character (must have namespace
+     * equal to 'character').
+     * @return The newly created physics character, or <code>nullptr</code> if the physics character
+     * failed to load.
      */
     static PhysicsCharacter* create(Node* node, Properties* properties);
 
@@ -231,7 +234,8 @@ namespace tractor
 
     void stepForwardAndStrafe(btCollisionWorld* collisionWorld, float time);
 
-    void updateTargetPositionFromCollision(btVector3& targetPosition, const btVector3& collisionNormal);
+    void updateTargetPositionFromCollision(btVector3& targetPosition,
+                                           const btVector3& collisionNormal);
 
     bool fixCollision(btCollisionWorld* world);
 
@@ -241,15 +245,14 @@ namespace tractor
      */
     class ActionInterface : public btActionInterface
     {
-    public:
+      public:
+        ActionInterface(PhysicsCharacter* character);
 
-      ActionInterface(PhysicsCharacter* character);
+        void updateAction(btCollisionWorld* collisionWorld, btScalar deltaTimeStep);
 
-      void updateAction(btCollisionWorld* collisionWorld, btScalar deltaTimeStep);
+        void debugDraw(btIDebugDraw* debugDrawer);
 
-      void debugDraw(btIDebugDraw* debugDrawer);
-
-      PhysicsCharacter* character;
+        PhysicsCharacter* character;
     };
 
     void updateAction(btCollisionWorld* collisionWorld, btScalar deltaTimeStep);
@@ -270,6 +273,6 @@ namespace tractor
     bool _physicsEnabled;
     float _mass;
     ActionInterface* _actionInterface;
-  };
+};
 
-}
+} // namespace tractor

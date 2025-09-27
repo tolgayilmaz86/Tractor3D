@@ -1,90 +1,90 @@
 #pragma once
 
-#include "tractor.h"
 #include "Sample.h"
+#include "tractor.h"
 
 using namespace tractor;
-
 
 /**
  * Sample post processing.
  */
 class PostProcessSample : public Sample
 {
-public:
+  public:
+    /**
+     * Constructor.
+     */
+    PostProcessSample();
 
-	/**
-	 * Constructor.
-	 */
-	PostProcessSample();
+    /**
+     * @see Sample::touchEvent
+     */
+    void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
 
-	/**
-	 * @see Sample::touchEvent
-	 */
-	void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
+    /**
+     * Compositing blitter with a specified material/technique applied from a source buffer into the
+     * destination buffer.
+     *
+     * If destination buffer is nullptr then it composites to the default frame buffer.
+     *
+     * Requried uniforms:
+     * sampler2d u_texture - The input texture sampler
+     */
+    class Compositor
+    {
+      public:
+        static Compositor* create(FrameBuffer* srcBuffer,
+                                  FrameBuffer* dstBuffer,
+                                  const std::string& materialPath,
+                                  const std::string& techniqueId);
 
-	/**
-	 * Compositing blitter with a specified material/technique applied from a source buffer into the destination buffer.
-	 *
-	 * If destination buffer is nullptr then it composites to the default frame buffer.
-	 *
-	 * Requried uniforms:
-	 * sampler2d u_texture - The input texture sampler
-	 */
-	class Compositor
-	{
-	public:
+        ~Compositor();
 
-		static Compositor* create(FrameBuffer* srcBuffer, FrameBuffer* dstBuffer, const std::string& materialPath, const std::string& techniqueId);
+        FrameBuffer* getSrcFrameBuffer() const;
 
-		~Compositor();
+        FrameBuffer* getDstFrameBuffer() const;
 
-		FrameBuffer* getSrcFrameBuffer() const;
+        const std::string& getTechniqueId() const;
 
-		FrameBuffer* getDstFrameBuffer() const;
+        Material* getMaterial() const;
 
-		const std::string& getTechniqueId() const;
+        void blit(const Rectangle& dst);
 
-		Material* getMaterial() const;
+      private:
+        Compositor();
 
-		void blit(const Rectangle& dst);
+        Compositor(FrameBuffer* srcBuffer,
+                   FrameBuffer* dstBuffer,
+                   Material* material,
+                   const std::string& techniqueId);
 
-	private:
+        FrameBuffer* _srcBuffer;
+        FrameBuffer* _dstBuffer;
+        Material* _material;
+        const std::string _techniqueId;
+    };
 
-		Compositor();
+  protected:
+    void initialize();
 
-		Compositor(FrameBuffer* srcBuffer, FrameBuffer* dstBuffer, Material* material, const std::string& techniqueId);
+    void finalize();
 
-		FrameBuffer* _srcBuffer;
-		FrameBuffer* _dstBuffer;
-		Material* _material;
-		const std::string _techniqueId;
-	};
+    void update(float elapsedTime);
 
-protected:
+    void render(float elapsedTime);
 
-	void initialize();
+  private:
+    bool drawScene(Node* node);
 
-	void finalize();
+    void drawTechniqueId(const std::string& techniqueId);
 
-	void update(float elapsedTime);
-
-	void render(float elapsedTime);
-
-private:
-
-	bool drawScene(Node* node);
-
-	void drawTechniqueId(const std::string& techniqueId);
-
-private:
-
-	Font* _font;
-	Scene* _scene;
-	Node* _modelNode;
-	FrameBuffer* _frameBuffer;
-	unsigned int _compositorIndex;
-	std::vector<Compositor*> _compositors;
-	static  Model* _quadModel;
-	static  Material* _compositorMaterial;
+  private:
+    Font* _font;
+    Scene* _scene;
+    Node* _modelNode;
+    FrameBuffer* _frameBuffer;
+    unsigned int _compositorIndex;
+    std::vector<Compositor*> _compositors;
+    static Model* _quadModel;
+    static Material* _compositorMaterial;
 };

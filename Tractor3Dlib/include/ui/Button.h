@@ -1,27 +1,26 @@
 #pragma once
 
+#include "input/Touch.h"
+#include "scene/Properties.h"
 #include "ui/Container.h"
 #include "ui/Label.h"
-#include "input/Touch.h"
 #include "ui/Theme.h"
-#include "scene/Properties.h"
 
 namespace tractor
 {
 
-  /**
-   * Defines a button control.
-   *
-   * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-UI_Forms
-   */
-  class Button : public Label
-  {
+/**
+ * Defines a button control.
+ *
+ * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-UI_Forms
+ */
+class Button : public Label
+{
     friend class Container;
     friend class Gamepad;
     friend class ControlFactory;
 
   public:
-
     /**
      * Creates a new Button.
      *
@@ -34,7 +33,6 @@ namespace tractor
     static Button* create(const std::string& id, Theme::Style* style = nullptr);
 
   protected:
-
     /**
      * Constructor.
      */
@@ -85,14 +83,12 @@ namespace tractor
     void setDataBinding(unsigned int dataBinding);
 
   private:
-
     /**
      * Constructor.
      */
     Button(const Button& copy);
 
     unsigned int _dataBinding;
+};
 
-  };
-
-}
+} // namespace tractor

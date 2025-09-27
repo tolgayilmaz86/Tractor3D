@@ -3,18 +3,17 @@
 namespace tractor
 {
 
-  class Node;
-  class NodeCloneContext;
+class Node;
+class NodeCloneContext;
 
-  /**
-   * Defines a drawable object that can be attached to a Node.
-   */
-  class Drawable
-  {
+/**
+ * Defines a drawable object that can be attached to a Node.
+ */
+class Drawable
+{
     friend class Node;
 
   public:
-
     /**
      * Constructor.
      */
@@ -42,7 +41,6 @@ namespace tractor
     Node* getNode() const;
 
   protected:
-
     /**
      * Clones the drawable and returns a new drawable.
      *
@@ -62,6 +60,6 @@ namespace tractor
      * Node this drawable is attached to.
      */
     Node* _node;
-  };
+};
 
-}
+} // namespace tractor

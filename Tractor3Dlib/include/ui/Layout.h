@@ -1,53 +1,52 @@
 #pragma once
 
-#include "utils/Ref.h"
 #include "input/Touch.h"
 #include "math/Vector2.h"
+#include "utils/Ref.h"
 
 namespace tractor
 {
 
-  class Container;
-  class Control;
+class Container;
+class Control;
 
-  /**
-   * Defines the layout for containers.
-   *
-   * Implementations are responsible for positioning, resizing and
-   * calling update on all the controls within a container.
-   *
-   * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-UI_Forms
-   */
-  class Layout : public Ref
-  {
+/**
+ * Defines the layout for containers.
+ *
+ * Implementations are responsible for positioning, resizing and
+ * calling update on all the controls within a container.
+ *
+ * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-UI_Forms
+ */
+class Layout : public Ref
+{
     friend class Container;
     friend class Form;
 
   public:
-
     /**
      * Layout types available to containers.
      */
     enum Type
     {
-      /**
-       * Flow layout: Controls are placed next to one another horizontally
-       * until the right-most edge of the container is reached, at which point
-       * a new row is started.
-       */
-      LAYOUT_FLOW,
+        /**
+         * Flow layout: Controls are placed next to one another horizontally
+         * until the right-most edge of the container is reached, at which point
+         * a new row is started.
+         */
+        LAYOUT_FLOW,
 
-      /**
-       * Vertical layout: Controls are placed next to one another vertically until
-       * the bottom-most edge of the container is reached.
-       */
-      LAYOUT_VERTICAL,
+        /**
+         * Vertical layout: Controls are placed next to one another vertically until
+         * the bottom-most edge of the container is reached.
+         */
+        LAYOUT_VERTICAL,
 
-      /**
-       * Absolute layout: Controls are not modified at all by this layout.
-       * They must be positioned and sized manually.
-       */
-      LAYOUT_ABSOLUTE
+        /**
+         * Absolute layout: Controls are not modified at all by this layout.
+         * They must be positioned and sized manually.
+         */
+        LAYOUT_ABSOLUTE
     };
 
     /**
@@ -58,7 +57,6 @@ namespace tractor
     virtual Type getType() = 0;
 
   protected:
-
     /**
      * Position, resize, and update the controls within a container.
      *
@@ -78,7 +76,6 @@ namespace tractor
      * @see Touch::TouchEvent
      */
     virtual bool touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
+};
 
-  };
-
-}
+} // namespace tractor

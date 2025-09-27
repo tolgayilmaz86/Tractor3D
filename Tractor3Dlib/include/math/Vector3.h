@@ -3,21 +3,20 @@
 namespace tractor
 {
 
-  class Matrix;
+class Matrix;
 
-  /**
-   * Defines a 3-element floating point vector.
-   *
-   * When using a vector to represent a surface normal,
-   * the vector should typically be normalized.
-   * Other uses of directional vectors may wish to leave
-   * the magnitude of the vector intact. When used as a point,
-   * the elements of the vector represent a position in 3D space.
-   */
-  class Vector3
-  {
+/**
+ * Defines a 3-element floating point vector.
+ *
+ * When using a vector to represent a surface normal,
+ * the vector should typically be normalized.
+ * Other uses of directional vectors may wish to leave
+ * the magnitude of the vector intact. When used as a point,
+ * the elements of the vector represent a position in 3D space.
+ */
+class Vector3
+{
   public:
-
     /**
      * The x-coordinate.
      */
@@ -142,7 +141,6 @@ namespace tractor
      * @return The angle between the two vectors (in radians).
      */
     static float angle(const Vector3& v1, const Vector3& v2);
-
 
     /**
      * Adds the elements of the specified vector to this one.
@@ -457,17 +455,17 @@ namespace tractor
      * @return True if this vector is not equal to the given vector, false otherwise.
      */
     inline bool operator!=(const Vector3& v) const;
-  };
+};
 
-  /**
-   * Calculates the scalar product of the given vector with the given value.
-   *
-   * @param x The value to scale by.
-   * @param v The vector to scale.
-   * @return The scaled vector.
-   */
-  inline const Vector3 operator*(float x, const Vector3& v);
+/**
+ * Calculates the scalar product of the given vector with the given value.
+ *
+ * @param x The value to scale by.
+ * @param v The vector to scale.
+ * @return The scaled vector.
+ */
+inline const Vector3 operator*(float x, const Vector3& v);
 
-}
+} // namespace tractor
 
 #include "math/Vector3.inl"

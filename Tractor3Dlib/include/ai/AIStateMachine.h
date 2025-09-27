@@ -32,8 +32,7 @@ class AIStateMachine
     friend class AIAgent;
     friend class AIState;
 
-public:
-
+  public:
     /**
      * Returns the AIAgent that owns this state machine.
      *
@@ -108,8 +107,7 @@ public:
      */
     bool setState(AIState* state);
 
-private:
-
+  private:
     /**
      * Constructor.
      */
@@ -153,7 +151,6 @@ private:
     AIAgent* _agent;
     AIState* _currentState;
     std::list<AIState*> _states;
-
 };
 
-}
+} // namespace tractor

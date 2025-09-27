@@ -3,15 +3,14 @@
 namespace tractor
 {
 
-  class Matrix;
+class Matrix;
 
-  /**
-   * Defines 4-element floating point vector.
-   */
-  class Vector4
-  {
+/**
+ * Defines 4-element floating point vector.
+ */
+class Vector4
+{
   public:
-
     /**
      * The x-coordinate.
      */
@@ -440,17 +439,17 @@ namespace tractor
      * @return True if this vector is not equal to the given vector, false otherwise.
      */
     inline bool operator!=(const Vector4& v) const;
-  };
+};
 
-  /**
-   * Calculates the scalar product of the given vector with the given value.
-   *
-   * @param x The value to scale by.
-   * @param v The vector to scale.
-   * @return The scaled vector.
-   */
-  inline const Vector4 operator*(float x, const Vector4& v);
+/**
+ * Calculates the scalar product of the given vector with the given value.
+ *
+ * @param x The value to scale by.
+ * @param v The vector to scale.
+ * @return The scaled vector.
+ */
+inline const Vector4 operator*(float x, const Vector4& v);
 
-}
+} // namespace tractor
 
 #include "math/Vector4.inl"

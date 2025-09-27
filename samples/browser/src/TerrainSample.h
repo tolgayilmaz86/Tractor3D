@@ -1,71 +1,67 @@
 #pragma once
 
-#include "tractor.h"
 #include "Sample.h"
+#include "tractor.h"
 
 using namespace tractor;
 
 class TerrainSample : public Sample, public Control::Listener, private RenderState::AutoBindingResolver
 {
-public:
+  public:
+    TerrainSample();
 
-	TerrainSample();
+    ~TerrainSample();
 
-	~TerrainSample();
+    void keyEvent(Keyboard::KeyEvent evt, int key);
 
-	void keyEvent(Keyboard::KeyEvent evt, int key);
+    void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
 
-	void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
+    bool mouseEvent(Mouse::MouseEvent evt, int x, int y, int wheelDelta);
 
-	bool mouseEvent(Mouse::MouseEvent evt, int x, int y, int wheelDelta);
+    void controlEvent(Control* control, EventType evt);
 
-	void controlEvent(Control* control, EventType evt);
+  protected:
+    void initialize();
 
-protected:
+    bool intializeLights(Node* node);
 
-	void initialize();
+    void finalize();
 
-	bool intializeLights(Node* node);
+    void update(float elapsedTime);
 
-	void finalize();
+    void render(float elapsedTime);
 
-	void update(float elapsedTime);
+    bool drawScene(Node* node);
 
-	void render(float elapsedTime);
+    void setMessage(const std::string& message);
 
-	bool drawScene(Node* node);
+  private:
+    enum Mode
+    {
+        MODE_LOOK,
+        MODE_DROP_SPHERE,
+        MODE_DROP_BOX
+    };
 
-	void setMessage(const std::string& message);
+    Vector3 getLightDirection0() const;
+    Vector3 getLightColor0() const;
 
-private:
+    bool resolveAutoBinding(const std::string& autoBinding, Node* node, MaterialParameter* parameter);
 
-	enum Mode
-	{
-		MODE_LOOK,
-		MODE_DROP_SPHERE,
-		MODE_DROP_BOX
-	};
-
-	Vector3 getLightDirection0() const;
-	Vector3 getLightColor0() const;
-
-	bool resolveAutoBinding(const std::string& autoBinding, Node* node, MaterialParameter* parameter);
-
-	Font* _font;
-	Scene* _scene;
-	Terrain* _terrain;
-	Node* _sky;
-	Form* _form;
-	bool _formVisible;
-	Vector2 _formSize;
-	bool _wireframe;
-	bool _debugPhysics;
-	bool _snapToGround;
-	bool _vsync;
-	Mode _mode;
-	Node* _sphere;
-	Node* _box;
-	std::list<Node*> _shapes;
-	Light* _directionalLight;
-
+    Font* _font;
+    Scene* _scene;
+    Terrain* _terrain;
+    Node* _sky;
+    Form* _form;
+    bool _formVisible;
+    Vector2 _formSize;
+    bool _wireframe;
+    bool _debugPhysics;
+    bool _snapToGround;
+    bool _vsync;
+    Mode _mode;
+    Node* _sphere;
+    Node* _box;
+    std::list<Node*> _shapes;
+    Light* _directionalLight;
 };

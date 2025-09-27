@@ -5,28 +5,28 @@
 namespace tractor
 {
 
-  class Properties;
-  class Control;
+class Properties;
+class Control;
 
-  /**
-   * Defines a factory for creating core controls and registered custom controls.
-   *
-   * @script{ignore}
-   */
-  class ControlFactory
-  {
+/**
+ * Defines a factory for creating core controls and registered custom controls.
+ *
+ * @script{ignore}
+ */
+class ControlFactory
+{
     friend class Game;
     friend class Container;
 
   public:
-
     /**
      * The activator interface for controls that are created.
      */
     typedef Control* (*ControlActivator)(Theme::Style*, Properties*);
 
     /**
-     * Gets the single instance of the control factory used to create controls and register/unregister custom controls.
+     * Gets the single instance of the control factory used to create controls and
+     * register/unregister custom controls.
      *
      * @return The instance of the ControlFactory.
      */
@@ -50,15 +50,14 @@ namespace tractor
     void unregisterCustomControl(const std::string& typeName);
 
   private:
-
     /**
      * Constructor.
      */
     ControlFactory();
 
     /**
-   * Constructor.
-   */
+     * Constructor.
+     */
     ControlFactory(const ControlFactory& copy);
 
     /**
@@ -77,21 +76,23 @@ namespace tractor
     ControlFactory& operator=(const ControlFactory&);
 
     /**
-    * Creates a controls from the set of core and custom controls registered.
-    *
-    * @param typeName The type of the control to create.
-    * @param style The style to apply to the control.
-    * @param properties A Properties object describing the control (optional).
-    * @return The new control.
-    */
-    Control* createControl(const std::string& typeName, Theme::Style* style, Properties* properties = nullptr);
+     * Creates a controls from the set of core and custom controls registered.
+     *
+     * @param typeName The type of the control to create.
+     * @param style The style to apply to the control.
+     * @param properties A Properties object describing the control (optional).
+     * @return The new control.
+     */
+    Control* createControl(const std::string& typeName,
+                           Theme::Style* style,
+                           Properties* properties = nullptr);
 
     /**
-   * Registers the standard (built-in) controls
-   */
+     * Registers the standard (built-in) controls
+     */
     void registerStandardControls();
 
-    std::map<std::string, ControlActivator>	_registeredControls;
-  };
+    std::map<std::string, ControlActivator> _registeredControls;
+};
 
-}
+} // namespace tractor

@@ -1,33 +1,32 @@
 #pragma once
 
-#include "utils/Ref.h"
-#include "math/Transform.h"
 #include "graphics/Frustum.h"
 #include "graphics/Rectangle.h"
+#include "math/Transform.h"
 #include "scene/Properties.h"
+#include "utils/Ref.h"
 
 namespace tractor
 {
 
-  class Node;
-  class NodeCloneContext;
+class Node;
+class NodeCloneContext;
 
-  /**
-   * Defines a camera which acts as a view of a scene to be rendered.
-   */
-  class Camera : public Ref, public Transform::Listener
-  {
+/**
+ * Defines a camera which acts as a view of a scene to be rendered.
+ */
+class Camera : public Ref, public Transform::Listener
+{
     friend class Node;
 
   public:
-
     /**
      * The type of camera.
      */
     enum Type
     {
-      PERSPECTIVE = 1,
-      ORTHOGRAPHIC = 2
+        PERSPECTIVE = 1,
+        ORTHOGRAPHIC = 2
     };
 
     /**
@@ -35,49 +34,59 @@ namespace tractor
      */
     class Listener
     {
-    public:
+      public:
+        virtual ~Listener() {}
 
-      virtual ~Listener() { }
-
-      /**
-       * Handles when an camera settings change or the transform changed for the node its attached to.
-       *
-       * @param camera The camera that was changed.
-       */
-      virtual void cameraChanged(Camera* camera) = 0;
+        /**
+         * Handles when an camera settings change or the transform changed for the node its attached to.
+         *
+         * @param camera The camera that was changed.
+         */
+        virtual void cameraChanged(Camera* camera) = 0;
     };
 
     /**
      * Creates a perspective camera.
      *
-     * @param fieldOfView The field of view in degrees for the perspective camera (normally in the range of 40-60 degrees).
-     * @param aspectRatio The aspect ratio of the camera (normally the width of the viewport divided by the height of the viewport).
+     * @param fieldOfView The field of view in degrees for the perspective camera (normally in the
+     * range of 40-60 degrees).
+     * @param aspectRatio The aspect ratio of the camera (normally the width of the viewport divided
+     * by the height of the viewport).
      * @param nearPlane The near plane distance.
      * @param farPlane The far plane distance.
      *
      * @return The new Camera.
      */
-    static Camera* createPerspective(float fieldOfView, float aspectRatio, float nearPlane, float farPlane);
+    static Camera* createPerspective(float fieldOfView,
+                                     float aspectRatio,
+                                     float nearPlane,
+                                     float farPlane);
 
     /**
      * Creates an orthographic camera.
      *
-     * @param zoomX The zoom factor along the X-axis of the orthographic projection (the width of the ortho projection).
-     * @param zoomY The zoom factor along the Y-axis of the orthographic projection (the height of the ortho projection).
+     * @param zoomX The zoom factor along the X-axis of the orthographic projection (the width of
+     * the ortho projection).
+     * @param zoomY The zoom factor along the Y-axis of the orthographic projection (the height of
+     * the ortho projection).
      * @param aspectRatio The aspect ratio of the orthographic projection.
      * @param nearPlane The near plane distance.
      * @param farPlane The far plane distance.
      *
      * @return The new Camera.
      */
-    static Camera* createOrthographic(float zoomX, float zoomY, float aspectRatio, float nearPlane, float farPlane);
+    static Camera* createOrthographic(float zoomX,
+                                      float zoomY,
+                                      float aspectRatio,
+                                      float nearPlane,
+                                      float farPlane);
 
     /**
      * Creates a camera from a properties definition.
      *
-     * The properties object must contain a "type" parameter, specifying either PERSPECTIVE or ORTHOGRAPHIC,
-     * as well as values for all required parameters in the Camera::createPerspective and Camera::createOrthographic
-     * methods.
+     * The properties object must contain a "type" parameter, specifying either PERSPECTIVE or
+     * ORTHOGRAPHIC, as well as values for all required parameters in the Camera::createPerspective
+     * and Camera::createOrthographic methods.
      *
      * @param properties The properties definition of the Camera.
      *
@@ -259,7 +268,11 @@ namespace tractor
      *
      * @script{ignore}
      */
-    void project(const Rectangle& viewport, const Vector3& position, float* x, float* y, float* depth = nullptr) const;
+    void project(const Rectangle& viewport,
+                 const Vector3& position,
+                 float* x,
+                 float* y,
+                 float* depth = nullptr) const;
 
     /**
      * Projects the specified world position into the viewport coordinates.
@@ -304,10 +317,10 @@ namespace tractor
     void pickRay(const Rectangle& viewport, float x, float y, Ray* dst) const;
 
     /**
-    * Adds a camera listener.
-    *
-    * @param listener The listener to add.
-    */
+     * Adds a camera listener.
+     *
+     * @param listener The listener to add.
+     */
     void addListener(Camera::Listener* listener);
 
     /**
@@ -333,7 +346,6 @@ namespace tractor
     virtual ~Camera();
 
   private:
-
     /**
      * Hidden copy assignment operator.
      */
@@ -374,6 +386,6 @@ namespace tractor
     mutable int _bits;
     Node* _node;
     std::list<Camera::Listener*>* _listeners;
-  };
+};
 
-}
+} // namespace tractor

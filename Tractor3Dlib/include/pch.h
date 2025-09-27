@@ -216,7 +216,7 @@ namespace tractor
  * mode and is therefore safe to use for realtime/per-frame GL
  * function calls.
  */
-#if defined(NDEBUG) || (defined(__APPLE__) && !defined(DEBUG))
+#if defined(NDEBUG)
 #define GL_ASSERT( gl_code ) gl_code
 #else
 #define GL_ASSERT( gl_code ) do \

@@ -7,19 +7,18 @@
 namespace tractor
 {
 
-  /**
-   * Defines a container that contains zero or more controls.
-   *
-   * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-UI_Forms
-   */
-  class Container : public Control
-  {
+/**
+ * Defines a container that contains zero or more controls.
+ *
+ * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-UI_Forms
+ */
+class Container : public Control
+{
     friend class Form;
     friend class Control;
     friend class ControlFactory;
 
   public:
-
     /**
      * Constant used to auto-hide scrollbars.
      */
@@ -30,10 +29,10 @@ namespace tractor
      */
     enum Scroll
     {
-      SCROLL_NONE = 0,
-      SCROLL_HORIZONTAL = 0x01,
-      SCROLL_VERTICAL = 0x02,
-      SCROLL_BOTH = SCROLL_HORIZONTAL | SCROLL_VERTICAL
+        SCROLL_NONE = 0,
+        SCROLL_HORIZONTAL = 0x01,
+        SCROLL_VERTICAL = 0x02,
+        SCROLL_BOTH = SCROLL_HORIZONTAL | SCROLL_VERTICAL
     };
 
     /**
@@ -41,12 +40,12 @@ namespace tractor
      */
     enum Direction
     {
-      UP = 0x01,
-      DOWN = 0x02,
-      LEFT = 0x04,
-      RIGHT = 0x08,
-      NEXT = 0x10,
-      PREVIOUS = 0x20
+        UP = 0x01,
+        DOWN = 0x02,
+        LEFT = 0x04,
+        RIGHT = 0x08,
+        NEXT = 0x10,
+        PREVIOUS = 0x20
     };
 
     /**
@@ -59,7 +58,9 @@ namespace tractor
      * @return The new container.
      * @script{create}
      */
-    static Container* create(const std::string& id, Theme::Style* style = nullptr, Layout::Type layout = Layout::LAYOUT_ABSOLUTE);
+    static Container* create(const std::string& id,
+                             Theme::Style* style = nullptr,
+                             Layout::Type layout = Layout::LAYOUT_ABSOLUTE);
 
     /**
      * Extends ScriptTarget::getTypeName() to return the type name of this class.
@@ -88,7 +89,7 @@ namespace tractor
     /**
      * Adds a new control to this container.
      *
-   * @param control The control to add.
+     * @param control The control to add.
      *
      * @return The index assigned to the new Control.
      */
@@ -301,10 +302,11 @@ namespace tractor
     /**
      * @see AnimationTarget::setAnimationProperty
      */
-    virtual void setAnimationPropertyValue(int propertyId, AnimationValue* value, float blendWeight = 1.0f);
+    virtual void setAnimationPropertyValue(int propertyId,
+                                           AnimationValue* value,
+                                           float blendWeight = 1.0f);
 
   protected:
-
     /**
      * Constructor.
      */
@@ -319,7 +321,8 @@ namespace tractor
      * Create a container with a given style and properties, including a list of controls.
      *
      * @param style The style to apply to this container.
-     * @param properties A properties object containing a definition of the container and its nested controls (optional).
+     * @param properties A properties object containing a definition of the container and its nested
+     * controls (optional).
      *
      * @return The new container.
      */
@@ -566,7 +569,6 @@ namespace tractor
     bool _scrollingMouseHorizontally;
 
   private:
-
     /**
      * Constructor.
      */
@@ -593,6 +595,6 @@ namespace tractor
     bool _contactIndices[MAX_CONTACT_INDICES];
     bool _initializedWithScroll;
     bool _scrollWheelRequiresFocus;
-  };
+};
 
-}
+} // namespace tractor

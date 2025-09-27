@@ -1,40 +1,39 @@
 #pragma once
 
-#include "scripting/ScriptTarget.h"
-#include "math/Vector3.h"
-#include "math/Quaternion.h"
-#include "math/Matrix.h"
 #include "animation/AnimationTarget.h"
+#include "math/Matrix.h"
+#include "math/Quaternion.h"
+#include "math/Vector3.h"
+#include "scripting/ScriptTarget.h"
 
 namespace tractor
 {
 
-  class BoundingBox;
-  class BoundingSphere;
-  class NodeCloneContext;
-  class ScriptListener;
+class BoundingBox;
+class BoundingSphere;
+class NodeCloneContext;
+class ScriptListener;
 
-  /**
-   * Defines a 3-dimensional transformation.
-   *
-   * When using the scale, rotate, and translate methods, only the
-   * transform's corresponding scale, rotation, or translation
-   * component is updated (it is not as if the scale, rotate, or translate
-   * is applied to the transform's matrix).
-   *
-   * Note: To construct a Transform from a transformation matrix stored as a Matrix,
-   * first decompose the Matrix into its separate translation, scale, and rotation
-   * components using matrix.decompose(Vector3, Quaternion, Vector3) and then pass
-   * those arguments to the appropriate constructor or set methods of Transform.
-   */
-  class Transform : public AnimationTarget, public ScriptTarget
-  {
+/**
+ * Defines a 3-dimensional transformation.
+ *
+ * When using the scale, rotate, and translate methods, only the
+ * transform's corresponding scale, rotation, or translation
+ * component is updated (it is not as if the scale, rotate, or translate
+ * is applied to the transform's matrix).
+ *
+ * Note: To construct a Transform from a transformation matrix stored as a Matrix,
+ * first decompose the Matrix into its separate translation, scale, and rotation
+ * components using matrix.decompose(Vector3, Quaternion, Vector3) and then pass
+ * those arguments to the appropriate constructor or set methods of Transform.
+ */
+class Transform : public AnimationTarget, public ScriptTarget
+{
     GP_SCRIPT_EVENTS_START();
     GP_SCRIPT_EVENT(transformChanged, "<Transform>");
     GP_SCRIPT_EVENTS_END();
 
   public:
-
     /**
      * Scale animation property. Data=scale
      */
@@ -118,7 +117,8 @@ namespace tractor
     /**
      * Gets whether all transform changed events are suspended.
      *
-     * @return TRUE if transform changed events are suspended; FALSE if transform changed events are not suspended.
+     * @return TRUE if transform changed events are suspended; FALSE if transform changed events are
+     * not suspended.
      */
     static bool isTransformChangedSuspended();
 
@@ -127,17 +127,16 @@ namespace tractor
      */
     class Listener
     {
-    public:
+      public:
+        virtual ~Listener() {}
 
-      virtual ~Listener() { }
-
-      /**
-       * Handles when an transform has changed.
-       *
-       * @param transform The Transform object that was changed.
-       * @param cookie Cookie value that was specified when the listener was registered.
-       */
-      virtual void transformChanged(Transform* transform, long cookie) = 0;
+        /**
+         * Handles when an transform has changed.
+         *
+         * @param transform The Transform object that was changed.
+         * @param cookie Cookie value that was specified when the listener was registered.
+         */
+        virtual void transformChanged(Transform* transform, long cookie) = 0;
     };
 
     /**
@@ -798,21 +797,20 @@ namespace tractor
     void setAnimationPropertyValue(int propertyId, AnimationValue* value, float blendWeight = 1.0f);
 
   protected:
-
     /**
      * Transform Listener.
      */
     struct TransformListener
     {
-      /**
-       * Listener for Transform events.
-       */
-      Listener* listener;
+        /**
+         * Listener for Transform events.
+         */
+        Listener* listener;
 
-      /**
-       * An optional long value that is specified to the Listener's callback.
-       */
-      long cookie;
+        /**
+         * An optional long value that is specified to the Listener's callback.
+         */
+        long cookie;
     };
 
     /**
@@ -821,10 +819,10 @@ namespace tractor
      */
     enum MatrixDirtyBits
     {
-      DIRTY_TRANSLATION = 0x01,
-      DIRTY_SCALE = 0x02,
-      DIRTY_ROTATION = 0x04,
-      DIRTY_NOTIFY = 0x08
+        DIRTY_TRANSLATION = 0x01,
+        DIRTY_SCALE = 0x02,
+        DIRTY_ROTATION = 0x04,
+        DIRTY_NOTIFY = 0x08
     };
 
     /**
@@ -890,12 +888,10 @@ namespace tractor
     std::list<TransformListener>* _listeners;
 
   private:
-
     void applyAnimationValueRotation(AnimationValue* value, unsigned int index, float blendWeight);
 
     static int _suspendTransformChanged;
     static std::vector<Transform*> _transformsChanged;
+};
 
-  };
-
-}
+} // namespace tractor

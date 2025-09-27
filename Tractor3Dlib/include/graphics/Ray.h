@@ -5,21 +5,19 @@
 namespace tractor
 {
 
-  class Frustum;
-  class Plane;
-  class BoundingSphere;
-  class BoundingBox;
+class Frustum;
+class Plane;
+class BoundingSphere;
+class BoundingBox;
 
-
-  /**
-   * Defines a 3-dimensional ray.
-   *
-   * Rays direction vector are always normalized.
-   */
-  class Ray
-  {
+/**
+ * Defines a 3-dimensional ray.
+ *
+ * Rays direction vector are always normalized.
+ */
+class Ray
+{
   public:
-
     /**
      * Represents when a 3D entity does not intersect a ray.
      */
@@ -180,25 +178,24 @@ namespace tractor
     inline Ray& operator*=(const Matrix& matrix);
 
   private:
-
     /**
      * Normalizes the ray.
      */
     void normalize();
 
-    Vector3 _origin;        // The ray origin position.
-    Vector3 _direction;     // The ray direction vector.
-  };
+    Vector3 _origin;    // The ray origin position.
+    Vector3 _direction; // The ray direction vector.
+};
 
-  /**
-   * Transforms the given ray by the given matrix.
-   *
-   * @param matrix The matrix to transform by.
-   * @param ray The ray to transform.
-   * @return The resulting transformed ray.
-   */
-  inline const Ray operator*(const Matrix& matrix, const Ray& ray);
+/**
+ * Transforms the given ray by the given matrix.
+ *
+ * @param matrix The matrix to transform by.
+ * @param ray The ray to transform.
+ * @return The resulting transformed ray.
+ */
+inline const Ray operator*(const Matrix& matrix, const Ray& ray);
 
-}
+} // namespace tractor
 
 #include "graphics/Ray.inl"

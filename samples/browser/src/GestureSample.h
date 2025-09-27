@@ -1,7 +1,7 @@
 #pragma once
 
-#include "tractor.h"
 #include "Sample.h"
+#include "tractor.h"
 
 using namespace tractor;
 
@@ -10,36 +10,33 @@ using namespace tractor;
  */
 class GestureSample : public Sample
 {
-public:
+  public:
+    GestureSample() = default;
 
-	GestureSample() = default;
+    void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
 
-	void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
+    void gestureSwipeEvent(int x, int y, int direction);
 
-	void gestureSwipeEvent(int x, int y, int direction);
+    void gesturePinchEvent(int x, int y, float scale);
 
-	void gesturePinchEvent(int x, int y, float scale);
+    void gestureTapEvent(int x, int y);
 
-	void gestureTapEvent(int x, int y);
+    void gestureLongTapEvent(int x, int y, float duration);
 
-	void gestureLongTapEvent(int x, int y, float duration);
+    void gestureDragEvent(int x, int y);
 
-	void gestureDragEvent(int x, int y);
+    void gestureDropEvent(int x, int y);
 
-	void gestureDropEvent(int x, int y);
+  protected:
+    void initialize();
 
-protected:
+    void finalize();
 
-	void initialize();
+    void update(float elapsedTime);
 
-	void finalize();
+    void render(float elapsedTime);
 
-	void update(float elapsedTime);
-
-	void render(float elapsedTime);
-
-private:
-
-	Font* _font{ nullptr };
-	std::list<std::string> _eventLog{};
+  private:
+    Font* _font{ nullptr };
+    std::list<std::string> _eventLog{};
 };

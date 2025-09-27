@@ -5,13 +5,12 @@
 namespace tractor
 {
 
-  /**
-   * Defines a 3-dimensional bounding sphere.
-   */
-  class BoundingSphere
-  {
+/**
+ * Defines a 3-dimensional bounding sphere.
+ */
+class BoundingSphere
+{
   public:
-
     /**
      * The center point.
      */
@@ -84,9 +83,10 @@ namespace tractor
      *
      * @param plane The plane to test intersection with.
      *
-     * @return Plane::INTERSECTS_BACK INTERSECTS_BACK if this bounding sphere is in the negative half-space of
-     *  the plane, Plane::INTERSECTS_FRONT INTERSECTS_FRONT if it is in the positive half-space of the plane,
-     *  and Plane::INTERSECTS_INTERSECTING INTERSECTS_INTERSECTING if it intersects the plane.
+     * @return Plane::INTERSECTS_BACK INTERSECTS_BACK if this bounding sphere is in the negative
+     * half-space of the plane, Plane::INTERSECTS_FRONT INTERSECTS_FRONT if it is in the positive
+     * half-space of the plane, and Plane::INTERSECTS_INTERSECTING INTERSECTS_INTERSECTING if it
+     * intersects the plane.
      */
     float intersects(const Plane& plane) const;
 
@@ -161,21 +161,20 @@ namespace tractor
     inline BoundingSphere& operator*=(const Matrix& matrix);
 
   private:
-
     float distance(const BoundingSphere& sphere, const Vector3&);
 
     bool contains(const BoundingSphere& sphere, Vector3* points, unsigned int count);
-  };
+};
 
-  /**
-   * Transforms the given bounding sphere by the given matrix.
-   *
-   * @param matrix The matrix to transform by.
-   * @param sphere The bounding sphere to transform.
-   * @return The resulting transformed bounding sphere.
-   */
-  inline const BoundingSphere operator*(const Matrix& matrix, const BoundingSphere& sphere);
+/**
+ * Transforms the given bounding sphere by the given matrix.
+ *
+ * @param matrix The matrix to transform by.
+ * @param sphere The bounding sphere to transform.
+ * @return The resulting transformed bounding sphere.
+ */
+inline const BoundingSphere operator*(const Matrix& matrix, const BoundingSphere& sphere);
 
-}
+} // namespace tractor
 
 #include "graphics/BoundingSphere.inl"

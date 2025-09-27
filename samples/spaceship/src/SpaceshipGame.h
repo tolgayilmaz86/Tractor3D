@@ -9,141 +9,135 @@ using namespace tractor;
  */
 class SpaceshipGame : public Game
 {
-public:
+  public:
+    /**
+     * Constructor.
+     */
+    SpaceshipGame();
 
-  /**
-   * Constructor.
-   */
-  SpaceshipGame();
+    /**
+     * Destructor.
+     */
+    virtual ~SpaceshipGame();
 
-  /**
-   * Destructor.
-   */
-  virtual ~SpaceshipGame();
+    /**
+     * @see Game::keyEvent
+     */
+    void keyEvent(Keyboard::KeyEvent evt, int key);
 
-  /**
-   * @see Game::keyEvent
-   */
-  void keyEvent(Keyboard::KeyEvent evt, int key);
+    /**
+     * @see Game::touchEvent
+     */
+    void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
 
-  /**
-   * @see Game::touchEvent
-   */
-  void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
+  protected:
+    /**
+     * @see Game::initialize
+     */
+    void initialize();
 
-protected:
+    /**
+     * @see Game::finalize
+     */
+    void finalize();
 
-  /**
-   * @see Game::initialize
-   */
-  void initialize();
+    /**
+     * @see Game::update
+     */
+    void update(float elapsedTime);
 
-  /**
-   * @see Game::finalize
-   */
-  void finalize();
+    /**
+     * @see Game::render
+     */
+    void render(float elapsedTime);
 
-  /**
-   * @see Game::update
-   */
-  void update(float elapsedTime);
+  private:
+    /**
+     * Initializes the spaceship.
+     */
+    void initializeSpaceship();
 
-  /**
-   * @see Game::render
-   */
-  void render(float elapsedTime);
+    /**
+     * Initializes the environment including ground, roof and background.
+     */
+    void initializeEnvironment();
 
+    /**
+     * Initializes the material with common parameter bindings.
+     *
+     * @param lighting true if the material should receive lighting parameters.
+     * @param specular true if the material should receive specular lighting parameters.
+     */
+    void initializeMaterial(Material* material, bool lighting, bool specular);
 
+    /**
+     * Handles foe collisions with the ground and roof.
+     */
+    void handleCollisions(float t);
 
-private:
+    /**
+     * Updates the camera based on the ships position.
+     */
+    void updateCamera();
 
-  /**
-   * Initializes the spaceship.
-   */
-  void initializeSpaceship();
+    /**
+     * Resets the games
+     */
+    void resetGame();
 
-  /**
-   * Initializes the environment including ground, roof and background.
-   */
-  void initializeEnvironment();
+    /**
+     * Draws the default "gameplay powered" splash screen.
+     */
+    void drawSplash(void* param);
 
-  /**
-   * Initializes the material with common parameter bindings.
-   *
-   * @param lighting true if the material should receive lighting parameters.
-   * @param specular true if the material should receive specular lighting parameters.
-   */
-  void initializeMaterial(Material* material, bool lighting, bool specular);
+    /**
+     * Draws the scene
+     */
+    bool drawScene(Node* node, void* cookie);
 
-  /**
-   * Handles foe collisions with the ground and roof.
-   */
-  void handleCollisions(float t);
+    /**
+     * Draws the text.
+     */
+    void drawText();
 
-  /**
-   * Updates the camera based on the ships position.
-   */
-  void updateCamera();
+    // Scene variables
+    Scene* _scene;
+    Node* _cameraNode;
+    Node* _shipGroupNode;
+    Node* _shipNode;
+    Node* _propulsionNode;
+    Node* _glowNode;
+    RenderState::StateBlock* _stateBlock;
+    Vector3 _initialShipPos;
+    Quaternion _initialShipRot;
+    Vector3 _initialCameraPos;
 
-  /**
-   * Resets the games
-   */
-  void resetGame();
+    // Font for text rendering
+    Font* _font;
 
-  /**
-   * Draws the default "gameplay powered" splash screen.
-   */
-  void drawSplash(void* param);
+    // Ship physics variables
+    Vector2 _velocity;
+    Vector2 _acceleration;
+    Vector2 _force;
+    float _throttle;
+    float _shipTilt;
 
-  /**
-   * Draws the scene
-   */
-  bool drawScene(Node* node, void* cookie);
+    // State variables
+    bool _finished;
+    double _finishedTime;
+    bool _pushing;
+    Vector2 _pushPoint;
 
-  /**
-   * Draws the text.
-   */
-  void drawText();
+    // Game time in seconds
+    float _time;
 
+    // Frequently updated material parameters
+    MaterialParameter* _glowDiffuseParameter;
+    MaterialParameter* _shipSpecularParameter;
 
-  // Scene variables
-  Scene* _scene;
-  Node* _cameraNode;
-  Node* _shipGroupNode;
-  Node* _shipNode;
-  Node* _propulsionNode;
-  Node* _glowNode;
-  RenderState::StateBlock* _stateBlock;
-  Vector3 _initialShipPos;
-  Quaternion _initialShipRot;
-  Vector3 _initialCameraPos;
+    // Sounds
+    AudioSource* _backgroundMusic;
+    AudioSource* _spaceshipSound;
 
-  // Font for text rendering
-  Font* _font;
-
-  // Ship physics variables
-  Vector2 _velocity;
-  Vector2 _acceleration;
-  Vector2 _force;
-  float _throttle;
-  float _shipTilt;
-
-  // State variables
-  bool _finished;
-  double _finishedTime;
-  bool _pushing;
-  Vector2 _pushPoint;
-
-  // Game time in seconds
-  float _time;
-
-  // Frequently updated material parameters
-  MaterialParameter* _glowDiffuseParameter;
-  MaterialParameter* _shipSpecularParameter;
-
-  // Sounds
-  AudioSource* _backgroundMusic;
-  AudioSource* _spaceshipSound;
-
-  bool _hitSomething;
+    bool _hitSomething;
 };

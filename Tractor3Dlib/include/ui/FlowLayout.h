@@ -5,18 +5,17 @@
 namespace tractor
 {
 
-  /**
-   * Defines a flow layout.
-   *
-   * A flow layout arranges controls in order, left-to-right, row by row and wraps.
-   */
-  class FlowLayout : public Layout
-  {
+/**
+ * Defines a flow layout.
+ *
+ * A flow layout arranges controls in order, left-to-right, row by row and wraps.
+ */
+class FlowLayout : public Layout
+{
     friend class Form;
     friend class Container;
 
   public:
-
     /**
      * Get the type of this Layout.
      *
@@ -47,7 +46,6 @@ namespace tractor
     void setSpacing(int horizontalSpacing, int verticalSpacing);
 
   protected:
-
     /**
      * Update the controls contained by the specified container.
      *
@@ -66,7 +64,6 @@ namespace tractor
     int _verticalSpacing;
 
   private:
-
     /**
      * Constructor.
      */
@@ -88,7 +85,6 @@ namespace tractor
      * @return A FlowLayout object.
      */
     static FlowLayout* create();
+};
 
-  };
-
-}
+} // namespace tractor

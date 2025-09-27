@@ -5,26 +5,25 @@
 namespace tractor
 {
 
-  /**
-   * Defines a font for text rendering.
-   */
-  class Font : public Ref
-  {
+/**
+ * Defines a font for text rendering.
+ */
+class Font : public Ref
+{
     friend class Bundle;
     friend class Text;
     friend class TextBox;
 
   public:
-
     /**
      * Defines the set of allowable font styles.
      */
     enum Style
     {
-      PLAIN = 0,
-      BOLD = 1,
-      ITALIC = 2,
-      BOLD_ITALIC = 4
+        PLAIN = 0,
+        BOLD = 1,
+        ITALIC = 2,
+        BOLD_ITALIC = 4
     };
 
     /**
@@ -32,21 +31,21 @@ namespace tractor
      */
     enum Justify
     {
-      ALIGN_LEFT = 0x01,
-      ALIGN_HCENTER = 0x02,
-      ALIGN_RIGHT = 0x04,
-      ALIGN_TOP = 0x10,
-      ALIGN_VCENTER = 0x20,
-      ALIGN_BOTTOM = 0x40,
-      ALIGN_TOP_LEFT = ALIGN_TOP | ALIGN_LEFT,
-      ALIGN_VCENTER_LEFT = ALIGN_VCENTER | ALIGN_LEFT,
-      ALIGN_BOTTOM_LEFT = ALIGN_BOTTOM | ALIGN_LEFT,
-      ALIGN_TOP_HCENTER = ALIGN_TOP | ALIGN_HCENTER,
-      ALIGN_VCENTER_HCENTER = ALIGN_VCENTER | ALIGN_HCENTER,
-      ALIGN_BOTTOM_HCENTER = ALIGN_BOTTOM | ALIGN_HCENTER,
-      ALIGN_TOP_RIGHT = ALIGN_TOP | ALIGN_RIGHT,
-      ALIGN_VCENTER_RIGHT = ALIGN_VCENTER | ALIGN_RIGHT,
-      ALIGN_BOTTOM_RIGHT = ALIGN_BOTTOM | ALIGN_RIGHT
+        ALIGN_LEFT = 0x01,
+        ALIGN_HCENTER = 0x02,
+        ALIGN_RIGHT = 0x04,
+        ALIGN_TOP = 0x10,
+        ALIGN_VCENTER = 0x20,
+        ALIGN_BOTTOM = 0x40,
+        ALIGN_TOP_LEFT = ALIGN_TOP | ALIGN_LEFT,
+        ALIGN_VCENTER_LEFT = ALIGN_VCENTER | ALIGN_LEFT,
+        ALIGN_BOTTOM_LEFT = ALIGN_BOTTOM | ALIGN_LEFT,
+        ALIGN_TOP_HCENTER = ALIGN_TOP | ALIGN_HCENTER,
+        ALIGN_VCENTER_HCENTER = ALIGN_VCENTER | ALIGN_HCENTER,
+        ALIGN_BOTTOM_HCENTER = ALIGN_BOTTOM | ALIGN_HCENTER,
+        ALIGN_TOP_RIGHT = ALIGN_TOP | ALIGN_RIGHT,
+        ALIGN_VCENTER_RIGHT = ALIGN_VCENTER | ALIGN_RIGHT,
+        ALIGN_BOTTOM_RIGHT = ALIGN_BOTTOM | ALIGN_RIGHT
     };
 
     /**
@@ -54,8 +53,8 @@ namespace tractor
      */
     enum Format
     {
-      BITMAP = 0,
-      DISTANCE_FIELD = 1
+        BITMAP = 0,
+        DISTANCE_FIELD = 1
     };
 
     /**
@@ -120,8 +119,12 @@ namespace tractor
      * @param size The size to draw text (0 for default size).
      * @param rightToLeft Whether to draw text from right to left.
      */
-    void drawText(const std::string& text, int x, int y, const Vector4& color, unsigned int size = 0,
-      bool rightToLeft = false);
+    void drawText(const std::string& text,
+                  int x,
+                  int y,
+                  const Vector4& color,
+                  unsigned int size = 0,
+                  bool rightToLeft = false);
 
     /**
      * Draws the specified text in a solid color, with a scaling factor.
@@ -136,8 +139,15 @@ namespace tractor
      * @param size The size to draw text (0 for default size).
      * @param rightToLeft Whether to draw text from right to left.
      */
-    void drawText(const std::string& text, int x, int y, float red, float green, float blue, float alpha, unsigned int size = 0,
-      bool rightToLeft = false);
+    void drawText(const std::string& text,
+                  int x,
+                  int y,
+                  float red,
+                  float green,
+                  float blue,
+                  float alpha,
+                  unsigned int size = 0,
+                  bool rightToLeft = false);
 
     /**
      * Draws the specified text within a rectangular area, with a specified alignment and scale.
@@ -152,9 +162,14 @@ namespace tractor
      * @param rightToLeft Whether to draw text from right to left.
      * @param clip A region to clip text within after applying justification to the viewport area.
      */
-    void drawText(const std::string& text, const Rectangle& area, const Vector4& color, unsigned int size = 0,
-      Justify justify = ALIGN_TOP_LEFT, bool wrap = true, bool rightToLeft = false,
-      const Rectangle& clip = Rectangle(0, 0, 0, 0));
+    void drawText(const std::string& text,
+                  const Rectangle& area,
+                  const Vector4& color,
+                  unsigned int size = 0,
+                  Justify justify = ALIGN_TOP_LEFT,
+                  bool wrap = true,
+                  bool rightToLeft = false,
+                  const Rectangle& clip = Rectangle(0, 0, 0, 0));
 
     /**
      * Finishes text batching for this font and renders all drawn text.
@@ -169,7 +184,10 @@ namespace tractor
      * @param widthOut Destination for the text's width.
      * @param heightOut Destination for the text's height.
      */
-    void measureText(const std::string& text, unsigned int size, unsigned int* widthOut, unsigned int* heightOut);
+    void measureText(const std::string& text,
+                     unsigned int size,
+                     unsigned int* widthOut,
+                     unsigned int* heightOut);
 
     /**
      * Measures a string's bounding box after alignment, wrapping and clipping within a viewport.
@@ -180,11 +198,17 @@ namespace tractor
      * @param out Destination rectangle to store the bounds in.
      * @param justify Justification of text within the viewport.
      * @param wrap Whether to measure text with wrapping applied.
-     * @param ignoreClip Whether to clip 'out' to the viewport.  Set false for the bounds of what would actually be drawn
-     *                within the given viewport; true for bounds that are guaranteed to fit the entire string of text.
+     * @param ignoreClip Whether to clip 'out' to the viewport.  Set false for the bounds of what
+     * would actually be drawn within the given viewport; true for bounds that are guaranteed to fit
+     * the entire string of text.
      */
-    void measureText(const std::string& text, const Rectangle& clip, unsigned int size, Rectangle* out,
-      Justify justify = ALIGN_TOP_LEFT, bool wrap = true, bool ignoreClip = false);
+    void measureText(const std::string& text,
+                     const Rectangle& clip,
+                     unsigned int size,
+                     Rectangle* out,
+                     Justify justify = ALIGN_TOP_LEFT,
+                     bool wrap = true,
+                     bool ignoreClip = false);
 
     /**
      * Returns current character spacing for this font in percentage of fonts size.
@@ -196,10 +220,11 @@ namespace tractor
     /**
      * Sets the additional character spacing for this font.
      *
-     * Character spacing is the additional amount of space that is inserted between characters. Character spacing is defined
-     * as a floating point value that is interpreted as a percentage of size used to draw the font. For example,
-     * a value of 0.1 would cause a spacing of 10% of the font size to be inserted between adjacent characters.
-     * For a font size of 20, this would equate to 2 pixels of extra space between characters.
+     * Character spacing is the additional amount of space that is inserted between characters.
+     * Character spacing is defined as a floating point value that is interpreted as a percentage of
+     * size used to draw the font. For example, a value of 0.1 would cause a spacing of 10% of the
+     * font size to be inserted between adjacent characters. For a font size of 20, this would
+     * equate to 2 pixels of extra space between characters.
      *
      * The default additional character spacing for fonts is 0.0.
      *
@@ -208,17 +233,29 @@ namespace tractor
     void setCharacterSpacing(float spacing);
 
     /**
-     * Get an character index into a string corresponding to the character nearest the given location within the clip region.
+     * Get an character index into a string corresponding to the character nearest the given
+     * location within the clip region.
      */
-    int getIndexAtLocation(const std::string& text, const Rectangle& clip, unsigned int size, const Vector2& inLocation,
-      Vector2* outLocation, Justify justify = ALIGN_TOP_LEFT, bool wrap = true, bool rightToLeft = false);
+    int getIndexAtLocation(const std::string& text,
+                           const Rectangle& clip,
+                           unsigned int size,
+                           const Vector2& inLocation,
+                           Vector2* outLocation,
+                           Justify justify = ALIGN_TOP_LEFT,
+                           bool wrap = true,
+                           bool rightToLeft = false);
 
     /**
      * Get the location of the character at the given index.
      */
-    void getLocationAtIndex(const std::string& text, const Rectangle& clip, unsigned int size, Vector2* outLocation,
-      const unsigned int destIndex, Justify justify = ALIGN_TOP_LEFT, bool wrap = true,
-      bool rightToLeft = false);
+    void getLocationAtIndex(const std::string& text,
+                            const Rectangle& clip,
+                            unsigned int size,
+                            Vector2* outLocation,
+                            const unsigned int destIndex,
+                            Justify justify = ALIGN_TOP_LEFT,
+                            bool wrap = true,
+                            bool rightToLeft = false);
 
     /**
      * Gets the sprite batch used to draw this Font.
@@ -240,37 +277,36 @@ namespace tractor
     static Justify getJustify(const std::string& justify);
 
   private:
-
     /**
      * Defines a font glyph within the texture map for a font.
      */
     class Glyph
     {
-    public:
-      /**
-       * Glyph character code (decimal value).
-       */
-      unsigned int code;
+      public:
+        /**
+         * Glyph character code (decimal value).
+         */
+        unsigned int code;
 
-      /**
-       * Glyph width (in pixels).
-       */
-      unsigned int width;
+        /**
+         * Glyph width (in pixels).
+         */
+        unsigned int width;
 
-      /**
-       * Glyph left side bearing (in pixels).
-       */
-      int bearingX;
+        /**
+         * Glyph left side bearing (in pixels).
+         */
+        int bearingX;
 
-      /**
-       * Glyph horizontal advance (in pixels).
-       */
-      unsigned int advance;
+        /**
+         * Glyph horizontal advance (in pixels).
+         */
+        unsigned int advance;
 
-      /**
-       * Glyph texture coordinates.
-       */
-      float uvs[4];
+        /**
+         * Glyph texture coordinates.
+         */
+        float uvs[4];
     };
 
     /**
@@ -309,24 +345,59 @@ namespace tractor
      *
      * @return The new Font or nullptr if there was an error.
      */
-    static Font* create(const std::string& family, Style style, unsigned int size, Glyph* glyphs, int glyphCount, Texture* texture, Font::Format format);
+    static Font* create(const std::string& family,
+                        Style style,
+                        unsigned int size,
+                        Glyph* glyphs,
+                        int glyphCount,
+                        Texture* texture,
+                        Font::Format format);
 
-    void getMeasurementInfo(const std::string& text, const Rectangle& area, unsigned int size, Justify justify, bool wrap, bool rightToLeft,
-      std::vector<int>* xPositions, int* yPosition, std::vector<unsigned int>* lineLengths);
+    void getMeasurementInfo(const std::string& text,
+                            const Rectangle& area,
+                            unsigned int size,
+                            Justify justify,
+                            bool wrap,
+                            bool rightToLeft,
+                            std::vector<int>* xPositions,
+                            int* yPosition,
+                            std::vector<unsigned int>* lineLengths);
 
-    int getIndexOrLocation(const std::string& text, const Rectangle& clip, unsigned int size, const Vector2& inLocation, Vector2* outLocation,
-      const int destIndex = -1, Justify justify = ALIGN_TOP_LEFT, bool wrap = true, bool rightToLeft = false);
+    int getIndexOrLocation(const std::string& text,
+                           const Rectangle& clip,
+                           unsigned int size,
+                           const Vector2& inLocation,
+                           Vector2* outLocation,
+                           const int destIndex = -1,
+                           Justify justify = ALIGN_TOP_LEFT,
+                           bool wrap = true,
+                           bool rightToLeft = false);
 
     unsigned int getTokenWidth(const char* token, unsigned length, unsigned int size, float scale);
 
     unsigned int getReversedTokenLength(const std::string& token, const std::string& bufStart);
 
-    int handleDelimiters(const char** token, const unsigned int size, const int iteration, const int areaX, int* xPos, int* yPos, unsigned int* lineLength,
-      std::vector<int>::const_iterator* xPositionsIt, std::vector<int>::const_iterator xPositionsEnd, unsigned int* charIndex = nullptr,
-      const Vector2* stopAtPosition = nullptr, const int currentIndex = -1, const int destIndex = -1);
+    int handleDelimiters(const char** token,
+                         const unsigned int size,
+                         const int iteration,
+                         const int areaX,
+                         int* xPos,
+                         int* yPos,
+                         unsigned int* lineLength,
+                         std::vector<int>::const_iterator* xPositionsIt,
+                         std::vector<int>::const_iterator xPositionsEnd,
+                         unsigned int* charIndex = nullptr,
+                         const Vector2* stopAtPosition = nullptr,
+                         const int currentIndex = -1,
+                         const int destIndex = -1);
 
-    void addLineInfo(const Rectangle& area, int lineWidth, int lineLength, Justify hAlign,
-      std::vector<int>* xPositions, std::vector<unsigned int>* lineLengths, bool rightToLeft);
+    void addLineInfo(const Rectangle& area,
+                     int lineWidth,
+                     int lineLength,
+                     Justify hAlign,
+                     std::vector<int>* xPositions,
+                     std::vector<unsigned int>* lineLengths,
+                     bool rightToLeft);
 
     Font* findClosestSize(int size);
 
@@ -346,6 +417,6 @@ namespace tractor
     SpriteBatch* _batch;
     Rectangle _viewport;
     MaterialParameter* _cutoffParam;
-  };
+};
 
-}
+} // namespace tractor

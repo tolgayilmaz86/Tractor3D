@@ -1,42 +1,42 @@
 #pragma once
 
 #include <string>
+
 #include "ui/Label.h"
 
 namespace tractor
 {
 
-  /**
-   * Defines a text control.
-   *
-   * Listeners can listen for a TEXT_CHANGED event, and then query the text box
-   * for the last keypress it received.
-   * On mobile device you can tap or click within the text box to
-   * bring up the virtual keyboard.
-   *
-   * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-UI_Forms
-   */
-  class TextBox : public Label
-  {
+/**
+ * Defines a text control.
+ *
+ * Listeners can listen for a TEXT_CHANGED event, and then query the text box
+ * for the last keypress it received.
+ * On mobile device you can tap or click within the text box to
+ * bring up the virtual keyboard.
+ *
+ * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-UI_Forms
+ */
+class TextBox : public Label
+{
     friend class Container;
     friend class ControlFactory;
 
   public:
-
     /**
      * Input modes. Default is Text.
      */
     enum InputMode
     {
-      /**
-       * Text: Text is displayed directly.
-       */
-      TEXT = 0x01,
+        /**
+         * Text: Text is displayed directly.
+         */
+        TEXT = 0x01,
 
-      /**
-       * Password: Text is replaced by _passwordChar, which is '*' by default.
-       */
-      PASSWORD = 0x02
+        /**
+         * Password: Text is replaced by _passwordChar, which is '*' by default.
+         */
+        PASSWORD = 0x02
     };
 
     /**
@@ -117,7 +117,6 @@ namespace tractor
     void setText(const std::string& text) override;
 
   protected:
-
     /**
      * Constructor.
      */
@@ -251,7 +250,6 @@ namespace tractor
     bool _shiftPressed = false;
 
   private:
-
     /**
      * Constructor.
      */
@@ -260,6 +258,6 @@ namespace tractor
     void setCaretLocation(int x, int y);
 
     void getCaretLocation(Vector2* p);
-  };
+};
 
-}
+} // namespace tractor

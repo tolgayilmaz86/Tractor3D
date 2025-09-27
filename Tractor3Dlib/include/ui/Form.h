@@ -1,30 +1,30 @@
 #pragma once
 
-#include "utils/Ref.h"
-#include "ui/Container.h"
+#include "graphics/Drawable.h"
 #include "graphics/Mesh.h"
-#include "scene/Node.h"
-#include "input/Touch.h"
+#include "input/Gamepad.h"
 #include "input/Keyboard.h"
 #include "input/Mouse.h"
-#include "input/Gamepad.h"
+#include "input/Touch.h"
 #include "renderer/FrameBuffer.h"
-#include "graphics/Drawable.h"
+#include "scene/Node.h"
+#include "ui/Container.h"
+#include "utils/Ref.h"
 
 namespace tractor
 {
 
-  class Theme;
+class Theme;
 
-  /**
-   * Defines a form that is a root container that contains zero or more controls.
-   *
-   * This can also be attached on a scene Node to support 3D forms.
-   *
-   * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-UI_Forms
-   */
-  class Form : public Drawable, public Container
-  {
+/**
+ * Defines a form that is a root container that contains zero or more controls.
+ *
+ * This can also be attached on a scene Node to support 3D forms.
+ *
+ * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-UI_Forms
+ */
+class Form : public Drawable, public Container
+{
     friend class Platform;
     friend class Game;
     friend class Gamepad;
@@ -32,7 +32,6 @@ namespace tractor
     friend class Container;
 
   public:
-
     /**
      * Creates a form from a .form properties file.
      *
@@ -45,19 +44,21 @@ namespace tractor
 
     /**
      * Create a new Form.
-   *
-   * The specified style defines the visual style for the form. If nullptr is passed
-   * for the style, the default UI theme is used. All controls attached to this
-   * form will inherit the theme that contains the form's style.
+     *
+     * The specified style defines the visual style for the form. If nullptr is passed
+     * for the style, the default UI theme is used. All controls attached to this
+     * form will inherit the theme that contains the form's style.
      *
      * @param id The Form's ID.
      * @param style The Form's custom style (optional - may be nullptr).
-   * @param layoutType The form's layout type (optional).
+     * @param layoutType The form's layout type (optional).
      *
      * @return The new Form.
      * @script{create}
      */
-    static Form* create(const std::string& id, Theme::Style* style, Layout::Type layoutType = Layout::LAYOUT_ABSOLUTE);
+    static Form* create(const std::string& id,
+                        Theme::Style* style,
+                        Layout::Type layoutType = Layout::LAYOUT_ABSOLUTE);
 
     /**
      * Get a form from its ID.
@@ -140,7 +141,6 @@ namespace tractor
     void setBatchingEnabled(bool enabled);
 
   private:
-
     /**
      * Constructor.
      */
@@ -257,7 +257,11 @@ namespace tractor
 
     static Control* findInputControl(int* x, int* y, bool focus, unsigned int contactIndex);
 
-    static Control* findInputControl(Control* control, int x, int y, bool focus, unsigned int contactIndex);
+    static Control* findInputControl(Control* control,
+                                     int x,
+                                     int y,
+                                     bool focus,
+                                     unsigned int contactIndex);
 
     static Control* handlePointerPressRelease(int* x, int* y, bool pressed, unsigned int contactIndex);
 
@@ -275,9 +279,9 @@ namespace tractor
 
     static bool pollGamepad(Gamepad* gamepad);
 
-    Matrix _projectionMatrix;           // Projection matrix to be set on SpriteBatch objects when rendering the form
+    Matrix _projectionMatrix; // Projection matrix to be set on SpriteBatch objects when rendering the form
     std::vector<SpriteBatch*> _batches;
     bool _batched;
-  };
+};
 
-}
+} // namespace tractor

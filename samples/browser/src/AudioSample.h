@@ -6,28 +6,25 @@ using namespace tractor;
 
 class AudioSample : public Sample, Control::Listener
 {
-public:
+  public:
+    AudioSample();
 
-  AudioSample();
+  protected:
+    void initialize();
 
-protected:
+    void finalize();
 
-  void initialize();
+    void update(float elapsedTime);
 
-  void finalize();
+    void render(float elapsedTime);
 
-  void update(float elapsedTime);
+    void controlEvent(Control* control, EventType evt);
 
-  void render(float elapsedTime);
-
-  void controlEvent(Control* control, EventType evt);
-
-private:
-
-  Form* _formBackground;
-  Form* _formEngine;
-  Form* _formBraking;
-  AudioSource* _audioBackground;
-  AudioSource* _audioEngine;
-  AudioSource* _audioBraking;
+  private:
+    Form* _formBackground;
+    Form* _formEngine;
+    Form* _formBraking;
+    AudioSource* _audioBackground;
+    AudioSource* _audioEngine;
+    AudioSource* _audioBraking;
 };

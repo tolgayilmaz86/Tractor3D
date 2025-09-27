@@ -1,20 +1,21 @@
 #pragma once
 
 #include "pch.h"
+
 #include "math/Vector3.h"
 
 namespace tractor
 {
-  class PhysicsRigidBody;
-  class Node;
+class PhysicsRigidBody;
+class Node;
 
-  /**
-   * Defines the base class for physics constraints.
-   *
-   * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-Constraints
-   */
-  class PhysicsConstraint
-  {
+/**
+ * Defines the base class for physics constraints.
+ *
+ * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-Constraints
+ */
+class PhysicsConstraint
+{
     friend class PhysicsController;
     friend class PhysicsRigidBody;
 
@@ -75,7 +76,6 @@ namespace tractor
     static Vector3 getTranslationOffset(const Node* node, const Vector3& point);
 
   protected:
-
     /**
      * Constructor.
      */
@@ -116,8 +116,8 @@ namespace tractor
      * Pointer to the Bullet constraint.
      */
     btTypedConstraint* _constraint;
-  };
+};
 
-}
+} // namespace tractor
 
 #include "physics/PhysicsConstraint.inl"

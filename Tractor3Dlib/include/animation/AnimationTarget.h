@@ -1,29 +1,29 @@
 #pragma once
 
-#include "graphics/Curve.h"
 #include "animation/AnimationController.h"
+#include "graphics/Curve.h"
 
 namespace tractor
 {
 
-  class Animation;
-  class AnimationValue;
-  class NodeCloneContext;
+class Animation;
+class AnimationValue;
+class NodeCloneContext;
 
-  /**
-   * Defines an interface allowing animation to target
-   * an object for changing its animation properties.
-   */
-  class AnimationTarget
-  {
+/**
+ * Defines an interface allowing animation to target
+ * an object for changing its animation properties.
+ */
+class AnimationTarget
+{
     friend class Animation;
     friend class AnimationClip;
 
   public:
-
     /**
      * Creates an animation on this target from a set of key value and key time pairs.
-     * Cannot use Curve::BEZIER or CURVE::HERMITE as the interpolation type since they require tangents/control points.
+     * Cannot use Curve::BEZIER or CURVE::HERMITE as the interpolation type since they require
+     * tangents/control points.
      *
      * @param id The ID of the animation.
      * @param propertyId The property on this target to animate.
@@ -34,7 +34,12 @@ namespace tractor
      *
      * @return The newly created animation.
      */
-    Animation* createAnimation(const std::string& id, int propertyId, unsigned int keyCount, unsigned int* keyTimes, float* keyValues, Curve::InterpolationType type);
+    Animation* createAnimation(const std::string& id,
+                               int propertyId,
+                               unsigned int keyCount,
+                               unsigned int* keyTimes,
+                               float* keyValues,
+                               Curve::InterpolationType type);
 
     /**
      * Creates an animation on this target from a set of key value and key time pairs.
@@ -50,12 +55,20 @@ namespace tractor
      *
      * @return The newly created animation.
      */
-    Animation* createAnimation(const std::string& id, int propertyId, unsigned int keyCount, unsigned int* keyTimes, float* keyValues, float* keyInValue, float* keyOutValue, Curve::InterpolationType type);
+    Animation* createAnimation(const std::string& id,
+                               int propertyId,
+                               unsigned int keyCount,
+                               unsigned int* keyTimes,
+                               float* keyValues,
+                               float* keyInValue,
+                               float* keyOutValue,
+                               Curve::InterpolationType type);
 
     /**
-     * Creates an animation on this target using the data from the Properties object defined at the specified URL,
-     * where the URL is of the format "<file-path>.<extension>#<namespace-id>/<namespace-id>/.../<namespace-id>"
-     * (and "#<namespace-id>/<namespace-id>/.../<namespace-id>" is optional).
+     * Creates an animation on this target using the data from the Properties object defined at the
+     * specified URL, where the URL is of the format
+     * "<file-path>.<extension>#<namespace-id>/<namespace-id>/.../<namespace-id>" (and
+     * "#<namespace-id>/<namespace-id>/.../<namespace-id>" is optional).
      *
      * @param id The ID of the animation.
      * @param url The URL pointing to the Properties object defining the animation data.
@@ -76,7 +89,8 @@ namespace tractor
 
     /**
      * Creates a simple two keyframe from-to animation.
-     * Cannot use Curve::BEZIER or CURVE::HERMITE as the interpolation type since they require tangents/control points.
+     * Cannot use Curve::BEZIER or CURVE::HERMITE as the interpolation type since they require
+     * tangents/control points.
      *
      * @param id The ID of the animation.
      * @param propertyId The property on this target to animate.
@@ -87,11 +101,17 @@ namespace tractor
      *
      * @return The newly created animation.
      */
-    Animation* createAnimationFromTo(const std::string& id, int propertyId, float* from, float* to, Curve::InterpolationType type, unsigned long duration);
+    Animation* createAnimationFromTo(const std::string& id,
+                                     int propertyId,
+                                     float* from,
+                                     float* to,
+                                     Curve::InterpolationType type,
+                                     unsigned long duration);
 
     /**
      * Creates a simple two keyframe from-by animation.
-     * Cannot use Curve::BEZIER or CURVE::HERMITE as the interpolation type since they require tangents/control points.
+     * Cannot use Curve::BEZIER or CURVE::HERMITE as the interpolation type since they require
+     * tangents/control points.
      *
      * @param id The ID of the animation.
      * @param propertyId The property on this target to animate.
@@ -102,7 +122,12 @@ namespace tractor
      *
      * @return The newly created animation.
      */
-    Animation* createAnimationFromBy(const std::string& id, int propertyId, float* from, float* by, Curve::InterpolationType type, unsigned long duration);
+    Animation* createAnimationFromBy(const std::string& id,
+                                     int propertyId,
+                                     float* from,
+                                     float* by,
+                                     Curve::InterpolationType type,
+                                     unsigned long duration);
 
     /**
      * Destroys the animation with the specified ID. Destroys the first animation if ID is nullptr.
@@ -135,24 +160,26 @@ namespace tractor
      * @param value The container to set the animation property value in.
      * @param blendWeight The blend weight.
      */
-    virtual void setAnimationPropertyValue(int propertyId, AnimationValue* value, float blendWeight = 1.0f) = 0;
+    virtual void setAnimationPropertyValue(int propertyId,
+                                           AnimationValue* value,
+                                           float blendWeight = 1.0f) = 0;
 
     /**
-     * Gets the animation with the specified ID. If the ID is nullptr, this function will return the first animation it finds.
+     * Gets the animation with the specified ID. If the ID is nullptr, this function will return the
+     * first animation it finds.
      *
      * @param id The name of the animation to get.
      */
     Animation* getAnimation(const std::string& id = EMPTY_STRING) const;
 
   protected:
-
     /**
      * The type of animation target.
      */
     enum TargetType
     {
-      SCALAR,
-      TRANSFORM
+        SCALAR,
+        TRANSFORM
     };
 
     /**
@@ -166,13 +193,13 @@ namespace tractor
     virtual ~AnimationTarget();
 
     /**
-       * Gets the TargetType's property ID value for the specified property ID string.
-       *
-       * @param type The TargetType of the AnimationTarget.
-       * @param propertyIdStr The property ID string.
-       * @return The property ID value for the property ID string; -1 if the propertyIdStr does not exist
-       *    for the TargetType.
-       */
+     * Gets the TargetType's property ID value for the specified property ID string.
+     *
+     * @param type The TargetType of the AnimationTarget.
+     * @param propertyIdStr The property ID string.
+     * @return The property ID value for the property ID string; -1 if the propertyIdStr does not
+     * exist for the TargetType.
+     */
     virtual int getPropertyId(TargetType type, const std::string& propertyIdStr);
 
     /**
@@ -213,7 +240,6 @@ namespace tractor
     TargetType _targetType;
 
   private:
-
     /**
      * Constructor.
      */
@@ -239,7 +265,7 @@ namespace tractor
      */
     void convertByValues(float* from, float* by, unsigned int componentCount);
 
-    std::vector<Animation::Channel*>* _animationChannels;   // Collection of all animation channels that target the AnimationTarget
-
-  };
-}
+    std::vector<Animation::Channel*>*
+        _animationChannels; // Collection of all animation channels that target the AnimationTarget
+};
+} // namespace tractor

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "tractor.h"
 #include "Sample.h"
+#include "tractor.h"
 
 using namespace tractor;
 
@@ -10,31 +10,28 @@ using namespace tractor;
  */
 class SceneLoadSample : public Sample
 {
-public:
+  public:
+    SceneLoadSample();
 
-  SceneLoadSample();
+    void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
 
-  void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
+    void keyEvent(Keyboard::KeyEvent evt, int key);
 
-  void keyEvent(Keyboard::KeyEvent evt, int key);
+  protected:
+    void initialize();
 
-protected:
+    void finalize();
 
-  void initialize();
+    void update(float elapsedTime);
 
-  void finalize();
+    void render(float elapsedTime);
 
-  void update(float elapsedTime);
+  private:
+    bool initializeMaterials(Node* node);
 
-  void render(float elapsedTime);
+    bool drawScene(Node* node);
 
-private:
-
-  bool initializeMaterials(Node* node);
-
-  bool drawScene(Node* node);
-
-  Font* _font;
-  Scene* _scene;
-  bool _wireFrame;
+    Font* _font;
+    Scene* _scene;
+    bool _wireFrame;
 };

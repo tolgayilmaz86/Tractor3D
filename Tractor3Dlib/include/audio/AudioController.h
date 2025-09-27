@@ -3,31 +3,29 @@
 namespace tractor
 {
 
-  class AudioListener;
-  class AudioSource;
+class AudioListener;
+class AudioSource;
 
-  /**
-   * Defines a class for controlling game audio.
-   */
-  class AudioController
-  {
+/**
+ * Defines a class for controlling game audio.
+ */
+class AudioController
+{
     friend class Game;
     friend class AudioSource;
 
   public:
-
     /**
      * Constructor.
      */
     AudioController();
 
     /**
-      * Destructor.
-      */
+     * Destructor.
+     */
     virtual ~AudioController();
 
   private:
-
     /**
      * Controller initialize.
      */
@@ -68,6 +66,6 @@ namespace tractor
     bool _streamingThreadActive;
     std::unique_ptr<std::thread> _streamingThread;
     std::unique_ptr<std::mutex> _streamingMutex;
-  };
+};
 
-}
+} // namespace tractor

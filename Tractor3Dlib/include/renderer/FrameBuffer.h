@@ -1,32 +1,32 @@
 #pragma once
 
 #include "pch.h"
-#include "renderer/RenderTarget.h"
+
 #include "renderer/DepthStencilTarget.h"
+#include "renderer/RenderTarget.h"
 #include "ui/Image.h"
 
 namespace tractor
 {
 
-  /**
-   * Defines a frame buffer object that may contain one or more render targets and optionally
-   * a depth-stencil target.
-   *
-   * Frame buffers can be created and used for off-screen rendering, which is useful for
-   * techniques such as shadow mapping and post-processing. Render targets within a frame
-   * buffer can be both written to and read (by calling RenderTarget::getTexture).
-   *
-   * When binding a custom frame buffer, you should always store the return value of
-   * FrameBuffer::bind and restore it when you are finished drawing to your frame buffer.
-   *
-   * To bind the default frame buffer, call FrameBuffer::bindDefault.
-   */
-  class FrameBuffer : public Ref
-  {
+/**
+ * Defines a frame buffer object that may contain one or more render targets and optionally
+ * a depth-stencil target.
+ *
+ * Frame buffers can be created and used for off-screen rendering, which is useful for
+ * techniques such as shadow mapping and post-processing. Render targets within a frame
+ * buffer can be both written to and read (by calling RenderTarget::getTexture).
+ *
+ * When binding a custom frame buffer, you should always store the return value of
+ * FrameBuffer::bind and restore it when you are finished drawing to your frame buffer.
+ *
+ * To bind the default frame buffer, call FrameBuffer::bindDefault.
+ */
+class FrameBuffer : public Ref
+{
     friend class Game;
 
   public:
-
     /**
      * Creates a new, empty FrameBuffer object.
      *
@@ -58,7 +58,10 @@ namespace tractor
      * @return A newly created FrameBuffer.
      * @script{create}
      */
-    static FrameBuffer* create(const std::string& id, unsigned int width, unsigned int height, Texture::Format format = Texture::RGBA);
+    static FrameBuffer* create(const std::string& id,
+                               unsigned int width,
+                               unsigned int height,
+                               Texture::Format format = Texture::RGBA);
 
     /**
      * Get a named FrameBuffer from its ID.
@@ -106,12 +109,12 @@ namespace tractor
     void setRenderTarget(RenderTarget* target, unsigned int index = 0);
 
     /**
-    * Set a RenderTarget on this FrameBuffer's color attachment at the specified index.
-    *
-    * @param target The Cubemap RenderTarget to set.
-    * @param face The face of the cubemap to target.
-    * @param index The index of the color attachment to set.
-    */
+     * Set a RenderTarget on this FrameBuffer's color attachment at the specified index.
+     *
+     * @param target The Cubemap RenderTarget to set.
+     * @param face The face of the cubemap to target.
+     * @param index The index of the color attachment to set.
+     */
     void setRenderTarget(RenderTarget* target, Texture::CubeFace face, unsigned int index = 0);
 
     /**
@@ -192,11 +195,13 @@ namespace tractor
     static FrameBuffer* getCurrent();
 
   private:
-
     /**
      * Constructor.
      */
-    FrameBuffer(const std::string& id, unsigned int width, unsigned int height, FrameBufferHandle handle);
+    FrameBuffer(const std::string& id,
+                unsigned int width,
+                unsigned int height,
+                FrameBufferHandle handle);
 
     /**
      * Destructor.
@@ -226,6 +231,6 @@ namespace tractor
     static std::vector<FrameBuffer*> _frameBuffers;
     static FrameBuffer* _defaultFrameBuffer;
     static FrameBuffer* _currentFrameBuffer;
-  };
+};
 
-}
+} // namespace tractor

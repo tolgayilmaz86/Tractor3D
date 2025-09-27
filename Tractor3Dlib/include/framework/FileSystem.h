@@ -1,20 +1,20 @@
 #pragma once
 
-#include "framework/Stream.h"
 #include <string>
+
+#include "framework/Stream.h"
 
 namespace tractor
 {
 
-  class Properties;
+class Properties;
 
-  /**
-   * Defines a set of functions for interacting with the device file system.
-   */
-  class FileSystem
-  {
+/**
+ * Defines a set of functions for interacting with the device file system.
+ */
+class FileSystem
+{
   public:
-
     /**
      * Mode flags for opening a stream.
      *
@@ -22,8 +22,8 @@ namespace tractor
      */
     enum StreamMode
     {
-      READ = 1,
-      WRITE = 2
+        READ = 1,
+        WRITE = 2
     };
 
     /**
@@ -33,8 +33,8 @@ namespace tractor
      */
     enum DialogMode
     {
-      OPEN,
-      SAVE
+        OPEN,
+        SAVE
     };
 
     /**
@@ -107,7 +107,11 @@ namespace tractor
      *
      * @script{ignore}
      */
-    static std::string displayFileDialog(size_t dialogMode, const std::string& title, const std::string& filterDescription, const std::string& filterExtensions, const std::string& initialDirectory);
+    static std::string displayFileDialog(size_t dialogMode,
+                                         const std::string& title,
+                                         const std::string& filterDescription,
+                                         const std::string& filterExtensions,
+                                         const std::string& initialDirectory);
 
     /**
      * Resolves a filesystem path.
@@ -148,10 +152,11 @@ namespace tractor
     /**
      * Opens a byte stream for the given resource path.
      *
-     * If <code>path</code> is a file path, the file at the specified location is opened relative to the currently set
-     * resource path.
+     * If <code>path</code> is a file path, the file at the specified location is opened relative to
+     * the currently set resource path.
      *
-     * @param path The path to the resource to be opened, relative to the currently set resource path.
+     * @param path The path to the resource to be opened, relative to the currently set resource
+     * path.
      * @param streamMode The stream mode used to open the file.
      *
      * @return A stream that can be used to read or write to the file depending on the mode.
@@ -201,20 +206,20 @@ namespace tractor
     static bool isAbsolutePath(const std::string& filePath);
 
     /**
-    * Sets the asset root path for the game on platforms that have separate assets (currently just Android).
-    *
-    * Once set, all asset paths will be loaded relative to the given path.
-    * The default asset path is an empty string ("").
-    *
-    * @param path The asset root path.
-    */
+     * Sets the asset root path for the game on platforms that have separate assets (currently just Android).
+     *
+     * Once set, all asset paths will be loaded relative to the given path.
+     * The default asset path is an empty string ("").
+     *
+     * @param path The asset root path.
+     */
     static void setAssetPath(const std::string& path);
 
     /**
-    * Returns the currently set asset root path.
-    *
-    * @return The currently set asset root path.
-    */
+     * Returns the currently set asset root path.
+     *
+     * @return The currently set asset root path.
+     */
     static std::string getAssetPath();
 
     /**
@@ -234,9 +239,11 @@ namespace tractor
      * - "image.png" will return ""
      * - "c:\foo\bar\image.png" will return "c:/foo/bar/"
      *
-     * @param path The file path. May be relative or absolute, forward or back slashes. May be nullptr.
+     * @param path The file path. May be relative or absolute, forward or back slashes. May be
+     * nullptr.
      *
-     * @return The directory name with the trailing '/'. Returns "" if path is nullptr or the path does not contain a directory.
+     * @return The directory name with the trailing '/'. Returns "" if path is nullptr or the path
+     * does not contain a directory.
      */
     static std::string getDirectoryName(const std::string& path);
 
@@ -255,11 +262,10 @@ namespace tractor
     static std::string getExtension(const std::string& path);
 
   private:
-
     /**
      * Constructor.
      */
     FileSystem();
-  };
+};
 
-}
+} // namespace tractor

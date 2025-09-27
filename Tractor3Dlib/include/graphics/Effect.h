@@ -1,31 +1,30 @@
 #pragma once
 
-#include "utils/Ref.h"
+#include "math/Matrix.h"
 #include "math/Vector2.h"
 #include "math/Vector3.h"
 #include "math/Vector4.h"
-#include "math/Matrix.h"
 #include "renderer/Texture.h"
+#include "utils/Ref.h"
 
 namespace tractor
 {
 
-  class Uniform;
+class Uniform;
 
-  /**
-   * Defines an effect which can be applied during rendering.
-   *
-   * An effect essentially wraps an OpenGL program object, which includes the
-   * vertex and fragment shader.
-   *
-   * In the future, this class may be extended to support additional logic that
-   * typical effect systems support, such as GPU render state management,
-   * techniques and passes.
-   */
-  class Effect : public Ref
-  {
+/**
+ * Defines an effect which can be applied during rendering.
+ *
+ * An effect essentially wraps an OpenGL program object, which includes the
+ * vertex and fragment shader.
+ *
+ * In the future, this class may be extended to support additional logic that
+ * typical effect systems support, such as GPU render state management,
+ * techniques and passes.
+ */
+class Effect : public Ref
+{
   public:
-
     /**
      * Hidden constructor (use createEffect instead).
      */
@@ -45,7 +44,9 @@ namespace tractor
      *
      * @return The created effect.
      */
-    static Effect* createFromFile(const std::string& vshPath, const std::string& fshPath, const std::string& defines = EMPTY_STRING);
+    static Effect* createFromFile(const std::string& vshPath,
+                                  const std::string& fshPath,
+                                  const std::string& defines = EMPTY_STRING);
 
     /**
      * Creates an effect from the given vertex and fragment shader source code.
@@ -56,7 +57,9 @@ namespace tractor
      *
      * @return The created effect.
      */
-    static Effect* createFromSource(const std::string& vshSource, const std::string& fshSource, const std::string& defines = EMPTY_STRING);
+    static Effect* createFromSource(const std::string& vshSource,
+                                    const std::string& fshSource,
+                                    const std::string& defines = EMPTY_STRING);
 
     /**
      * Returns the unique string identifier for the effect, which is a concatenation of
@@ -232,30 +235,32 @@ namespace tractor
     static Effect* getCurrentEffect();
 
   private:
-
     /**
      * Hidden copy assignment operator.
      */
     Effect& operator=(const Effect&);
 
-    static Effect* createFromSource(const std::string& vshPath, const std::string& vshSource, const std::string& fshPath, const std::string& fshSource, const std::string& defines = EMPTY_STRING);
+    static Effect* createFromSource(const std::string& vshPath,
+                                    const std::string& vshSource,
+                                    const std::string& fshPath,
+                                    const std::string& fshSource,
+                                    const std::string& defines = EMPTY_STRING);
 
     GLuint _program;
     std::string _id;
     std::map<std::string, VertexAttribute> _vertexAttributes;
     mutable std::map<std::string, Uniform*> _uniforms;
     static Uniform _emptyUniform;
-  };
+};
 
-  /**
-   * Represents a uniform variable within an effect.
-   */
-  class Uniform
-  {
+/**
+ * Represents a uniform variable within an effect.
+ */
+class Uniform
+{
     friend class Effect;
 
   public:
-
     /**
      * Returns the name of this uniform.
      *
@@ -278,7 +283,6 @@ namespace tractor
     Effect* getEffect() const;
 
   private:
-
     /**
      * Constructor.
      */
@@ -304,6 +308,6 @@ namespace tractor
     GLenum _type;
     unsigned int _index;
     Effect* _effect;
-  };
+};
 
-}
+} // namespace tractor

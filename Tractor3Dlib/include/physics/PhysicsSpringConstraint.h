@@ -5,20 +5,19 @@
 namespace tractor
 {
 
-  /**
-   * Defines a generic spring constraint between two
-   * rigid bodies (or one rigid body and the world)
-   * where the spring strength and damping can be set
-   * for all six degrees of freedom.
-   *
-   * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-Constraints
-   */
-  class PhysicsSpringConstraint : public PhysicsGenericConstraint
-  {
+/**
+ * Defines a generic spring constraint between two
+ * rigid bodies (or one rigid body and the world)
+ * where the spring strength and damping can be set
+ * for all six degrees of freedom.
+ *
+ * @see http://gameplay3d.github.io/GamePlay/docs/file-formats.html#wiki-Constraints
+ */
+class PhysicsSpringConstraint : public PhysicsGenericConstraint
+{
     friend class PhysicsController;
 
   public:
-
     /**
      * Sets the angular damping along the constraint's local X axis.
      *
@@ -122,21 +121,20 @@ namespace tractor
     inline void setLinearStrengthZ(float strength);
 
   private:
-
     // Represents the different properties that
     // can be set on the spring constraint.
-    // 
+    //
     // (Note: the values map to the index parameter
     // used in the member functions of the Bullet
     // class btGeneric6DofSpringConstraint.)
     enum SpringProperty
     {
-      LINEAR_X = 0,
-      LINEAR_Y,
-      LINEAR_Z,
-      ANGULAR_X,
-      ANGULAR_Y,
-      ANGULAR_Z
+        LINEAR_X = 0,
+        LINEAR_Y,
+        LINEAR_Z,
+        ANGULAR_X,
+        ANGULAR_Y,
+        ANGULAR_Z
     };
 
     /**
@@ -165,29 +163,33 @@ namespace tractor
      * @param translationOffsetB The translation offset for the second rigid body
      *      (in its local space) with respect to the constraint joint (optional).
      */
-    PhysicsSpringConstraint(PhysicsRigidBody* a, const Quaternion& rotationOffsetA, const Vector3& translationOffsetA,
-      PhysicsRigidBody* b, const Quaternion& rotationOffsetB, const Vector3& translationOffsetB);
+    PhysicsSpringConstraint(PhysicsRigidBody* a,
+                            const Quaternion& rotationOffsetA,
+                            const Vector3& translationOffsetA,
+                            PhysicsRigidBody* b,
+                            const Quaternion& rotationOffsetB,
+                            const Vector3& translationOffsetB);
 
     /**
      * Destructor.
      */
     ~PhysicsSpringConstraint();
 
-    // Sets the strength for the given angular/linear 
+    // Sets the strength for the given angular/linear
     // X/Y/Z axis combination determined by the given index.
-    // 
+    //
     // See the Bullet class btGeneric6DofSpringConstraint
     // for more information.
     void setStrength(SpringProperty property, float strength);
 
-    // Sets the damping for the given angular/linear 
+    // Sets the damping for the given angular/linear
     // X/Y/Z axis combination determined by the given index.
-    // 
+    //
     // See the Bullet class btGeneric6DofSpringConstraint
     // for more information.
     void setDamping(SpringProperty property, float damping);
-  };
+};
 
-}
+} // namespace tractor
 
 #include "physics/PhysicsSpringConstraint.inl"

@@ -1,35 +1,33 @@
 #pragma once
 
 #include "SamplesGame.h"
+
 #include "input/Gamepad.h"
 
 using namespace tractor;
 
 class GamepadSample : public Sample
 {
-public:
+  public:
+    GamepadSample() = default;
 
-	GamepadSample() = default;
+    void gamepadEvent(Gamepad::GamepadEvent evt, Gamepad* gamepad);
 
-	void gamepadEvent(Gamepad::GamepadEvent evt, Gamepad* gamepad);
+  protected:
+    void initialize();
 
-protected:
+    void finalize();
 
-	void initialize();
+    void update(float elapsedTime);
 
-	void finalize();
+    void render(float elapsedTime);
 
-	void update(float elapsedTime);
+  private:
+    void updateGamepad(float elapsedTime, Gamepad* gamepad, unsigned int player);
 
-	void render(float elapsedTime);
+    const std::string& getStringFromButtonMapping(Gamepad::ButtonMapping mapping);
 
-private:
-
-	void updateGamepad(float elapsedTime, Gamepad* gamepad, unsigned int player);
-
-	const std::string& getStringFromButtonMapping(Gamepad::ButtonMapping mapping);
-
-	Gamepad* _gamepad{ nullptr };
-	Font* _font{ nullptr };
-	std::string _status{};
+    Gamepad* _gamepad{ nullptr };
+    Font* _font{ nullptr };
+    std::string _status{};
 };

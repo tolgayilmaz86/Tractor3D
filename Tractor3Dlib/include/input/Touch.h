@@ -3,13 +3,12 @@
 namespace tractor
 {
 
-  /**
-   * Defines a touch screen event.
-   */
-  class Touch
-  {
+/**
+ * Defines a touch screen event.
+ */
+class Touch
+{
   public:
-
     /**
      * Maximum simultaneous touch points supported.
      */
@@ -20,17 +19,16 @@ namespace tractor
      */
     enum TouchEvent
     {
-      TOUCH_PRESS,
-      TOUCH_RELEASE,
-      TOUCH_MOVE
+        TOUCH_PRESS,
+        TOUCH_RELEASE,
+        TOUCH_MOVE
     };
 
   private:
-
     /**
      * Constructor. Used internally.
      */
     Touch();
-  };
+};
 
-}
+} // namespace tractor

@@ -150,7 +150,7 @@ class Gamepad
      *
      * @param formPath The path the the .form file.
      */
-    Gamepad(const std::string& formPath);
+    explicit Gamepad(const std::string& formPath);
 
     /**
      * Constructs a physical gamepad.
@@ -161,7 +161,7 @@ class Gamepad
      * @param triggerCount the number of triggers on the gamepad.
      * @param name The product/device name.
      */
-    Gamepad(GamepadHandle handle,
+    explicit Gamepad(GamepadHandle handle,
             unsigned int buttonCount,
             unsigned int joystickCount,
             unsigned int triggerCount,

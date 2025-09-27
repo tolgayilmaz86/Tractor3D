@@ -54,7 +54,7 @@ class TerrainPatch : public Camera::Listener
     /**
      * Constructor.
      */
-    TerrainPatch();
+    TerrainPatch() = default;
 
     /**
      * Hidden copy constructor.
@@ -156,18 +156,24 @@ class TerrainPatch : public Camera::Listener
 
     std::string passCreated(Pass* pass);
 
-    Terrain* _terrain;
-    unsigned int _index;
-    unsigned int _row;
-    unsigned int _column;
-    std::vector<Level*> _levels;
-    std::set<Layer*, LayerCompare> _layers;
-    std::vector<Texture::Sampler*> _samplers;
-    mutable BoundingBox _boundingBox;
-    mutable BoundingBox _boundingBoxWorld;
-    mutable Camera* _camera;
-    mutable unsigned int _level;
-    mutable int _bits;
+  private:
+    static constexpr auto TERRAINPATCH_DIRTY_MATERIAL = 1;
+    static constexpr auto TERRAINPATCH_DIRTY_BOUNDS = 2;
+    static constexpr auto TERRAINPATCH_DIRTY_LEVEL = 4;
+
+    Terrain* _terrain{ nullptr };
+    unsigned int _index{ 0 };
+    unsigned int _row{ 0 };
+    unsigned int _column{ 0 };
+    std::vector<Level*> _levels{};
+    std::set<Layer*, LayerCompare> _layers{};
+    std::vector<Texture::Sampler*> _samplers{};
+    mutable BoundingBox _boundingBox{};
+    mutable BoundingBox _boundingBoxWorld{};
+    mutable Camera* _camera{ nullptr };
+    mutable unsigned int _level{ 0 };
+    mutable int _bits{ TERRAINPATCH_DIRTY_MATERIAL | TERRAINPATCH_DIRTY_BOUNDS
+                       | TERRAINPATCH_DIRTY_LEVEL };
 };
 
 } // namespace tractor

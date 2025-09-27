@@ -53,10 +53,6 @@ Bundle::~Bundle()
     SAFE_DELETE_ARRAY(_references);
 }
 
-unsigned int Bundle::getVersionMajor() const { return (unsigned int)_version[0]; }
-
-unsigned int Bundle::getVersionMinor() const { return (unsigned int)_version[1]; }
-
 template <class T> bool Bundle::readArray(unsigned int* length, T** ptr)
 {
     assert(length);
@@ -358,14 +354,6 @@ Bundle::Reference* Bundle::seekToFirstType(unsigned int type)
     }
     return nullptr;
 }
-
-bool Bundle::read(unsigned int* ptr) { return _stream->read(ptr, sizeof(unsigned int), 1) == 1; }
-
-bool Bundle::read(unsigned char* ptr) { return _stream->read(ptr, sizeof(unsigned char), 1) == 1; }
-
-bool Bundle::read(float* ptr) { return _stream->read(ptr, sizeof(float), 1) == 1; }
-
-bool Bundle::readMatrix(float* m) { return _stream->read(m, sizeof(float), 16) == 16; }
 
 Scene* Bundle::loadScene(const std::string& id)
 {
@@ -1851,10 +1839,6 @@ void Bundle::setTransform(const float& values, Transform* transform)
     transform->setRotation(rotation);
 }
 
-bool Bundle::contains(const std::string& id) const { return (find(id) != nullptr); }
-
-unsigned int Bundle::getObjectCount() const { return _referenceCount; }
-
 const std::string& Bundle::getObjectId(unsigned int index) const
 {
     assert(_references);
@@ -1866,10 +1850,6 @@ const std::string& Bundle::getObjectId(unsigned int index) const
 
     return _references[index].id;
 }
-
-Bundle::Reference::Reference() : type(0), offset(0) {}
-
-Bundle::Reference::~Reference() {}
 
 Bundle::MeshPartData::MeshPartData()
     : primitiveType(Mesh::TRIANGLES), indexFormat(Mesh::INDEX32), indexCount(0), indexData(nullptr)

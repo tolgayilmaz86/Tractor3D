@@ -11,11 +11,6 @@
 namespace tractor
 {
 
-MeshSkin::MeshSkin()
-    : _rootJoint(nullptr), _rootNode(nullptr), _matrixPalette(nullptr), _model(nullptr)
-{
-}
-
 MeshSkin::~MeshSkin()
 {
     clearJoints();

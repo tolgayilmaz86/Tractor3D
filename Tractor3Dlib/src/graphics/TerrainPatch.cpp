@@ -12,20 +12,6 @@ namespace tractor
 {
 
 /**
- * @script{ignore}
- */
-template <class T> T clamp(T value, T min, T max)
-{
-    return value < min ? min : (value > max ? max : value);
-}
-
-#define TERRAINPATCH_DIRTY_MATERIAL 1
-#define TERRAINPATCH_DIRTY_BOUNDS 2
-#define TERRAINPATCH_DIRTY_LEVEL 4
-#define TERRAINPATCH_DIRTY_ALL                                                                     \
-    (TERRAINPATCH_DIRTY_MATERIAL | TERRAINPATCH_DIRTY_BOUNDS | TERRAINPATCH_DIRTY_LEVEL)
-
-/**
  * Custom material auto-binding resolver for terrain.
  * @script{ignore}
  */
@@ -35,12 +21,6 @@ class TerrainAutoBindingResolver : RenderState::AutoBindingResolver
 };
 static TerrainAutoBindingResolver __autoBindingResolver;
 static int __currentPatchIndex = -1;
-
-TerrainPatch::TerrainPatch()
-    : _terrain(nullptr), _row(0), _column(0), _camera(nullptr), _level(0),
-      _bits(TERRAINPATCH_DIRTY_ALL)
-{
-}
 
 TerrainPatch::~TerrainPatch()
 {

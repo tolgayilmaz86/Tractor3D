@@ -8,33 +8,12 @@
 #include "scene/Properties.h"
 #include "scene/Scene.h"
 
-#define PARTICLE_COUNT_MAX 100
-#define PARTICLE_EMISSION_RATE 10
-#define PARTICLE_EMISSION_RATE_TIME_INTERVAL 1000.0f / (float)PARTICLE_EMISSION_RATE
-#define PARTICLE_UPDATE_RATE_MAX 8
-
 namespace tractor
 {
 
 ParticleEmitter::ParticleEmitter(unsigned int particleCountMax)
-    : Drawable(), _particleCountMax(particleCountMax), _particleCount(0), _particles(nullptr),
-      _emissionRate(PARTICLE_EMISSION_RATE), _started(false), _ellipsoid(false), _sizeStartMin(1.0f),
-      _sizeStartMax(1.0f), _sizeEndMin(1.0f), _sizeEndMax(1.0f), _energyMin(1000L),
-      _energyMax(1000L), _colorStart(Vector4::zero()), _colorStartVar(Vector4::zero()),
-      _colorEnd(Vector4::one()), _colorEndVar(Vector4::zero()), _position(Vector3::zero()),
-      _positionVar(Vector3::zero()), _velocity(Vector3::zero()), _velocityVar(Vector3::one()),
-      _acceleration(Vector3::zero()), _accelerationVar(Vector3::zero()),
-      _rotationPerParticleSpeedMin(0.0f), _rotationPerParticleSpeedMax(0.0f),
-      _rotationSpeedMin(0.0f), _rotationSpeedMax(0.0f), _rotationAxis(Vector3::zero()),
-      _rotation(Matrix::identity()), _spriteBatch(nullptr), _spriteBlendMode(BLEND_ALPHA),
-      _spriteTextureWidth(0), _spriteTextureHeight(0), _spriteTextureWidthRatio(0),
-      _spriteTextureHeightRatio(0), _spriteTextureCoords(nullptr), _spriteAnimated(false),
-      _spriteLooped(false), _spriteFrameCount(1), _spriteFrameRandomOffset(0),
-      _spriteFrameDuration(0L), _spriteFrameDurationSecs(0.0f), _spritePercentPerFrame(0.0f),
-      _orbitPosition(false), _orbitVelocity(false), _orbitAcceleration(false),
-      _timePerEmission(PARTICLE_EMISSION_RATE_TIME_INTERVAL), _emitTime(0), _lastUpdated(0)
+    : Drawable(), _particleCountMax(particleCountMax)
 {
-    assert(particleCountMax);
     _particles = new Particle[particleCountMax];
 }
 
@@ -258,12 +237,6 @@ Texture* ParticleEmitter::getTexture() const
     return sampler ? sampler->getTexture() : nullptr;
 }
 
-void ParticleEmitter::setParticleCountMax(unsigned int max) { _particleCountMax = max; }
-
-unsigned int ParticleEmitter::getParticleCountMax() const { return _particleCountMax; }
-
-unsigned int ParticleEmitter::getEmissionRate() const { return _emissionRate; }
-
 void ParticleEmitter::setEmissionRate(unsigned int rate)
 {
     assert(rate);
@@ -276,10 +249,6 @@ void ParticleEmitter::start()
     _started = true;
     _lastUpdated = 0;
 }
-
-void ParticleEmitter::stop() { _started = false; }
-
-bool ParticleEmitter::isStarted() const { return _started; }
 
 bool ParticleEmitter::isActive() const
 {
@@ -374,12 +343,6 @@ void ParticleEmitter::emitOnce(unsigned int particleCount)
     }
 }
 
-unsigned int ParticleEmitter::getParticlesCount() const { return _particleCount; }
-
-void ParticleEmitter::setEllipsoid(bool ellipsoid) { _ellipsoid = ellipsoid; }
-
-bool ParticleEmitter::isEllipsoid() const { return _ellipsoid; }
-
 void ParticleEmitter::setSize(float startMin, float startMax, float endMin, float endMax)
 {
     _sizeStartMin = startMin;
@@ -388,23 +351,11 @@ void ParticleEmitter::setSize(float startMin, float startMax, float endMin, floa
     _sizeEndMax = endMax;
 }
 
-float ParticleEmitter::getSizeStartMin() const { return _sizeStartMin; }
-
-float ParticleEmitter::getSizeStartMax() const { return _sizeStartMax; }
-
-float ParticleEmitter::getSizeEndMin() const { return _sizeEndMin; }
-
-float ParticleEmitter::getSizeEndMax() const { return _sizeEndMax; }
-
 void ParticleEmitter::setEnergy(long energyMin, long energyMax)
 {
     _energyMin = energyMin;
     _energyMax = energyMax;
 }
-
-long ParticleEmitter::getEnergyMin() const { return _energyMin; }
-
-long ParticleEmitter::getEnergyMax() const { return _energyMax; }
 
 void ParticleEmitter::setColor(const Vector4& startColor,
                                const Vector4& startColorVar,
@@ -417,37 +368,17 @@ void ParticleEmitter::setColor(const Vector4& startColor,
     _colorEndVar.set(endColorVar);
 }
 
-const Vector4& ParticleEmitter::getColorStart() const { return _colorStart; }
-
-const Vector4& ParticleEmitter::getColorStartVariance() const { return _colorStartVar; }
-
-const Vector4& ParticleEmitter::getColorEnd() const { return _colorEnd; }
-
-const Vector4& ParticleEmitter::getColorEndVariance() const { return _colorEndVar; }
-
 void ParticleEmitter::setPosition(const Vector3& position, const Vector3& positionVar)
 {
     _position.set(position);
     _positionVar.set(positionVar);
 }
 
-const Vector3& ParticleEmitter::getPosition() const { return _position; }
-
-const Vector3& ParticleEmitter::getPositionVariance() const { return _positionVar; }
-
-const Vector3& ParticleEmitter::getVelocity() const { return _velocity; }
-
-const Vector3& ParticleEmitter::getVelocityVariance() const { return _velocityVar; }
-
 void ParticleEmitter::setVelocity(const Vector3& velocity, const Vector3& velocityVar)
 {
     _velocity.set(velocity);
     _velocityVar.set(velocityVar);
 }
-
-const Vector3& ParticleEmitter::getAcceleration() const { return _acceleration; }
-
-const Vector3& ParticleEmitter::getAccelerationVariance() const { return _accelerationVar; }
 
 void ParticleEmitter::setAcceleration(const Vector3& acceleration, const Vector3& accelerationVar)
 {
@@ -482,14 +413,6 @@ void ParticleEmitter::setRotation(float speedMin,
     _rotationAxisVar.set(axisVariance);
 }
 
-float ParticleEmitter::getRotationSpeedMin() const { return _rotationSpeedMin; }
-
-float ParticleEmitter::getRotationSpeedMax() const { return _rotationSpeedMax; }
-
-const Vector3& ParticleEmitter::getRotationAxis() const { return _rotationAxis; }
-
-const Vector3& ParticleEmitter::getRotationAxisVariance() const { return _rotationAxisVar; }
-
 void ParticleEmitter::setBlendMode(BlendMode blendMode)
 {
     assert(_spriteBatch);
@@ -523,30 +446,16 @@ void ParticleEmitter::setBlendMode(BlendMode blendMode)
     _spriteBlendMode = blendMode;
 }
 
-ParticleEmitter::BlendMode ParticleEmitter::getBlendMode() const { return _spriteBlendMode; }
-
-void ParticleEmitter::setSpriteAnimated(bool animated) { _spriteAnimated = animated; }
-
-bool ParticleEmitter::isSpriteAnimated() const { return _spriteAnimated; }
-
-void ParticleEmitter::setSpriteLooped(bool looped) { _spriteLooped = looped; }
-
-bool ParticleEmitter::isSpriteLooped() const { return _spriteLooped; }
-
 void ParticleEmitter::setSpriteFrameRandomOffset(int maxOffset)
 {
     _spriteFrameRandomOffset = maxOffset;
 }
-
-int ParticleEmitter::getSpriteFrameRandomOffset() const { return _spriteFrameRandomOffset; }
 
 void ParticleEmitter::setSpriteFrameDuration(long duration)
 {
     _spriteFrameDuration = duration;
     _spriteFrameDurationSecs = (float)duration / 1000.0f;
 }
-
-long ParticleEmitter::getSpriteFrameDuration() const { return _spriteFrameDuration; }
 
 unsigned int ParticleEmitter::getSpriteWidth() const
 {
@@ -630,20 +539,12 @@ void ParticleEmitter::setSpriteFrameCoords(unsigned int frameCount, int width, i
     SAFE_DELETE_ARRAY(frameCoords);
 }
 
-unsigned int ParticleEmitter::getSpriteFrameCount() const { return _spriteFrameCount; }
-
 void ParticleEmitter::setOrbit(bool orbitPosition, bool orbitVelocity, bool orbitAcceleration)
 {
     _orbitPosition = orbitPosition;
     _orbitVelocity = orbitVelocity;
     _orbitAcceleration = orbitAcceleration;
 }
-
-bool ParticleEmitter::getOrbitPosition() const { return _orbitPosition; }
-
-bool ParticleEmitter::getOrbitVelocity() const { return _orbitVelocity; }
-
-bool ParticleEmitter::getOrbitAcceleration() const { return _orbitAcceleration; }
 
 long ParticleEmitter::generateScalar(long min, long max)
 {

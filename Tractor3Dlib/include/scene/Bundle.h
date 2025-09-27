@@ -82,13 +82,12 @@ class Bundle : public Ref
      *
      * @param id The ID of the object to search for.
      */
-    bool contains(const std::string& id) const;
+    bool contains(const std::string& id) const { return (find(id) != nullptr); }
 
     /**
      * Returns the number of top-level objects in this bundle.
      */
-    unsigned int getObjectCount() const;
-
+    unsigned int getObjectCount() const { return _referenceCount; }
     /**
      * Gets the unique identifier of the top-level object at the specified index in this bundle.
      *
@@ -103,32 +102,32 @@ class Bundle : public Ref
      *
      * @return The major version of the loaded bundle.
      */
-    unsigned int getVersionMajor() const;
+    unsigned int getVersionMajor() const { return (unsigned int)_version[0]; }
 
     /**
      * Gets the minor version of the loaded bundle.
      *
      * @return The minor version of the loaded bundle.
      */
-    unsigned int getVersionMinor() const;
+    unsigned int getVersionMinor() const { return (unsigned int)_version[1]; }
 
   private:
     class Reference
     {
       public:
-        std::string id;
-        unsigned int type;
-        unsigned int offset;
+        std::string id{};
+        unsigned int type{ 0 };
+        unsigned int offset{ 0 };
 
         /**
          * Constructor.
          */
-        Reference();
+        Reference() = default;
 
         /**
          * Destructor.
          */
-        ~Reference();
+        ~Reference() = default;
     };
 
     struct MeshSkinData
@@ -163,7 +162,7 @@ class Bundle : public Ref
         std::vector<MeshPartData*> parts;
     };
 
-    Bundle(const std::string& path);
+    explicit Bundle(const std::string& path);
 
     /**
      * Destructor.
@@ -259,7 +258,7 @@ class Bundle : public Ref
      *
      * @return True if successful, false if an error occurred.
      */
-    bool read(unsigned int* ptr);
+    bool read(unsigned int* ptr) { return _stream->read(ptr, sizeof(unsigned int), 1) == 1; }
 
     /**
      * Reads an unsigned char from the current file position.
@@ -268,7 +267,7 @@ class Bundle : public Ref
      *
      * @return True if successful, false if an error occurred.
      */
-    bool read(unsigned char* ptr);
+    bool read(unsigned char* ptr) { return _stream->read(ptr, sizeof(unsigned char), 1) == 1; }
 
     /**
      * Reads a float from the current file position.
@@ -277,7 +276,7 @@ class Bundle : public Ref
      *
      * @return True if successful, false if an error occurred.
      */
-    bool read(float* ptr);
+    bool read(float* ptr) { return _stream->read(ptr, sizeof(float), 1) == 1; }
 
     /**
      * Reads an array of values and the array length from the current file position.
@@ -321,7 +320,7 @@ class Bundle : public Ref
      *
      * @return True if successful, false if an error occurred.
      */
-    bool readMatrix(float* m);
+    bool readMatrix(float* m) { return _stream->read(m, sizeof(float), 16) == 16; }
 
     /**
      * Reads an xref string from the current file position.
@@ -451,13 +450,13 @@ class Bundle : public Ref
      */
     bool skipNode();
 
-    unsigned char _version[2];
-    std::string _path{ "" };
-    std::string _materialPath;
+  private:
+    unsigned char _version[2]{ 0, 0 };
     unsigned int _referenceCount{ 0 };
+    std::string _path{};
+    std::string _materialPath{};
     Reference* _references{ nullptr };
     std::unique_ptr<Stream> _stream{ nullptr };
-
     std::vector<MeshSkinData*> _meshSkins{};
     std::map<std::string, Node*>* _trackedNodes{ nullptr };
 };

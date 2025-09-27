@@ -118,7 +118,7 @@ class MeshSkin : public Transform::Listener
     /**
      * Constructor.
      */
-    MeshSkin();
+    MeshSkin() = default;
 
     /**
      * Constructor.
@@ -172,21 +172,22 @@ class MeshSkin : public Transform::Listener
      */
     void clearJoints();
 
-    Matrix _bindShape;
-    std::vector<Joint*> _joints;
-    Joint* _rootJoint;
+  private:
+    Matrix _bindShape{};
+    std::vector<Joint*> _joints{};
+    Joint* _rootJoint{ nullptr };
 
     // Pointer to the root node of the mesh skin.
     // The purpose is so that the joint hierarchy doesn't need to be in the scene.
     // If the joints are not in the scene then something has to hold a reference to it.
-    Node* _rootNode;
+    Node* _rootNode{ nullptr };
 
     // Pointer to the array of palette matrices.
     // This array is passed to the vertex shader as a uniform.
     // Each 4x3 row-wise matrix is represented as 3 Vector4's.
     // The number of Vector4's is (_joints.size() * 3).
-    Vector4* _matrixPalette;
-    Model* _model;
+    Vector4* _matrixPalette{ nullptr };
+    Model* _model{ nullptr };
 };
 
 } // namespace tractor

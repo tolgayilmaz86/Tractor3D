@@ -8,6 +8,7 @@
 #include "graphics/Terrain.h"
 #include "scene/Bundle.h"
 #include "scene/SceneLoader.h"
+#include "utils/StringUtil.h"
 
 namespace tractor
 {
@@ -15,43 +16,7 @@ namespace tractor
 // Global list of active scenes
 static std::vector<Scene*> __sceneList;
 
-static inline char lowercase(char c)
-{
-    if (c >= 'A' && c <= 'Z')
-    {
-        c |= 0x20;
-    }
-    return c;
-}
-
-// Returns true if 'str' ends with 'suffix'; false otherwise.
-static bool endsWith(const std::string& str, const std::string& suffix, bool ignoreCase)
-{
-    if (str.empty() || suffix.empty() || suffix.length() > str.length()) return false;
-
-    const auto startPos = str.length() - suffix.length();
-
-    if (ignoreCase)
-    {
-        return std::equal(suffix.begin(),
-                          suffix.end(),
-                          str.begin() + startPos,
-                          [](char a, char b)
-                          {
-                              return std::tolower(static_cast<unsigned char>(a))
-                                     == std::tolower(static_cast<unsigned char>(b));
-                          });
-    }
-
-    return str.compare(startPos, suffix.length(), suffix) == 0;
-}
-
-Scene::Scene()
-    : _id(""), _activeCamera(nullptr), _firstNode(nullptr), _lastNode(nullptr), _nodeCount(0),
-      _bindAudioListenerToCamera(true), _nextItr(nullptr), _nextReset(true)
-{
-    __sceneList.push_back(this);
-}
+Scene::Scene() { __sceneList.push_back(this); }
 
 Scene::~Scene()
 {
@@ -84,7 +49,7 @@ Scene* Scene::create(const std::string& id)
 
 Scene* Scene::load(const std::string& filePath)
 {
-    if (endsWith(filePath, ".gpb", true))
+    if (endsWithIgnoreCase(filePath, ".gpb"))
     {
         Scene* scene = nullptr;
         Bundle* bundle = Bundle::create(filePath);
@@ -109,10 +74,6 @@ Scene* Scene::getScene(const std::string& id)
 
     return nullptr;
 }
-
-const std::string& Scene::getId() const { return _id; }
-
-void Scene::setId(const std::string& id) { _id = id; }
 
 Node* Scene::findNode(const std::string& id, bool recursive, bool exactMatch) const
 {
@@ -290,12 +251,6 @@ void Scene::removeAllNodes()
     }
 }
 
-unsigned int Scene::getNodeCount() const { return _nodeCount; }
-
-Node* Scene::getFirstNode() const { return _firstNode; }
-
-Camera* Scene::getActiveCamera() { return _activeCamera; }
-
 void Scene::setActiveCamera(Camera* camera)
 {
     // Make sure we don't release the camera if the same camera is set twice.
@@ -340,8 +295,6 @@ void Scene::bindAudioListenerToCamera(bool bind)
         }
     }
 }
-
-const Vector3& Scene::getAmbientColor() const { return _ambientColor; }
 
 void Scene::setAmbientColor(float red, float green, float blue)
 {

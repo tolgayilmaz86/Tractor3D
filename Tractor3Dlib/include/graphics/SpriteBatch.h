@@ -510,6 +510,7 @@ class SpriteBatch
                     float& u2,
                     float& v2);
 
+  private:
     MeshBatch* _batch{ nullptr };
     Texture::Sampler* _sampler{ nullptr };
     bool _customEffect{ false };

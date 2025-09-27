@@ -51,14 +51,14 @@ class Scene : public Ref
      *
      * @return The scene identifier.
      */
-    const std::string& getId() const;
+    const std::string& getId() const { return _id; }
 
     /**
      * Sets the identifier for the scene.
      *
      * @param id The identifier to set for the scene.
      */
-    void setId(const std::string& id);
+    void setId(const std::string& id) { _id = id; }
 
     /**
      * Returns the first node in the scene that matches the given ID.
@@ -122,14 +122,14 @@ class Scene : public Ref
      *
      * @return The node count.
      */
-    unsigned int getNodeCount() const;
+    unsigned int getNodeCount() const { return _nodeCount; }
 
     /**
      * Returns the first node in the scene.
      *
      * @return The first node in the scene.
      */
-    Node* getFirstNode() const;
+    Node* getFirstNode() const { return _firstNode; }
 
     /**
      * Gets the active camera for the scene.
@@ -137,7 +137,7 @@ class Scene : public Ref
      * @return The active camera for the scene.
      * @see VisibleSet#getActiveCamera
      */
-    Camera* getActiveCamera();
+    Camera* getActiveCamera() { return _activeCamera; }
 
     /**
      * Sets the active camera on the scene.
@@ -163,8 +163,7 @@ class Scene : public Ref
      *
      * @return The scene's ambient color.
      */
-    const Vector3& getAmbientColor() const;
-
+    const Vector3& getAmbientColor() const { return _ambientColor; }
     /**
      * Sets the ambient color of the scene.
      *
@@ -294,15 +293,15 @@ class Scene : public Ref
 
     bool isNodeVisible(Node* node);
 
-    std::string _id;
-    Camera* _activeCamera;
-    Node* _firstNode;
-    Node* _lastNode;
-    unsigned int _nodeCount;
-    Vector3 _ambientColor;
-    bool _bindAudioListenerToCamera;
-    Node* _nextItr;
-    bool _nextReset;
+    std::string _id{};
+    Camera* _activeCamera{ nullptr };
+    Node* _firstNode{ nullptr };
+    Node* _lastNode{ nullptr };
+    unsigned int _nodeCount{ 0 };
+    Vector3 _ambientColor{ Vector3 ::zero() };
+    bool _bindAudioListenerToCamera{ true };
+    Node* _nextItr{ nullptr };
+    bool _nextReset{ true };
 };
 
 template <class T> void Scene::visit(T* instance, bool (T::*visitMethod)(Node*))

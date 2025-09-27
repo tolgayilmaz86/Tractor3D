@@ -292,6 +292,19 @@ static inline bool endsWith(const std::string& str, const std::string& suffix)
 }
 
 /**
+ * @brief Checks if std::string str ends with specified suffix.
+ * @param str - input std::string that will be checked.
+ * @param suffix - searched suffix in str.
+ * @return True if suffix was found, false otherwise.
+ */
+static inline bool endsWithIgnoreCase(const std::string& str, const std::string& suffix)
+{
+    const auto suffix_start = str.size() - suffix.size();
+    const auto result = toLower(str).find(toLower(suffix), suffix_start);
+    return (result == suffix_start) && (result != std::string::npos);
+}
+
+/**
  * @brief Checks if std::string str ends with specified character.
  * @param str - input std::string that will be checked.
  * @param suffix - searched character in str.

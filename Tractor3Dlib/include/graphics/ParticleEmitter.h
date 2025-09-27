@@ -221,14 +221,14 @@ class ParticleEmitter : public Ref, public Drawable
      *
      * @param max The maximum number of particles that can be emitted.
      */
-    void setParticleCountMax(unsigned int max);
+    void setParticleCountMax(unsigned int max) { _particleCountMax = max; }
 
     /**
      * Returns the maximum number of particles that can be emitted.
      *
      * @return The maximum number of particles that can be emitted.
      */
-    unsigned int getParticleCountMax() const;
+    unsigned int getParticleCountMax() const { return _particleCountMax; }
 
     /**
      * Sets the emission rate, measured in particles per second.
@@ -242,7 +242,7 @@ class ParticleEmitter : public Ref, public Drawable
      *
      * @return The emission rate, measured in particles per second.
      */
-    unsigned int getEmissionRate() const;
+    unsigned int getEmissionRate() const { return _emissionRate; }
 
     /**
      * Starts emitting particles over time at this ParticleEmitter's emission rate.
@@ -256,14 +256,14 @@ class ParticleEmitter : public Ref, public Drawable
      *
      * @see ParticleEmitter::emit()
      */
-    void stop();
+    void stop() { _started = false; }
 
     /**
      * Gets whether this ParticleEmitter is currently started.
      *
      * @return Whether this ParticleEmitter is currently started.
      */
-    bool isStarted() const;
+    bool isStarted() const { return _started; }
 
     /**
      * Gets whether this ParticleEmitter is currently active (i.e. if any of its particles are alive).
@@ -290,7 +290,7 @@ class ParticleEmitter : public Ref, public Drawable
      *
      * @return The number of particles that are currently alive.
      */
-    unsigned int getParticlesCount() const;
+    unsigned int getParticlesCount() const { return _particleCount; }
 
     /**
      * Sets whether the positions of newly emitted particles are generated within an ellipsoidal
@@ -309,14 +309,14 @@ class ParticleEmitter : public Ref, public Drawable
      * @param ellipsoid Whether initial particle positions are generated within an ellipsoidal
      * domain.
      */
-    void setEllipsoid(bool ellipsoid);
+    void setEllipsoid(bool ellipsoid) { _ellipsoid = ellipsoid; }
 
     /**
      * Determines whether the positions of newly emitted particles are generated within an ellipsoidal domain.
      *
      * @return true if is ellipsoid, false if not.
      */
-    bool isEllipsoid() const;
+    bool isEllipsoid() const { return _ellipsoid; }
 
     /**
      * Sets the minimum and maximum size that each particle can be at the time when it is spawned,
@@ -334,28 +334,28 @@ class ParticleEmitter : public Ref, public Drawable
      *
      * @return The minimum size that each particle can be at the time when it is started.
      */
-    float getSizeStartMin() const;
+    float getSizeStartMin() const { return _sizeStartMin; }
 
     /**
      * Gets the maximum size that each particle can be at the time when it is started.
      *
      * @return The maximum size that each particle can be at the time when it is started.
      */
-    float getSizeStartMax() const;
+    float getSizeStartMax() const { return _sizeStartMax; }
 
     /**
      * Gets the minimum size that each particle can be at the end of its lifetime.
      *
      * @return The minimum size that each particle can be at the end of its lifetime.
      */
-    float getSizeEndMin() const;
+    float getSizeEndMin() const { return _sizeEndMin; }
 
     /**
      * Gets the maximum size that each particle can be at the end of its lifetime.
      *
      * @return The maximum size that each particle can be at the end of its lifetime.
      */
-    float getSizeEndMax() const;
+    float getSizeEndMax() const { return _sizeEndMax; }
 
     /**
      * Set the start and end colors, and their variances, of particles in this emitter's system.
@@ -375,28 +375,28 @@ class ParticleEmitter : public Ref, public Drawable
      *
      * @return The base start color of emitted particles.
      */
-    const Vector4& getColorStart() const;
+    const Vector4& getColorStart() const { return _colorStart; }
 
     /**
      * Gets the variance of start color of emitted particles.
      *
      * @return The variance of start color of emitted particles.
      */
-    const Vector4& getColorStartVariance() const;
+    const Vector4& getColorStartVariance() const { return _colorStartVar; }
 
     /**
      * Gets the base end color of emitted particles.
      *
      * @return The base end color of emitted particles.
      */
-    const Vector4& getColorEnd() const;
+    const Vector4& getColorEnd() const { return _colorEnd; }
 
     /**
      * Gets the variance of end color of emitted particles.
      *
      * @return The variance of end color of emitted particles.
      */
-    const Vector4& getColorEndVariance() const;
+    const Vector4& getColorEndVariance() const { return _colorEndVar; }
 
     /**
      * Sets the minimum and maximum lifetime of emitted particles, measured in milliseconds.
@@ -411,14 +411,14 @@ class ParticleEmitter : public Ref, public Drawable
      *
      * @return The minimum lifetime of each particle, measured in milliseconds.
      */
-    long getEnergyMin() const;
+    long getEnergyMin() const { return _energyMin; }
 
     /**
      * Gets the maximum lifetime of each particle, measured in milliseconds.
      *
      * @return The maximum lifetime of each particle, measured in milliseconds.
      */
-    long getEnergyMax() const;
+    long getEnergyMax() const { return _energyMax; }
 
     /**
      * Sets the initial position and position variance of new particles.
@@ -433,14 +433,14 @@ class ParticleEmitter : public Ref, public Drawable
      *
      * @return The position of new particles, relative to the emitter's transform.
      */
-    const Vector3& getPosition() const;
+    const Vector3& getPosition() const { return _position; }
 
     /**
      * Gets the position variance of new particles.
      *
      * @return The position variance of new particles.
      */
-    const Vector3& getPositionVariance() const;
+    const Vector3& getPositionVariance() const { return _positionVar; }
 
     /**
      * Sets the base velocity of new particles and its variance.
@@ -455,21 +455,21 @@ class ParticleEmitter : public Ref, public Drawable
      *
      * @return The initial velocity of new particles.
      */
-    const Vector3& getVelocity() const;
+    const Vector3& getVelocity() const { return _velocity; }
 
     /**
      * Gets the initial velocity variance of new particles.
      *
      * @return The initial velocity variance of new particles.
      */
-    const Vector3& getVelocityVariance() const;
+    const Vector3& getVelocityVariance() const { return _velocityVar; }
 
     /**
      * Gets the base acceleration vector of particles.
      *
      * @return The base acceleration vector of particles.
      */
-    const Vector3& getAcceleration() const;
+    const Vector3& getAcceleration() const { return _acceleration; }
 
     /**
      * Sets the base acceleration vector and its allowed variance for this ParticleEmitter.
@@ -484,7 +484,7 @@ class ParticleEmitter : public Ref, public Drawable
      *
      * @return The variance of acceleration of particles.
      */
-    const Vector3& getAccelerationVariance() const;
+    const Vector3& getAccelerationVariance() const { return _accelerationVar; }
 
     /**
      * Gets the maximum rotation speed of each emitted particle.
@@ -526,40 +526,40 @@ class ParticleEmitter : public Ref, public Drawable
      *
      * @return The minimum rotation speed of emitted particles.
      */
-    float getRotationSpeedMin() const;
+    float getRotationSpeedMin() const { return _rotationSpeedMin; }
 
     /**
      * Gets the maximum rotation speed of emitted particles.
      *
      * @return The maximum rotation speed of emitted particles.
      */
-    float getRotationSpeedMax() const;
+    float getRotationSpeedMax() const { return _rotationSpeedMax; }
 
     /**
      * Gets the base rotation axis of emitted particles.
      *
      * @return The base rotation axis of emitted particles.
      */
-    const Vector3& getRotationAxis() const;
+    const Vector3& getRotationAxis() const { return _rotationAxis; }
 
     /**
      * Gets the variance of the rotation axis of emitted particles.
      *
      * @return The variance of the rotation axis of emitted particles.
      */
-    const Vector3& getRotationAxisVariance() const;
+    const Vector3& getRotationAxisVariance() const { return _rotationAxisVar; }
 
     /**
      * Sets whether particles cycle through the sprite frames.
      *
      * @param animated Whether to animate particles through the sprite frames.
      */
-    void setSpriteAnimated(bool animated);
+    void setSpriteAnimated(bool animated) { _spriteAnimated = animated; }
 
     /**
      * Whether particles cycle through the sprite frames.
      */
-    bool isSpriteAnimated() const;
+    bool isSpriteAnimated() const { return _spriteAnimated; }
 
     /**
      * If sprites are set to loop, each frame will last for the emitter's frameDuration.
@@ -572,14 +572,14 @@ class ParticleEmitter : public Ref, public Drawable
      * @param looped Whether to loop animated sprites.
      * @see ParticleEmitter::setSpriteFrameDuration
      */
-    void setSpriteLooped(bool looped);
+    void setSpriteLooped(bool looped) { _spriteLooped = looped; }
 
     /**
      * Whether sprites are set to loop, each frame will last for the emitter's frameDuration.
      *
      * @return true if looped, false if not.
      */
-    bool isSpriteLooped() const;
+    bool isSpriteLooped() const { return _spriteLooped; }
 
     /**
      * Sets the maximum offset that a random frame from 0 to maxOffset will be selected.
@@ -593,7 +593,7 @@ class ParticleEmitter : public Ref, public Drawable
     /**
      * Gets the maximum offset that a random frame from 0 to maxOffset will be selected.
      */
-    int getSpriteFrameRandomOffset() const;
+    int getSpriteFrameRandomOffset() const { return _spriteFrameRandomOffset; }
 
     /**
      * Set the animated sprites frame duration.
@@ -607,7 +607,7 @@ class ParticleEmitter : public Ref, public Drawable
      *
      * @return The animated sprites frame duration.
      */
-    long getSpriteFrameDuration() const;
+    long getSpriteFrameDuration() const { return _spriteFrameDuration; }
 
     /**
      * Returns the width of the first frame this particle emitter's sprite.
@@ -658,7 +658,7 @@ class ParticleEmitter : public Ref, public Drawable
      *
      * @return The current frame count.
      */
-    unsigned int getSpriteFrameCount() const;
+    unsigned int getSpriteFrameCount() const { return _spriteFrameCount; }
 
     /**
      * Sets whether the vector properties of newly emitted particles are rotated around the node's position
@@ -675,21 +675,21 @@ class ParticleEmitter : public Ref, public Drawable
      *
      * @return True if orbiting positions, false otherwise.
      */
-    bool getOrbitPosition() const;
+    bool getOrbitPosition() const { return _orbitPosition; }
 
     /**
      * Whether new particle velocities are rotated by the node's rotation matrix.
      *
      * @return True if orbiting velocities, false otherwise.
      */
-    bool getOrbitVelocity() const;
+    bool getOrbitVelocity() const { return _orbitVelocity; }
 
     /**
      * Whether new particle accelerations are rotated by the node's rotation matrix.
      *
      * @return True if orbiting accelerations, false otherwise.
      */
-    bool getOrbitAcceleration() const;
+    bool getOrbitAcceleration() const { return _orbitAcceleration; }
 
     /**
      * Sets the texture blend mode for this particle emitter.
@@ -703,7 +703,7 @@ class ParticleEmitter : public Ref, public Drawable
      *
      * @return The current blend mode.
      */
-    BlendMode getBlendMode() const;
+    BlendMode getBlendMode() const { return _spriteBlendMode; }
 
     /**
      * Updates the particles currently being emitted.
@@ -723,7 +723,7 @@ class ParticleEmitter : public Ref, public Drawable
     /**
      * Constructor.
      */
-    ParticleEmitter(unsigned int particlesCount);
+    explicit ParticleEmitter(unsigned int particlesCount);
 
     /**
      * Destructor.
@@ -772,80 +772,97 @@ class ParticleEmitter : public Ref, public Drawable
     // Gets the blend mode from string.
     static ParticleEmitter::BlendMode getBlendModeFromString(const std::string& src);
 
+  private:
     /**
      * Defines the data for a single particle in the system.
      */
     class Particle
     {
       public:
-        Vector3 _position;
-        Vector3 _velocity;
-        Vector3 _acceleration;
-        Vector4 _colorStart;
-        Vector4 _colorEnd;
-        Vector4 _color;
-        float _rotationPerParticleSpeed;
-        Vector3 _rotationAxis;
-        float _rotationSpeed;
-        float _angle;
-        long _energyStart;
-        long _energy;
-        float _sizeStart;
-        float _sizeEnd;
-        float _size;
-        unsigned int _frame;
-        float _timeOnCurrentFrame;
+        // 16-byte aligned Vector4 members (frequently accessed for rendering)
+        // 16-byte aligned Vector4 members (frequently accessed for rendering)
+        Vector4 _colorStart{ Vector4::one() }; // 16 bytes - default to white
+        Vector4 _colorEnd{ Vector4::one() };   // 16 bytes - default to white
+        Vector4 _color{ Vector4::one() };      // 16 bytes - default to white
+
+        // 12-byte Vector3 members (physics/transform data)
+        Vector3 _position{ Vector3::zero() };     // 12 bytes - default to origin
+        Vector3 _velocity{ Vector3::zero() };     // 12 bytes - default to no movement
+        Vector3 _acceleration{ Vector3::zero() }; // 12 bytes - default to no acceleration
+        Vector3 _rotationAxis{ Vector3::zero() }; // 12 bytes - default to no rotation axis
+
+        // 8-byte members (timing data)
+        long _energyStart{ 1000L }; // 8 bytes - default to 1 second lifetime
+        long _energy{ 1000L };      // 8 bytes - default to 1 second remaining
+
+        // 4-byte members (size and rotation properties)
+        float _sizeStart{ 1.0f };                // 4 bytes - default unit size
+        float _sizeEnd{ 1.0f };                  // 4 bytes - default unit size
+        float _size{ 1.0f };                     // 4 bytes - default unit size
+        float _rotationPerParticleSpeed{ 0.0f }; // 4 bytes - default to no rotation
+        float _rotationSpeed{ 0.0f };            // 4 bytes - default to no rotation
+        float _angle{ 0.0f };                    // 4 bytes - default to no rotation
+        float _timeOnCurrentFrame{ 0.0f };       // 4 bytes - default to frame start
+
+        // 4-byte unsigned int (frame data)
+        unsigned int _frame{ 0 }; // 4 bytes - default to first frame
     };
 
-    unsigned int _particleCountMax;
-    unsigned int _particleCount;
-    Particle* _particles;
-    unsigned int _emissionRate;
-    bool _started;
-    bool _ellipsoid;
-    float _sizeStartMin;
-    float _sizeStartMax;
-    float _sizeEndMin;
-    float _sizeEndMax;
-    float _energyMin;
-    float _energyMax;
-    Vector4 _colorStart;
-    Vector4 _colorStartVar;
-    Vector4 _colorEnd;
-    Vector4 _colorEndVar;
-    Vector3 _position;
-    Vector3 _positionVar;
-    Vector3 _velocity;
-    Vector3 _velocityVar;
-    Vector3 _acceleration;
-    Vector3 _accelerationVar;
-    float _rotationPerParticleSpeedMin;
-    float _rotationPerParticleSpeedMax;
-    float _rotationSpeedMin;
-    float _rotationSpeedMax;
-    Vector3 _rotationAxis;
-    Vector3 _rotationAxisVar;
-    Matrix _rotation;
-    SpriteBatch* _spriteBatch;
-    BlendMode _spriteBlendMode;
-    float _spriteTextureWidth;
-    float _spriteTextureHeight;
-    float _spriteTextureWidthRatio;
-    float _spriteTextureHeightRatio;
-    float* _spriteTextureCoords;
-    bool _spriteAnimated;
-    bool _spriteLooped;
-    unsigned int _spriteFrameCount;
-    unsigned int _spriteFrameRandomOffset;
-    long _spriteFrameDuration;
-    float _spriteFrameDurationSecs;
-    float _spritePercentPerFrame;
-    bool _orbitPosition;
-    bool _orbitVelocity;
-    bool _orbitAcceleration;
-    float _timePerEmission;
-    float _emitTime;
-    double _lastUpdated;
+    static constexpr auto PARTICLE_COUNT_MAX = 100;
+    static constexpr auto PARTICLE_UPDATE_RATE_MAX = 8;
+    static constexpr auto PARTICLE_EMISSION_RATE = 10;
+    static constexpr auto PARTICLE_EMISSION_RATE_TIME_INTERVAL =
+        1000.0f / (float)PARTICLE_EMISSION_RATE;
+
+    unsigned int _particleCountMax{ 0 };
+    unsigned int _particleCount{ 0 };
+    Particle* _particles{ nullptr };
+    unsigned int _emissionRate{ PARTICLE_EMISSION_RATE };
+    bool _started{ false };
+    bool _ellipsoid{ false };
+    float _sizeStartMin{ 1.0f };
+    float _sizeStartMax{ 1.0f };
+    float _sizeEndMin{ 1.0f };
+    float _sizeEndMax{ 1.0f };
+    float _energyMin{ 1000L };
+    float _energyMax{ 1000L };
+    Vector4 _colorStart{ Vector4::zero() };
+    Vector4 _colorStartVar{ Vector4::zero() };
+    Vector4 _colorEnd{ Vector4::one() };
+    Vector4 _colorEndVar{ Vector4::zero() };
+    Vector3 _position{ Vector3::zero() };
+    Vector3 _positionVar{ Vector3::zero() };
+    Vector3 _velocity{ Vector3::zero() };
+    Vector3 _velocityVar{ Vector3::one() };
+    Vector3 _acceleration{ Vector3::zero() };
+    Vector3 _accelerationVar{ Vector3::zero() };
+    float _rotationPerParticleSpeedMin{ 0.0f };
+    float _rotationPerParticleSpeedMax{ 0.0f };
+    float _rotationSpeedMin{ 0.0f };
+    float _rotationSpeedMax{ 0.0f };
+    Vector3 _rotationAxis{ Vector3::zero() };
+    Vector3 _rotationAxisVar{ Vector3::zero() };
+    Matrix _rotation{ Matrix::identity() };
+    SpriteBatch* _spriteBatch{ nullptr };
+    BlendMode _spriteBlendMode{ BLEND_ALPHA };
+    float _spriteTextureWidth{ 0 };
+    float _spriteTextureHeight{ 0 };
+    float _spriteTextureWidthRatio{ 0 };
+    float _spriteTextureHeightRatio{ 0 };
+    float* _spriteTextureCoords{ nullptr };
+    bool _spriteAnimated{ false };
+    bool _spriteLooped{ false };
+    unsigned int _spriteFrameCount{ 1 };
+    unsigned int _spriteFrameRandomOffset{ 0 };
+    long _spriteFrameDuration{ 0L };
+    float _spriteFrameDurationSecs{ 0.0f };
+    float _spritePercentPerFrame{ 0.0f };
+    bool _orbitPosition{ false };
+    bool _orbitVelocity{ false };
+    bool _orbitAcceleration{ false };
+    float _timePerEmission{ PARTICLE_EMISSION_RATE_TIME_INTERVAL };
+    float _emitTime{ 0 };
+    double _lastUpdated{ 0 };
 };
 
 } // namespace tractor

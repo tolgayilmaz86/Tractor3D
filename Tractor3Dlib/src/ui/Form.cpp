@@ -13,6 +13,7 @@
 #include "ui/Label.h"
 #include "ui/Theme.h"
 #include "ui/VerticalLayout.h"
+#include "utils/StringUtil.h"
 
 // Scroll speed when using a joystick.
 static const float GAMEPAD_SCROLL_SPEED = 600.0f;
@@ -22,17 +23,9 @@ static const float JOYSTICK_THRESHOLD = 0.75f;
 static const float GAMEPAD_FOCUS_REPEAT_DELAY = 300.0f;
 
 // Shaders used for drawing offscreen quad when form is attached to a node
-#define FORM_VSH "res/shaders/sprite.vert"
-#define FORM_FSH "res/shaders/sprite.frag"
+constexpr auto FORM_VSH = "res/shaders/sprite.vert";
+constexpr auto FORM_FSH = "res/shaders/sprite.frag";
 
-static bool stringEqualIgnoreCase(const std::string& a, const std::string& b)
-{
-    return std::equal(a.begin(),
-                      a.end(),
-                      b.begin(),
-                      b.end(),
-                      [](char a, char b) { return std::tolower(a) == std::tolower(b); });
-}
 namespace tractor
 {
 
@@ -50,8 +43,6 @@ struct FormInit
     FormInit() { memset(__activeControl, 0, sizeof(__activeControl)); }
 };
 static FormInit __init;
-
-Form::Form() : Drawable(), _batched(true) {}
 
 Form::~Form()
 {
@@ -77,7 +68,7 @@ Form* Form::create(const std::string& url)
     // Check if the Properties is valid and has a valid namespace.
     Properties* formProperties =
         properties->getNamespace().length() > 0 ? properties : properties->getNextNamespace();
-    if (!formProperties || !stringEqualIgnoreCase(formProperties->getNamespace(), "form"))
+    if (!formProperties || !compareNoCase(formProperties->getNamespace(), "form"))
     {
         GP_WARN("Invalid properties file for form: %s", url);
         SAFE_DELETE(properties);

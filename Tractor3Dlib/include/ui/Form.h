@@ -142,7 +142,7 @@ class Form : public Drawable, public Container
     /**
      * Constructor.
      */
-    Form();
+    Form() = default;
 
     /**
      * Constructor.
@@ -278,8 +278,8 @@ class Form : public Drawable, public Container
     static bool pollGamepad(Gamepad* gamepad);
 
     Matrix _projectionMatrix; // Projection matrix to be set on SpriteBatch objects when rendering the form
-    std::vector<SpriteBatch*> _batches;
-    bool _batched;
+    std::vector<SpriteBatch*> _batches{};
+    bool _batched{ true };
 };
 
 } // namespace tractor

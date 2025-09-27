@@ -8,22 +8,13 @@
 #include "framework/FileSystem.h"
 #include "framework/Game.h"
 #include "ui/ThemeStyle.h"
+#include "utils/StringUtil.h"
 
 namespace tractor
 {
 
 static std::vector<Theme*> __themeCache;
 static Theme* __defaultTheme = nullptr;
-
-// Helper function for case-insensitive string comparison
-static bool stringEqualIgnoreCase(const std::string& a, const std::string& b)
-{
-    return std::equal(a.begin(),
-                      a.end(),
-                      b.begin(),
-                      b.end(),
-                      [](char a, char b) { return std::tolower(a) == std::tolower(b); });
-}
 
 Theme::~Theme()
 {
@@ -128,7 +119,7 @@ Theme* Theme::create(const std::string& url)
     Properties* themeProperties =
         properties->getNamespace().length() > 0 ? properties : properties->getNextNamespace();
     assert(themeProperties);
-    if (!themeProperties || !stringEqualIgnoreCase(themeProperties->getNamespace(), "theme"))
+    if (!themeProperties || !compareNoCase(themeProperties->getNamespace(), "theme"))
     {
         SAFE_DELETE(properties);
         return nullptr;
@@ -162,22 +153,22 @@ Theme* Theme::create(const std::string& url)
         // First load all cursors, checkboxes etc. that can be referred to by styles.
         const auto& spacename = space->getNamespace();
 
-        if (stringEqualIgnoreCase(spacename, "image"))
+        if (compareNoCase(spacename, "image"))
         {
             theme->_images.emplace_back(ThemeImage::create(tw, th, space, Vector4::one()));
         }
-        else if (stringEqualIgnoreCase(spacename, "imageList"))
+        else if (compareNoCase(spacename, "imageList"))
         {
             theme->_imageLists.emplace_back(ImageList::create(tw, th, space));
         }
-        else if (stringEqualIgnoreCase(spacename, "skin"))
+        else if (compareNoCase(spacename, "skin"))
         {
             Theme::Border border;
             Properties* innerSpace = space->getNextNamespace();
             if (innerSpace)
             {
                 const auto& innerSpacename = innerSpace->getNamespace();
-                if (stringEqualIgnoreCase(innerSpacename, "border"))
+                if (compareNoCase(innerSpacename, "border"))
                 {
                     border.top = innerSpace->getFloat("top");
                     border.bottom = innerSpace->getFloat("bottom");
@@ -209,7 +200,7 @@ Theme* Theme::create(const std::string& url)
     while (space != nullptr)
     {
         const auto& spacename = space->getNamespace();
-        if (stringEqualIgnoreCase(spacename, "style"))
+        if (compareNoCase(spacename, "style"))
         {
             // Each style contains up to MAX_OVERLAYS overlays,
             // as well as Border and Padding namespaces.
@@ -227,7 +218,7 @@ Theme* Theme::create(const std::string& url)
             {
                 const auto& innerSpacename = innerSpace->getNamespace();
 
-                if (stringEqualIgnoreCase(innerSpacename, "stateNormal"))
+                if (compareNoCase(innerSpacename, "stateNormal"))
                 {
                     Vector4 textColor(0, 0, 0, 1);
                     if (innerSpace->exists("textColor"))
@@ -297,21 +288,21 @@ Theme* Theme::create(const std::string& url)
             while (innerSpace != nullptr)
             {
                 const auto& innerSpacename = innerSpace->getNamespace();
-                if (stringEqualIgnoreCase(innerSpacename, "margin"))
+                if (compareNoCase(innerSpacename, "margin"))
                 {
                     margin.top = innerSpace->getFloat("top");
                     margin.bottom = innerSpace->getFloat("bottom");
                     margin.left = innerSpace->getFloat("left");
                     margin.right = innerSpace->getFloat("right");
                 }
-                else if (stringEqualIgnoreCase(innerSpacename, "padding"))
+                else if (compareNoCase(innerSpacename, "padding"))
                 {
                     padding.top = innerSpace->getFloat("top");
                     padding.bottom = innerSpace->getFloat("bottom");
                     padding.left = innerSpace->getFloat("left");
                     padding.right = innerSpace->getFloat("right");
                 }
-                else if (!stringEqualIgnoreCase(innerSpacename, "stateNormal"))
+                else if (!compareNoCase(innerSpacename, "stateNormal"))
                 {
                     // Either OVERLAY_FOCUS or OVERLAY_ACTIVE.
                     // If a property isn't specified, it inherits from OVERLAY_NORMAL.
@@ -394,7 +385,7 @@ Theme* Theme::create(const std::string& url)
                         skin = normal->getSkin();
                     }
 
-                    if (stringEqualIgnoreCase(innerSpacename, "stateFocus"))
+                    if (compareNoCase(innerSpacename, "stateFocus"))
                     {
                         focus = Theme::Style::Overlay::create();
                         assert(focus);
@@ -414,7 +405,7 @@ Theme* Theme::create(const std::string& url)
                             font->release();
                         }
                     }
-                    else if (stringEqualIgnoreCase(innerSpacename, "stateActive"))
+                    else if (compareNoCase(innerSpacename, "stateActive"))
                     {
                         active = Theme::Style::Overlay::create();
                         assert(active);
@@ -434,7 +425,7 @@ Theme* Theme::create(const std::string& url)
                             font->release();
                         }
                     }
-                    else if (stringEqualIgnoreCase(innerSpacename, "stateDisabled"))
+                    else if (compareNoCase(innerSpacename, "stateDisabled"))
                     {
                         disabled = Theme::Style::Overlay::create();
                         assert(disabled);
@@ -454,7 +445,7 @@ Theme* Theme::create(const std::string& url)
                             font->release();
                         }
                     }
-                    else if (stringEqualIgnoreCase(innerSpacename, "stateHover"))
+                    else if (compareNoCase(innerSpacename, "stateHover"))
                     {
                         hover = Theme::Style::Overlay::create();
                         assert(hover);
@@ -518,7 +509,7 @@ Theme::Style* Theme::getStyle(const std::string& name) const
     const auto found_style =
         std::ranges::find_if(_styles,
                              [name](Style* style)
-                             { return style && stringEqualIgnoreCase(name, style->getId()); });
+                             { return style && compareNoCase(name, style->getId()); });
 
     return found_style != _styles.end() ? *found_style : nullptr;
 }
@@ -698,7 +689,7 @@ Theme::ThemeImage* Theme::ImageList::getImage(const std::string& imageId) const
     auto it =
         std::ranges::find_if(_images,
                              [imageId](ThemeImage* image)
-                             { return image && stringEqualIgnoreCase(imageId, image->getId()); });
+                             { return image && compareNoCase(imageId, image->getId()); });
 
     if (it != _images.end())
     {
@@ -837,7 +828,7 @@ void Theme::lookUpSprites(const Properties* overlaySpace,
                                  [imageListString](ImageList* imgList)
                                  {
                                      assert(imgList);
-                                     return stringEqualIgnoreCase(imgList->getId(), imageListString);
+                                     return compareNoCase(imgList->getId(), imageListString);
                                  });
 
         if (it != _imageLists.end())
@@ -853,7 +844,7 @@ void Theme::lookUpSprites(const Properties* overlaySpace,
                                        [cursorString](ThemeImage* image)
                                        {
                                            assert(image);
-                                           return stringEqualIgnoreCase(image->getId(), cursorString);
+                                           return compareNoCase(image->getId(), cursorString);
                                        });
 
         if (it != _images.end())
@@ -869,7 +860,7 @@ void Theme::lookUpSprites(const Properties* overlaySpace,
                                        [skinString](Skin* skin)
                                        {
                                            assert(skin);
-                                           return stringEqualIgnoreCase(skin->getId(), skinString);
+                                           return compareNoCase(skin->getId(), skinString);
                                        });
 
         if (it != _skins.end())

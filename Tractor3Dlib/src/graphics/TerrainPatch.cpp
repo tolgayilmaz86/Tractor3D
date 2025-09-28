@@ -80,8 +80,6 @@ TerrainPatch* TerrainPatch::create(Terrain* terrain,
     return patch;
 }
 
-unsigned int TerrainPatch::getMaterialCount() const { return _levels.size(); }
-
 Material* TerrainPatch::getMaterial(int index) const
 {
     if (index == -1)
@@ -606,8 +604,6 @@ const BoundingBox& TerrainPatch::getBoundingBox(bool worldSpace) const
     return _boundingBoxWorld;
 }
 
-void TerrainPatch::cameraChanged(Camera* camera) { _bits |= TERRAINPATCH_DIRTY_LEVEL; }
-
 unsigned int TerrainPatch::computeLOD(Camera* camera, const BoundingBox& worldBounds)
 {
     if (camera != _camera)
@@ -668,18 +664,10 @@ const Vector3& TerrainPatch::getAmbientColor() const
     return scene ? scene->getAmbientColor() : Vector3::zero();
 }
 
-void TerrainPatch::setMaterialDirty() { _bits |= TERRAINPATCH_DIRTY_MATERIAL; }
-
 float TerrainPatch::computeHeight(float* heights, unsigned int width, unsigned int x, unsigned int z)
 {
     return heights[z * width + x] * _terrain->_localScale.y;
 }
-
-TerrainPatch::Layer::Layer() : index(0), row(-1), column(-1), textureIndex(-1), blendIndex(-1) {}
-
-TerrainPatch::Layer::~Layer() {}
-
-TerrainPatch::Level::Level() : model(nullptr) {}
 
 bool TerrainPatch::LayerCompare::operator()(const Layer* lhs, const Layer* rhs) const
 {

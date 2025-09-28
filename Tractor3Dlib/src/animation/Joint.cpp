@@ -22,8 +22,6 @@ Node* Joint::cloneSingleNode(NodeCloneContext& context) const
     return copy;
 }
 
-Node::Type Joint::getType() const { return Node::JOINT; }
-
 const std::string& Joint::getTypeName() const
 {
     static const std::string TYPE_NAME = "Joint";
@@ -76,8 +74,6 @@ void Joint::updateJointMatrix(const Matrix& bindShape, Vector4* matrixPalette)
         matrixPalette[2].set(t.m[2], t.m[6], t.m[10], t.m[14]);
     }
 }
-
-const Matrix& Joint::getInverseBindPose() const { return _bindPose; }
 
 void Joint::setInverseBindPose(const Matrix& m)
 {

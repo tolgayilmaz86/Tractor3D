@@ -24,7 +24,7 @@ class PhysicsGhostObject : public PhysicsCollisionObject, public Transform::List
     /**
      * @see PhysicsCollisionObject::getType
      */
-    PhysicsCollisionObject::Type getType() const;
+    PhysicsCollisionObject::Type getType() const noexcept { return GHOST_OBJECT; }
 
     /**
      * Used to synchronize the transform between GamePlay and Bullet.
@@ -35,7 +35,8 @@ class PhysicsGhostObject : public PhysicsCollisionObject, public Transform::List
     /**
      * @see PhysicsCollisionObject::getCollisionObject
      */
-    btCollisionObject* getCollisionObject() const override;
+    btCollisionObject* getCollisionObject() const noexcept override { return _ghostObject; }
+
 
   protected:
     /**

@@ -57,11 +57,11 @@ class WaterSample : public Sample
 
     bool _showBuffers;
     Vector4 _clipPlane;
-    const Vector4& getClipPlane() const { return _clipPlane; }
+    const Vector4& getClipPlane() const noexcept { return _clipPlane; }
     Matrix m_worldViewProjectionReflection;
-    const Matrix& getReflectionMatrix() const { return m_worldViewProjectionReflection; }
+    const Matrix& getReflectionMatrix() const noexcept { return m_worldViewProjectionReflection; }
 
-    float getTime() const { return Game::getGameTime() * 0.0001; }
+    float getTime() const noexcept { return Game::getGameTime() * 0.0001; }
 
     Gamepad* _gamepad;
     bool drawScene(Node* node, bool drawWater);

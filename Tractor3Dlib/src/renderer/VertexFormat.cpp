@@ -29,10 +29,6 @@ const VertexFormat::Element& VertexFormat::getElement(unsigned int index) const
     return _elements[index];
 }
 
-unsigned int VertexFormat::getElementCount() const { return (unsigned int)_elements.size(); }
-
-unsigned int VertexFormat::getVertexSize() const { return _vertexSize; }
-
 bool VertexFormat::operator==(const VertexFormat& f) const
 {
     if (_elements.size() != f._elements.size()) return false;

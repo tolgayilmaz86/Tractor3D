@@ -96,16 +96,11 @@ PhysicsVehicleWheel* PhysicsVehicleWheel::create(Node* node, Properties* propert
 
 PhysicsVehicleWheel::~PhysicsVehicleWheel() {}
 
-btCollisionObject* PhysicsVehicleWheel::getCollisionObject() const
+btCollisionObject* PhysicsVehicleWheel::getCollisionObject() const noexcept
 {
     assert(_host);
 
     return _host->getCollisionObject();
-}
-
-PhysicsCollisionObject::Type PhysicsVehicleWheel::getType() const
-{
-    return PhysicsCollisionObject::VEHICLE_WHEEL;
 }
 
 void PhysicsVehicleWheel::setEnabled(bool enable)

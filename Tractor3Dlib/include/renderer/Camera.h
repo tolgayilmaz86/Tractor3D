@@ -99,7 +99,7 @@ class Camera : public Ref, public Transform::Listener
      *
      * @return The camera type.
      */
-    Camera::Type getCameraType() const;
+    Camera::Type getCameraType() const noexcept { return _type; }
 
     /**
      * Gets the field of view for a perspective camera.
@@ -151,7 +151,7 @@ class Camera : public Ref, public Transform::Listener
      *
      * @return The aspect ratio.
      */
-    float getAspectRatio() const;
+    float getAspectRatio() const noexcept { return _aspectRatio; }
 
     /**
      * Sets the aspect ratio.
@@ -165,7 +165,7 @@ class Camera : public Ref, public Transform::Listener
      *
      * @return The near z clipping plane distance.
      */
-    float getNearPlane() const;
+    float getNearPlane() const noexcept { return _nearPlane; }
 
     /**
      * Sets the near z clipping plane distance.
@@ -179,7 +179,7 @@ class Camera : public Ref, public Transform::Listener
      *
      * @return The far z clipping plane distance.
      */
-    float getFarPlane() const;
+    float getFarPlane() const noexcept { return _farPlane; }
 
     /**
      * Sets the far z clipping plane distance.
@@ -193,7 +193,7 @@ class Camera : public Ref, public Transform::Listener
      *
      * @return The node that this camera is attached to.
      */
-    Node* getNode() const;
+    Node* getNode() const noexcept { return _node; }
 
     /**
      * Gets the camera's view matrix.

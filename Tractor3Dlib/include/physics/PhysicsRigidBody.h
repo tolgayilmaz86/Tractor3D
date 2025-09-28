@@ -393,7 +393,7 @@ class PhysicsRigidBody : public PhysicsCollisionObject, public Transform::Listen
     /**
      * @see PhysicsCollisionObject::getCollisionObject
      */
-    btCollisionObject* getCollisionObject() const;
+    btCollisionObject* getCollisionObject() const noexcept { return _body; }
 
   private:
     /**

@@ -30,14 +30,14 @@ class Technique : public RenderState
      *
      * @return The Id of this technique.
      */
-    const std::string& getId() const;
+    const std::string& getId() const noexcept { return _id; }
 
     /**
      * Gets the number of passes in this technique.
      *
      * @return The number of passes in this technique.
      */
-    unsigned int getPassCount() const;
+    unsigned int getPassCount() const noexcept { return (unsigned int)_passes.size(); }
 
     /**
      * Gets the pass at the specified index.

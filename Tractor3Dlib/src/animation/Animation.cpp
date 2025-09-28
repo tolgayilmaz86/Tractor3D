@@ -130,12 +130,6 @@ Animation::Channel::~Channel()
     SAFE_RELEASE(_animation);
 }
 
-Curve* Animation::Channel::getCurve() const { return _curve; }
-
-const std::string& Animation::getId() const { return _id; }
-
-unsigned long Animation::getDuration() const { return _duration; }
-
 void Animation::createClips(const std::string& url)
 {
     Properties* properties = Properties::create(url);
@@ -182,7 +176,7 @@ AnimationClip* Animation::getClip(unsigned int index) const
     return nullptr;
 }
 
-unsigned int Animation::getClipCount() const { return _clips ? (unsigned int)_clips->size() : 0; }
+unsigned int Animation::getClipCount() const noexcept { return _clips ? (unsigned int)_clips->size() : 0; }
 
 void Animation::play(const std::string& clipId)
 {

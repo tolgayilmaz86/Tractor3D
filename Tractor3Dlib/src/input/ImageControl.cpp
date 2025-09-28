@@ -89,7 +89,7 @@ void ImageControl::setRegionSrc(const Rectangle& region)
     setRegionSrc(region.x, region.y, region.width, region.height);
 }
 
-const Rectangle& ImageControl::getRegionSrc() const { return _srcRegion; }
+const Rectangle& ImageControl::getRegionSrc() const noexcept { return _srcRegion; }
 
 void ImageControl::setRegionDst(float x, float y, float width, float height)
 {
@@ -101,7 +101,7 @@ void ImageControl::setRegionDst(const Rectangle& region)
     setRegionDst(region.x, region.y, region.width, region.height);
 }
 
-const Rectangle& ImageControl::getRegionDst() const { return _dstRegion; }
+const Rectangle& ImageControl::getRegionDst() const noexcept { return _dstRegion; }
 
 unsigned int ImageControl::drawImages(Form* form, const Rectangle& clip)
 {

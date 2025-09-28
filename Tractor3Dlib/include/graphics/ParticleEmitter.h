@@ -228,7 +228,7 @@ class ParticleEmitter : public Ref, public Drawable
      *
      * @return The maximum number of particles that can be emitted.
      */
-    unsigned int getParticleCountMax() const { return _particleCountMax; }
+    unsigned int getParticleCountMax() const noexcept { return _particleCountMax; }
 
     /**
      * Sets the emission rate, measured in particles per second.
@@ -242,7 +242,7 @@ class ParticleEmitter : public Ref, public Drawable
      *
      * @return The emission rate, measured in particles per second.
      */
-    unsigned int getEmissionRate() const { return _emissionRate; }
+    unsigned int getEmissionRate() const noexcept { return _emissionRate; }
 
     /**
      * Starts emitting particles over time at this ParticleEmitter's emission rate.
@@ -263,7 +263,7 @@ class ParticleEmitter : public Ref, public Drawable
      *
      * @return Whether this ParticleEmitter is currently started.
      */
-    bool isStarted() const { return _started; }
+    bool isStarted() const noexcept { return _started; }
 
     /**
      * Gets whether this ParticleEmitter is currently active (i.e. if any of its particles are alive).
@@ -290,7 +290,7 @@ class ParticleEmitter : public Ref, public Drawable
      *
      * @return The number of particles that are currently alive.
      */
-    unsigned int getParticlesCount() const { return _particleCount; }
+    unsigned int getParticlesCount() const noexcept { return _particleCount; }
 
     /**
      * Sets whether the positions of newly emitted particles are generated within an ellipsoidal
@@ -316,7 +316,7 @@ class ParticleEmitter : public Ref, public Drawable
      *
      * @return true if is ellipsoid, false if not.
      */
-    bool isEllipsoid() const { return _ellipsoid; }
+    bool isEllipsoid() const noexcept { return _ellipsoid; }
 
     /**
      * Sets the minimum and maximum size that each particle can be at the time when it is spawned,
@@ -334,28 +334,28 @@ class ParticleEmitter : public Ref, public Drawable
      *
      * @return The minimum size that each particle can be at the time when it is started.
      */
-    float getSizeStartMin() const { return _sizeStartMin; }
+    float getSizeStartMin() const noexcept { return _sizeStartMin; }
 
     /**
      * Gets the maximum size that each particle can be at the time when it is started.
      *
      * @return The maximum size that each particle can be at the time when it is started.
      */
-    float getSizeStartMax() const { return _sizeStartMax; }
+    float getSizeStartMax() const noexcept { return _sizeStartMax; }
 
     /**
      * Gets the minimum size that each particle can be at the end of its lifetime.
      *
      * @return The minimum size that each particle can be at the end of its lifetime.
      */
-    float getSizeEndMin() const { return _sizeEndMin; }
+    float getSizeEndMin() const noexcept { return _sizeEndMin; }
 
     /**
      * Gets the maximum size that each particle can be at the end of its lifetime.
      *
      * @return The maximum size that each particle can be at the end of its lifetime.
      */
-    float getSizeEndMax() const { return _sizeEndMax; }
+    float getSizeEndMax() const noexcept { return _sizeEndMax; }
 
     /**
      * Set the start and end colors, and their variances, of particles in this emitter's system.
@@ -375,28 +375,28 @@ class ParticleEmitter : public Ref, public Drawable
      *
      * @return The base start color of emitted particles.
      */
-    const Vector4& getColorStart() const { return _colorStart; }
+    const Vector4& getColorStart() const noexcept { return _colorStart; }
 
     /**
      * Gets the variance of start color of emitted particles.
      *
      * @return The variance of start color of emitted particles.
      */
-    const Vector4& getColorStartVariance() const { return _colorStartVar; }
+    const Vector4& getColorStartVariance() const noexcept { return _colorStartVar; }
 
     /**
      * Gets the base end color of emitted particles.
      *
      * @return The base end color of emitted particles.
      */
-    const Vector4& getColorEnd() const { return _colorEnd; }
+    const Vector4& getColorEnd() const noexcept { return _colorEnd; }
 
     /**
      * Gets the variance of end color of emitted particles.
      *
      * @return The variance of end color of emitted particles.
      */
-    const Vector4& getColorEndVariance() const { return _colorEndVar; }
+    const Vector4& getColorEndVariance() const noexcept { return _colorEndVar; }
 
     /**
      * Sets the minimum and maximum lifetime of emitted particles, measured in milliseconds.
@@ -411,14 +411,14 @@ class ParticleEmitter : public Ref, public Drawable
      *
      * @return The minimum lifetime of each particle, measured in milliseconds.
      */
-    long getEnergyMin() const { return _energyMin; }
+    long getEnergyMin() const noexcept { return _energyMin; }
 
     /**
      * Gets the maximum lifetime of each particle, measured in milliseconds.
      *
      * @return The maximum lifetime of each particle, measured in milliseconds.
      */
-    long getEnergyMax() const { return _energyMax; }
+    long getEnergyMax() const noexcept { return _energyMax; }
 
     /**
      * Sets the initial position and position variance of new particles.
@@ -433,14 +433,14 @@ class ParticleEmitter : public Ref, public Drawable
      *
      * @return The position of new particles, relative to the emitter's transform.
      */
-    const Vector3& getPosition() const { return _position; }
+    const Vector3& getPosition() const noexcept { return _position; }
 
     /**
      * Gets the position variance of new particles.
      *
      * @return The position variance of new particles.
      */
-    const Vector3& getPositionVariance() const { return _positionVar; }
+    const Vector3& getPositionVariance() const noexcept { return _positionVar; }
 
     /**
      * Sets the base velocity of new particles and its variance.
@@ -455,21 +455,21 @@ class ParticleEmitter : public Ref, public Drawable
      *
      * @return The initial velocity of new particles.
      */
-    const Vector3& getVelocity() const { return _velocity; }
+    const Vector3& getVelocity() const noexcept { return _velocity; }
 
     /**
      * Gets the initial velocity variance of new particles.
      *
      * @return The initial velocity variance of new particles.
      */
-    const Vector3& getVelocityVariance() const { return _velocityVar; }
+    const Vector3& getVelocityVariance() const noexcept { return _velocityVar; }
 
     /**
      * Gets the base acceleration vector of particles.
      *
      * @return The base acceleration vector of particles.
      */
-    const Vector3& getAcceleration() const { return _acceleration; }
+    const Vector3& getAcceleration() const noexcept { return _acceleration; }
 
     /**
      * Sets the base acceleration vector and its allowed variance for this ParticleEmitter.
@@ -484,7 +484,7 @@ class ParticleEmitter : public Ref, public Drawable
      *
      * @return The variance of acceleration of particles.
      */
-    const Vector3& getAccelerationVariance() const { return _accelerationVar; }
+    const Vector3& getAccelerationVariance() const noexcept { return _accelerationVar; }
 
     /**
      * Gets the maximum rotation speed of each emitted particle.
@@ -526,28 +526,28 @@ class ParticleEmitter : public Ref, public Drawable
      *
      * @return The minimum rotation speed of emitted particles.
      */
-    float getRotationSpeedMin() const { return _rotationSpeedMin; }
+    float getRotationSpeedMin() const noexcept { return _rotationSpeedMin; }
 
     /**
      * Gets the maximum rotation speed of emitted particles.
      *
      * @return The maximum rotation speed of emitted particles.
      */
-    float getRotationSpeedMax() const { return _rotationSpeedMax; }
+    float getRotationSpeedMax() const noexcept { return _rotationSpeedMax; }
 
     /**
      * Gets the base rotation axis of emitted particles.
      *
      * @return The base rotation axis of emitted particles.
      */
-    const Vector3& getRotationAxis() const { return _rotationAxis; }
+    const Vector3& getRotationAxis() const noexcept { return _rotationAxis; }
 
     /**
      * Gets the variance of the rotation axis of emitted particles.
      *
      * @return The variance of the rotation axis of emitted particles.
      */
-    const Vector3& getRotationAxisVariance() const { return _rotationAxisVar; }
+    const Vector3& getRotationAxisVariance() const noexcept { return _rotationAxisVar; }
 
     /**
      * Sets whether particles cycle through the sprite frames.
@@ -559,7 +559,7 @@ class ParticleEmitter : public Ref, public Drawable
     /**
      * Whether particles cycle through the sprite frames.
      */
-    bool isSpriteAnimated() const { return _spriteAnimated; }
+    bool isSpriteAnimated() const noexcept { return _spriteAnimated; }
 
     /**
      * If sprites are set to loop, each frame will last for the emitter's frameDuration.
@@ -579,7 +579,7 @@ class ParticleEmitter : public Ref, public Drawable
      *
      * @return true if looped, false if not.
      */
-    bool isSpriteLooped() const { return _spriteLooped; }
+    bool isSpriteLooped() const noexcept { return _spriteLooped; }
 
     /**
      * Sets the maximum offset that a random frame from 0 to maxOffset will be selected.
@@ -593,7 +593,7 @@ class ParticleEmitter : public Ref, public Drawable
     /**
      * Gets the maximum offset that a random frame from 0 to maxOffset will be selected.
      */
-    int getSpriteFrameRandomOffset() const { return _spriteFrameRandomOffset; }
+    int getSpriteFrameRandomOffset() const noexcept { return _spriteFrameRandomOffset; }
 
     /**
      * Set the animated sprites frame duration.
@@ -607,7 +607,7 @@ class ParticleEmitter : public Ref, public Drawable
      *
      * @return The animated sprites frame duration.
      */
-    long getSpriteFrameDuration() const { return _spriteFrameDuration; }
+    long getSpriteFrameDuration() const noexcept { return _spriteFrameDuration; }
 
     /**
      * Returns the width of the first frame this particle emitter's sprite.
@@ -658,7 +658,7 @@ class ParticleEmitter : public Ref, public Drawable
      *
      * @return The current frame count.
      */
-    unsigned int getSpriteFrameCount() const { return _spriteFrameCount; }
+    unsigned int getSpriteFrameCount() const noexcept { return _spriteFrameCount; }
 
     /**
      * Sets whether the vector properties of newly emitted particles are rotated around the node's position
@@ -675,21 +675,21 @@ class ParticleEmitter : public Ref, public Drawable
      *
      * @return True if orbiting positions, false otherwise.
      */
-    bool getOrbitPosition() const { return _orbitPosition; }
+    bool getOrbitPosition() const noexcept { return _orbitPosition; }
 
     /**
      * Whether new particle velocities are rotated by the node's rotation matrix.
      *
      * @return True if orbiting velocities, false otherwise.
      */
-    bool getOrbitVelocity() const { return _orbitVelocity; }
+    bool getOrbitVelocity() const noexcept { return _orbitVelocity; }
 
     /**
      * Whether new particle accelerations are rotated by the node's rotation matrix.
      *
      * @return True if orbiting accelerations, false otherwise.
      */
-    bool getOrbitAcceleration() const { return _orbitAcceleration; }
+    bool getOrbitAcceleration() const noexcept { return _orbitAcceleration; }
 
     /**
      * Sets the texture blend mode for this particle emitter.
@@ -703,7 +703,7 @@ class ParticleEmitter : public Ref, public Drawable
      *
      * @return The current blend mode.
      */
-    BlendMode getBlendMode() const { return _spriteBlendMode; }
+    BlendMode getBlendMode() const noexcept { return _spriteBlendMode; }
 
     /**
      * Updates the particles currently being emitted.

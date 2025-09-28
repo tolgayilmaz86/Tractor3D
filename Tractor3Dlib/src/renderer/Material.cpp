@@ -133,8 +133,6 @@ Material* Material::create(const std::string& vshPath,
     return material;
 }
 
-unsigned int Material::getTechniqueCount() const { return (unsigned int)_techniques.size(); }
-
 Technique* Material::getTechniqueByIndex(unsigned int index) const
 {
     assert(index < _techniques.size());
@@ -152,8 +150,6 @@ Technique* Material::getTechnique(const std::string& id) const
 
     return nullptr;
 }
-
-Technique* Material::getTechnique() const { return _currentTechnique; }
 
 void Material::setTechnique(const std::string& id)
 {

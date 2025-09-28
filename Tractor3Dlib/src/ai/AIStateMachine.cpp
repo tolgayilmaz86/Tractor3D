@@ -40,8 +40,6 @@ AIStateMachine::~AIStateMachine()
     }
 }
 
-AIAgent* AIStateMachine::getAgent() const { return _agent; }
-
 AIState* AIStateMachine::addState(const std::string& id)
 {
     return _states.emplace_back(AIState::create(id));
@@ -75,8 +73,6 @@ AIState* AIStateMachine::getState(const std::string& id) const
 
     return nullptr;
 }
-
-AIState* AIStateMachine::getActiveState() const { return _currentState; }
 
 bool AIStateMachine::hasState(AIState* state) const
 {

@@ -105,7 +105,7 @@ class BoundingSphere
      *
      * @return true if this bounding sphere is empty; false otherwise.
      */
-    bool isEmpty() const;
+    bool isEmpty() const noexcept;
 
     /**
      * Sets this bounding sphere to the smallest bounding sphere

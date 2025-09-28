@@ -55,20 +55,6 @@ const std::string& Slider::getTypeName() const
     return TYPE_NAME;
 }
 
-void Slider::setMin(float min) { _min = min; }
-
-float Slider::getMin() const { return _min; }
-
-void Slider::setMax(float max) { _max = max; }
-
-float Slider::getMax() const { return _max; }
-
-void Slider::setStep(float step) { _step = step; }
-
-float Slider::getStep() const { return _step; }
-
-float Slider::getValue() const { return _value; }
-
 void Slider::setValue(float value)
 {
     value = MATH_CLAMP(value, _min, _max);
@@ -96,16 +82,6 @@ void Slider::setValueTextVisible(bool valueTextVisible)
         if (_autoSize & AUTO_SIZE_HEIGHT) setDirty(DIRTY_BOUNDS);
     }
 }
-
-bool Slider::isValueTextVisible() const { return _valueTextVisible; }
-
-void Slider::setValueTextAlignment(Font::Justify alignment) { _valueTextAlignment = alignment; }
-
-Font::Justify Slider::getValueTextAlignment() const { return _valueTextAlignment; }
-
-void Slider::setValueTextPrecision(unsigned int precision) { _valueTextPrecision = precision; }
-
-unsigned int Slider::getValueTextPrecision() const { return _valueTextPrecision; }
 
 void Slider::addListener(Control::Listener* listener, int eventFlags)
 {

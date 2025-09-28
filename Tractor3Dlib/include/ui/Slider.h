@@ -47,28 +47,28 @@ class Slider : public Label
      *
      * @param min The new minimum.
      */
-    void setMin(float min);
+    void setMin(float min) { _min = min; }
 
     /**
      * Get the minimum value that can be set on this slider.
      *
      * @return The minimum value that can be set on this slider.
      */
-    float getMin() const;
+    float getMin() const noexcept { return _min; }
 
     /**
      * Set the maximum value that can be set on this slider.
      *
      * @param max The new maximum.
      */
-    void setMax(float max);
+    void setMax(float max) { _max = max; }
 
     /**
      * Get the maximum value that can be set on this slider.
      *
      * @return The maximum value that can be set on this slider.
      */
-    float getMax() const;
+    float getMax() const noexcept { return _max; }
 
     /**
      * Set this slider's step size.  If this is greater than zero, the marker
@@ -76,14 +76,14 @@ class Slider : public Label
      *
      * @param step The new step size.
      */
-    void setStep(float step);
+    void setStep(float step) { _step = step; }
 
     /**
      * Get this slider's step size.
      *
      * @return This slider's step size.
      */
-    float getStep() const;
+    float getStep() const noexcept { return _step; }
 
     /**
      * Set this slider's value.  The new value will be clamped to fit within
@@ -98,7 +98,7 @@ class Slider : public Label
      *
      * @return This slider's current value.
      */
-    float getValue() const;
+    float getValue() const noexcept { return _value; }
 
     /**
      * Sets if the slider value text is rendered below the control.
@@ -112,35 +112,35 @@ class Slider : public Label
      *
      * @return true if the slider value text is rendered below the control, false if otherwise.
      */
-    bool isValueTextVisible() const;
+    bool isValueTextVisible() const noexcept { return _valueTextVisible; }
 
     /**
      * Sets the slider value text alignment.
      *
      * @param alignment the slider value text alignment.
      */
-    void setValueTextAlignment(Font::Justify alignment);
+    void setValueTextAlignment(Font::Justify alignment) { _valueTextAlignment = alignment; }
 
     /**
      * Gets the slider value text alignment.
      *
      * @return The slider value text alignment.
      */
-    Font::Justify getValueTextAlignment() const;
+    Font::Justify getValueTextAlignment() const noexcept { return _valueTextAlignment; }
 
     /**
      * Sets the precision, which is the number floating point digits after the decimal.
      *
      * @param precision The number floating point precision/digits after the decimal.
      */
-    void setValueTextPrecision(unsigned int precision);
+    void setValueTextPrecision(unsigned int precision) { _valueTextPrecision = precision; }
 
     /**
      * Gets the precision, which is the number floating point digits after the decimal.
      *
      * @return The number floating point precision/digits after the decimal.
      */
-    unsigned int getValueTextPrecision() const;
+    unsigned int getValueTextPrecision() const noexcept { return _valueTextPrecision; }
 
     /**
      * Add a listener to be notified of specific events affecting

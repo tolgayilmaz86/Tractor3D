@@ -33,19 +33,19 @@ class MeshSkin : public Transform::Listener
      *
      * @return The bind shape matrix.
      */
-    const Matrix& getBindShape() const;
+    const Matrix& getBindShape() const noexcept { return _bindShape; }
 
     /**
      * Sets the bind shape of this skin.
      *
      * @param matrix An array of 16 floats.
      */
-    void setBindShape(const float* matrix);
+    void setBindShape(const float* matrix) { _bindShape.set(matrix); }
 
     /**
      * Returns the number of joints in this MeshSkin.
      */
-    unsigned int getJointCount() const;
+    unsigned int getJointCount() const noexcept { return (unsigned int)_joints.size(); }
 
     /**
      * Returns the joint at the given index.
@@ -70,7 +70,7 @@ class MeshSkin : public Transform::Listener
      *
      * @return The root joint.
      */
-    Joint* getRootJoint() const;
+    Joint* getRootJoint() const noexcept { return _rootJoint; }
 
     /**
      * Sets the root joint for this MeshSkin.
@@ -107,7 +107,7 @@ class MeshSkin : public Transform::Listener
     /**
      * Returns our parent Model.
      */
-    Model* getModel() const;
+    Model* getModel() const noexcept { return _model; }
 
     /**
      * Handles transform change events for joints.

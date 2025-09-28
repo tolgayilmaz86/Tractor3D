@@ -43,7 +43,7 @@ class AnimationClip : public Ref, public ScriptTarget
         /**
          * Constructor.
          */
-        Listener() {}
+        Listener() = default;
 
         /**
          * The type of animation event.
@@ -69,7 +69,7 @@ class AnimationClip : public Ref, public ScriptTarget
         /*
          * Destructor.
          */
-        virtual ~Listener() {}
+        virtual ~Listener() = default;
 
         /**
          * Handles when animation event occurs.
@@ -90,35 +90,35 @@ class AnimationClip : public Ref, public ScriptTarget
      *
      * @return The AnimationClip's ID.
      */
-    const std::string& getId() const;
+    const std::string& getId() const noexcept { return _id; };
 
     /**
      * Gets the Animation that this AnimationClip was created from.
      *
      * @return The Animation that this clip was created from.
      */
-    Animation* getAnimation() const;
+    Animation* getAnimation() const noexcept { return _animation; }
 
     /**
      * Gets the AnimationClip's start time.
      *
      * @return The time (in milliseconds) that the AnimationClip starts playing from.
      */
-    unsigned long getStartTime() const;
+    unsigned long getStartTime() const noexcept { return _startTime; }
 
     /**
      * Gets the AnimationClip's end time.
      *
      * @return The time (in milliseconds) that the AnimationClip will end.
      */
-    unsigned long getEndTime() const;
+    unsigned long getEndTime() const noexcept { return _endTime; }
 
     /**
      * Gets the AnimationClip's elapsed time.
      *
      * @return The elapsed time of the AnimationClip (in milliseconds).
      */
-    float getElapsedTime() const;
+    float getElapsedTime() const noexcept { return _elapsedTime; }
 
     /**
      * Sets the AnimationClip's repeat count. Overrides repeat duration.
@@ -134,7 +134,7 @@ class AnimationClip : public Ref, public ScriptTarget
      *
      * @return The repeat count that is set on the AnimationClip.
      */
-    float getRepeatCount() const;
+    float getRepeatCount() const noexcept { return _repeatCount; }
 
     /**
      * Sets the AnimationClip's active duration. Overrides repeat count.
@@ -157,35 +157,35 @@ class AnimationClip : public Ref, public ScriptTarget
      *
      * @return the AnimationClip's duration, in milliseconds.
      */
-    unsigned long getDuration() const;
+    unsigned long getDuration() const noexcept { return _duration; }
 
     /**
      * Set the AnimationClip's running speed.
      *
      * @param speed The clips running speed.
      */
-    void setSpeed(float speed);
+    void setSpeed(float speed) { _speed = speed; }
 
     /**
      * Gets the AninimationClip's running speed.
      *
      * @return The AninimationClip's running speed.
      */
-    float getSpeed() const;
+    float getSpeed() const noexcept { return _speed; }
 
     /**
      * Sets the blend weight of the AnimationClip.
      *
      * @param blendWeight The blend weight to apply to the clip.
      */
-    void setBlendWeight(float blendWeight);
+    void setBlendWeight(float blendWeight) { _blendWeight = blendWeight; }
 
     /**
      * Gets the blend weight of the AnimationClip.
      *
      * @return The blendweight of the AnimationClip.
      */
-    float getBlendWeight() const;
+    float getBlendWeight() const noexcept { return _blendWeight; }
 
     /**
      * Sets the time (in milliseconds) to append to the clip's active duration
@@ -201,7 +201,7 @@ class AnimationClip : public Ref, public ScriptTarget
      *
      * @return Time spent blending end points of the clip when looping.
      */
-    float getLoopBlendTime() const;
+    float getLoopBlendTime() const noexcept { return _loopBlendTime; }
 
     /**
      * Checks if the AnimationClip is playing.
@@ -315,7 +315,7 @@ class AnimationClip : public Ref, public ScriptTarget
         /**
          * Destructor.
          */
-        ~ListenerEvent();
+        ~ListenerEvent() = default;
 
         /**
          * Hidden copy assignment operator.
@@ -373,17 +373,17 @@ class AnimationClip : public Ref, public ScriptTarget
     /**
      * Determines whether the given bit is set in the AnimationClip's state.
      */
-    bool isClipStateBitSet(unsigned char bit) const;
+    bool isClipStateBitSet(unsigned char bit) const { return (_stateBits & bit) == bit; }
 
     /**
      * Sets the given bit in the AnimationClip's state.
      */
-    void setClipStateBit(unsigned char bit);
+    void setClipStateBit(unsigned char bit) { _stateBits |= bit; }
 
     /**
      * Resets the given bit in the AnimationClip's state.
      */
-    void resetClipStateBit(unsigned char bit);
+    void resetClipStateBit(unsigned char bit) { _stateBits &= ~bit; }
 
     /**
      * Clones the animation clip.

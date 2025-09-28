@@ -25,7 +25,7 @@ class Joint : public Node
     /**
      * @see Node::getType()
      */
-    Node::Type getType() const;
+    Node::Type getType() const noexcept { return Node::JOINT; }
 
     /**
      * @see Node::getScene()
@@ -45,7 +45,7 @@ class Joint : public Node
      *
      * @return Inverse bind pose matrix.
      */
-    const Matrix& getInverseBindPose() const;
+    const Matrix& getInverseBindPose() const noexcept { return _bindPose; }
 
   protected:
     /**

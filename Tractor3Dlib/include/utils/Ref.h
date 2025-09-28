@@ -39,7 +39,7 @@ class Ref
      *
      * @return This object's reference count.
      */
-    unsigned int getRefCount() const;
+    unsigned int getRefCount() const noexcept { return _refCount; }
 
   protected:
     /**

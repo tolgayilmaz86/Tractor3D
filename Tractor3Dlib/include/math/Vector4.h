@@ -132,14 +132,14 @@ class Vector4
      *
      * @return true if this vector contains all zeros, false otherwise.
      */
-    bool isZero() const;
+    bool isZero() const noexcept;
 
     /**
      * Indicates whether this vector contains all ones.
      *
      * @return true if this vector contains all ones, false otherwise.
      */
-    bool isOne() const;
+    bool isOne() const noexcept;
 
     /**
      * Returns the angle (in radians) between the specified vectors.
@@ -238,7 +238,7 @@ class Vector4
      *
      * @see lengthSquared
      */
-    float length() const;
+    float length() const noexcept;
 
     /**
      * Returns the squared length of this vector.
@@ -252,7 +252,7 @@ class Vector4
      *
      * @see length
      */
-    float lengthSquared() const;
+    float lengthSquared() const noexcept;
 
     /**
      * Negates this vector.

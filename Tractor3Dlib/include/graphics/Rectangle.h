@@ -76,7 +76,7 @@ class Rectangle
      *
      * @return true if the rectangle is empty, false otherwise.
      */
-    bool isEmpty() const;
+    bool isEmpty() const noexcept;
 
     /**
      * Sets the values of this rectangle to the specified values.
@@ -108,28 +108,28 @@ class Rectangle
      *
      * @return The x-coordinate of the left side of the rectangle.
      */
-    float left() const;
+    float left() const noexcept { return x; }
 
     /**
      * Returns the y-coordinate of the top of the rectangle.
      *
      * @return The y-coordinate of the top of the rectangle.
      */
-    float top() const;
+    float top() const noexcept { return y; }
 
     /**
      * Returns the x-coordinate of the right side of the rectangle.
      *
      * @return The x-coordinate of the right side of the rectangle.
      */
-    float right() const;
+    float right() const noexcept { return x + width; }
 
     /**
      * Returns the y-coordinate of the bottom of the rectangle.
      *
      * @return The y-coordinate of the bottom of the rectangle.
      */
-    float bottom() const;
+    float bottom() const noexcept { return y + height; }
 
     /**
      * Determines whether this rectangle contains a specified point.

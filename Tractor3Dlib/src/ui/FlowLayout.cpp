@@ -28,12 +28,6 @@ FlowLayout* FlowLayout::create()
     return __instance;
 }
 
-Layout::Type FlowLayout::getType() { return Layout::LAYOUT_FLOW; }
-
-int FlowLayout::getHorizontalSpacing() const { return _horizontalSpacing; }
-
-int FlowLayout::getVerticalSpacing() const { return _verticalSpacing; }
-
 void FlowLayout::setSpacing(int horizontalSpacing, int verticalSpacing)
 {
     _horizontalSpacing = horizontalSpacing;

@@ -63,7 +63,7 @@ class TextBox : public Label
      *
      * @return The current caret location.
      */
-    unsigned int getCaretLocation() const;
+    unsigned int getCaretLocation() const noexcept { return _caretLocation; }
 
     /**
      * Sets the location of the caret within this text box.
@@ -84,28 +84,28 @@ class TextBox : public Label
      *
      * @param character Character to display in password mode.
      */
-    void setPasswordChar(char character);
+    void setPasswordChar(char character) { _passwordChar = character; }
 
     /**
      * Get the character displayed in password mode.
      *
      * @return The character displayed in password mode.
      */
-    char getPasswordChar() const;
+    char getPasswordChar() const noexcept { return _passwordChar; }
 
     /**
      * Set the input mode.
      *
      * @param inputMode Input mode to set.
      */
-    void setInputMode(InputMode inputMode);
+    void setInputMode(InputMode inputMode) { _inputMode = inputMode; }
 
     /**
      * Get the input mode.
      *
      * @return The input mode.
      */
-    InputMode getInputMode() const;
+    InputMode getInputMode() const noexcept { return _inputMode; }
 
     /**
      * @see Control::addListener

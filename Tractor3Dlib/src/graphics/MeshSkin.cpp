@@ -18,12 +18,6 @@ MeshSkin::~MeshSkin()
     SAFE_DELETE_ARRAY(_matrixPalette);
 }
 
-const Matrix& MeshSkin::getBindShape() const { return _bindShape; }
-
-void MeshSkin::setBindShape(const float* matrix) { _bindShape.set(matrix); }
-
-unsigned int MeshSkin::getJointCount() const { return (unsigned int)_joints.size(); }
-
 Joint* MeshSkin::getJoint(unsigned int index) const
 {
     assert(index < _joints.size());
@@ -157,10 +151,6 @@ unsigned int MeshSkin::getMatrixPaletteSize() const
 {
     return (unsigned int)_joints.size() * PALETTE_ROWS;
 }
-
-Model* MeshSkin::getModel() const { return _model; }
-
-Joint* MeshSkin::getRootJoint() const { return _rootJoint; }
 
 void MeshSkin::setRootJoint(Joint* joint)
 {

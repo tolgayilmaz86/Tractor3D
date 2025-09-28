@@ -73,8 +73,6 @@ void MaterialParameter::clearValue()
     _type = MaterialParameter::NONE;
 }
 
-const std::string& MaterialParameter::getName() const { return _name; }
-
 Texture::Sampler* MaterialParameter::getSampler(unsigned int index) const
 {
     if (_type == MaterialParameter::SAMPLER)

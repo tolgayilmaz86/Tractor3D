@@ -132,14 +132,14 @@ class ScriptTarget
          *
          * @return The event name.
          */
-        const std::string& getName() const;
+        const std::string& getName() const noexcept;
 
         /**
          * Gets the argument string for this event.
          *
          * @return The argument string.
          */
-        const std::string& getArgs() const;
+        const std::string& getArgs() const noexcept;
 
       private:
         /**
@@ -191,7 +191,7 @@ class ScriptTarget
          *
          * @return The number of script events registered.
          */
-        unsigned int getEventCount() const;
+        unsigned int getEventCount() const noexcept;
 
         /**
          * Returns the event with the given index.

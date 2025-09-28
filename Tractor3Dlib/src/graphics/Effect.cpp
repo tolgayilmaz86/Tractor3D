@@ -464,8 +464,6 @@ Effect* Effect::createFromSource(const std::string& vshPath,
     return effect;
 }
 
-const std::string& Effect::getId() const { return _id; }
-
 VertexAttribute Effect::getVertexAttribute(const std::string& name) const
 {
     std::map<std::string, VertexAttribute>::const_iterator itr = _vertexAttributes.find(name);
@@ -520,8 +518,6 @@ Uniform* Effect::getUniform(unsigned int index) const
     auto itr = std::next(_uniforms.begin(), index);
     return itr->second;
 }
-
-unsigned int Effect::getUniformCount() const { return (unsigned int)_uniforms.size(); }
 
 void Effect::setValue(Uniform* uniform, float value)
 {
@@ -661,10 +657,10 @@ Uniform::~Uniform()
     // hidden
 }
 
-Effect* Uniform::getEffect() const { return _effect; }
+Effect* Uniform::getEffect() const noexcept { return _effect; }
 
-const std::string& Uniform::getName() const { return _name; }
+const std::string& Uniform::getName() const noexcept { return _name; }
 
-const GLenum Uniform::getType() const { return _type; }
+const GLenum Uniform::getType() const noexcept { return _type; }
 
 } // namespace tractor

@@ -76,7 +76,7 @@ class AIState : public Ref
      *
      * @return The state ID.
      */
-    const std::string& getId() const;
+    const std::string& getId() const noexcept { return _id; }
 
     /**
      * Sets a listener to dispatch state events to.

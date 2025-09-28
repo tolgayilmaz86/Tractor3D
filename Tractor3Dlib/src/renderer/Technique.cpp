@@ -23,10 +23,6 @@ Technique::~Technique()
     }
 }
 
-const std::string& Technique::getId() const { return _id; }
-
-unsigned int Technique::getPassCount() const { return (unsigned int)_passes.size(); }
-
 Pass* Technique::getPassByIndex(unsigned int index) const
 {
     assert(index < _passes.size());

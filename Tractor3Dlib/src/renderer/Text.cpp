@@ -115,44 +115,6 @@ Text* Text::create(Properties* properties)
     return Text::create(fontPath, text, color, size);
 }
 
-void Text::setText(const std::string& str) { _text = str; }
-
-const std::string& Text::getText() const { return _text; }
-
-unsigned int Text::getSize() const { return _size; }
-
-void Text::setWidth(float width) { _width = width; }
-
-float Text::getWidth() const { return _width; }
-
-void Text::setHeight(float height) { _height = height; }
-
-float Text::getHeight() const { return _height; }
-
-void Text::setWrap(bool wrap) { _wrap = wrap; }
-
-bool Text::getWrap() const { return _wrap; }
-
-void Text::setRightToLeft(bool rightToLeft) { _rightToLeft = rightToLeft; }
-
-bool Text::getRightToLeft() const { return _rightToLeft; }
-
-void Text::setJustify(Font::Justify align) { _align = align; }
-
-Font::Justify Text::getJustify() const { return _align; }
-
-void Text::setClip(const Rectangle& clip) { _clip = clip; }
-
-const Rectangle& Text::getClip() const { return _clip; }
-
-void Text::setOpacity(float opacity) { _opacity = opacity; }
-
-float Text::getOpacity() const { return _opacity; }
-
-void Text::setColor(const Vector4& color) { _color = color; }
-
-const Vector4& Text::getColor() const { return _color; }
-
 Drawable* Text::clone(NodeCloneContext& context)
 {
     Text* textClone = new Text();

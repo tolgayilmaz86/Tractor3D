@@ -113,12 +113,12 @@ class VertexFormat
      *
      * @return The number of items in the elements array.
      */
-    unsigned int getElementCount() const;
+    unsigned int getElementCount() const noexcept { return (unsigned int)_elements.size(); }
 
     /**
      * Gets the size (in bytes) of a single vertex using this format.
      */
-    unsigned int getVertexSize() const;
+    unsigned int getVertexSize() const noexcept { return _vertexSize; }
 
     /**
      * Compares two vertex formats for equality.

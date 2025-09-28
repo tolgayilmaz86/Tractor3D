@@ -107,14 +107,4 @@ DepthStencilTarget* DepthStencilTarget::getDepthStencilTarget(const std::string&
 
     return nullptr;
 }
-
-const std::string& DepthStencilTarget::getId() const { return _id; }
-
-DepthStencilTarget::Format DepthStencilTarget::getFormat() const { return _format; }
-
-unsigned int DepthStencilTarget::getWidth() const { return _width; }
-
-unsigned int DepthStencilTarget::getHeight() const { return _height; }
-
-bool DepthStencilTarget::isPacked() const { return _packed; }
 } // namespace tractor

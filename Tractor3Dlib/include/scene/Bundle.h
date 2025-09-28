@@ -87,7 +87,7 @@ class Bundle : public Ref
     /**
      * Returns the number of top-level objects in this bundle.
      */
-    unsigned int getObjectCount() const { return _referenceCount; }
+    unsigned int getObjectCount() const noexcept { return _referenceCount; }
     /**
      * Gets the unique identifier of the top-level object at the specified index in this bundle.
      *
@@ -102,14 +102,14 @@ class Bundle : public Ref
      *
      * @return The major version of the loaded bundle.
      */
-    unsigned int getVersionMajor() const { return (unsigned int)_version[0]; }
+    unsigned int getVersionMajor() const noexcept { return (unsigned int)_version[0]; }
 
     /**
      * Gets the minor version of the loaded bundle.
      *
      * @return The minor version of the loaded bundle.
      */
-    unsigned int getVersionMinor() const { return (unsigned int)_version[1]; }
+    unsigned int getVersionMinor() const noexcept { return (unsigned int)_version[1]; }
 
   private:
     /**

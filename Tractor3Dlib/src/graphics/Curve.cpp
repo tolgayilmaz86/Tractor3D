@@ -144,13 +144,13 @@ Curve::Point::~Point()
     SAFE_DELETE_ARRAY(outValue);
 }
 
-unsigned int Curve::getPointCount() const { return _pointCount; }
+unsigned int Curve::getPointCount() const noexcept { return _pointCount; }
 
-unsigned int Curve::getComponentCount() const { return _componentCount; }
+unsigned int Curve::getComponentCount() const noexcept { return _componentCount; }
 
-float Curve::getStartTime() const { return _points[0].time; }
+float Curve::getStartTime() const noexcept { return _points[0].time; }
 
-float Curve::getEndTime() const { return _points[_pointCount - 1].time; }
+float Curve::getEndTime() const noexcept { return _points[_pointCount - 1].time; }
 
 float Curve::getPointTime(unsigned int index) const
 {

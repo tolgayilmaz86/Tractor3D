@@ -74,7 +74,7 @@ class Plane
      *
      * @return normal The plane's normal.
      */
-    const Vector3& getNormal() const;
+    const Vector3& getNormal() const noexcept;
 
     /**
      * Sets the plane's normal to the given vector.
@@ -97,21 +97,24 @@ class Plane
      *
      * @return The plane's distance to the origin along its normal.
      */
-    float getDistance() const;
+    float getDistance() const noexcept { return _distance; }
 
     /**
      * Sets the plane's distance to the origin along its normal.
      *
      * @param distance The new distance.
      */
-    void setDistance(float distance);
+    void setDistance(float distance) { _distance = distance; }
 
     /**
      * Calculates the distance from this plane to the specified point.
      *
      * @param point The point to calculate distance to.
      */
-    float distance(const Vector3& point) const;
+    float distance(const Vector3& point) const
+    {
+        return _normal.x * point.x + _normal.y * point.y + _normal.z * point.z + _distance;
+    }
 
     /**
      * Calculates the point of intersection of the given three planes and stores it in the given point.

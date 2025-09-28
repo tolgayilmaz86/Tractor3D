@@ -15,8 +15,6 @@ AIState::AIState(const std::string& id) : _id(id), _listener(nullptr) {}
 
 AIState* AIState::create(const std::string& id) { return new AIState(id); }
 
-const std::string& AIState::getId() const { return _id; }
-
 void AIState::setListener(Listener* listener) { _listener = listener; }
 
 void AIState::enter(AIStateMachine* stateMachine)

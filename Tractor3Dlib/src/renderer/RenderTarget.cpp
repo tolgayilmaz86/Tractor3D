@@ -66,12 +66,4 @@ RenderTarget* RenderTarget::getRenderTarget(const std::string& id)
     return nullptr;
 }
 
-const std::string& RenderTarget::getId() const { return _id; }
-
-Texture* RenderTarget::getTexture() const { return _texture; }
-
-unsigned int RenderTarget::getWidth() const { return _texture->getWidth(); }
-
-unsigned int RenderTarget::getHeight() const { return _texture->getHeight(); }
-
 } // namespace tractor

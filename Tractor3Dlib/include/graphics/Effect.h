@@ -65,7 +65,7 @@ class Effect : public Ref
      * Returns the unique string identifier for the effect, which is a concatenation of
      * the shader paths it was loaded from.
      */
-    const std::string& getId() const;
+    const std::string& getId() const noexcept { return _id; }
 
     /**
      * Returns the vertex attribute handle for the vertex attribute with the specified name.
@@ -99,7 +99,7 @@ class Effect : public Ref
      *
      * @return The number of active uniforms.
      */
-    unsigned int getUniformCount() const;
+    unsigned int getUniformCount() const noexcept { return (unsigned int)_uniforms.size(); }
 
     /**
      * Sets a float uniform value.
@@ -266,21 +266,21 @@ class Uniform
      *
      * @return The name of the uniform.
      */
-    const std::string& getName() const;
+    const std::string& getName() const noexcept;
 
     /**
      * Returns the OpenGL uniform type.
      *
      * @return The OpenGL uniform type.
      */
-    const GLenum getType() const;
+    const GLenum getType() const noexcept;
 
     /**
      * Returns the effect for this uniform.
      *
      * @return The uniform's effect.
      */
-    Effect* getEffect() const;
+    Effect* getEffect() const noexcept;
 
   private:
     /**

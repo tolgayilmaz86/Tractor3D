@@ -68,9 +68,9 @@ const Vector4& Vector4::unitW()
     return value;
 }
 
-bool Vector4::isZero() const { return x == 0.0f && y == 0.0f && z == 0.0f && w == 0.0f; }
+bool Vector4::isZero() const noexcept { return x == 0.0f && y == 0.0f && z == 0.0f && w == 0.0f; }
 
-bool Vector4::isOne() const { return x == 1.0f && y == 1.0f && z == 1.0f && w == 1.0f; }
+bool Vector4::isOne() const noexcept { return x == 1.0f && y == 1.0f && z == 1.0f && w == 1.0f; }
 
 float Vector4::angle(const Vector4& v1, const Vector4& v2)
 {
@@ -149,9 +149,9 @@ float Vector4::dot(const Vector4& v1, const Vector4& v2)
     return (v1.x * v2.x + v1.y * v2.y + v1.z * v2.z + v1.w * v2.w);
 }
 
-float Vector4::length() const { return sqrt(x * x + y * y + z * z + w * w); }
+float Vector4::length() const noexcept { return sqrt(x * x + y * y + z * z + w * w); }
 
-float Vector4::lengthSquared() const { return (x * x + y * y + z * z + w * w); }
+float Vector4::lengthSquared() const noexcept { return (x * x + y * y + z * z + w * w); }
 
 void Vector4::negate()
 {

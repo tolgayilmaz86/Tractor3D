@@ -1310,8 +1310,6 @@ void Texture::Sampler::setFilterMode(Filter minificationFilter, Filter magnifica
     _magFilter = magnificationFilter;
 }
 
-Texture* Texture::Sampler::getTexture() const { return _texture; }
-
 void Texture::Sampler::bind()
 {
     assert(_texture);

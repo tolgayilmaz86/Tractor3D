@@ -10,10 +10,6 @@ Script::Script() : _scope(GLOBAL), _env(0) {}
 
 Script::~Script() { Game::getInstance()->getScriptController()->unloadScript(this); }
 
-const std::string& Script::getPath() const { return _path; }
-
-Script::Scope Script::getScope() const { return _scope; }
-
 bool Script::functionExists(const char* name) const
 {
     return Game::getInstance()->getScriptController()->functionExists(name, this);

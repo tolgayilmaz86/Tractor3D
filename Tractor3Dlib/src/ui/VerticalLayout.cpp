@@ -5,21 +5,7 @@
 namespace tractor
 {
 
-VerticalLayout::VerticalLayout() : _bottomToTop(false), _spacing(0) {}
-
-VerticalLayout::~VerticalLayout() {}
-
 VerticalLayout* VerticalLayout::create() { return new VerticalLayout(); }
-
-void VerticalLayout::setBottomToTop(bool bottomToTop) { _bottomToTop = bottomToTop; }
-
-bool VerticalLayout::getBottomToTop() { return _bottomToTop; }
-
-Layout::Type VerticalLayout::getType() { return Layout::LAYOUT_VERTICAL; }
-
-int VerticalLayout::getSpacing() const { return _spacing; }
-
-void VerticalLayout::setSpacing(int spacing) { _spacing = spacing; }
 
 void VerticalLayout::update(const Container* container)
 {

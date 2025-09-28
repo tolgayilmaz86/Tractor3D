@@ -56,8 +56,6 @@ PhysicsCollisionShape::~PhysicsCollisionShape()
     }
 }
 
-PhysicsCollisionShape::Type PhysicsCollisionShape::getType() const { return _type; }
-
 PhysicsCollisionShape::Definition::Definition()
     : type(SHAPE_NONE), isExplicit(false), centerAbsolute(false)
 {
@@ -121,8 +119,6 @@ PhysicsCollisionShape::Definition& PhysicsCollisionShape::Definition::operator=(
 
     return *this;
 }
-
-bool PhysicsCollisionShape::Definition::isEmpty() const { return type == SHAPE_NONE; }
 
 PhysicsCollisionShape::Definition PhysicsCollisionShape::Definition::create(Node* node,
                                                                             Properties* properties)

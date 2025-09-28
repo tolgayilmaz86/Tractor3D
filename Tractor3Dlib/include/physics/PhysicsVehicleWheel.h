@@ -23,7 +23,10 @@ class PhysicsVehicleWheel : public PhysicsCollisionObject
     /**
      * @see PhysicsCollisionObject#getType
      */
-    PhysicsCollisionObject::Type getType() const;
+    PhysicsCollisionObject::Type getType() const noexcept override
+    {
+        return PhysicsCollisionObject::VEHICLE_WHEEL;
+    }
 
     /**
      * Operation not supported. Use host vehicle's setEnabled() instead.
@@ -241,7 +244,7 @@ class PhysicsVehicleWheel : public PhysicsCollisionObject
     /**
      * @see PhysicsCollisionObject::getCollisionObject
      */
-    btCollisionObject* getCollisionObject() const;
+    btCollisionObject* getCollisionObject() const noexcept;
 
   private:
     /**

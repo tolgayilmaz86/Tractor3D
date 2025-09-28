@@ -107,7 +107,7 @@ class Transform : public AnimationTarget, public ScriptTarget
     /**
      * Globally suspends all transform changed events.
      */
-    static void suspendTransformChanged();
+    static void suspendTransformChanged() { _suspendTransformChanged++; }
 
     /**
      * Globally resumes all transform changed events.
@@ -120,7 +120,7 @@ class Transform : public AnimationTarget, public ScriptTarget
      * @return TRUE if transform changed events are suspended; FALSE if transform changed events are
      * not suspended.
      */
-    static bool isTransformChangedSuspended();
+    static bool isTransformChangedSuspended() { return (_suspendTransformChanged > 0); }
 
     /**
      * Listener interface for Transform events.
@@ -199,7 +199,7 @@ class Transform : public AnimationTarget, public ScriptTarget
     /**
      * Returns the scale for this transform.
      */
-    const Vector3& getScale() const;
+    const Vector3& getScale() const noexcept { return _scale; }
 
     /**
      * Gets the scale component of this transform in the specified vector.
@@ -213,26 +213,26 @@ class Transform : public AnimationTarget, public ScriptTarget
      *
      * @return The scale factor along the x-axis.
      */
-    float getScaleX() const;
+    float getScaleX() const noexcept { return _scale.x; }
 
     /**
      * Gets the scale factor along the y-axis of this transform.
      *
      * @return The scale factor along the y-axis.
      */
-    float getScaleY() const;
+    float getScaleY() const noexcept { return _scale.y; }
 
     /**
      * Gets the scale factor along the z-axis of this transform.
      *
      * @return The scale factor along the z-axis.
      */
-    float getScaleZ() const;
+    float getScaleZ() const noexcept { return _scale.z; }
 
     /**
      * Returns the rotation for this transform.
      */
-    const Quaternion& getRotation() const;
+    const Quaternion& getRotation() const noexcept { return _rotation; }
 
     /**
      * Gets the rotation component of this transform in the specified quaternion.
@@ -261,7 +261,7 @@ class Transform : public AnimationTarget, public ScriptTarget
     /**
      * Returns the translation for this transform.
      */
-    const Vector3& getTranslation() const;
+    const Vector3& getTranslation() const noexcept { return _translation; }
 
     /**
      * Gets the translation component of this transform in the specified vector.
@@ -275,21 +275,21 @@ class Transform : public AnimationTarget, public ScriptTarget
      *
      * @return The translation factor along the x-axis.
      */
-    float getTranslationX() const;
+    float getTranslationX() const noexcept { return _translation.x; }
 
     /**
      * Gets the translation factor along the y-axis of this transform.
      *
      * @return The translation factor along the y-axis.
      */
-    float getTranslationY() const;
+    float getTranslationY() const noexcept { return _translation.y; }
 
     /**
      * Gets the translation factor along the z-axis of this transform.
      *
      * @return The translation factor along the z-axis.
      */
-    float getTranslationZ() const;
+    float getTranslationZ() const noexcept { return _translation.z; }
 
     /**
      * Returns the forward vector for this Transform.
@@ -764,7 +764,7 @@ class Transform : public AnimationTarget, public ScriptTarget
      *
      * @return True if this Transform is static, false otherwise.
      */
-    virtual bool isStatic() const;
+    virtual bool isStatic() const noexcept { return false; }
 
     /**
      * Adds a transform listener.

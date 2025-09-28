@@ -46,8 +46,6 @@ void Ref::release()
     }
 }
 
-unsigned int Ref::getRefCount() const { return _refCount; }
-
 #ifdef GP_USE_MEM_LEAK_DETECTION
 
 struct RefAllocationRecord

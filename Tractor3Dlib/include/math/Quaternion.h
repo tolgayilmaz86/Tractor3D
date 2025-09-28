@@ -137,14 +137,14 @@ class Quaternion
      *
      * @return true if it is the identity quaternion, false otherwise.
      */
-    bool isIdentity() const;
+    bool isIdentity() const noexcept { return x == 0.0f && y == 0.0f && z == 0.0f && w == 1.0f; }
 
     /**
      * Determines if this quaternion is all zeros.
      *
      * @return true if this quaternion is all zeros, false otherwise.
      */
-    bool isZero() const;
+    bool isZero() const noexcept { return x == 0.0f && y == 0.0f && z == 0.0f && w == 0.0f; }
 
     /**
      * Creates this quaternion equal to the rotation from the specified euler angles

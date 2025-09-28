@@ -147,16 +147,6 @@ Light* Light::create(Properties* properties)
     return light;
 }
 
-Light::Type Light::getLightType() const { return _type; }
-
-Node* Light::getNode() const { return _node; }
-
-void Light::setNode(Node* node)
-{
-    // Connect the new node.
-    _node = node;
-}
-
 const Vector3& Light::getColor() const
 {
     switch (_type)

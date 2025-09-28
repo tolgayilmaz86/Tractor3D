@@ -113,7 +113,7 @@ class AudioSource : public Ref, public Transform::Listener
      *
      * @return true if the audio source is looped, false if not.
      */
-    bool isLooped() const;
+    bool isLooped() const noexcept { return _looped; }
 
     /**
      * Sets the state of the audio source to be looping or not.
@@ -127,7 +127,7 @@ class AudioSource : public Ref, public Transform::Listener
      *
      * @return The gain.
      */
-    float getGain() const;
+    float getGain() const noexcept { return _gain; }
 
     /**
      * Sets the gain/volume of the audio source.
@@ -141,7 +141,7 @@ class AudioSource : public Ref, public Transform::Listener
      *
      * @return The pitch.
      */
-    float getPitch() const;
+    float getPitch() const noexcept { return _pitch; }
 
     /**
      * Sets the pitch of the audio source.
@@ -155,7 +155,7 @@ class AudioSource : public Ref, public Transform::Listener
      *
      * @return The velocity as a vector.
      */
-    const Vector3& getVelocity() const;
+    const Vector3& getVelocity() const noexcept { return _velocity; }
 
     /**
      * Sets the velocity of the audio source.
@@ -178,7 +178,7 @@ class AudioSource : public Ref, public Transform::Listener
      *
      * @return The node that this audio source is attached to.
      */
-    Node* getNode() const;
+    Node* getNode() const noexcept { return _node; }
 
   private:
     /**

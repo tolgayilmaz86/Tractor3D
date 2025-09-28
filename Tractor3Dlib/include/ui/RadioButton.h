@@ -46,7 +46,7 @@ class RadioButton : public Button
      *
      * @return Whether this radio button is currently selected.
      */
-    bool isSelected() const;
+    bool isSelected() const noexcept { return _selected; }
 
     /**
      * Sets whether this radio button is currently selected.
@@ -69,14 +69,15 @@ class RadioButton : public Button
      *
      * @param groupId
      */
-    void setGroupId(const std::string& groupId);
+    void setGroupId(const std::string& groupId) { _groupId = groupId; }
+
 
     /**
      * Gets the RadioButton's group ID.
      *
      * @return the RadioButton's group ID.
      */
-    const std::string& getGroupId() const;
+    const std::string& getGroupId() const noexcept { return _groupId; }
 
   protected:
     /**

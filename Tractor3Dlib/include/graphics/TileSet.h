@@ -80,42 +80,42 @@ class TileSet : public Ref, public Drawable
      *
      * @return The width of each tile in the tile set.
      */
-    float getTileWidth() const;
+    float getTileWidth() const noexcept { return _tileWidth; }
 
     /**
      * Gets the height of each tile in the tile set.
      *
      * @return The height of each tile in the tile set.
      */
-    float getTileHeight() const;
+    float getTileHeight() const noexcept { return _tileHeight; }
 
     /**
      * Gets the number of tile rows.
      *
      * @return The number of tile rows.
      */
-    unsigned int getRowCount() const;
+    unsigned int getRowCount() const noexcept { return _rowCount; }
 
     /**
      * Gets the number of tile columns.
      *
      * @return The number of tile columns.
      */
-    unsigned int getColumnCount() const;
+    unsigned int getColumnCount() const noexcept { return _columnCount; }
 
     /**
      * Gets the overall width of the tileset.
      *
      * @return The overall width of the tileset.
      */
-    float getWidth() const;
+    float getWidth() const noexcept { return _width; }
 
     /**
      * Gets the overall width of the tileset.
      *
      * @return The overall width of the tileset.
      */
-    float getHeight() const;
+    float getHeight() const noexcept { return _height; }
 
     /**
      * Sets the opacity for the sprite.
@@ -124,7 +124,7 @@ class TileSet : public Ref, public Drawable
      *
      * @param opacity The opacity for the sprite.
      */
-    void setOpacity(float opacity);
+    void setOpacity(float opacity) { _opacity = opacity; }
 
     /**
      * Gets the opacity for the sprite.
@@ -133,21 +133,21 @@ class TileSet : public Ref, public Drawable
      *
      * @return The opacity for the sprite.
      */
-    float getOpacity() const;
+    float getOpacity() const noexcept { return _opacity; }
 
     /**
      * Sets the color (RGBA) for the sprite.
      *
      * @param color The color(RGBA) for the sprite.
      */
-    void setColor(const Vector4& color);
+    void setColor(const Vector4& color) { _color = color; }
 
     /**
      * Gets the color (RGBA) for the sprite.
      *
      * @return The color(RGBA) for the sprite.
      */
-    const Vector4& getColor() const;
+    const Vector4& getColor() const noexcept { return _color; }
 
     /**
      * @see Drawable::draw
@@ -158,7 +158,7 @@ class TileSet : public Ref, public Drawable
     /**
      * Constructor
      */
-    TileSet();
+    TileSet() = default;
 
     /**
      * Destructor
@@ -168,7 +168,7 @@ class TileSet : public Ref, public Drawable
     /**
      * operator=
      */
-    TileSet& operator=(const TileSet& set);
+    TileSet& operator=(const TileSet& set) { return *this; }
 
     /**
      * @see Drawable::clone
@@ -176,16 +176,16 @@ class TileSet : public Ref, public Drawable
     Drawable* clone(NodeCloneContext& context);
 
   private:
-    Vector2* _tiles;
-    float _tileWidth;
-    float _tileHeight;
-    unsigned int _rowCount;
-    unsigned int _columnCount;
-    float _width;
-    float _height;
-    SpriteBatch* _batch;
-    float _opacity;
-    Vector4 _color;
+    Vector2* _tiles{ nullptr };
+    float _tileWidth{ 0.0f };
+    float _tileHeight{ 0.0f };
+    unsigned int _rowCount{ 0 };
+    unsigned int _columnCount{ 0 };
+    float _width{ 0.0f };
+    float _height{ 0.0f };
+    SpriteBatch* _batch{ nullptr };
+    float _opacity{ 1.0f };
+    Vector4 _color{ Vector4::one() };
 };
 
 } // namespace tractor

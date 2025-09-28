@@ -31,10 +31,6 @@ const Quaternion& Quaternion::zero()
     return value;
 }
 
-bool Quaternion::isIdentity() const { return x == 0.0f && y == 0.0f && z == 0.0f && w == 1.0f; }
-
-bool Quaternion::isZero() const { return x == 0.0f && y == 0.0f && z == 0.0f && w == 0.0f; }
-
 void Quaternion::createFromEuler(float yaw, float pitch, float roll, Quaternion* dst)
 {
     assert(dst);

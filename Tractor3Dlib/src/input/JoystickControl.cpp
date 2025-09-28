@@ -33,7 +33,7 @@ const std::string& JoystickControl::getTypeName() const
     return TYPE_NAME;
 }
 
-const Vector2& JoystickControl::getValue() const { return _value; }
+const Vector2& JoystickControl::getValue() const noexcept { return _value; }
 
 void JoystickControl::setInnerRegionSize(const Vector2& size,
                                          bool isWidthPercentage,
@@ -127,9 +127,9 @@ const Vector2& JoystickControl::getOuterRegionSize(bool* isWidthPercentage,
 
 void JoystickControl::setRelative(bool relative) { _relative = relative; }
 
-bool JoystickControl::isRelative() const { return _relative; }
+bool JoystickControl::isRelative() const noexcept { return _relative; }
 
-unsigned int JoystickControl::getIndex() const { return _index; }
+unsigned int JoystickControl::getIndex() const noexcept { return _index; }
 
 void JoystickControl::setBoundsBit(bool set, int& bitSetOut, int bit)
 {
@@ -150,7 +150,7 @@ void JoystickControl::setRadius(float radius, bool isPercentage)
     updateAbsoluteSizes();
 }
 
-float JoystickControl::getRadius() const { return _radiusCoord; }
+float JoystickControl::getRadius() const noexcept { return _radiusCoord; }
 
 bool JoystickControl::isRadiusPercentage() const
 {

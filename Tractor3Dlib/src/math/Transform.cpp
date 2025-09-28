@@ -47,8 +47,6 @@ Transform::Transform(const Transform& copy) : _matrixDirtyBits(0), _listeners(nu
 
 Transform::~Transform() { SAFE_DELETE(_listeners); }
 
-void Transform::suspendTransformChanged() { _suspendTransformChanged++; }
-
 void Transform::resumeTransformChanged()
 {
     if (_suspendTransformChanged == 0) // We haven't suspended transformChanged() calls, so do nothing.
@@ -80,8 +78,6 @@ void Transform::resumeTransformChanged()
     }
     _suspendTransformChanged--;
 }
-
-bool Transform::isTransformChangedSuspended() { return (_suspendTransformChanged > 0); }
 
 const std::string& Transform::getTypeName() const
 {
@@ -118,21 +114,11 @@ const Matrix& Transform::getMatrix() const
     return _matrix;
 }
 
-const Vector3& Transform::getScale() const { return _scale; }
-
 void Transform::getScale(Vector3* scale) const
 {
     assert(scale);
     scale->set(_scale);
 }
-
-float Transform::getScaleX() const { return _scale.x; }
-
-float Transform::getScaleY() const { return _scale.y; }
-
-float Transform::getScaleZ() const { return _scale.z; }
-
-const Quaternion& Transform::getRotation() const { return _rotation; }
 
 void Transform::getRotation(Quaternion* rotation) const
 {
@@ -152,19 +138,11 @@ float Transform::getRotation(Vector3* axis) const
     return _rotation.toAxisAngle(axis);
 }
 
-const Vector3& Transform::getTranslation() const { return _translation; }
-
 void Transform::getTranslation(Vector3* translation) const
 {
     assert(translation);
     translation->set(_translation);
 }
-
-float Transform::getTranslationX() const { return _translation.x; }
-
-float Transform::getTranslationY() const { return _translation.y; }
-
-float Transform::getTranslationZ() const { return _translation.z; }
 
 Vector3 Transform::getForwardVector() const
 {
@@ -638,8 +616,6 @@ void Transform::transformVector(float x, float y, float z, float w, Vector3* dst
     getMatrix();
     _matrix.transformVector(x, y, z, w, dst);
 }
-
-bool Transform::isStatic() const { return false; }
 
 unsigned int Transform::getAnimationPropertyComponentCount(int propertyId) const
 {

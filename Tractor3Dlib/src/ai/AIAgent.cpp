@@ -24,13 +24,13 @@ const std::string& AIAgent::getId() const
     return EMPTY_STRING;
 }
 
-Node* AIAgent::getNode() const { return _node; }
+Node* AIAgent::getNode() const noexcept { return _node; }
 
 void AIAgent::setNode(Node* node) { _node = node; }
 
 AIStateMachine* AIAgent::getStateMachine() { return _stateMachine; }
 
-bool AIAgent::isEnabled() const { return (_node && _enabled); }
+bool AIAgent::isEnabled() const noexcept { return (_node && _enabled); }
 
 void AIAgent::setEnabled(bool enabled) { _enabled = enabled; }
 

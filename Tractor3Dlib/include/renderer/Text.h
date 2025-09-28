@@ -63,56 +63,56 @@ class Text : public Ref, public Drawable, public AnimationTarget
      *
      * @param str The text string to be drawn.
      */
-    void setText(const std::string& str);
+    void setText(const std::string& str) { _text = str; }
 
     /**
      * Get the string that will be drawn from this Text object.
      *
      * @return The text string to be drawn.
      */
-    const std::string& getText() const;
+    const std::string& getText() const noexcept { return _text; };
 
     /**
      * Gets the size of the text to be drawn.
      *
      * @return The size of the text to be drawn.
      */
-    unsigned int getSize() const;
+    unsigned int getSize() const noexcept { return _size; }
 
     /**
      * Set the width to draw the text within.
      *
      * @param width The width to draw the text.
      */
-    void setWidth(float width);
+    void setWidth(float width) { _width = width; }
 
     /**
      * Gets the width of the text.
      *
      * @return The width of the text.
      */
-    float getWidth() const;
+    float getWidth() const noexcept { return _width; }
 
     /**
      * Set the height of text to be drawn within.
      *
      * @param height The height to draw the text.
      */
-    void setHeight(float height);
+    void setHeight(float height) { _height = height; }
 
     /**
      * Gets the width of the text.
      *
      * @return The overall width of the text.
      */
-    float getHeight() const;
+    float getHeight() const noexcept { return _height; }
 
     /**
      * Sets if the the text is wrapped by the text width.
      *
      * @param wrap true if the the text is wrapped by the text width.
      */
-    void setWrap(bool wrap);
+    void setWrap(bool wrap) { _wrap = wrap; }
 
     /**
      * Gets if the the text is wrapped by the text width.
@@ -121,14 +121,14 @@ class Text : public Ref, public Drawable, public AnimationTarget
      *
      * @return true if the the text is wrapped by the text width.
      */
-    bool getWrap() const;
+    bool getWrap() const noexcept { return _wrap; }
 
     /**
      * Sets if the text is rendered right-to-left.
      *
      * @param rightToLeft true if the text is rendered right-to-left, false if left-to-right.
      */
-    void setRightToLeft(bool rightToLeft);
+    void setRightToLeft(bool rightToLeft) { _rightToLeft = rightToLeft; }
 
     /**
      * Sets if the text is rendered right-to-left.
@@ -137,21 +137,21 @@ class Text : public Ref, public Drawable, public AnimationTarget
      *
      * @return rightToLeft true if the text is rendered right-to-left, false if left-to-right.
      */
-    bool getRightToLeft() const;
+    bool getRightToLeft() const noexcept { return _rightToLeft; }
 
     /**
      * Sets the justification to align the text within the text bounds.
      *
      * @param align The text justification alignment.
      */
-    void setJustify(Font::Justify align);
+    void setJustify(Font::Justify align) { _align = align; }
 
     /**
      * Gets the justification to align the text within the text bounds.
      *
      * @return The text justification alignment.
      */
-    Font::Justify getJustify() const;
+    Font::Justify getJustify() const noexcept { return _align; }
 
     /**
      * Sets the local clipping region for this text.
@@ -160,7 +160,7 @@ class Text : public Ref, public Drawable, public AnimationTarget
      *
      * @param clip The clipping region for this text.
      */
-    void setClip(const Rectangle& clip);
+    void setClip(const Rectangle& clip) { _clip = clip; }
 
     /**
      * Gets the local clipping region for this text.
@@ -171,7 +171,7 @@ class Text : public Ref, public Drawable, public AnimationTarget
      *
      * @return clip The clipping region for this text.
      */
-    const Rectangle& getClip() const;
+    const Rectangle& getClip() const noexcept { return _clip; }
 
     /**
      * Sets the opacity for the sprite.
@@ -180,7 +180,7 @@ class Text : public Ref, public Drawable, public AnimationTarget
      *
      * @param opacity The opacity for the sprite.
      */
-    void setOpacity(float opacity);
+    void setOpacity(float opacity) { _opacity = opacity; }
 
     /**
      * Gets the opacity for the sprite.
@@ -189,21 +189,21 @@ class Text : public Ref, public Drawable, public AnimationTarget
      *
      * @return The opacity for the sprite.
      */
-    float getOpacity() const;
+    float getOpacity() const noexcept { return _opacity; }
 
     /**
      * Sets the color (RGBA) for the sprite.
      *
      * @param color The color(RGBA) for the sprite.
      */
-    void setColor(const Vector4& color);
+    void setColor(const Vector4& color) { _color = color; }
 
     /**
      * Gets the color (RGBA) for the sprite.
      *
      * @return The color(RGBA) for the sprite.
      */
-    const Vector4& getColor() const;
+    const Vector4& getColor() const noexcept { return _color; }
 
     /**
      * @see Drawable::draw

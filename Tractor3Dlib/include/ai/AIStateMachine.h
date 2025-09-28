@@ -38,7 +38,7 @@ class AIStateMachine
      *
      * @return The AIAgent that owns this state machine.
      */
-    AIAgent* getAgent() const;
+    AIAgent* getAgent() const noexcept { return _agent; }
 
     /**
      * Creates and adds a new state to the state machine.
@@ -81,7 +81,7 @@ class AIStateMachine
      *
      * @return The active state for this state machine.
      */
-    AIState* getActiveState() const;
+    AIState* getActiveState() const noexcept { return _currentState; }
 
     /**
      * Changes the state of this state machine to the given state.

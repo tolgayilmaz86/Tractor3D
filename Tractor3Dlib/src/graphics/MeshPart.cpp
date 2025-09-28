@@ -64,15 +64,15 @@ std::unique_ptr<MeshPart> MeshPart::create(unsigned int meshIndex,
     return std::move(part);
 }
 
-unsigned int MeshPart::getMeshIndex() const { return _meshIndex; }
+unsigned int MeshPart::getMeshIndex() const noexcept { return _meshIndex; }
 
-Mesh::PrimitiveType MeshPart::getPrimitiveType() const { return _primitiveType; }
+Mesh::PrimitiveType MeshPart::getPrimitiveType() const noexcept { return _primitiveType; }
 
-unsigned int MeshPart::getIndexCount() const { return _indexCount; }
+unsigned int MeshPart::getIndexCount() const noexcept { return _indexCount; }
 
-Mesh::IndexFormat MeshPart::getIndexFormat() const { return _indexFormat; }
+Mesh::IndexFormat MeshPart::getIndexFormat() const noexcept { return _indexFormat; }
 
-IndexBufferHandle MeshPart::getIndexBuffer() const { return _indexBuffer; }
+IndexBufferHandle MeshPart::getIndexBuffer() const noexcept { return _indexBuffer; }
 
 void* MeshPart::mapIndexBuffer()
 {
@@ -125,6 +125,6 @@ void MeshPart::setIndexData(const void* indexData, unsigned int indexStart, unsi
     }
 }
 
-bool MeshPart::isDynamic() const { return _dynamic; }
+bool MeshPart::isDynamic() const noexcept { return _dynamic; }
 
 } // namespace tractor

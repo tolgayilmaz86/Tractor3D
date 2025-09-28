@@ -55,7 +55,7 @@ class JoystickControl : public Control
      *
      * @return The value of the joystick.
      */
-    const Vector2& getValue() const;
+    const Vector2& getValue() const noexcept;
 
     /**
      * Sets the image size of the inner region of the joystick. Does not do anything if there is no
@@ -129,14 +129,14 @@ class JoystickControl : public Control
      *
      * @return <code>true</code> if relative positioning is enabled; <code>false</code> otherwise.
      */
-    bool isRelative() const;
+    bool isRelative() const noexcept;
 
     /**
      * Gets the index of this joystick across all joysticks on a form.
      *
      * @return The index of this joystick on a form.
      */
-    unsigned int getIndex() const;
+    unsigned int getIndex() const noexcept;
 
     /**
      * Sets the radius of joystick motion
@@ -151,7 +151,7 @@ class JoystickControl : public Control
      *
      * @return The radius of joystick motion
      */
-    float getRadius() const;
+    float getRadius() const noexcept;
 
     /**
      * Determines if the radius of joystick motion is a percentage value of the relative size of this control

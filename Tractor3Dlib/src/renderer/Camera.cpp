@@ -129,7 +129,6 @@ Camera* Camera::create(Properties* properties)
     return camera;
 }
 
-Camera::Type Camera::getCameraType() const { return _type; }
 
 float Camera::getFieldOfView() const
 {
@@ -182,8 +181,6 @@ void Camera::setZoomY(float zoomY)
     cameraChanged();
 }
 
-float Camera::getAspectRatio() const { return _aspectRatio; }
-
 void Camera::setAspectRatio(float aspectRatio)
 {
     _aspectRatio = aspectRatio;
@@ -191,8 +188,6 @@ void Camera::setAspectRatio(float aspectRatio)
              | CAMERA_DIRTY_BOUNDS;
     cameraChanged();
 }
-
-float Camera::getNearPlane() const { return _nearPlane; }
 
 void Camera::setNearPlane(float nearPlane)
 {
@@ -202,8 +197,6 @@ void Camera::setNearPlane(float nearPlane)
     cameraChanged();
 }
 
-float Camera::getFarPlane() const { return _farPlane; }
-
 void Camera::setFarPlane(float farPlane)
 {
     _farPlane = farPlane;
@@ -211,8 +204,6 @@ void Camera::setFarPlane(float farPlane)
              | CAMERA_DIRTY_BOUNDS;
     cameraChanged();
 }
-
-Node* Camera::getNode() const { return _node; }
 
 void Camera::setNode(Node* node)
 {

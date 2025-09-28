@@ -74,7 +74,7 @@ class PhysicsCollisionShape : public Ref
         /**
          * Determines if this is an empty/undefined collision shape definition.
          */
-        bool isEmpty() const;
+        bool isEmpty() const noexcept { return type == SHAPE_NONE; }
 
       private:
         /**
@@ -131,7 +131,7 @@ class PhysicsCollisionShape : public Ref
      *
      * @return The collision shape type.
      */
-    PhysicsCollisionShape::Type getType() const;
+    PhysicsCollisionShape::Type getType() const noexcept { return _type; }
 
     /**
      * Returns the internal bullet physics shape object.
@@ -139,7 +139,7 @@ class PhysicsCollisionShape : public Ref
      * @return The bullet shape object.
      * @script{ignore}
      */
-    btCollisionShape* getShape() const { return _shape; }
+    btCollisionShape* getShape() const noexcept { return _shape; }
 
     /**
      * Defines a box shape, using the bounding volume of the node it is attached to.

@@ -24,46 +24,46 @@ class VerticalLayout : public Layout
      *
      * @param bottomToTop Whether to start laying out controls from the bottom of the container.
      */
-    void setBottomToTop(bool bottomToTop);
+    void setBottomToTop(bool bottomToTop) { _bottomToTop = bottomToTop; }
 
     /**
      * Get whether this layout will start laying out controls from the bottom of the container.
      *
      * @return Whether to start laying out controls from the bottom of the container.
      */
-    bool getBottomToTop();
+    bool getBottomToTop() { return _bottomToTop; }
 
     /**
      * Get the type of this Layout.
      *
      * @return Layout::LAYOUT_VERTICAL
      */
-    Layout::Type getType();
+    Layout::Type getType() { return Layout::LAYOUT_VERTICAL; }
 
     /**
      * Returns the vertical spacing between controls in the layout.
      *
      * @return The vertical spacing between controls.
      */
-    int getSpacing() const;
+    int getSpacing() const noexcept { return _spacing; }
 
     /**
      * Sets the vertical spacing to add between controls in the layout.
      *
      * @param spacing The vertical spacing between controls.
      */
-    void setSpacing(int spacing);
+    void setSpacing(int spacing) { _spacing = spacing; }
 
   protected:
     /**
      * Constructor.
      */
-    VerticalLayout();
+    VerticalLayout() = default;
 
     /**
      * Destructor.
      */
-    virtual ~VerticalLayout();
+    virtual ~VerticalLayout() = default;
 
     /**
      * Update the controls contained by the specified container.
@@ -79,12 +79,12 @@ class VerticalLayout : public Layout
      * Flag determining whether this layout will start laying out controls from the bottom of the
      * container. The default is 'false' meaning controls will start at the top.
      */
-    bool _bottomToTop;
+    bool _bottomToTop{ false };
 
     /**
      * Spacing between controls in the layout.
      */
-    int _spacing;
+    int _spacing{0};
 
   private:
     /**

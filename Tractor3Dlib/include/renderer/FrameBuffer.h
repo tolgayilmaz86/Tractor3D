@@ -77,7 +77,7 @@ class FrameBuffer : public Ref
      *
      * @return The ID of this FrameBuffer.
      */
-    const std::string& getId() const;
+    const std::string& getId() const noexcept { return _id; }
 
     /**
      * Gets the width of the frame buffer.
@@ -98,7 +98,7 @@ class FrameBuffer : public Ref
      *
      * @return The number of color attachments available on the current hardware.
      */
-    static unsigned int getMaxRenderTargets();
+    unsigned int getMaxRenderTargets() { return _maxRenderTargets; }
 
     /**
      * Set a RenderTarget on this FrameBuffer's color attachment at the specified index.
@@ -131,7 +131,7 @@ class FrameBuffer : public Ref
      *
      * @return The number of render targets attached.
      */
-    unsigned int getRenderTargetCount() const;
+    unsigned int getRenderTargetCount() const noexcept { return _renderTargetCount; }
 
     /**
      * Set this FrameBuffer's DepthStencilTarget.
@@ -145,14 +145,14 @@ class FrameBuffer : public Ref
      *
      * @return This FrameBuffer's DepthStencilTarget.
      */
-    DepthStencilTarget* getDepthStencilTarget() const;
+    DepthStencilTarget* getDepthStencilTarget() const noexcept { return _depthStencilTarget; }
 
     /**
      * Determines whether this is the default frame buffer.
      *
      * @return true if this is the default frame buffer, false otherwise.
      */
-    bool isDefault() const;
+    bool isDefault() const noexcept { return (this == _defaultFrameBuffer); }
 
     /**
      * Binds this FrameBuffer for off-screen rendering and return you the currently bound one.
@@ -192,7 +192,7 @@ class FrameBuffer : public Ref
      *
      * @return The currently bound FrameBuffer.
      */
-    static FrameBuffer* getCurrent();
+    FrameBuffer* getCurrent() { return _currentFrameBuffer; }
 
   private:
     /**

@@ -23,7 +23,7 @@ Plane::Plane(const Plane& copy) { set(copy); }
 
 Plane::~Plane() {}
 
-const Vector3& Plane::getNormal() const { return _normal; }
+const Vector3& Plane::getNormal() const noexcept { return _normal; }
 
 void Plane::setNormal(const Vector3& normal)
 {
@@ -35,15 +35,6 @@ void Plane::setNormal(float x, float y, float z)
 {
     _normal.set(x, y, z);
     normalize();
-}
-
-float Plane::getDistance() const { return _distance; }
-
-void Plane::setDistance(float distance) { _distance = distance; }
-
-float Plane::distance(const Vector3& point) const
-{
-    return _normal.x * point.x + _normal.y * point.y + _normal.z * point.z + _distance;
 }
 
 void Plane::intersection(const Plane& p1, const Plane& p2, const Plane& p3, Vector3* point)

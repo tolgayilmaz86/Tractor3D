@@ -33,14 +33,14 @@ class AudioListener : public Camera::Listener
      *
      * @return The position of the audio listener
      */
-    const Vector3& getPosition() const;
+    const Vector3& getPosition() const noexcept { return _position; }
 
     /**
      * Sets the position of the audio source.
      *
      * @param position The position to set the listener to.
      */
-    void setPosition(const Vector3& position);
+    void setPosition(const Vector3& position) noexcept { _position = position; };
 
     /**
      * Sets the position of the audio source.
@@ -49,35 +49,35 @@ class AudioListener : public Camera::Listener
      * @param y The y coordinate of the position.
      * @param z The z coordinate of the position.
      */
-    void setPosition(float x, float y, float z);
+    void setPosition(float x, float y, float z) { _position.set(x, y, z); }
 
     /**
      * Returns the gain of the audio listener.
      *
      * @return The gain of the audio listener.
      */
-    float getGain() const;
+    float getGain() const noexcept { return _gain; }
 
     /**
      * Sets the gain/volume of the audio listener.
      *
      * @param gain The gain/volume of the listener.
      */
-    void setGain(float gain);
+    void setGain(float gain) { _gain = gain; }
 
     /**
      * Gets the velocity of the audio source.
      *
      * @return The velocity as a vector.
      */
-    const Vector3& getVelocity() const;
+    const Vector3& getVelocity() const noexcept { return _velocity; }
 
     /**
      * Sets the velocity of the audio source
      *
      * @param velocity A vector representing the velocity.
      */
-    void setVelocity(const Vector3& velocity);
+    void setVelocity(const Vector3& velocity) { _velocity = velocity; }
 
     /**
      * Sets the velocity of the audio source
@@ -86,7 +86,7 @@ class AudioListener : public Camera::Listener
      * @param y The y coordinate of the velocity.
      * @param z The z coordinate of the velocity.
      */
-    void setVelocity(float x, float y, float z);
+    void setVelocity(float x, float y, float z) { _velocity.set(x, y, z); }
 
     /**
      * Gets the float pointer to the orientation of the audio listener.
@@ -95,21 +95,21 @@ class AudioListener : public Camera::Listener
      * @return Pointer to the 6 orientation float values.
      * @script{ignore}
      */
-    const float* getOrientation() const;
+    const float* getOrientation() const noexcept { return (const float*)&_orientation[0]; }
 
     /**
      * Gets the forward orientation vector of the audio listener.
      *
      * @return The forward vector.
      */
-    const Vector3& getOrientationForward() const;
+    const Vector3& getOrientationForward() const noexcept { return _orientation[0]; }
 
     /**
      * Gets the up orientation vector of the audio listener.
      *
      * @return The up vector.
      */
-    const Vector3& getOrientationUp() const;
+    const Vector3& getOrientationUp() const noexcept { return _orientation[1]; }
 
     /**
      * Sets the orientation of the audio listener.
@@ -136,7 +136,7 @@ class AudioListener : public Camera::Listener
      *
      * @return camera The camera currently associated with the audio listener.
      */
-    Camera* getCamera() const;
+    Camera* getCamera() const noexcept { return _camera; }
 
     /**
      * Sets the camera that is associated with the audio listener. This should usually be the current camera.
@@ -148,7 +148,7 @@ class AudioListener : public Camera::Listener
     /**
      * Constructor.
      */
-    AudioListener();
+    AudioListener() = default;
 
     /**
      * Destructor.
@@ -161,11 +161,11 @@ class AudioListener : public Camera::Listener
      */
     void cameraChanged(Camera* camera);
 
-    float _gain;
+    float _gain{ 1.0f };
     Vector3 _position;
     Vector3 _velocity;
     Vector3 _orientation[2];
-    Camera* _camera;
+    Camera* _camera{ nullptr };
 };
 
 } // namespace tractor

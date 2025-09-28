@@ -90,10 +90,6 @@ PhysicsGhostObject* PhysicsGhostObject::create(Node* node, Properties* propertie
     return ghost;
 }
 
-PhysicsCollisionObject::Type PhysicsGhostObject::getType() const { return GHOST_OBJECT; }
-
-btCollisionObject* PhysicsGhostObject::getCollisionObject() const { return _ghostObject; }
-
 void PhysicsGhostObject::transformChanged(Transform* transform, long cookie)
 {
     assert(_motionState);

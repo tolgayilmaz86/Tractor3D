@@ -16,11 +16,11 @@
 #include "utils/StringUtil.h"
 
 // Scroll speed when using a joystick.
-static const float GAMEPAD_SCROLL_SPEED = 600.0f;
+constexpr auto GAMEPAD_SCROLL_SPEED = 600.0f;
 // Distance a joystick must be pushed in order to trigger focus-change and/or scrolling.
-static const float JOYSTICK_THRESHOLD = 0.75f;
+constexpr auto JOYSTICK_THRESHOLD = 0.75f;
 // If the DPad or joystick is held down, this is the initial delay in milliseconds between focus changes.
-static const float GAMEPAD_FOCUS_REPEAT_DELAY = 300.0f;
+constexpr auto GAMEPAD_FOCUS_REPEAT_DELAY = 300.0f;
 
 // Shaders used for drawing offscreen quad when form is attached to a node
 constexpr auto FORM_VSH = "res/shaders/sprite.vert";
@@ -94,7 +94,7 @@ Form* Form::create(const std::string& url)
     if (theme)
     {
         // Load the form's style
-        auto styleName = formProperties->getString("style", "Form");
+        const auto& styleName = formProperties->getString("style", "Form");
         style = theme->getStyle(styleName);
         if (!style) style = theme->getEmptyStyle();
     }
@@ -137,15 +137,10 @@ void Form::initialize(const std::string& typeName, Theme::Style* style, Properti
 
 Form* Form::getForm(const std::string& id)
 {
-    for (size_t i = 0, size = __forms.size(); i < size; ++i)
-    {
-        Form* f = __forms[i];
-        assert(f);
-        if (id == f->getId())
-        {
-            return f;
-        }
-    }
+    for (const auto& form : __forms)
+        if (id == form->getId())
+            return form;
+
     return nullptr;
 }
 
@@ -165,8 +160,6 @@ const std::string& Form::getTypeName() const
     static const std::string TYPE_NAME = "Form";
     return TYPE_NAME;
 }
-
-bool Form::isForm() const { return true; }
 
 static unsigned int nextPowerOfTwo(unsigned int v)
 {
@@ -210,12 +203,8 @@ void Form::startBatch(SpriteBatch* batch)
 void Form::finishBatch(SpriteBatch* batch)
 {
     if (!_batched)
-    {
         batch->finish();
-    }
 }
-
-const Matrix& Form::getProjectionMatrix() const { return _projectionMatrix; }
 
 unsigned int Form::draw(bool wireframe)
 {
@@ -266,18 +255,12 @@ Drawable* Form::clone(NodeCloneContext& context)
     return nullptr;
 }
 
-bool Form::isBatchingEnabled() const { return _batched; }
-
-void Form::setBatchingEnabled(bool enabled) { _batched = enabled; }
-
 void Form::updateInternal(float elapsedTime)
 {
     pollGamepads();
 
-    for (size_t i = 0, size = __forms.size(); i < size; ++i)
+    for (auto& form : __forms)
     {
-        Form* form = __forms[i];
-
         if (form && form->isEnabled() && form->isVisible())
         {
             form->update(elapsedTime);
@@ -288,28 +271,19 @@ void Form::updateInternal(float elapsedTime)
 bool Form::screenToForm(Control* ctrl, int* x, int* y)
 {
     Form* form = ctrl->getTopLevelForm();
-    if (form)
-    {
-        if (form->_node)
-        {
-            // Form is attached to a scene node, so project the screen space point into the
-            // form's coordinate space (which may be transformed by the node).
-            Vector3 point;
-            if (form->projectPoint(*x, *y, &point))
-            {
-                *x = (int)point.x;
-                *y = form->_absoluteBounds.height - (int)point.y;
-            }
-            else
-            {
-                return false;
-            }
-        }
+    if (!form) return false;
 
-        return true;
-    }
+    if (!form->_node) return true;
 
-    return false;
+    // Form is attached to a scene node, so project the screen space point into the
+    // form's coordinate space (which may be transformed by the node).
+    Vector3 point;
+    if (!form->projectPoint(*x, *y, &point)) return false;
+
+    *x = (int)point.x;
+    *y = form->_absoluteBounds.height - (int)point.y;
+
+    return true;
 }
 
 Control* Form::findInputControl(int* x, int* y, bool focus, unsigned int contactIndex)
@@ -984,11 +958,11 @@ bool Form::gamepadJoystickEventInternal(Gamepad* gamepad, unsigned int index)
     }
     return false;
 }
+
 void Form::resizeEventInternal(unsigned int width, unsigned int height)
 {
-    for (size_t i = 0, size = __forms.size(); i < size; ++i)
+    for (auto& form : __forms)
     {
-        Form* form = __forms[i];
         if (form)
         {
             // Dirty the form

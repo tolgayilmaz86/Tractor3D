@@ -47,10 +47,6 @@ bool Pass::initialize(const std::string& vshPath, const std::string& fshPath, co
     return true;
 }
 
-const std::string& Pass::getId() const { return _id; }
-
-Effect* Pass::getEffect() const { return _effect; }
-
 void Pass::setVertexAttributeBinding(VertexAttributeBinding* binding)
 {
     SAFE_RELEASE(_vaBinding);
@@ -61,8 +57,6 @@ void Pass::setVertexAttributeBinding(VertexAttributeBinding* binding)
         binding->addRef();
     }
 }
-
-VertexAttributeBinding* Pass::getVertexAttributeBinding() const { return _vaBinding; }
 
 void Pass::bind()
 {

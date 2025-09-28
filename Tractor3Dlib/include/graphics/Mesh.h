@@ -164,42 +164,42 @@ class Mesh
      * to the file and ID of the mesh within the bundle. For
      * all other meshes, an empty string will be returned.
      */
-    const std::string& getUrl() const;
+    const std::string& getUrl() const noexcept { return _url; }
 
     /**
      * Gets the vertex format for the mesh.
      *
      * @return The vertex format.
      */
-    const VertexFormat& getVertexFormat() const;
+    const VertexFormat& getVertexFormat() const noexcept { return _vertexFormat; }
 
     /**
      * Gets the number of vertices in the mesh.
      *
      * @return The number of vertices in the mesh.
      */
-    unsigned int getVertexCount() const;
+    unsigned int getVertexCount() const noexcept { return _vertexCount; }
 
     /**
      * Gets the size of a single vertex in the mesh.
      *
      * @return The size of 1 vertex in the mesh.
      */
-    unsigned int getVertexSize() const;
+    unsigned int getVertexSize() const noexcept { return _vertexFormat.getVertexSize(); }
 
     /**
      * Returns a handle to the vertex buffer for the mesh.
      *
      * @return The vertex buffer object handle.
      */
-    VertexBufferHandle getVertexBuffer() const;
+    VertexBufferHandle getVertexBuffer() const noexcept { return _vertexBuffer; }
 
     /**
      * Determines if the mesh is dynamic.
      *
      * @return true if the mesh is dynamic; false otherwise.
      */
-    bool isDynamic() const;
+    bool isDynamic() const noexcept { return _dynamic; }
 
     /**
      * Returns the primitive type of the vertices in the mesh.
@@ -210,7 +210,7 @@ class Mesh
      *
      * @see setPrimitiveType(PrimitiveType)
      */
-    PrimitiveType getPrimitiveType() const;
+    Mesh::PrimitiveType getPrimitiveType() const noexcept { return _primitiveType; }
 
     /**
      * Sets the primitive type for the vertices in the mesh.
@@ -222,7 +222,7 @@ class Mesh
      *
      * @param type The new primitive type.
      */
-    void setPrimitiveType(Mesh::PrimitiveType type);
+    void setPrimitiveType(PrimitiveType type) { _primitiveType = type; }
 
     /**
      * Maps the vertex buffer for the specified access.
@@ -288,7 +288,7 @@ class Mesh
      *
      * @return The number of mesh parts contained within the mesh.
      */
-    unsigned int getPartCount() const;
+    unsigned int getPartCount() const noexcept;
 
     /**
      * Gets a MeshPart by index.
@@ -319,7 +319,7 @@ class Mesh
      *
      * @return The bounding box for the mesh.
      */
-    const BoundingBox& getBoundingBox() const;
+    const BoundingBox& getBoundingBox() const noexcept;
 
     /**
      * Sets the bounding box for this mesh.
@@ -348,7 +348,7 @@ class Mesh
      *
      * @return The bounding sphere for the mesh.
      */
-    const BoundingSphere& getBoundingSphere() const;
+    const BoundingSphere& getBoundingSphere() const noexcept;
 
     /**
      * Sets the bounding sphere for this mesh.

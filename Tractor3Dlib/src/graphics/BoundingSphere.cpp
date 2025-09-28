@@ -107,7 +107,7 @@ float BoundingSphere::intersects(const Ray& ray) const
     }
 }
 
-bool BoundingSphere::isEmpty() const { return radius == 0.0f; }
+bool BoundingSphere::isEmpty() const noexcept { return radius == 0.0f; }
 
 void BoundingSphere::merge(const BoundingSphere& sphere)
 {

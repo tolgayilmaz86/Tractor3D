@@ -23,13 +23,13 @@ Ray::Ray(const Ray& copy) { set(copy); }
 
 Ray::~Ray() {}
 
-const Vector3& Ray::getOrigin() const { return _origin; }
+const Vector3& Ray::getOrigin() const noexcept { return _origin; }
 
 void Ray::setOrigin(const Vector3& origin) { _origin = origin; }
 
 void Ray::setOrigin(float x, float y, float z) { _origin.set(x, y, z); }
 
-const Vector3& Ray::getDirection() const { return _direction; }
+const Vector3& Ray::getDirection() const noexcept { return _direction; }
 
 void Ray::setDirection(const Vector3& direction)
 {

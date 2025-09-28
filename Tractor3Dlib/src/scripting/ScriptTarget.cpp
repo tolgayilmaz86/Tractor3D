@@ -12,9 +12,9 @@ namespace tractor
 
 extern void splitURL(const std::string& url, std::string* file, std::string* id);
 
-const std::string& ScriptTarget::Event::getName() const { return name.c_str(); }
+const std::string& ScriptTarget::Event::getName() const noexcept { return name.c_str(); }
 
-const std::string& ScriptTarget::Event::getArgs() const { return args; }
+const std::string& ScriptTarget::Event::getArgs() const noexcept { return args; }
 
 ScriptTarget::EventRegistry::EventRegistry() {}
 
@@ -37,7 +37,7 @@ const ScriptTarget::Event* ScriptTarget::EventRegistry::addEvent(const char* nam
     return evt;
 }
 
-unsigned int ScriptTarget::EventRegistry::getEventCount() const { return _events.size(); }
+unsigned int ScriptTarget::EventRegistry::getEventCount() const noexcept { return _events.size(); }
 
 const ScriptTarget::Event* ScriptTarget::EventRegistry::getEvent(unsigned int index) const
 {

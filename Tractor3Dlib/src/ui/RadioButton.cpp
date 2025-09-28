@@ -56,8 +56,6 @@ const std::string& RadioButton::getTypeName() const
     return TYPE_NAME;
 }
 
-bool RadioButton::isSelected() const { return _selected; }
-
 void RadioButton::setSelected(bool selected)
 {
     if (selected) RadioButton::clearSelected(_groupId);
@@ -197,9 +195,5 @@ unsigned int RadioButton::drawImages(Form* form, const Rectangle& clip)
 
     return 1;
 }
-
-void RadioButton::setGroupId(const std::string& groupId) { _groupId = groupId; }
-
-const std::string& RadioButton::getGroupId() const { return _groupId; }
 
 } // namespace tractor

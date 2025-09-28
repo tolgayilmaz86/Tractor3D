@@ -23,7 +23,7 @@ class TerrainPatch : public Camera::Listener
      *
      * @return The number of material for this patch for all level of details.
      */
-    unsigned int getMaterialCount() const;
+    size_t getMaterialCount() const noexcept { return _levels.size(); };
 
     /**
      * Gets the material for the specified level of detail index or -1 for the current level of
@@ -41,7 +41,7 @@ class TerrainPatch : public Camera::Listener
     /**
      * @see Camera::Listener
      */
-    void cameraChanged(Camera* camera);
+    void cameraChanged(Camera* camera) { _bits |= TERRAINPATCH_DIRTY_LEVEL; };
 
     /**
      * Internal use only.
@@ -73,28 +73,28 @@ class TerrainPatch : public Camera::Listener
 
     struct Layer
     {
-        Layer();
+        Layer() = default;
 
-        Layer(const Layer&);
+        Layer(const Layer&) = default;
 
-        ~Layer();
+        ~Layer() = default;
 
         Layer& operator=(const Layer&) = delete;
 
-        int index;
-        int row;
-        int column;
-        int textureIndex;
+        int index{ 0 };
+        int row{ -1 };
+        int column{ -1 };
+        int textureIndex{ -1 };
+        int blendIndex{ -1 };
+        int blendChannel{ 0 };
         Vector2 textureRepeat;
-        int blendIndex;
-        int blendChannel;
     };
 
     struct Level
     {
-        Model* model;
+        Model* model{ nullptr };
 
-        Level();
+        Level() = default;
     };
 
     struct LayerCompare
@@ -148,7 +148,7 @@ class TerrainPatch : public Camera::Listener
 
     const Vector3& getAmbientColor() const;
 
-    void setMaterialDirty();
+    void setMaterialDirty() { _bits |= TERRAINPATCH_DIRTY_MATERIAL; };
 
     float computeHeight(float* heights, unsigned int width, unsigned int x, unsigned int z);
 

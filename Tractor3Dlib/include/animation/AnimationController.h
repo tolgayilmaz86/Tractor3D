@@ -22,12 +22,12 @@ class AnimationController
     /**
      * Constructor.
      */
-    AnimationController();
+    AnimationController() = default;
 
     /**
      * Destructor.
      */
-    ~AnimationController();
+    ~AnimationController() = default;
 
     /**
      * Stops all AnimationClips currently playing on the AnimationController.
@@ -56,12 +56,12 @@ class AnimationController
      *
      * @return The current state.
      */
-    State getState() const;
+    AnimationController::State getState() const noexcept { return _state; }
 
     /**
      * Callback for when the controller is initialized.
      */
-    void initialize();
+    void initialize() noexcept { _state = IDLE; }
 
     /*
      * Callback for when the controller is finalized.
@@ -76,7 +76,7 @@ class AnimationController
     /**
      * Pauses the AnimationController.
      */
-    void pause();
+    void pause() { _state = PAUSED; }
 
     /**
      * Schedules an AnimationClip to run.
@@ -93,8 +93,8 @@ class AnimationController
      */
     void update(float elapsedTime);
 
-    State _state;                            // The current state of the AnimationController.
-    std::list<AnimationClip*> _runningClips; // A list of running AnimationClips.
+    State _state{ STOPPED };                   // The current state of the AnimationController.
+    std::list<AnimationClip*> _runningClips{}; // A list of running AnimationClips.
 };
 
 } // namespace tractor

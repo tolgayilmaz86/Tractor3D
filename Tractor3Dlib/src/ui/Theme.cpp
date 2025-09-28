@@ -547,8 +547,6 @@ void Theme::setProjectionMatrix(const Matrix& matrix)
     _spriteBatch->setProjectionMatrix(matrix);
 }
 
-SpriteBatch* Theme::getSpriteBatch() const { return _spriteBatch; }
-
 /**************
  * Theme::UVs *
  **************/
@@ -619,14 +617,6 @@ Theme::ThemeImage* Theme::ThemeImage::create(float tw,
     return image;
 }
 
-const std::string& Theme::ThemeImage::getId() const { return _id; }
-
-const Theme::UVs& Theme::ThemeImage::getUVs() const { return _uvs; }
-
-const Rectangle& Theme::ThemeImage::getRegion() const { return _region; }
-
-const Vector4& Theme::ThemeImage::getColor() const { return _color; }
-
 /********************
  * Theme::ImageList *
  ********************/
@@ -682,8 +672,6 @@ Theme::ImageList* Theme::ImageList::create(float tw, float th, Properties* prope
     return imageList;
 }
 
-const std::string& Theme::ImageList::getId() const { return _id; }
-
 Theme::ThemeImage* Theme::ImageList::getImage(const std::string& imageId) const
 {
     auto it =
@@ -730,12 +718,6 @@ Theme::Skin::Skin(float tw,
 }
 
 Theme::Skin::~Skin() {}
-
-const std::string& Theme::Skin::getId() const { return _id; }
-
-const Theme::Border& Theme::Skin::getBorder() const { return _border; }
-
-const Rectangle& Theme::Skin::getRegion() const { return _region; }
 
 void Theme::Skin::setRegion(const Rectangle& region, float tw, float th)
 {
@@ -796,10 +778,6 @@ void Theme::Skin::setRegion(const Rectangle& region, float tw, float th)
     _uvs[BOTTOM_RIGHT].u2 = rightEdge;
     _uvs[BOTTOM_RIGHT].v2 = bottomEdge;
 }
-
-const Theme::UVs& Theme::Skin::getUVs(SkinArea area) const { return _uvs[area]; }
-
-const Vector4& Theme::Skin::getColor() const { return _color; }
 
 /**
  * Theme utility methods.

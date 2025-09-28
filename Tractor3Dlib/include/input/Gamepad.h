@@ -79,7 +79,7 @@ class Gamepad
      *
      * @return the number of joysticks on the gamepad.
      */
-    unsigned int getJoystickCount() const { return _joystickCount; }
+    unsigned int getJoystickCount() const noexcept { return _joystickCount; }
 
     /**
      * Returns the specified joystick's value as a Vector2.
@@ -120,14 +120,14 @@ class Gamepad
      * @return true if the gamepad is currently represented by a UI form; false if the gamepad is
      *         not represented by a UI form.
      */
-    bool isVirtual() const { return _form; }
+    bool isVirtual() const noexcept { return _form; }
 
     /**
      * Gets the Form used to represent this gamepad.
      *
      * @return the Form used to represent this gamepad. nullptr if the gamepad is not represented with a Form.
      */
-    Form* getForm() const { return _form; }
+    Form* getForm() const noexcept { return _form; }
 
     /**
      * Updates the gamepad's state.  For a virtual gamepad, this results in calling update()

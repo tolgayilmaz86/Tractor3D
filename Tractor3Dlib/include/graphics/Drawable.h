@@ -38,7 +38,7 @@ class Drawable
      *
      * @return The node this drawable is attached to.
      */
-    Node* getNode() const;
+    Node* getNode() const noexcept { return _node; }
 
   protected:
     /**

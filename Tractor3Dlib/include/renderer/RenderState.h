@@ -444,21 +444,22 @@ class RenderState : public Ref
         bool _cullFaceEnabled;
         bool _depthTestEnabled;
         bool _depthWriteEnabled;
-        DepthFunction _depthFunction;
         bool _blendEnabled;
+        bool _stencilTestEnabled;
+        int _stencilFunctionRef;
+        unsigned int _stencilWrite;
+        unsigned int _stencilFunctionMask;
+        long _bits;
+
+        DepthFunction _depthFunction;
         Blend _blendSrc;
         Blend _blendDst;
         CullFaceSide _cullFaceSide;
         FrontFace _frontFace;
-        bool _stencilTestEnabled;
-        unsigned int _stencilWrite;
         StencilFunction _stencilFunction;
-        int _stencilFunctionRef;
-        unsigned int _stencilFunctionMask;
         StencilOperation _stencilOpSfail;
         StencilOperation _stencilOpDpfail;
         StencilOperation _stencilOpDppass;
-        long _bits;
 
         static StateBlock* _defaultState;
     };
@@ -483,8 +484,7 @@ class RenderState : public Ref
      *
      * @return The number of material parameters.
      */
-    unsigned int getParameterCount() const;
-
+    unsigned int getParameterCount() const { return _parameters.size(); }
     /**
      * Gets a MaterialParameter for the specified index.
      *

@@ -56,42 +56,42 @@ class Frustum
      *
      * @return near The near plane.
      */
-    const Plane& getNear() const;
+    const Plane& getNear() const noexcept;
 
     /**
      * Gets the far plane of the frustum.
      *
      * @return far The far plane.
      */
-    const Plane& getFar() const;
+    const Plane& getFar() const noexcept;
 
     /**
      * Gets the left plane of the frustum.
      *
      * @return left The left plane.
      */
-    const Plane& getLeft() const;
+    const Plane& getLeft() const noexcept;
 
     /**
      * Gets the right plane of the frustum.
      *
      * @return right The right plane.
      */
-    const Plane& getRight() const;
+    const Plane& getRight() const noexcept;
 
     /**
      * Gets the bottom plane of the frustum.
      *
      * @return bottom The bottom plane.
      */
-    const Plane& getBottom() const;
+    const Plane& getBottom() const noexcept;
 
     /**
      * Gets the top plane of the frustum.
      *
      * @return top The top plane.
      */
-    const Plane& getTop() const;
+    const Plane& getTop() const noexcept;
 
     /**
      * Gets the projection matrix corresponding to the frustum in the specified matrix.

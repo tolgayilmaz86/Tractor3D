@@ -515,12 +515,6 @@ void Terrain::setFlag(Flags flag, bool on)
     }
 }
 
-unsigned int Terrain::getPatchCount() const { return _patches.size(); }
-
-TerrainPatch* Terrain::getPatch(unsigned int index) const { return _patches[index]; }
-
-const BoundingBox& Terrain::getBoundingBox() const { return _boundingBox; }
-
 float Terrain::getHeight(float x, float z) const
 {
     // Calculate the correct x, z position relative to the heightfield data.

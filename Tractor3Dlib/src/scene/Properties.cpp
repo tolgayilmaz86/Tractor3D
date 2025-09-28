@@ -754,12 +754,6 @@ Properties* Properties::getNamespace(const std::string& id, bool searchNames, bo
 }
 
 //-----------------------------------------------------------------------------------------------------------------
-const std::string& Properties::getNamespace() const { return _namespace; }
-
-//-----------------------------------------------------------------------------------------------------------------
-const std::string& Properties::getId() const { return _id; }
-
-//-----------------------------------------------------------------------------------------------------------------
 bool Properties::exists(const std::string& name) const
 {
     if (name.empty()) return false;

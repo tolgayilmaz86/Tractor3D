@@ -72,21 +72,21 @@ class AIMessage
      *
      * @return The message ID.
      */
-    unsigned int getId() const;
+    unsigned int getId() const noexcept;
 
     /**
      * Returns the sender for the message.
      *
      * @return The message sender ID.
      */
-    const std::string& getSender() const;
+    const std::string& getSender() const noexcept;
 
     /**
      * Returns the receiver for the message.
      *
      * @return The message receiver.
      */
-    const std::string& getReceiver() const;
+    const std::string& getReceiver() const noexcept;
 
     /**
      * Returns the value of the specified parameter as an integer.
@@ -195,7 +195,7 @@ class AIMessage
      *
      * @return The number of message parameters.
      */
-    unsigned int getParameterCount() const;
+    unsigned int getParameterCount() const noexcept;
 
     /**
      * Returns the type of the specified parameter.
@@ -266,7 +266,7 @@ class AIMessage
      * @return The delivery time for the message, or zero if the message is not currently scheduled
      * to be delivered.
      */
-    double getDeliveryTime() const;
+    double getDeliveryTime() const noexcept;
 
     void clearParameter(unsigned int index);
 

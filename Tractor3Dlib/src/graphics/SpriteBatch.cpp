@@ -155,8 +155,6 @@ SpriteBatch* SpriteBatch::create(Texture* texture, Effect* effect, unsigned int 
 
 void SpriteBatch::start() { _batch->start(); }
 
-bool SpriteBatch::isStarted() const { return _batch->isStarted(); }
-
 void SpriteBatch::draw(const Rectangle& dst, const Rectangle& src, const Vector4& color)
 {
     // Calculate uvs.
@@ -490,14 +488,6 @@ RenderState::StateBlock* SpriteBatch::getStateBlock() const
 {
     return _batch->getMaterial()->getStateBlock();
 }
-
-Texture::Sampler* SpriteBatch::getSampler() const { return _sampler; }
-
-Material* SpriteBatch::getMaterial() const { return _batch->getMaterial(); }
-
-void SpriteBatch::setProjectionMatrix(const Matrix& matrix) { _projectionMatrix = matrix; }
-
-const Matrix& SpriteBatch::getProjectionMatrix() const { return _projectionMatrix; }
 
 bool SpriteBatch::clipSprite(const Rectangle& clip,
                              float& x,

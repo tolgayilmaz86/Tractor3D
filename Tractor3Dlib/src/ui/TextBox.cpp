@@ -58,8 +58,6 @@ void TextBox::addListener(Control::Listener* listener, int eventFlags)
 
 int TextBox::getLastKeypress() { return _lastKeypress; }
 
-unsigned int TextBox::getCaretLocation() const { return _caretLocation; }
-
 void TextBox::setCaretLocation(unsigned int index)
 {
     _caretLocation = index;
@@ -520,14 +518,6 @@ void TextBox::getCaretLocation(Vector2* p)
                                        true,
                                        getTextRightToLeft(state));
 }
-
-void TextBox::setPasswordChar(char character) { _passwordChar = character; }
-
-char TextBox::getPasswordChar() const { return _passwordChar; }
-
-void TextBox::setInputMode(InputMode inputMode) { _inputMode = inputMode; }
-
-TextBox::InputMode TextBox::getInputMode() const { return _inputMode; }
 
 TextBox::InputMode TextBox::getInputMode(const std::string& inputMode)
 {

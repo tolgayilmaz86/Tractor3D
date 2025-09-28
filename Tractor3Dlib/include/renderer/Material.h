@@ -107,7 +107,7 @@ class Material : public RenderState
      *
      * @return The technique count.
      */
-    unsigned int getTechniqueCount() const;
+    unsigned int getTechniqueCount() const noexcept { return (unsigned int)_techniques.size(); }
 
     /**
      * Returns the technique at the specified index in this material.
@@ -132,7 +132,7 @@ class Material : public RenderState
      *
      * @return The current technique.
      */
-    Technique* getTechnique() const;
+    Technique* getTechnique() const noexcept { return _currentTechnique; }
 
     /**
      * Sets the current material technique.

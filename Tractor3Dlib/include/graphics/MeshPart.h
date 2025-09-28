@@ -30,35 +30,35 @@ class MeshPart
      *
      * @return The part offset index.
      */
-    unsigned int getMeshIndex() const;
+    unsigned int getMeshIndex() const noexcept;
 
     /**
      * Gets the type of primitive to define how the indices are connected.
      *
      * @return The type of primitive.
      */
-    Mesh::PrimitiveType getPrimitiveType() const;
+    Mesh::PrimitiveType getPrimitiveType() const noexcept;
 
     /**
      * Gets the number of indices in the part.
      *
      * @return The number of indices in the part.
      */
-    unsigned int getIndexCount() const;
+    unsigned int getIndexCount() const noexcept;
 
     /**
      * Returns the format of the part indices.
      *
      * @return The part index format.
      */
-    Mesh::IndexFormat getIndexFormat() const;
+    Mesh::IndexFormat getIndexFormat() const noexcept;
 
     /**
      * Returns a handle to the index buffer for the mesh part.
      *
      * @return The index buffer object handle.
      */
-    IndexBufferHandle getIndexBuffer() const;
+    IndexBufferHandle getIndexBuffer() const noexcept;
 
     /**
      * Maps the index buffer for the specified access.
@@ -107,7 +107,7 @@ class MeshPart
      *
      * @return true if the part is dynamic; false otherwise.
      */
-    bool isDynamic() const;
+    bool isDynamic() const noexcept;
 
   private:
     /**

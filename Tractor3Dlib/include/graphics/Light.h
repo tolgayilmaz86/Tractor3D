@@ -138,7 +138,7 @@ class Light : public Ref
      *
      * @return The light type.
      */
-    Type getLightType() const;
+    Type getLightType() const noexcept { return _type; }
 
     /**
      * Gets the light color.
@@ -168,7 +168,7 @@ class Light : public Ref
      *
      * @return The node associated with this light.
      */
-    Node* getNode() const;
+    Node* getNode() const noexcept { return _node; }
 
     /**
      * Returns the Range of the point or spot light.
@@ -295,7 +295,7 @@ class Light : public Ref
      *
      * @param node The node to be associated with this light.
      */
-    void setNode(Node* node);
+    void setNode(Node* node) { _node = node; }
 
     /**
      * Clones the light and returns a new light.

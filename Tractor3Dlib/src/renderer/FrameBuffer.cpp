@@ -4,7 +4,7 @@
 
 #include "framework/Game.h"
 
-#define FRAMEBUFFER_ID_DEFAULT "org.gameplay3d.framebuffer.default"
+constexpr auto FRAMEBUFFER_ID_DEFAULT = "org.gameplay3d.framebuffer.default";
 
 namespace tractor
 {
@@ -126,8 +126,6 @@ FrameBuffer* FrameBuffer::getFrameBuffer(const std::string& id)
     return nullptr;
 }
 
-const std::string& FrameBuffer::getId() const { return _id; }
-
 unsigned int FrameBuffer::getWidth() const
 {
     if (_renderTargetCount > 0 && _renderTargets != nullptr && _renderTargets[0] != nullptr)
@@ -143,8 +141,6 @@ unsigned int FrameBuffer::getHeight() const
 
     return 0;
 }
-
-unsigned int FrameBuffer::getMaxRenderTargets() { return _maxRenderTargets; }
 
 void FrameBuffer::setRenderTarget(RenderTarget* target, unsigned int index)
 {
@@ -236,8 +232,6 @@ RenderTarget* FrameBuffer::getRenderTarget(unsigned int index) const
     return nullptr;
 }
 
-unsigned int FrameBuffer::getRenderTargetCount() const { return _renderTargetCount; }
-
 void FrameBuffer::setDepthStencilTarget(DepthStencilTarget* target)
 {
     if (_depthStencilTarget == target) return;
@@ -287,10 +281,6 @@ void FrameBuffer::setDepthStencilTarget(DepthStencilTarget* target)
     }
 }
 
-DepthStencilTarget* FrameBuffer::getDepthStencilTarget() const { return _depthStencilTarget; }
-
-bool FrameBuffer::isDefault() const { return (this == _defaultFrameBuffer); }
-
 FrameBuffer* FrameBuffer::bind(GLenum type)
 {
     GL_ASSERT(glBindFramebuffer(type, _handle));
@@ -330,7 +320,5 @@ FrameBuffer* FrameBuffer::bindDefault(GLenum type)
     _currentFrameBuffer = _defaultFrameBuffer;
     return _defaultFrameBuffer;
 }
-
-FrameBuffer* FrameBuffer::getCurrent() { return _currentFrameBuffer; }
 
 } // namespace tractor

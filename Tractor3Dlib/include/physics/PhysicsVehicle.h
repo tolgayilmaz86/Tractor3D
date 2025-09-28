@@ -279,7 +279,7 @@ class PhysicsVehicle : public PhysicsCollisionObject
     /**
      * @see PhysicsCollisionObject::getCollisionObject
      */
-    btCollisionObject* getCollisionObject() const;
+    btCollisionObject* getCollisionObject() const noexcept;
 
   private:
     /**

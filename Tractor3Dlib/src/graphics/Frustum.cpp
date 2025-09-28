@@ -16,17 +16,17 @@ Frustum::Frustum(const Frustum& frustum) { set(frustum); }
 
 Frustum::~Frustum() {}
 
-const Plane& Frustum::getNear() const { return _near; }
+const Plane& Frustum::getNear() const noexcept { return _near; }
 
-const Plane& Frustum::getFar() const { return _far; }
+const Plane& Frustum::getFar() const noexcept { return _far; }
 
-const Plane& Frustum::getLeft() const { return _left; }
+const Plane& Frustum::getLeft() const noexcept { return _left; }
 
-const Plane& Frustum::getRight() const { return _right; }
+const Plane& Frustum::getRight() const noexcept { return _right; }
 
-const Plane& Frustum::getBottom() const { return _bottom; }
+const Plane& Frustum::getBottom() const noexcept { return _bottom; }
 
-const Plane& Frustum::getTop() const { return _top; }
+const Plane& Frustum::getTop() const noexcept { return _top; }
 
 void Frustum::getMatrix(Matrix* dst) const
 {

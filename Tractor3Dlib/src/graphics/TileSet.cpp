@@ -8,19 +8,11 @@
 namespace tractor
 {
 
-TileSet::TileSet()
-    : Drawable(), _tiles(nullptr), _tileWidth(0), _tileHeight(0), _rowCount(0), _columnCount(0),
-      _width(0), _height(0), _opacity(1.0f), _color(Vector4::one()), _batch(nullptr)
-{
-}
-
 TileSet::~TileSet()
 {
     SAFE_DELETE_ARRAY(_tiles);
     SAFE_DELETE(_batch);
 }
-
-TileSet& TileSet::operator=(const TileSet& set) { return *this; }
 
 TileSet* TileSet::create(const std::string& imagePath,
                          float tileWidth,
@@ -164,26 +156,6 @@ void TileSet::getTileSource(unsigned int column, unsigned int row, Vector2* sour
     source->x = _tiles[row * _columnCount + column].x;
     source->y = _tiles[row * _columnCount + column].y;
 }
-
-float TileSet::getTileWidth() const { return _tileWidth; }
-
-float TileSet::getTileHeight() const { return _tileHeight; }
-
-unsigned int TileSet::getRowCount() const { return _rowCount; }
-
-unsigned int TileSet::getColumnCount() const { return _columnCount; }
-
-float TileSet::getWidth() const { return _width; }
-
-float TileSet::getHeight() const { return _height; }
-
-void TileSet::setOpacity(float opacity) { _opacity = opacity; }
-
-float TileSet::getOpacity() const { return _opacity; }
-
-void TileSet::setColor(const Vector4& color) { _color = color; }
-
-const Vector4& TileSet::getColor() const { return _color; }
 
 unsigned int TileSet::draw(bool wireframe)
 {

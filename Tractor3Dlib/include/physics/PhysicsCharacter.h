@@ -25,7 +25,10 @@ class PhysicsCharacter : public PhysicsGhostObject
     /**
      * @see PhysicsCollisionObject::getType
      */
-    PhysicsCollisionObject::Type getType() const;
+    PhysicsCollisionObject::Type getType() const noexcept
+    {
+        return PhysicsCollisionObject::CHARACTER;
+    }
 
     /**
      * Returns whether physics simulation is enabled for the physics character.
@@ -34,7 +37,7 @@ class PhysicsCharacter : public PhysicsGhostObject
      *
      * @see setPhysicsEnabled(bool)
      */
-    bool isPhysicsEnabled() const;
+    bool isPhysicsEnabled() const noexcept { return _physicsEnabled; }
 
     /**
      * Enables or disables physics simulation for the character.
@@ -48,21 +51,21 @@ class PhysicsCharacter : public PhysicsGhostObject
      *
      * @param enabled true to enable physics simulation, false otherwise.
      */
-    void setPhysicsEnabled(bool enabled);
+    void setPhysicsEnabled(bool enabled) noexcept { _physicsEnabled = enabled; }
 
     /**
      * Returns the maximum step height for the character.
      *
      * @return The maximum step height.
      */
-    float getMaxStepHeight() const;
+    float getMaxStepHeight() const noexcept { return _stepHeight; }
 
     /**
      * Sets the maximum step height for the character.
      *
      * @param height The maximum step height.
      */
-    void setMaxStepHeight(float height);
+    void setMaxStepHeight(float height) noexcept { _stepHeight = height; }
 
     /**
      * Returns the maximum slope angle for the character.
@@ -73,7 +76,7 @@ class PhysicsCharacter : public PhysicsGhostObject
      *
      * @return The maximum slope angle.
      */
-    float getMaxSlopeAngle() const;
+    float getMaxSlopeAngle() const noexcept { return _slopeAngle; }
 
     /**
      * Sets the maximum slope angle (in degrees).
@@ -187,7 +190,7 @@ class PhysicsCharacter : public PhysicsGhostObject
     /**
      * @see PhysicsCollisionObject::getCollisionObject
      */
-    btCollisionObject* getCollisionObject() const;
+    btCollisionObject* getCollisionObject() const noexcept { return _ghostObject; }
 
   private:
     /**

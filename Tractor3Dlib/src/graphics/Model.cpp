@@ -36,8 +36,6 @@ Model* Model::create(std::shared_ptr<Mesh> mesh)
     return new Model(mesh);
 }
 
-Mesh* Model::getMesh() const { return _mesh.get(); }
-
 unsigned int Model::getMeshPartCount() const
 {
     assert(_mesh);
@@ -197,8 +195,6 @@ bool Model::hasMaterial(unsigned int partIndex) const
 {
     return (partIndex < _partCount && _partMaterials && _partMaterials[partIndex]);
 }
-
-MeshSkin* Model::getSkin() const { return _skin; }
 
 void Model::setSkin(MeshSkin* skin)
 {

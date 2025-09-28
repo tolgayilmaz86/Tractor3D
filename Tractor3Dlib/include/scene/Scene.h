@@ -51,7 +51,7 @@ class Scene : public Ref
      *
      * @return The scene identifier.
      */
-    const std::string& getId() const { return _id; }
+    const std::string& getId() const noexcept { return _id; }
 
     /**
      * Sets the identifier for the scene.
@@ -122,14 +122,14 @@ class Scene : public Ref
      *
      * @return The node count.
      */
-    unsigned int getNodeCount() const { return _nodeCount; }
+    unsigned int getNodeCount() const noexcept { return _nodeCount; }
 
     /**
      * Returns the first node in the scene.
      *
      * @return The first node in the scene.
      */
-    Node* getFirstNode() const { return _firstNode; }
+    Node* getFirstNode() const noexcept { return _firstNode; }
 
     /**
      * Gets the active camera for the scene.
@@ -163,7 +163,7 @@ class Scene : public Ref
      *
      * @return The scene's ambient color.
      */
-    const Vector3& getAmbientColor() const { return _ambientColor; }
+    const Vector3& getAmbientColor() const noexcept { return _ambientColor; }
     /**
      * Sets the ambient color of the scene.
      *

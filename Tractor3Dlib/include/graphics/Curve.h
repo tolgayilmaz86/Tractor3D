@@ -291,28 +291,28 @@ class Curve : public Ref
      *
      * @return The number of points in the curve.
      */
-    unsigned int getPointCount() const;
+    unsigned int getPointCount() const noexcept;
 
     /**
      * Gets the number of float component values per points.
      *
      * @return The number of float component values per point.
      */
-    unsigned int getComponentCount() const;
+    unsigned int getComponentCount() const noexcept;
 
     /**
      * Returns the start time for the curve.
      *
      * @return The curve's start time.
      */
-    float getStartTime() const;
+    float getStartTime() const noexcept;
 
     /**
      * Returns the end time for the curve.
      *
      * @return The curve's end time.
      */
-    float getEndTime() const;
+    float getEndTime() const noexcept;
 
     /**
      * Sets the given point values on the curve.

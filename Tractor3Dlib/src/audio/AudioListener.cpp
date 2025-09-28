@@ -7,8 +7,6 @@
 namespace tractor
 {
 
-AudioListener::AudioListener() : _gain(1.0f), _camera(NULL) {}
-
 AudioListener::~AudioListener()
 {
     // Call setCamera() to release camera and cause transform listener
@@ -17,28 +15,6 @@ AudioListener::~AudioListener()
 }
 
 AudioListener* AudioListener::getInstance() { return Game::getInstance()->getAudioListener(); }
-
-float AudioListener::getGain() const { return _gain; }
-
-void AudioListener::setGain(float gain) { _gain = gain; }
-
-const Vector3& AudioListener::getPosition() const { return _position; }
-
-void AudioListener::setPosition(const Vector3& position) { _position = position; }
-
-void AudioListener::setPosition(float x, float y, float z) { _position.set(x, y, z); }
-
-const Vector3& AudioListener::getVelocity() const { return _velocity; }
-
-void AudioListener::setVelocity(const Vector3& velocity) { _velocity = velocity; }
-
-void AudioListener::setVelocity(float x, float y, float z) { _velocity.set(x, y, z); }
-
-const float* AudioListener::getOrientation() const { return (const float*)&_orientation[0]; }
-
-const Vector3& AudioListener::getOrientationForward() const { return _orientation[0]; }
-
-const Vector3& AudioListener::getOrientationUp() const { return _orientation[1]; }
 
 void AudioListener::setOrientation(const Vector3& forward, const Vector3& up)
 {
@@ -61,8 +37,6 @@ void AudioListener::setOrientation(float forwardX,
     _orientation[0].set(forwardX, forwardY, forwardZ);
     _orientation[1].set(upX, upY, upZ);
 }
-
-Camera* AudioListener::getCamera() const { return _camera; }
 
 void AudioListener::setCamera(Camera* camera)
 {

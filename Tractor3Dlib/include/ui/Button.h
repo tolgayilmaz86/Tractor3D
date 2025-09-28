@@ -71,14 +71,14 @@ class Button : public Label
      *
      * @return The data binding index for control.
      */
-    const unsigned int getDataBinding() const;
+    const unsigned int getDataBinding() const noexcept { return _dataBinding; }
 
     /**
      * Sets the data binding provider for this control.
      *
      * @param dataBinding The data binding index for control.
      */
-    void setDataBinding(unsigned int dataBinding);
+    void setDataBinding(unsigned int dataBinding) { _dataBinding = dataBinding; }
 
   private:
     /**

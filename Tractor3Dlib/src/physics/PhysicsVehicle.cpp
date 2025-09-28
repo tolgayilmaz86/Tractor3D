@@ -200,7 +200,7 @@ PhysicsVehicle::~PhysicsVehicle()
     SAFE_DELETE(_rigidBody);
 }
 
-btCollisionObject* PhysicsVehicle::getCollisionObject() const
+btCollisionObject* PhysicsVehicle::getCollisionObject() const noexcept
 {
     assert(_rigidBody);
 

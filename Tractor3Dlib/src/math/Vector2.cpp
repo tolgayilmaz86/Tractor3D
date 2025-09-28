@@ -41,10 +41,6 @@ const Vector2& Vector2::unitY()
     return value;
 }
 
-bool Vector2::isZero() const { return x == 0.0f && y == 0.0f; }
-
-bool Vector2::isOne() const { return x == 1.0f && y == 1.0f; }
-
 float Vector2::angle(const Vector2& v1, const Vector2& v2)
 {
     float dz = v1.x * v2.y - v1.y * v2.x;
@@ -99,15 +95,18 @@ float Vector2::distanceSquared(const Vector2& v) const
     return (dx * dx + dy * dy);
 }
 
-float Vector2::dot(const Vector2& v) const { return (x * v.x + y * v.y); }
+float Vector2::dot(const Vector2& v) const noexcept { return (x * v.x + y * v.y); }
 
-float Vector2::dot(const Vector2& v1, const Vector2& v2) { return (v1.x * v2.x + v1.y * v2.y); }
+float Vector2::dot(const Vector2& v1, const Vector2& v2) noexcept
+{
+    return (v1.x * v2.x + v1.y * v2.y);
+}
 
 float Vector2::length() const { return sqrt(x * x + y * y); }
 
-float Vector2::lengthSquared() const { return (x * x + y * y); }
+float Vector2::lengthSquared() const noexcept { return (x * x + y * y); }
 
-void Vector2::negate()
+void Vector2::negate() noexcept
 {
     x = -x;
     y = -y;

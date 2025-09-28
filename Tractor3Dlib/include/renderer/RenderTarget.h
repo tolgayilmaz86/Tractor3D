@@ -62,28 +62,28 @@ class RenderTarget : public Ref
      *
      * @return The ID of this RenderTarget.
      */
-    const std::string& getId() const;
+    const std::string& getId() const noexcept { return _id; }
 
     /**
      * Get the backing texture of this RenderTarget.
      *
      * @return The backing texture of this RenderTarget.
      */
-    Texture* getTexture() const;
+    Texture* getTexture() const noexcept { return _texture; }
 
     /**
      * Returns the width of the RenderTarget.
      *
      * @return The width.
      */
-    unsigned int getWidth() const;
+    unsigned int getWidth() const noexcept { return _texture->getWidth(); }
 
     /**
      * Returns the height of the RenderTarget.
      *
      * @return The height.
      */
-    unsigned int getHeight() const;
+    unsigned int getHeight() const noexcept { return _texture->getHeight(); }
 
   private:
     /**

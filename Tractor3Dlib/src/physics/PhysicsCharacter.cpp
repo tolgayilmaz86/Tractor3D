@@ -158,23 +158,6 @@ PhysicsCharacter* PhysicsCharacter::create(Node* node, Properties* properties)
     return character;
 }
 
-PhysicsCollisionObject::Type PhysicsCharacter::getType() const
-{
-    return PhysicsCollisionObject::CHARACTER;
-}
-
-btCollisionObject* PhysicsCharacter::getCollisionObject() const { return _ghostObject; }
-
-bool PhysicsCharacter::isPhysicsEnabled() const { return _physicsEnabled; }
-
-void PhysicsCharacter::setPhysicsEnabled(bool enabled) { _physicsEnabled = enabled; }
-
-float PhysicsCharacter::getMaxStepHeight() const { return _stepHeight; }
-
-void PhysicsCharacter::setMaxStepHeight(float height) { _stepHeight = height; }
-
-float PhysicsCharacter::getMaxSlopeAngle() const { return _slopeAngle; }
-
 void PhysicsCharacter::setMaxSlopeAngle(float angle)
 {
     _slopeAngle = angle;

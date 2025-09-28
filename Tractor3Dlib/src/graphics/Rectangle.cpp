@@ -24,7 +24,7 @@ const Rectangle& Rectangle::empty()
     return empty;
 }
 
-bool Rectangle::isEmpty() const { return (x == 0 && y == 0 && width == 0 && height == 0); }
+bool Rectangle::isEmpty() const noexcept { return (x == 0 && y == 0 && width == 0 && height == 0); }
 
 void Rectangle::set(const Rectangle& r) { set(r.x, r.y, r.width, r.height); }
 
@@ -41,14 +41,6 @@ void Rectangle::setPosition(float x, float y)
     this->x = x;
     this->y = y;
 }
-
-float Rectangle::left() const { return x; }
-
-float Rectangle::top() const { return y; }
-
-float Rectangle::right() const { return x + width; }
-
-float Rectangle::bottom() const { return y + height; }
 
 bool Rectangle::contains(float x, float y) const
 {

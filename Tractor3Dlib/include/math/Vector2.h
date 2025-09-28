@@ -94,14 +94,14 @@ class Vector2
      *
      * @return true if this vector contains all zeros, false otherwise.
      */
-    bool isZero() const;
+    bool isZero() const noexcept { return x == 0.0f && y == 0.0f; }
 
     /**
      * Indicates whether this vector contains all ones.
      *
      * @return true if this vector contains all ones, false otherwise.
      */
-    bool isOne() const;
+    bool isOne() const noexcept { return x == 1.0f && y == 1.0f; }
 
     /**
      * Returns the angle (in radians) between the specified vectors.
@@ -181,7 +181,7 @@ class Vector2
      *
      * @return The dot product.
      */
-    float dot(const Vector2& v) const;
+    float dot(const Vector2& v) const noexcept;
 
     /**
      * Returns the dot product between the specified vectors.
@@ -191,7 +191,7 @@ class Vector2
      *
      * @return The dot product between the vectors.
      */
-    static float dot(const Vector2& v1, const Vector2& v2);
+    static float dot(const Vector2& v1, const Vector2& v2) noexcept;
 
     /**
      * Computes the length of this vector.
@@ -214,12 +214,12 @@ class Vector2
      *
      * @see length
      */
-    float lengthSquared() const;
+    float lengthSquared() const noexcept;
 
     /**
      * Negates this vector.
      */
-    void negate();
+    void negate() noexcept;
 
     /**
      * Normalizes this vector.

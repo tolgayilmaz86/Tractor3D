@@ -190,22 +190,6 @@ std::shared_ptr<Mesh> Mesh::createBoundingBox(const BoundingBox& box)
     return mesh;
 }
 
-const std::string& Mesh::getUrl() const { return _url; }
-
-const VertexFormat& Mesh::getVertexFormat() const { return _vertexFormat; }
-
-unsigned int Mesh::getVertexCount() const { return _vertexCount; }
-
-unsigned int Mesh::getVertexSize() const { return _vertexFormat.getVertexSize(); }
-
-VertexBufferHandle Mesh::getVertexBuffer() const { return _vertexBuffer; }
-
-bool Mesh::isDynamic() const { return _dynamic; }
-
-Mesh::PrimitiveType Mesh::getPrimitiveType() const { return _primitiveType; }
-
-void Mesh::setPrimitiveType(PrimitiveType type) { _primitiveType = type; }
-
 void* Mesh::mapVertexBuffer()
 {
     GL_ASSERT(glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer));
@@ -254,15 +238,15 @@ MeshPart* Mesh::addPart(PrimitiveType primitiveType,
     return nullptr;
 }
 
-unsigned int Mesh::getPartCount() const { return _partCount; }
+unsigned int Mesh::getPartCount() const noexcept { return _partCount; }
 
 MeshPart* Mesh::getPart(unsigned int index) { return _parts[index].get(); }
 
-const BoundingBox& Mesh::getBoundingBox() const { return _boundingBox; }
+const BoundingBox& Mesh::getBoundingBox() const noexcept { return _boundingBox; }
 
 void Mesh::setBoundingBox(const BoundingBox& box) { _boundingBox = box; }
 
-const BoundingSphere& Mesh::getBoundingSphere() const { return _boundingSphere; }
+const BoundingSphere& Mesh::getBoundingSphere() const noexcept { return _boundingSphere; }
 
 void Mesh::setBoundingSphere(const BoundingSphere& sphere) { _boundingSphere = sphere; }
 

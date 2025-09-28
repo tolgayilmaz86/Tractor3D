@@ -10,20 +10,19 @@
 #include "scene/Scene.h"
 
 // Render state override bits
-#define RS_BLEND 1
-#define RS_BLEND_FUNC 2
-#define RS_CULL_FACE 4
-#define RS_DEPTH_TEST 8
-#define RS_DEPTH_WRITE 16
-#define RS_DEPTH_FUNC 32
-#define RS_CULL_FACE_SIDE 64
-#define RS_STENCIL_TEST 128
-#define RS_STENCIL_WRITE 256
-#define RS_STENCIL_FUNC 512
-#define RS_STENCIL_OP 1024
-#define RS_FRONT_FACE 2048
-
-#define RS_ALL_ONES 0xFFFFFFFF
+constexpr int RS_BLEND = 1;
+constexpr int RS_BLEND_FUNC = 2;
+constexpr int RS_CULL_FACE = 4;
+constexpr int RS_DEPTH_TEST = 8;
+constexpr int RS_DEPTH_WRITE = 16;
+constexpr int RS_DEPTH_FUNC = 32;
+constexpr int RS_CULL_FACE_SIDE = 64;
+constexpr int RS_STENCIL_TEST = 128;
+constexpr int RS_STENCIL_WRITE = 256;
+constexpr int RS_STENCIL_FUNC = 512;
+constexpr int RS_STENCIL_OP = 1024;
+constexpr int RS_FRONT_FACE = 2048;
+constexpr unsigned int RS_ALL_ONES = 0xFFFFFFFF;
 
 namespace tractor
 {
@@ -60,8 +59,6 @@ MaterialParameter* RenderState::getParameter(const std::string& name) const
     // Create a new parameter and store it in our list.
     return _parameters.emplace_back(new MaterialParameter(name));
 }
-
-unsigned int RenderState::getParameterCount() const { return _parameters.size(); }
 
 MaterialParameter* RenderState::getParameterByIndex(unsigned int index)
 {

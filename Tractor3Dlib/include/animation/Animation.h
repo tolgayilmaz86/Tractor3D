@@ -31,14 +31,14 @@ class Animation : public Ref
      *
      * @return The Animation's ID.
      */
-    const std::string& getId() const;
+    const std::string& getId() const noexcept { return _id; }
 
     /**
      * Gets the Animation's duration.
      *
      * @return The Animation's duration (in milliseconds).
      */
-    unsigned long getDuration() const;
+    unsigned long getDuration() const noexcept { return _duration; }
 
     /**
      * Creates an AnimationClip from the Properties object defined at the specified URL,
@@ -81,7 +81,7 @@ class Animation : public Ref
     /**
      * Returns the number of animation clips in this animation.
      */
-    unsigned int getClipCount() const;
+    unsigned int getClipCount() const noexcept;
 
     /**
      * Plays the AnimationClip with the specified name.
@@ -132,7 +132,7 @@ class Animation : public Ref
         Channel(const Channel&); // Hidden copy constructor.
         ~Channel();
         Channel& operator=(const Channel&) = delete;
-        Curve* getCurve() const;
+        Curve* getCurve() const noexcept { return _curve; }
 
         Animation* _animation;    // Reference to the animation this channel belongs to.
         AnimationTarget* _target; // The target of this channel.

@@ -46,7 +46,7 @@ class MaterialParameter : public AnimationTarget, public Ref
     /**
      * Returns the name of this material parameter.
      */
-    const std::string& getName() const;
+    const std::string& getName() const noexcept { return _name; }
 
     /**
      * Returns the texture sampler or nullptr if this MaterialParameter is not a sampler type.

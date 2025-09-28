@@ -58,14 +58,15 @@ class Script : public Ref
      *
      * @return The script's path.
      */
-    const std::string& getPath() const;
+    const std::string& getPath() const noexcept { return _path; }
 
     /**
      * Returns the scope of this script.
      *
      * @return The scope of this script.
      */
-    Scope getScope() const;
+    Script::Scope getScope() const noexcept { return _scope; }
+
 
     /**
      * Determines if a function with the given name exists in the script.

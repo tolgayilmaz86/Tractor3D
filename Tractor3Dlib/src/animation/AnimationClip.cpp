@@ -75,23 +75,11 @@ AnimationClip::ListenerEvent::ListenerEvent(Listener* listener, unsigned long ev
     _eventTime = eventTime;
 }
 
-AnimationClip::ListenerEvent::~ListenerEvent() {}
-
 const std::string& AnimationClip::getTypeName() const
 {
     static const std::string TYPE_NAME = "AnimationClip";
     return TYPE_NAME;
 }
-
-const std::string& AnimationClip::getId() const { return _id; }
-
-Animation* AnimationClip::getAnimation() const { return _animation; }
-
-unsigned long AnimationClip::getStartTime() const { return _startTime; }
-
-unsigned long AnimationClip::getEndTime() const { return _endTime; }
-
-float AnimationClip::getElapsedTime() const { return _elapsedTime; }
 
 void AnimationClip::setRepeatCount(float repeatCount)
 {
@@ -111,8 +99,6 @@ void AnimationClip::setRepeatCount(float repeatCount)
             _activeDuration += std::ceil(repeatCount - 1.0f) * _loopBlendTime;
     }
 }
-
-float AnimationClip::getRepeatCount() const { return _repeatCount; }
 
 void AnimationClip::setActiveDuration(unsigned long duration)
 {
@@ -136,16 +122,6 @@ unsigned long AnimationClip::getActiveDuration() const
     return _activeDuration;
 }
 
-unsigned long AnimationClip::getDuration() const { return _duration; }
-
-void AnimationClip::setSpeed(float speed) { _speed = speed; }
-
-float AnimationClip::getSpeed() const { return _speed; }
-
-void AnimationClip::setBlendWeight(float blendWeight) { _blendWeight = blendWeight; }
-
-float AnimationClip::getBlendWeight() const { return _blendWeight; }
-
 void AnimationClip::setLoopBlendTime(float loopBlendTime)
 {
     if (loopBlendTime < 0.0f)
@@ -157,8 +133,6 @@ void AnimationClip::setLoopBlendTime(float loopBlendTime)
         _loopBlendTime = (unsigned int)loopBlendTime;
     }
 }
-
-float AnimationClip::getLoopBlendTime() const { return _loopBlendTime; }
 
 bool AnimationClip::isPlaying() const
 {
@@ -637,12 +611,6 @@ void AnimationClip::onEnd()
 
     this->release();
 }
-
-bool AnimationClip::isClipStateBitSet(unsigned char bit) const { return (_stateBits & bit) == bit; }
-
-void AnimationClip::setClipStateBit(unsigned char bit) { _stateBits |= bit; }
-
-void AnimationClip::resetClipStateBit(unsigned char bit) { _stateBits &= ~bit; }
 
 AnimationClip* AnimationClip::clone(Animation* animation) const
 {

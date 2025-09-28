@@ -44,7 +44,7 @@ class TerrainSample : public Sample, public Control::Listener, private RenderSta
     };
 
     Vector3 getLightDirection0() const;
-    Vector3 getLightColor0() const;
+    Vector3 getLightColor0() const noexcept;
 
     bool resolveAutoBinding(const std::string& autoBinding, Node* node, MaterialParameter* parameter);
 

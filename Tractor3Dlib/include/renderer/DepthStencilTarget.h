@@ -61,35 +61,35 @@ class DepthStencilTarget : public Ref
      *
      * @return The ID of this DepthStencilTarget.
      */
-    const std::string& getId() const;
+    const std::string& getId() const noexcept { return _id; }
 
     /**
      * Returns the format of the DepthStencilTarget.
      *
      * @return The format.
      */
-    Format getFormat() const;
+    DepthStencilTarget::Format getFormat() const noexcept { return _format; }
 
     /**
      * Returns the width of the DepthStencilTarget.
      *
      * @return The width.
      */
-    unsigned int getWidth() const;
+    unsigned int getWidth() const noexcept { return _width; }
 
     /**
      * Returns the height of the DepthStencilTarget.
      *
      * @return The height.
      */
-    unsigned int getHeight() const;
+    unsigned int getHeight() const noexcept { return _height; }
 
     /**
      * Returns true if depth and stencil buffer are packed.
      *
      * @return The packed state.
      */
-    bool isPacked() const;
+    bool isPacked() const noexcept { return _packed; }
 
   private:
     /**

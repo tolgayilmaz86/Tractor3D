@@ -21,21 +21,21 @@ class FlowLayout : public Layout
      *
      * @return Layout::LAYOUT_FLOW
      */
-    Layout::Type getType();
+    Layout::Type getType() { return Layout::LAYOUT_FLOW; }
 
     /**
      * Returns the horizontal spacing between controls in the layout.
      *
      * @return The horizontal spacing between controls.
      */
-    int getHorizontalSpacing() const;
+    int getHorizontalSpacing() const noexcept { return _horizontalSpacing; }
 
     /**
      * Returns the vertical spacing between controls in the layout.
      *
      * @return The vertical spacing between controls.
      */
-    int getVerticalSpacing() const;
+    int getVerticalSpacing() const noexcept { return _verticalSpacing; }
 
     /**
      * Sets the spacing to add between controls in the layout.

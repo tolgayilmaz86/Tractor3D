@@ -63,7 +63,7 @@ class MeshBatch
      *
      * @return The batch capacity.
      */
-    unsigned int getCapacity() const;
+    unsigned int getCapacity() const noexcept { return _capacity; }
 
     /**
      * Explicitly sets a new capacity for the batch.
@@ -138,17 +138,17 @@ class MeshBatch
      * Calling this method will clear any primitives currently in the batch and set the
      * position of the batch back to the beginning.
      */
-    void start();
+    void start() noexcept;
 
     /**
      * Determines if the batch has been started and not yet finished.
      */
-    bool isStarted() const;
+    bool isStarted() const noexcept { return _started; }
 
     /**
      * Indicates that batching is complete and prepares the batch for drawing.
      */
-    void finish();
+    void finish() noexcept { _started = false; }
 
     /**
      * Draws the primitives currently in batch.

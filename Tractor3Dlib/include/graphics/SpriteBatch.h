@@ -104,7 +104,7 @@ class SpriteBatch
      *
      * @return True if the batch has been started and not finished.
      */
-    bool isStarted() const;
+    bool isStarted() const { return _batch->isStarted(); }
 
     /**
      * Draws a single sprite.
@@ -396,7 +396,7 @@ class SpriteBatch
      * effect. This can be modified for controlling sampler setting such as
      * filtering modes.
      */
-    Texture::Sampler* getSampler() const;
+    Texture::Sampler* getSampler() const noexcept { return _sampler; }
 
     /**
      * Gets the StateBlock for the SpriteBatch.
@@ -414,7 +414,7 @@ class SpriteBatch
      *
      * @return The material.
      */
-    Material* getMaterial() const;
+    Material* getMaterial() const { return _batch->getMaterial(); };
 
     /**
      * Sets a custom projection matrix to use with the sprite batch.
@@ -426,14 +426,14 @@ class SpriteBatch
      *
      * @param matrix The new projection matrix to be used with the default effect.
      */
-    void setProjectionMatrix(const Matrix& matrix);
+    void setProjectionMatrix(const Matrix& matrix) { _projectionMatrix = matrix; }
 
     /**
      * Gets the projection matrix for the SpriteBatch.
      *
      * @return The projection matrix.
      */
-    const Matrix& getProjectionMatrix() const;
+    const Matrix& getProjectionMatrix() const noexcept { return _projectionMatrix; }
 
   private:
     /**

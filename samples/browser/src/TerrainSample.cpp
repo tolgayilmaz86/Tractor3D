@@ -374,7 +374,7 @@ Vector3 TerrainSample::getLightDirection0() const
     return _directionalLight->getNode()->getForwardVectorView();
 }
 
-Vector3 TerrainSample::getLightColor0() const { return _directionalLight->getColor(); }
+Vector3 TerrainSample::getLightColor0() const noexcept { return _directionalLight->getColor(); }
 
 bool TerrainSample::resolveAutoBinding(const std::string& autoBinding,
                                        Node* node,

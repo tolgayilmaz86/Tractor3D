@@ -76,7 +76,7 @@ class AIAgent : public Ref
      *
      * @return The Node this agent is assigned to.
      */
-    Node* getNode() const;
+    Node* getNode() const noexcept;
 
     /**
      * Returns the state machine for the AIAgent.
@@ -95,7 +95,7 @@ class AIAgent : public Ref
      *
      * @return true if the agent is enabled, false otherwise.
      */
-    bool isEnabled() const;
+    bool isEnabled() const noexcept;
 
     /**
      * Sets whether this AIAgent is enabled.

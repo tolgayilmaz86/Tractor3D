@@ -36,7 +36,7 @@ class Model : public Ref, public Drawable
      *
      * @return The Mesh for this Model.
      */
-    Mesh* getMesh() const;
+    Mesh* getMesh() const noexcept { return _mesh.get(); }
 
     /**
      * Returns the number of parts in the Mesh for this Model.
@@ -128,7 +128,7 @@ class Model : public Ref, public Drawable
      *
      * @return The MeshSkin, or nullptr if one is not set.
      */
-    MeshSkin* getSkin() const;
+    MeshSkin* getSkin() const noexcept { return _skin; }
 
     /**
      * @see Drawable::draw

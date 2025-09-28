@@ -723,7 +723,7 @@ bool Matrix::invert(Matrix* dst) const
     return true;
 }
 
-bool Matrix::isIdentity() const { return (memcmp(m, MATRIX_IDENTITY, MATRIX_SIZE) == 0); }
+bool Matrix::isIdentity() const noexcept { return (memcmp(m, MATRIX_IDENTITY, MATRIX_SIZE) == 0); }
 
 void Matrix::multiply(float scalar) { multiply(scalar, this); }
 

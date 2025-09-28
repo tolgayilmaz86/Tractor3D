@@ -115,8 +115,6 @@ PhysicsCollisionObject::Type PhysicsRigidBody::getType() const
     return PhysicsCollisionObject::RIGID_BODY;
 }
 
-btCollisionObject* PhysicsRigidBody::getCollisionObject() const { return _body; }
-
 void PhysicsRigidBody::applyForce(const Vector3& force, const Vector3* relativePosition)
 {
     // If the force is significant enough, activate the rigid body

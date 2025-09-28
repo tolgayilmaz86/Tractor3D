@@ -513,7 +513,7 @@ class Matrix
      *
      * @return true if the matrix is an identity matrix, false otherwise.
      */
-    bool isIdentity() const;
+    bool isIdentity() const noexcept;
 
     /**
      * Multiplies the components of this matrix by the specified scalar.

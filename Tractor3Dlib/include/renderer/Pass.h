@@ -26,12 +26,12 @@ class Pass : public RenderState
     /**
      * Returns the Id of this pass.
      */
-    const std::string& getId() const;
+    const std::string& getId() const noexcept { return _id; }
 
     /**
      * Returns the effect for this Pass.
      */
-    Effect* getEffect() const;
+    Effect* getEffect() const noexcept { return _effect; }
 
     /**
      * Sets a vertex attribute binding for this pass.
@@ -48,7 +48,7 @@ class Pass : public RenderState
      *
      * @return The vertex attribute binding for this pass.
      */
-    VertexAttributeBinding* getVertexAttributeBinding() const;
+    VertexAttributeBinding* getVertexAttributeBinding() const noexcept { return _vaBinding; }
 
     /**
      * Binds the render state for this pass.

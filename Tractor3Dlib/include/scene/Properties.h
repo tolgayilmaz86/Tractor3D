@@ -210,7 +210,7 @@ class Properties
      *
      * @return The name of this Property's namespace.
      */
-    const std::string& getNamespace() const;
+    const std::string& getNamespace() const noexcept { return _namespace; }
 
     /**
      * Get the ID of this Property's namespace. The ID should be a unique identifier,
@@ -218,7 +218,7 @@ class Properties
      *
      * @return The ID of this Property's namespace.
      */
-    const std::string& getId() const;
+    const std::string& getId() const noexcept { return _id; }
 
     /**
      * Check if a property with the given name is specified in this Properties object.

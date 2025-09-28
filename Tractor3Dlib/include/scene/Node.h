@@ -63,7 +63,7 @@ class Node : public Transform, public Ref
      * @param id The ID for the new node.
      * @script{create}
      */
-    static Node* create(const std::string& id = EMPTY_STRING);
+    static Node* create(const std::string& id = EMPTY_STRING) { return new Node(id); }
 
     /**
      * Extends ScriptTarget::getTypeName() to return the type name of this class.
@@ -82,7 +82,7 @@ class Node : public Transform, public Ref
      *
      * @return The node identifier.
      */
-    const std::string& getId() const { return _id; }
+    const std::string& getId() const noexcept { return _id; }
 
     /**
      * Sets the identifier for the node.
@@ -94,7 +94,7 @@ class Node : public Transform, public Ref
     /**
      * Returns the type of the node.
      */
-    virtual Node::Type getType() const { return Node::NODE; }
+    virtual Node::Type getType() const noexcept { return Node::NODE; }
 
     /**
      * Adds a child node.
@@ -120,35 +120,35 @@ class Node : public Transform, public Ref
      *
      * @return The first child.
      */
-    Node* getFirstChild() const { return _firstChild; }
+    Node* getFirstChild() const noexcept { return _firstChild; }
 
     /**
      * Returns the first sibling of this node.
      *
      * @return The first sibling.
      */
-    Node* getNextSibling() const { return _nextSibling; }
+    Node* getNextSibling() const noexcept { return _nextSibling; }
 
     /**
      * Returns the previous sibling to this node.
      *
      * @return The previous sibling.
      */
-    Node* getPreviousSibling() const { return _prevSibling; }
+    Node* getPreviousSibling() const noexcept { return _prevSibling; }
 
     /**
      * Returns the parent of this node.
      *
      * @return The parent.
      */
-    Node* getParent() const { return _parent; }
+    Node* getParent() const noexcept { return _parent; }
 
     /**
      * Returns the number of direct children of this item.
      *
      * @return The number of children.
      */
-    unsigned int getChildCount() const { return _childCount; }
+    unsigned int getChildCount() const noexcept { return _childCount; }
 
     /**
      * Gets the top level node in this node's parent hierarchy.
@@ -247,7 +247,7 @@ class Node : public Transform, public Ref
      *
      * @return if the node is enabled in the scene.
      */
-    bool isEnabled() const;
+    bool isEnabled() const noexcept { return _enabled; }
 
     /**
      * Gets if the node inherently enabled.
@@ -277,7 +277,7 @@ class Node : public Transform, public Ref
      *
      * @see Transform::isStatic()
      */
-    bool isStatic() const;
+    bool isStatic() const noexcept { return (_collisionObject && _collisionObject->isStatic()); }
 
     /**
      * Gets the world matrix corresponding to this node.
@@ -378,7 +378,7 @@ class Node : public Transform, public Ref
      *
      * @return The forward vector in world space.
      */
-    Vector3 getForwardVectorWorld() const;
+    Vector3 getForwardVectorWorld() const noexcept { return getWorldMatrix().getForwardVector(); }
 
     /**
      * Returns the forward vector of the Node in view space.
@@ -392,14 +392,14 @@ class Node : public Transform, public Ref
      *
      * @return The right vector in world space.
      */
-    Vector3 getRightVectorWorld() const;
+    Vector3 getRightVectorWorld() const noexcept { return getWorldMatrix().getRightVector(); }
 
     /**
      * Returns the up vector of the Node in world space.
      *
      * @return The up vector in world space.
      */
-    Vector3 getUpVectorWorld() const;
+    Vector3 getUpVectorWorld() const noexcept { return getWorldMatrix().getUpVector(); }
 
     /**
      * Returns the translation vector of the currently active camera for this node's scene.
@@ -428,7 +428,7 @@ class Node : public Transform, public Ref
      *
      * @return The drawable component attached to this node.
      */
-    Drawable* getDrawable() const { return _drawable; }
+    Drawable* getDrawable() const noexcept { return _drawable; }
 
     /**
      * Set the drawable object to be attached to this node
@@ -447,7 +447,7 @@ class Node : public Transform, public Ref
      *
      * @return Gets the camera attached to this node.
      */
-    Camera* getCamera() const { return _camera; }
+    Camera* getCamera() const noexcept { return _camera; }
 
     /**
      * Attaches a camera to this node.
@@ -464,7 +464,7 @@ class Node : public Transform, public Ref
      *
      * @return The light attached to this node.
      */
-    Light* getLight() const { return _light; }
+    Light* getLight() const noexcept { return _light; }
 
     /**
      * Attaches a light to this node.
@@ -481,7 +481,7 @@ class Node : public Transform, public Ref
      *
      * @return The audio source attached to this node.
      */
-    AudioSource* getAudioSource() const { return _audioSource; }
+    AudioSource* getAudioSource() const noexcept { return _audioSource; }
 
     /**
      * Attaches an audio source to this node.
@@ -501,7 +501,7 @@ class Node : public Transform, public Ref
      *
      * @return The pointer to this node's physics collision object.
      */
-    PhysicsCollisionObject* getCollisionObject() const { return _collisionObject; }
+    PhysicsCollisionObject* getCollisionObject() const noexcept { return _collisionObject; }
 
     /**
      * Sets (or disables) the physics collision object for this node.
@@ -581,7 +581,7 @@ class Node : public Transform, public Ref
      *
      * @return The user object assigned object to this node.
      */
-    Ref* getUserObject() const { return _userObject; }
+    Ref* getUserObject() const noexcept { return _userObject; }
 
     /**
      * Sets a user object to be assigned object to this node.
@@ -776,12 +776,12 @@ class NodeCloneContext
     /**
      * Constructor.
      */
-    NodeCloneContext();
+    NodeCloneContext() = default;
 
     /**
      * Destructor.
      */
-    ~NodeCloneContext();
+    ~NodeCloneContext() = default;
 
     /**
      * Finds the cloned animation of the given animation or nullptr if this animation was not

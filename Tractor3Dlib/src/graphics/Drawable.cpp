@@ -11,8 +11,6 @@ Drawable::Drawable() : _node(nullptr) {}
 
 Drawable::~Drawable() {}
 
-Node* Drawable::getNode() const { return _node; }
-
 void Drawable::setNode(Node* node) { _node = node; }
 
 } // namespace tractor

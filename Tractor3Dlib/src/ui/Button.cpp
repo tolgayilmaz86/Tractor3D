@@ -42,9 +42,4 @@ const std::string& Button::getTypeName() const
     static const std::string TYPE_NAME = "Button";
     return TYPE_NAME;
 }
-
-const unsigned int Button::getDataBinding() const { return _dataBinding; }
-
-void Button::setDataBinding(unsigned int dataBinding) { _dataBinding = dataBinding; }
-
 } // namespace tractor

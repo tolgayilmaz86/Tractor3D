@@ -155,22 +155,22 @@ class Theme : public Ref
         /**
          * Gets the ID of the ThemeImage.
          */
-        const std::string& getId() const;
+        const std::string& getId() const noexcept { return _id; }
 
         /**
          * Gets the UV coordinates for the ThemeImage.
          */
-        const UVs& getUVs() const;
-
+        const Theme::UVs& getUVs() const noexcept { return _uvs; }
+        
         /**
          * Gets the Rectangle region of the ThemeImage.
          */
-        const Rectangle& getRegion() const;
+        const Rectangle& getRegion() const noexcept { return _region; }
 
         /**
          * Gets the color of the ThemeImage in a Vector4.
          */
-        const Vector4& getColor() const;
+        const Vector4& getColor() const noexcept { return _color; }
 
       private:
         ThemeImage(float tw, float th, const Rectangle& region, const Vector4& color);
@@ -230,7 +230,7 @@ class Theme : public Ref
      *
      * @return The theme's sprite batch.
      */
-    SpriteBatch* getSpriteBatch() const;
+    SpriteBatch* getSpriteBatch() const noexcept { return _spriteBatch; }
 
   private:
     /**
@@ -244,7 +244,7 @@ class Theme : public Ref
         friend class Control;
 
       public:
-        const std::string& getId() const;
+        const std::string& getId() const noexcept { return _id; }
 
         ThemeImage* getImage(const std::string& imageId) const;
 
@@ -293,35 +293,35 @@ class Theme : public Ref
          *
          * @return This skin's ID.
          */
-        const std::string& getId() const;
+        const std::string& getId() const noexcept { return _id; }
 
         /**
          * Gets this skin's border.
          *
          * @return This skin's border.
          */
-        const Theme::Border& getBorder() const;
+        const Theme::Border& getBorder() const noexcept { return _border; }
 
         /**
          * Gets the skin region within the theme texture.
          *
          * @return The skin region.
          */
-        const Rectangle& getRegion() const;
+        const Rectangle& getRegion() const noexcept { return _region; }
 
         /**
          * Gets this skin's UVs.
          *
          * @return This skin's UVs.
          */
-        const Theme::UVs& getUVs(SkinArea area) const;
+        const Theme::UVs& getUVs(SkinArea area) const { return _uvs[area]; }
 
         /**
          * Gets this skin's color.
          *
          * @return This skin's color.
          */
-        const Vector4& getColor() const;
+        const Vector4& getColor() const noexcept { return _color; }
 
       private:
         Skin(float tw,

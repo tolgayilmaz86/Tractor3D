@@ -150,8 +150,6 @@ void MeshBatch::updateVertexAttributeBinding()
     }
 }
 
-unsigned int MeshBatch::getCapacity() const { return _capacity; }
-
 void MeshBatch::setCapacity(unsigned int capacity) { resize(capacity); }
 
 bool MeshBatch::resize(unsigned int capacity)
@@ -247,7 +245,7 @@ void MeshBatch::add(const float* vertices,
     add(vertices, sizeof(float), vertexCount, indices, indexCount);
 }
 
-void MeshBatch::start()
+void MeshBatch::start() noexcept
 {
     _vertexCount = 0;
     _indexCount = 0;
@@ -255,10 +253,6 @@ void MeshBatch::start()
     _indicesPtr = _indices;
     _started = true;
 }
-
-bool MeshBatch::isStarted() const { return _started; }
-
-void MeshBatch::finish() { _started = false; }
 
 void MeshBatch::draw()
 {

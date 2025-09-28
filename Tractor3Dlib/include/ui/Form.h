@@ -105,7 +105,7 @@ class Form : public Drawable, public Container
     /**
      * @see Container#isForm()
      */
-    bool isForm() const;
+    bool isForm() const noexcept { return true; }
 
     /**
      * @see Control::update
@@ -124,7 +124,7 @@ class Form : public Drawable, public Container
      *
      * @return True if batching is enabled for this form, false otherwise.
      */
-    bool isBatchingEnabled() const;
+    bool isBatchingEnabled() const noexcept { return _batched; }
 
     /**
      * Turns batching on or off for this form.
@@ -136,7 +136,7 @@ class Form : public Drawable, public Container
      *
      * @param enabled True to enable batching (default), false otherwise.
      */
-    void setBatchingEnabled(bool enabled);
+    void setBatchingEnabled(bool enabled) { _batched = enabled; }
 
   private:
     /**
@@ -249,7 +249,7 @@ class Form : public Drawable, public Container
      */
     bool projectPoint(int x, int y, Vector3* point);
 
-    const Matrix& getProjectionMatrix() const;
+    const Matrix& getProjectionMatrix() const noexcept { return _projectionMatrix; }
 
     static bool pointerEventInternal(bool mouse, int evt, int x, int y, int param);
 

@@ -162,14 +162,14 @@ class PhysicsCollisionObject
     /**
      * Returns the node associated with this collision object.
      */
-    Node* getNode() const;
+    Node* getNode() const noexcept { return _node; }
 
     /**
      * Returns the collision shape.
      *
      * @return The collision shape.
      */
-    PhysicsCollisionShape* getCollisionShape() const;
+    PhysicsCollisionShape* getCollisionShape() const noexcept { return _collisionShape; }
 
     /**
      * Returns whether this collision object is kinematic.
@@ -206,7 +206,7 @@ class PhysicsCollisionObject
      *
      * @return true if the collision object is enabled.
      */
-    bool isEnabled() const;
+    bool isEnabled() const noexcept { return _enabled; }
 
     /**
      * Sets the collision object to be enabled or disabled.
@@ -292,7 +292,7 @@ class PhysicsCollisionObject
         /** The URL to the Lua script function to use as the callback. */
         std::string url;
         /** The loaded script that contains the function. */
-        Script* script;
+        Script* script{ nullptr };
         /** The name of the Lua script function to use as the callback. */
         std::string function;
 
@@ -300,7 +300,7 @@ class PhysicsCollisionObject
         /**
          * Constructor.
          */
-        ScriptListener();
+        ScriptListener() = default;
     };
 
     /**
@@ -315,7 +315,7 @@ class PhysicsCollisionObject
      *
      * @return The Bullet collision object.
      */
-    virtual btCollisionObject* getCollisionObject() const = 0;
+    virtual btCollisionObject* getCollisionObject() const noexcept = 0;
 
     /**
      * Pointer to Node contained by this collision object.
@@ -362,7 +362,7 @@ class PhysicsCollisionObject
         /**
          * Destructor.
          */
-        virtual ~PhysicsMotionState();
+        virtual ~PhysicsMotionState() = default;
 
         /**
          * @see btMotionState::getWorldTransform

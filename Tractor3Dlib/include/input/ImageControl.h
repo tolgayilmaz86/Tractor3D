@@ -72,7 +72,7 @@ class ImageControl : public Control
      *
      * @return The source region of this ImageControl.
      */
-    const Rectangle& getRegionSrc() const;
+    const Rectangle& getRegionSrc() const noexcept;
 
     /**
      * Sets the destination region of this ImageControl.  This is the region
@@ -98,7 +98,7 @@ class ImageControl : public Control
      *
      * @return The destination region of this ImageControl.
      */
-    const Rectangle& getRegionDst() const;
+    const Rectangle& getRegionDst() const noexcept;
 
   protected:
     ImageControl();

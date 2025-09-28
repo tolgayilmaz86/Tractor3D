@@ -195,19 +195,19 @@ class Terrain : public Ref, public Drawable, public Transform::Listener
      *
      * @return The number of terrain patches.
      */
-    unsigned int getPatchCount() const;
+    unsigned int getPatchCount() const noexcept { return _patches.size(); }
 
     /**
      * Gets a terrain patch
      */
-    TerrainPatch* getPatch(unsigned int index) const;
+    TerrainPatch* getPatch(unsigned int index) const { return _patches[index]; }
 
     /**
      * Gets the local bounding box for this terrain.
      *
      * @return The local bounding box for the terrain.
      */
-    const BoundingBox& getBoundingBox() const;
+    const BoundingBox& getBoundingBox() const noexcept { return _boundingBox; }
 
     /**
      * Gets the world-space height of the terrain at the specified position on the X,Z plane.

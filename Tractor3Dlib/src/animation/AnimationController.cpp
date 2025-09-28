@@ -8,10 +8,6 @@
 namespace tractor
 {
 
-AnimationController::AnimationController() : _state(STOPPED) {}
-
-AnimationController::~AnimationController() {}
-
 void AnimationController::stopAllAnimations()
 {
     std::list<AnimationClip*>::iterator clipIter = _runningClips.begin();
@@ -23,10 +19,6 @@ void AnimationController::stopAllAnimations()
         clipIter++;
     }
 }
-
-AnimationController::State AnimationController::getState() const { return _state; }
-
-void AnimationController::initialize() { _state = IDLE; }
 
 void AnimationController::finalize()
 {
@@ -46,8 +38,6 @@ void AnimationController::resume()
     else
         _state = RUNNING;
 }
-
-void AnimationController::pause() { _state = PAUSED; }
 
 void AnimationController::schedule(AnimationClip* clip)
 {

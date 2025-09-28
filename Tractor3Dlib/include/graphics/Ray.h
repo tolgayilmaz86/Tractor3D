@@ -65,7 +65,7 @@ class Ray
      *
      * @return The ray's origin.
      */
-    const Vector3& getOrigin() const;
+    const Vector3& getOrigin() const noexcept;
 
     /**
      * Sets the ray's origin to the given point.
@@ -88,7 +88,7 @@ class Ray
      *
      * @return The ray's direction.
      */
-    const Vector3& getDirection() const;
+    const Vector3& getDirection() const noexcept;
 
     /**
      * Sets the ray's direction to the given vector.

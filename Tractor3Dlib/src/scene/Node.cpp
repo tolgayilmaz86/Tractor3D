@@ -47,8 +47,6 @@ Node::~Node()
     setAgent(nullptr);
 }
 
-Node* Node::create(const std::string& id) { return new Node(id); }
-
 void Node::addChild(Node* child)
 {
     assert(child);
@@ -339,8 +337,6 @@ void Node::setEnabled(bool enabled)
     }
 }
 
-bool Node::isEnabled() const { return _enabled; }
-
 bool Node::isEnabledInHierarchy() const
 {
     if (!_enabled) return false;
@@ -368,8 +364,6 @@ void Node::update(float elapsedTime)
     }
     fireScriptEvent<void>(GP_GET_SCRIPT_EVENT(Node, update), dynamic_cast<void*>(this), elapsedTime);
 }
-
-bool Node::isStatic() const { return (_collisionObject && _collisionObject->isStatic()); }
 
 const Matrix& Node::getWorldMatrix() const
 {
@@ -520,18 +514,12 @@ Vector3 Node::getTranslationView() const
     return translation;
 }
 
-Vector3 Node::getForwardVectorWorld() const { return getWorldMatrix().getForwardVector(); }
-
 Vector3 Node::getForwardVectorView() const
 {
     Vector3 vector = getWorldMatrix().getForwardVector();
     getViewMatrix().transformVector(&vector);
     return vector;
 }
-
-Vector3 Node::getRightVectorWorld() const { return getWorldMatrix().getRightVector(); }
-
-Vector3 Node::getUpVectorWorld() const { return getWorldMatrix().getUpVector(); }
 
 Vector3 Node::getActiveCameraTranslationWorld() const
 {
@@ -1126,10 +1114,6 @@ void Node::setAgent(AIAgent* agent)
         Game::getInstance()->getAIController()->addAgent(_agent);
     }
 }
-
-NodeCloneContext::NodeCloneContext() {}
-
-NodeCloneContext::~NodeCloneContext() {}
 
 Animation* NodeCloneContext::findClonedAnimation(const Animation* animation)
 {

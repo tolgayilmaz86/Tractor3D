@@ -202,10 +202,6 @@ void AudioSource::stop()
     audioController->removePlayingSource(this);
 }
 
-void AudioSource::rewind() { AL_CHECK(alSourceRewind(_alSource)); }
-
-bool AudioSource::isLooped() const { return _looped; }
-
 void AudioSource::setLooped(bool looped)
 {
     AL_CHECK(alSourcei(_alSource, AL_LOOPING, (looped && !isStreamed()) ? AL_TRUE : AL_FALSE));
@@ -216,23 +212,17 @@ void AudioSource::setLooped(bool looped)
     _looped = looped;
 }
 
-float AudioSource::getGain() const { return _gain; }
-
 void AudioSource::setGain(float gain)
 {
     AL_CHECK(alSourcef(_alSource, AL_GAIN, gain));
     _gain = gain;
 }
 
-float AudioSource::getPitch() const { return _pitch; }
-
 void AudioSource::setPitch(float pitch)
 {
     AL_CHECK(alSourcef(_alSource, AL_PITCH, pitch));
     _pitch = pitch;
 }
-
-const Vector3& AudioSource::getVelocity() const { return _velocity; }
 
 void AudioSource::setVelocity(const Vector3& velocity)
 {
@@ -241,8 +231,6 @@ void AudioSource::setVelocity(const Vector3& velocity)
 }
 
 void AudioSource::setVelocity(float x, float y, float z) { setVelocity(Vector3(x, y, z)); }
-
-Node* AudioSource::getNode() const { return _node; }
 
 void AudioSource::setNode(Node* node)
 {
@@ -340,5 +328,7 @@ bool AudioSource::streamDataIfNeeded()
     }
     return true;
 }
+
+void AudioSource::rewind() { AL_CHECK(alSourceRewind(_alSource)); }
 
 } // namespace tractor

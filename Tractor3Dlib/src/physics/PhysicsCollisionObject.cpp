@@ -73,10 +73,6 @@ PhysicsCollisionShape::Type PhysicsCollisionObject::getShapeType() const
     return getCollisionShape()->getType();
 }
 
-Node* PhysicsCollisionObject::getNode() const { return _node; }
-
-PhysicsCollisionShape* PhysicsCollisionObject::getCollisionShape() const { return _collisionShape; }
-
 bool PhysicsCollisionObject::isKinematic() const
 {
     switch (getType())
@@ -108,8 +104,6 @@ bool PhysicsCollisionObject::isDynamic() const
     assert(getCollisionObject());
     return !getCollisionObject()->isStaticOrKinematicObject();
 }
-
-bool PhysicsCollisionObject::isEnabled() const { return _enabled; }
 
 void PhysicsCollisionObject::setEnabled(bool enable)
 {
@@ -227,7 +221,6 @@ PhysicsCollisionObject::PhysicsMotionState::PhysicsMotionState(Node* node,
     updateTransformFromNode();
 }
 
-PhysicsCollisionObject::PhysicsMotionState::~PhysicsMotionState() {}
 
 void PhysicsCollisionObject::PhysicsMotionState::getWorldTransform(btTransform& transform) const
 {
@@ -283,8 +276,6 @@ void PhysicsCollisionObject::PhysicsMotionState::setCenterOfMassOffset(const Vec
 {
     _centerOfMassOffset.setOrigin(BV(centerOfMassOffset));
 }
-
-PhysicsCollisionObject::ScriptListener::ScriptListener() : script(nullptr) {}
 
 PhysicsCollisionObject::ScriptListener::~ScriptListener() { SAFE_RELEASE(script); }
 

@@ -167,7 +167,7 @@ bool Game::startup()
     // Set script handler
     if (_properties)
     {
-        auto scriptPath = _properties->getString("script");
+        const auto& scriptPath = _properties->getString("script");
         if (!scriptPath.empty())
         {
             _scriptTarget = new GameScriptTarget();
@@ -266,8 +266,6 @@ void Game::shutdown()
         SAFE_DELETE(_audioListener);
         FrameBuffer::finalize();
         RenderState::finalize();
-
-        SAFE_DELETE(_properties);
 
         _state = UNINITIALIZED;
     }
@@ -766,19 +764,19 @@ bool Game::TimeEvent::operator<(const TimeEvent& v) const
 
 Properties* Game::getConfig() const
 {
-    if (_properties == NULL) const_cast<Game*>(this)->loadConfig();
+    if (!_properties) const_cast<Game*>(this)->loadConfig();
 
-    return _properties;
+    return _properties.get();
 }
 
 void Game::loadConfig()
 {
-    if (_properties == NULL)
+    if (!_properties)
     {
         // Try to load custom config from file.
         if (FileSystem::fileExists("game.config"))
         {
-            _properties = Properties::create("game.config");
+            _properties = std::unique_ptr<Properties>(Properties::create("game.config"));
 
             // Load filesystem aliases.
             Properties* aliases = _properties->getNamespace("aliases", true);
@@ -790,7 +788,7 @@ void Game::loadConfig()
         else
         {
             // Create an empty config
-            _properties = new Properties();
+            _properties = std::unique_ptr<Properties>();
         }
     }
 }

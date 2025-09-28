@@ -52,7 +52,7 @@ AudioSource* AudioSource::create(const std::string& url, bool streamed)
     std::string pathStr = url;
     if (pathStr.find(".audio") != std::string::npos)
     {
-        Properties* properties = Properties::create(url);
+        auto properties = std::unique_ptr<Properties>(Properties::create(url));
         if (properties == nullptr)
         {
             GP_ERROR("Failed to create audio source from .audio file.");
@@ -60,8 +60,7 @@ AudioSource* AudioSource::create(const std::string& url, bool streamed)
         }
 
         AudioSource* audioSource = create(
-            properties->getNamespace().length() > 0 ? properties : properties->getNextNamespace());
-        SAFE_DELETE(properties);
+            properties->getNamespace().length() > 0 ? properties.get() : properties->getNextNamespace());
         return audioSource;
     }
 

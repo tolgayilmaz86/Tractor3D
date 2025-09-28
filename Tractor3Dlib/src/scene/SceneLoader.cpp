@@ -35,7 +35,7 @@ Scene* SceneLoader::loadInternal(const std::string& url)
     splitURL(url, &_path, &id);
 
     // Load the scene properties from file.
-    Properties* properties = Properties::create(url);
+    auto properties = std::unique_ptr<Properties>(Properties::create(url));
     if (properties == nullptr)
     {
         GP_ERROR("Failed to load scene file '%s'.", url);
@@ -44,12 +44,11 @@ Scene* SceneLoader::loadInternal(const std::string& url)
 
     // Check if the properties object is valid and has a valid namespace.
     Properties* sceneProperties =
-        !properties->getNamespace().empty() ? properties : properties->getNextNamespace();
+        !properties->getNamespace().empty() ? properties.get() : properties->getNextNamespace();
     if (!sceneProperties || sceneProperties->getNamespace() != "scene")
     {
         GP_ERROR("Failed to load scene from properties object: must be non-null object and have "
                  "namespace equal to 'scene'.");
-        SAFE_DELETE(properties);
         return nullptr;
     }
 
@@ -73,7 +72,6 @@ Scene* SceneLoader::loadInternal(const std::string& url)
         if (!_scene)
         {
             GP_WARN("Failed to load main scene from bundle.");
-            SAFE_DELETE(properties);
             return nullptr;
         }
     }
@@ -143,9 +141,6 @@ Scene* SceneLoader::loadInternal(const std::string& url)
                       SAFE_DELETE(pair.second);
                       return true; // erase each of them
                   });
-
-    // Clean up the .scene file's properties object.
-    SAFE_DELETE(properties);
 
     return _scene;
 }

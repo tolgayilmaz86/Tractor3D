@@ -768,7 +768,7 @@ class Game
     Vector4 _clearColor;     // The clear color value last used for clearing the color buffer.
     float _clearDepth;       // The clear depth value last used for clearing the depth buffer.
     int _clearStencil;       // The clear stencil value last used for clearing the stencil buffer.
-    Properties* _properties; // Game configuration properties object.
+    std::unique_ptr<Properties> _properties; // Game configuration properties object.
     AnimationController* _animationController; // Controls the scheduling and running of animations.
     AudioController* _audioController;     // Controls audio sources that are playing in the game.
     PhysicsController* _physicsController; // Controls the simulation of a physics scene and entities.

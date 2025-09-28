@@ -59,7 +59,7 @@ Form* Form::create(const std::string& url)
     Form* form = new Form();
 
     // Load Form from .form file.
-    Properties* properties = Properties::create(url);
+    auto properties = std::unique_ptr<Properties>(Properties::create(url));
     if (!properties)
     {
         GP_WARN("Failed to load properties file for Form.");
@@ -67,11 +67,10 @@ Form* Form::create(const std::string& url)
     }
     // Check if the Properties is valid and has a valid namespace.
     Properties* formProperties =
-        properties->getNamespace().length() > 0 ? properties : properties->getNextNamespace();
+        properties->getNamespace().length() > 0 ? properties.get() : properties->getNextNamespace();
     if (!formProperties || !compareNoCase(formProperties->getNamespace(), "form"))
     {
         GP_WARN("Invalid properties file for form: %s", url);
-        SAFE_DELETE(properties);
         return nullptr;
     }
 
@@ -109,8 +108,6 @@ Form* Form::create(const std::string& url)
     {
         SAFE_RELEASE(theme);
     }
-
-    SAFE_DELETE(properties);
 
     return form;
 }

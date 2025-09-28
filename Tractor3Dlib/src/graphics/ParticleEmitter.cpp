@@ -57,7 +57,7 @@ ParticleEmitter* ParticleEmitter::create(Texture* texture,
 
 ParticleEmitter* ParticleEmitter::create(const std::string& url)
 {
-    Properties* properties = Properties::create(url);
+    auto properties = std::unique_ptr<Properties>(Properties::create(url));
     if (!properties)
     {
         GP_ERROR("Failed to create particle emitter from file.");
@@ -65,8 +65,7 @@ ParticleEmitter* ParticleEmitter::create(const std::string& url)
     }
 
     ParticleEmitter* particle =
-        create(properties->getNamespace().length() > 0 ? properties : properties->getNextNamespace());
-    SAFE_DELETE(properties);
+        create(properties->getNamespace().length() > 0 ? properties.get() : properties->getNextNamespace());
 
     return particle;
 }

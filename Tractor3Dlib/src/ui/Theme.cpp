@@ -108,7 +108,7 @@ Theme* Theme::create(const std::string& url)
     }
 
     // Load theme properties from file path.
-    Properties* properties = Properties::create(url);
+    auto properties = std::unique_ptr<Properties>(Properties::create(url));
     assert(properties);
     if (properties == nullptr)
     {
@@ -117,11 +117,10 @@ Theme* Theme::create(const std::string& url)
 
     // Check if the Properties is valid and has a valid namespace.
     Properties* themeProperties =
-        properties->getNamespace().length() > 0 ? properties : properties->getNextNamespace();
+        properties->getNamespace().length() > 0 ? properties.get() : properties->getNextNamespace();
     assert(themeProperties);
     if (!themeProperties || !compareNoCase(themeProperties->getNamespace(), "theme"))
     {
-        SAFE_DELETE(properties);
         return nullptr;
     }
 
@@ -498,8 +497,6 @@ Theme* Theme::create(const std::string& url)
         }
         space = themeProperties->getNextNamespace();
     }
-
-    SAFE_DELETE(properties);
 
     return theme;
 }

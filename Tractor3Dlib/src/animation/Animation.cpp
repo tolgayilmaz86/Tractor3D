@@ -132,19 +132,17 @@ Animation::Channel::~Channel()
 
 void Animation::createClips(const std::string& url)
 {
-    Properties* properties = Properties::create(url);
+    auto properties = std::unique_ptr<Properties>(Properties::create(url));
     assert(properties);
 
     Properties* pAnimation =
-        properties->getNamespace().length() > 0 ? properties : properties->getNextNamespace();
+        properties->getNamespace().length() > 0 ? properties.get() : properties->getNextNamespace();
     assert(pAnimation);
 
     int frameCount = pAnimation->getInt("frameCount");
     if (frameCount <= 0) GP_ERROR("The animation's frame count must be greater than 0.");
 
     createClips(pAnimation, (unsigned int)frameCount);
-
-    SAFE_DELETE(properties);
 }
 
 AnimationClip* Animation::createClip(const std::string& id, unsigned long begin, unsigned long end)

@@ -102,7 +102,7 @@ std::string FileSystem::getResourcePath() { return __resourcePath; }
 
 void FileSystem::loadResourceAliases(const std::string& aliasFilePath)
 {
-    Properties* properties = Properties::create(aliasFilePath);
+    auto properties = std::unique_ptr<Properties>(Properties::create(aliasFilePath));
     if (properties)
     {
         Properties* aliases;
@@ -111,7 +111,6 @@ void FileSystem::loadResourceAliases(const std::string& aliasFilePath)
             loadResourceAliases(aliases);
         }
     }
-    SAFE_DELETE(properties);
 }
 
 void FileSystem::loadResourceAliases(Properties* properties)

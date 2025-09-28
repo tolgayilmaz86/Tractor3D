@@ -66,13 +66,11 @@ Animation* AnimationTarget::createAnimation(const std::string& id,
 
 Animation* AnimationTarget::createAnimation(const std::string& id, const std::string& url)
 {
-    Properties* p = Properties::create(url);
+    auto p = std::unique_ptr<Properties>(Properties::create(url));
     assert(p);
 
     Animation* animation =
-        createAnimation(id, (p->getNamespace().length() > 0) ? p : p->getNextNamespace());
-
-    SAFE_DELETE(p);
+        createAnimation(id, (p->getNamespace().length() > 0) ? p.get() : p->getNextNamespace());
 
     return animation;
 }
@@ -146,7 +144,7 @@ Animation* AnimationTarget::createAnimation(const std::string& id, Properties* a
         return nullptr;
     }
 
-    auto propertyIdStr = animationProperties->getString("property");
+    const auto& propertyIdStr = animationProperties->getString("property");
     if (propertyIdStr.empty())
     {
         GP_ERROR("Attribute 'property' must be specified for an animation.");
@@ -168,21 +166,21 @@ Animation* AnimationTarget::createAnimation(const std::string& id, Properties* a
         return nullptr;
     }
 
-    auto keyTimesStr = animationProperties->getString("keyTimes");
+    const auto& keyTimesStr = animationProperties->getString("keyTimes");
     if (keyTimesStr.empty())
     {
         GP_ERROR("Attribute 'keyTimes' must be specified for an animation.");
         return nullptr;
     }
 
-    auto keyValuesStr = animationProperties->getString("keyValues");
+    const auto& keyValuesStr = animationProperties->getString("keyValues");
     if (keyValuesStr.empty())
     {
         GP_ERROR("Attribute 'keyValues' must be specified for an animation.");
         return nullptr;
     }
 
-    auto curveStr = animationProperties->getString("curve");
+    const auto& curveStr = animationProperties->getString("curve");
     if (curveStr.empty())
     {
         GP_ERROR("Attribute 'curve' must be specified for an animation.");
@@ -245,7 +243,7 @@ Animation* AnimationTarget::createAnimation(const std::string& id, Properties* a
         startOffset = endOffset + 1;
     }
 
-    auto keyInStr = animationProperties->getString("keyIn");
+    const auto& keyInStr = animationProperties->getString("keyIn");
     float* keyIn = nullptr;
     if (!keyInStr.empty())
     {
@@ -272,7 +270,7 @@ Animation* AnimationTarget::createAnimation(const std::string& id, Properties* a
         }
     }
 
-    auto keyOutStr = animationProperties->getString("keyOut");
+    const auto& keyOutStr = animationProperties->getString("keyOut");
     float* keyOut = nullptr;
     if (!keyOutStr.empty())
     {
@@ -323,7 +321,7 @@ Animation* AnimationTarget::createAnimation(const std::string& id, Properties* a
                                     (Curve::InterpolationType)curve);
     }
 
-    auto repeat = animationProperties->getString("repeatCount");
+    const auto& repeat = animationProperties->getString("repeatCount");
     if (!repeat.empty())
     {
         if (repeat == ANIMATION_TARGET_INDEFINITE_STR)

@@ -26,7 +26,7 @@ Material* Material::create(const std::string& url)
 Material* Material::create(const std::string& url, PassCallback callback, void* cookie)
 {
     // Load the material properties from file.
-    Properties* properties = Properties::create(url);
+    auto properties = std::unique_ptr<Properties>(Properties::create(url));
     if (properties == nullptr)
     {
         GP_WARN("Failed to create material from file: %s", url);
@@ -34,10 +34,9 @@ Material* Material::create(const std::string& url, PassCallback callback, void* 
     }
 
     Material* material =
-        create(properties->getNamespace().length() > 0 ? properties : properties->getNextNamespace(),
+        create(properties->getNamespace().length() > 0 ? properties.get() : properties->getNextNamespace(),
                callback,
                cookie);
-    SAFE_DELETE(properties);
 
     return material;
 }

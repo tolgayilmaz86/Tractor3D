@@ -94,7 +94,7 @@ class Font : public Ref
     /**
      * Gets the font format. BITMAP or DISTANCEMAP.
      */
-    Format getFormat();
+    Font::Format getFormat() const noexcept { return _format; }
 
     /**
      * Determines if this font supports the specified character code.
@@ -312,7 +312,7 @@ class Font : public Ref
     /**
      * Constructor.
      */
-    Font();
+    Font() = default;
 
     /**
      * Constructor.
@@ -403,20 +403,20 @@ class Font : public Ref
 
     void lazyStart();
 
-    Format _format;
-    std::string _path;
-    std::string _id;
-    std::string _family;
-    Style _style;
-    unsigned int _size;
-    std::vector<Font*> _sizes; // stores additional font sizes of the same family
-    float _spacing;
-    Glyph* _glyphs;
-    unsigned int _glyphCount;
-    Texture* _texture;
-    SpriteBatch* _batch;
-    Rectangle _viewport;
-    MaterialParameter* _cutoffParam;
+    Format _format{ BITMAP };
+    std::string _path{};
+    std::string _id{};
+    std::string _family{};
+    Style _style{ PLAIN };
+    unsigned int _size{0};
+    std::vector<Font*> _sizes{}; // stores additional font sizes of the same family
+    float _spacing{0.0f};
+    Glyph* _glyphs{ nullptr };
+    unsigned int _glyphCount{0};
+    Texture* _texture{ nullptr };
+    SpriteBatch* _batch{ nullptr };
+    Rectangle _viewport{};
+    MaterialParameter* _cutoffParam{ nullptr };
 };
 
 } // namespace tractor

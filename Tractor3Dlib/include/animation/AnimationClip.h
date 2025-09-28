@@ -127,7 +127,7 @@ class AnimationClip : public Ref, public ScriptTarget
      *
      * @param repeatCount The repeat count to set on the AnimationClip.
      */
-    void setRepeatCount(float repeatCount);
+    void setRepeatCount(float repeatCount) noexcept;
 
     /**
      * Gets the AnimationClip's repeat count.
@@ -150,7 +150,7 @@ class AnimationClip : public Ref, public ScriptTarget
      *
      * @return the AnimationClip's active duration.
      */
-    unsigned long getActiveDuration() const;
+    unsigned long getActiveDuration() const noexcept;
 
     /**
      * Gets the AnimationClip's duration.
@@ -193,7 +193,7 @@ class AnimationClip : public Ref, public ScriptTarget
      *
      * @param loopBlendTime Time spent blending end points of clip when looping.
      */
-    void setLoopBlendTime(float loopBlendTime);
+    void setLoopBlendTime(float loopBlendTime) noexcept;
 
     /**
      * Returns the amount of time (in milliseconds) spent blending the clip's
@@ -208,7 +208,7 @@ class AnimationClip : public Ref, public ScriptTarget
      *
      * @return true if the AnimationClip is playing; false if the AnimationClip is not playing.
      */
-    bool isPlaying() const;
+    bool isPlaying() const noexcept;
 
     /**
      * Plays the AnimationClip.
@@ -338,7 +338,7 @@ class AnimationClip : public Ref, public ScriptTarget
     /**
      * Constructor.
      */
-    AnimationClip();
+    AnimationClip() = default;
 
     /**
      * Constructor.
@@ -373,17 +373,17 @@ class AnimationClip : public Ref, public ScriptTarget
     /**
      * Determines whether the given bit is set in the AnimationClip's state.
      */
-    bool isClipStateBitSet(unsigned char bit) const { return (_stateBits & bit) == bit; }
+    bool isClipStateBitSet(unsigned char bit) const noexcept { return (_stateBits & bit) == bit; }
 
     /**
      * Sets the given bit in the AnimationClip's state.
      */
-    void setClipStateBit(unsigned char bit) { _stateBits |= bit; }
+    void setClipStateBit(unsigned char bit) noexcept { _stateBits |= bit; }
 
     /**
      * Resets the given bit in the AnimationClip's state.
      */
-    void resetClipStateBit(unsigned char bit) { _stateBits &= ~bit; }
+    void resetClipStateBit(unsigned char bit) noexcept { _stateBits &= ~bit; }
 
     /**
      * Clones the animation clip.
@@ -394,28 +394,27 @@ class AnimationClip : public Ref, public ScriptTarget
      */
     AnimationClip* clone(Animation* animation) const;
 
-    std::string _id;          // AnimationClip ID.
-    Animation* _animation;    // The Animation this clip is created from.
-    unsigned long _startTime; // Start time of the clip.
-    unsigned long _endTime;   // End time of the clip.
-    unsigned long _duration;  // The total duration.
-    unsigned char _stateBits; // Bit flag used to keep track of the clip's current state.
-    float _repeatCount;       // The clip's repeat count.
-    unsigned int _loopBlendTime; // Time spent blending the last frame of animation with the first frame, when looping.
-    unsigned long _activeDuration; // The active duration of the clip.
-    float _speed; // The speed that the clip is playing. Default is 1.0. Negative goes in reverse.
-    double _timeStarted;                  // The game time when this clip was actually started.
-    float _elapsedTime;                   // Time elapsed while the clip is running.
-    AnimationClip* _crossFadeToClip;      // The clip to cross fade to.
-    float _crossFadeOutElapsed;           // The amount of time that has elapsed for the crossfade.
-    unsigned long _crossFadeOutDuration;  // The duration of the cross fade.
-    float _blendWeight;                   // The clip's blendweight.
-    std::vector<AnimationValue*> _values; // AnimationValue holder.
-    std::vector<Listener*>* _beginListeners; // Collection of begin listeners on the clip.
-    std::vector<Listener*>* _endListeners;   // Collection of end listeners on the clip.
-    std::list<ListenerEvent*>* _listeners;   // Ordered collection of listeners on the clip.
-    std::list<ListenerEvent*>::iterator*
-        _listenerItr; // Iterator that points to the next listener event to be triggered.
+    std::string _id{};                // AnimationClip ID.
+    Animation* _animation{ nullptr }; // The Animation this clip is created from.
+    unsigned long _startTime{ 0 };    // Start time of the clip.
+    unsigned long _endTime{ 0 };      // End time of the clip.
+    unsigned long _duration{ 0 };     // The total duration.
+    unsigned char _stateBits{ 0x00 }; // Bit flag used to keep track of the clip's current state.
+    float _repeatCount{ 1.0f };       // The clip's repeat count.
+    unsigned int _loopBlendTime{ 0 }; // Time spent blending the last frame of animation with the first frame, when looping.
+    unsigned long _activeDuration{ 0 }; // The active duration of the clip.
+    float _speed { 1.0f }; // The speed that the clip is playing. Default is 1.0. Negative goes in reverse.
+    double _timeStarted{ 0.0 }; // The game time when this clip was actually started.
+    float _elapsedTime{ 0.0f }; // Time elapsed while the clip is running.
+    AnimationClip* _crossFadeToClip{ nullptr }; // The clip to cross fade to.
+    float _crossFadeOutElapsed{ 0.0f }; // The amount of time that has elapsed for the crossfade.
+    unsigned long _crossFadeOutDuration{ 0 };           // The duration of the cross fade.
+    float _blendWeight{ 1.0f };                         // The clip's blendweight.
+    std::vector<AnimationValue*> _values{};             // AnimationValue holder.
+    std::vector<Listener*>* _beginListeners{ nullptr }; // Collection of begin listeners on the clip.
+    std::vector<Listener*>* _endListeners{ nullptr };   // Collection of end listeners on the clip.
+    std::list<ListenerEvent*>* _listeners{ nullptr }; // Ordered collection of listeners on the clip.
+    std::list<ListenerEvent*>::iterator* _listenerItr{  nullptr }; // Iterator that points to the next listener event to be triggered.
 };
 
 } // namespace tractor

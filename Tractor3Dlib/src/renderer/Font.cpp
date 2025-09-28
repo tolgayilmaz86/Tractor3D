@@ -19,12 +19,6 @@ static std::vector<Font*> __fontCache;
 
 static Effect* __fontEffect = nullptr;
 
-Font::Font()
-    : _format(BITMAP), _style(PLAIN), _size(0), _spacing(0.0f), _glyphs(nullptr), _glyphCount(0),
-      _texture(nullptr), _batch(nullptr), _cutoffParam(nullptr)
-{
-}
-
 Font::~Font()
 {
     // Remove this Font from the font cache.
@@ -176,8 +170,6 @@ unsigned int Font::getSizeCount() const
     return _sizes.size() + 1; // +1 for "this" font
 }
 
-Font::Format Font::getFormat() { return _format; }
-
 bool Font::isCharacterSupported(int character) const
 {
     // TODO: Update this once we support unicode fonts
@@ -212,9 +204,9 @@ void Font::finish()
     // Finish any font batches that have been started
     if (_batch->isStarted()) _batch->finish();
 
-    for (size_t i = 0, count = _sizes.size(); i < count; ++i)
+    for (auto& font : _sizes)
     {
-        SpriteBatch* batch = _sizes[i]->_batch;
+        SpriteBatch* batch = font->_batch;
         if (batch->isStarted()) batch->finish();
     }
 }
@@ -383,13 +375,9 @@ void Font::drawText(const std::string& text,
         }
 
         if (rightToLeft)
-        {
             cursor += length;
-        }
         else
-        {
             done = true;
-        }
     }
 }
 

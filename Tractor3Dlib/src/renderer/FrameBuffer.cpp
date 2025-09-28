@@ -18,8 +18,7 @@ FrameBuffer::FrameBuffer(const std::string& id,
                          unsigned int width,
                          unsigned int height,
                          FrameBufferHandle handle)
-    : _id(id), _handle(handle), _renderTargets(nullptr), _renderTargetCount(0),
-      _depthStencilTarget(nullptr)
+    : _id(id), _handle(handle), _renderTargetCount(0)
 {
 }
 
@@ -114,15 +113,13 @@ FrameBuffer* FrameBuffer::create(const std::string& id,
 FrameBuffer* FrameBuffer::getFrameBuffer(const std::string& id)
 {
     // Search the vector for a matching ID.
-    std::vector<FrameBuffer*>::const_iterator it;
-    for (auto fb : _frameBuffers)
+    if (auto it =
+            std::ranges::find_if(_frameBuffers, [&id](const auto& rt) { return id == rt->getId(); });
+        it != _frameBuffers.end())
     {
-        assert(fb);
-        if (id == fb->getId())
-        {
-            return fb;
-        }
+        return *it;
     }
+
     return nullptr;
 }
 
@@ -194,12 +191,8 @@ void FrameBuffer::setRenderTarget(RenderTarget* target, unsigned int index, GLen
                                              textureTarget,
                                              _renderTargets[index]->getTexture()->getHandle(),
                                              0));
-#ifndef OPENGL_ES
             glDrawBuffer(GL_NONE);
             glReadBuffer(GL_NONE);
-#elif defined(GL_ES_VERSION_3_0) && GL_ES_VERSION_3_0
-            glDrawBuffers(0, nullptr);
-#endif
         }
         else
         {

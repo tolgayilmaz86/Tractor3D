@@ -97,14 +97,14 @@ class SpriteBatch
      * This method must be called before drawing any sprites and it must eventually be
      * followed by a call to finish().
      */
-    void start();
+    void start() noexcept;
 
     /**
      * Determines if the sprite batch has been started but not yet finished.
      *
      * @return True if the batch has been started and not finished.
      */
-    bool isStarted() const { return _batch->isStarted(); }
+    bool isStarted() const noexcept { return _batch->isStarted(); }
 
     /**
      * Draws a single sprite.

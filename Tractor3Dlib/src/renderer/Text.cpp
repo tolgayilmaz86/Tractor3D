@@ -8,21 +8,12 @@
 namespace tractor
 {
 
-Text::Text()
-    : _font(nullptr), _drawFont(nullptr), _text(""), _size(0), _width(0), _height(0), _wrap(true),
-      _rightToLeft(false), _align(Font::ALIGN_TOP_LEFT), _clip(Rectangle(0, 0, 0, 0)),
-      _opacity(1.0f), _color(Vector4::one())
-{
-}
-
 Text::~Text()
 {
-    // _drawFont is a child of _font, so it should never be released
     SAFE_RELEASE(_font);
+    // _drawFont is a child of _font, so it should never be released
     _drawFont = nullptr;
 }
-
-Text& Text::operator=(const Text& text) { return *this; }
 
 Text* Text::create(const std::string& fontPath,
                    const std::string& str,
@@ -43,6 +34,7 @@ Text* Text::create(const std::string& fontPath,
         drawFont = font->findClosestSize(size);
         size = drawFont->_size;
     }
+
     unsigned int widthOut, heightOut;
     font->measureText(str, size, &widthOut, &heightOut);
     Text* text = new Text();
@@ -67,7 +59,7 @@ Text* Text::create(Properties* properties)
     }
 
     // Get font path.
-    auto fontPath = properties->getString("font");
+    const auto& fontPath = properties->getString("font");
     if (fontPath.empty())
     {
         GP_ERROR("Text is missing required font file path.");
@@ -75,7 +67,7 @@ Text* Text::create(Properties* properties)
     }
 
     // Get text
-    auto text = properties->getString("text");
+    const auto& text = properties->getString("text");
     if (text.empty())
     {
         GP_ERROR("Text is missing required 'text' value.");

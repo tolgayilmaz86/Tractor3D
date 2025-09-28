@@ -214,7 +214,7 @@ class Text : public Ref, public Drawable, public AnimationTarget
     /**
      * Constructor
      */
-    Text();
+    Text() = default;
 
     /**
      * Destructor
@@ -224,7 +224,7 @@ class Text : public Ref, public Drawable, public AnimationTarget
     /**
      * operator=
      */
-    Text& operator=(const Text& text);
+    Text& operator=(const Text& text) { return *this; }
 
     /**
      * @see Drawable::clone
@@ -252,18 +252,18 @@ class Text : public Ref, public Drawable, public AnimationTarget
     void setAnimationPropertyValue(int propertyId, AnimationValue* value, float blendWeight = 1.0f);
 
   private:
-    Font* _font;
-    Font* _drawFont;
-    std::string _text;
-    unsigned int _size;
-    float _width;
-    float _height;
-    bool _wrap;
-    bool _rightToLeft;
-    Font::Justify _align;
-    Rectangle _clip;
-    float _opacity;
-    Vector4 _color;
+    Font* _font{ nullptr };
+    Font* _drawFont{ nullptr };
+    std::string _text{ "" };
+    unsigned int _size{ 0 };
+    float _width{ 0 };
+    float _height{ 0 };
+    bool _wrap{ true };
+    bool _rightToLeft{ false };
+    Font::Justify _align{ Font::ALIGN_TOP_LEFT };
+    Rectangle _clip{ Rectangle{ 0, 0, 0, 0 } };
+    float _opacity{ 1.0f };
+    Vector4 _color{ Vector4::one() };
 };
 
 } // namespace tractor

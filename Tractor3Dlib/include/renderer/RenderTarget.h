@@ -55,7 +55,7 @@ class RenderTarget : public Ref
      *
      * @return The RenderTarget with the specified ID, or nullptr if one was not found.
      */
-    static RenderTarget* getRenderTarget(const std::string& id);
+    static RenderTarget* getRenderTarget(const std::string& id) noexcept;
 
     /**
      * Get the ID of this RenderTarget.
@@ -101,8 +101,8 @@ class RenderTarget : public Ref
      */
     RenderTarget& operator=(const RenderTarget&) = delete;
 
-    std::string _id;
-    Texture* _texture;
+    std::string _id{};
+    Texture* _texture{ nullptr };
 };
 
 } // namespace tractor

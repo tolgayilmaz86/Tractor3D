@@ -136,22 +136,21 @@ Material* Material::create(const std::string& vshPath,
 Technique* Material::getTechniqueByIndex(unsigned int index) const
 {
     assert(index < _techniques.size());
-    return _techniques[index];
+    return _techniques.at(index);
 }
 
-Technique* Material::getTechnique(const std::string& id) const
+Technique* Material::getTechnique(const std::string& id) const noexcept
 {
-    for (size_t i = 0, count = _techniques.size(); i < count; ++i)
-    {
-        Technique* t = _techniques[i];
-        assert(t);
-        if (t->getId() == id) return t;
-    }
+    auto it = std::ranges::find_if(_techniques,
+                                   [&id](const Technique* t)
+                                   {
+                                       return t->getId() == id;
+                                   });
 
-    return nullptr;
+    return it != _techniques.end() ? *it : nullptr;
 }
 
-void Material::setTechnique(const std::string& id)
+void Material::setTechnique(const std::string& id) noexcept
 {
     Technique* t = getTechnique(id);
     if (t) _currentTechnique = t;

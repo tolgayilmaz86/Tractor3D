@@ -7,7 +7,7 @@ namespace tractor
 
 static std::vector<RenderTarget*> __renderTargets;
 
-RenderTarget::RenderTarget(const std::string& id) : _id(id), _texture(nullptr) {}
+RenderTarget::RenderTarget(const std::string& id) : _id(id) {}
 
 RenderTarget::~RenderTarget()
 {
@@ -17,9 +17,7 @@ RenderTarget::~RenderTarget()
     std::vector<RenderTarget*>::iterator it =
         std::find(__renderTargets.begin(), __renderTargets.end(), this);
     if (it != __renderTargets.end())
-    {
         __renderTargets.erase(it);
-    }
 }
 
 RenderTarget* RenderTarget::create(const std::string& id,
@@ -51,16 +49,13 @@ RenderTarget* RenderTarget::create(const std::string& id, Texture* texture)
     return renderTarget;
 }
 
-RenderTarget* RenderTarget::getRenderTarget(const std::string& id)
+RenderTarget* RenderTarget::getRenderTarget(const std::string& id) noexcept
 {
-    // Search the vector for a matching ID.
-    for (const auto& dst : __renderTargets)
+    if (auto it = std::ranges::find_if(__renderTargets,
+                                       [&id](const auto& rt) { return id == rt->getId(); });
+        it != __renderTargets.end())
     {
-        assert(dst);
-        if (id == dst->getId())
-        {
-            return dst;
-        }
+        return *it;
     }
 
     return nullptr;

@@ -221,11 +221,11 @@ class FrameBuffer : public Ref
 
     static bool isPowerOfTwo(unsigned int value) = delete;
 
-    std::string _id;
+    std::string _id{};
     FrameBufferHandle _handle;
-    RenderTarget** _renderTargets;
-    unsigned int _renderTargetCount;
-    DepthStencilTarget* _depthStencilTarget;
+    RenderTarget** _renderTargets{ nullptr };
+    unsigned int _renderTargetCount{ 0 };
+    DepthStencilTarget* _depthStencilTarget{ nullptr };
 
     static unsigned int _maxRenderTargets;
     static std::vector<FrameBuffer*> _frameBuffers;

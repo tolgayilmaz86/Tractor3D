@@ -18,11 +18,7 @@ AnimationClip::AnimationClip(const std::string& id,
                              unsigned long startTime,
                              unsigned long endTime)
     : _id(id), _animation(animation), _startTime(startTime), _endTime(endTime),
-      _duration(_endTime - _startTime), _stateBits(0x00), _repeatCount(1.0f), _loopBlendTime(0),
-      _activeDuration(_duration * _repeatCount), _speed(1.0f), _timeStarted(0), _elapsedTime(0),
-      _crossFadeToClip(nullptr), _crossFadeOutElapsed(0), _crossFadeOutDuration(0),
-      _blendWeight(1.0f), _beginListeners(nullptr), _endListeners(nullptr), _listeners(nullptr),
-      _listenerItr(nullptr)
+      _duration(_endTime - _startTime), _activeDuration(_duration * _repeatCount)
 {
     GP_REGISTER_SCRIPT_EVENTS();
 
@@ -81,7 +77,7 @@ const std::string& AnimationClip::getTypeName() const
     return TYPE_NAME;
 }
 
-void AnimationClip::setRepeatCount(float repeatCount)
+void AnimationClip::setRepeatCount(float repeatCount) noexcept
 {
     assert(repeatCount == REPEAT_INDEFINITE || repeatCount > 0.0f);
 
@@ -115,14 +111,14 @@ void AnimationClip::setActiveDuration(unsigned long duration)
     }
 }
 
-unsigned long AnimationClip::getActiveDuration() const
+unsigned long AnimationClip::getActiveDuration() const noexcept
 {
     if (_repeatCount == REPEAT_INDEFINITE) return REPEAT_INDEFINITE;
 
     return _activeDuration;
 }
 
-void AnimationClip::setLoopBlendTime(float loopBlendTime)
+void AnimationClip::setLoopBlendTime(float loopBlendTime) noexcept
 {
     if (loopBlendTime < 0.0f)
     {
@@ -134,7 +130,7 @@ void AnimationClip::setLoopBlendTime(float loopBlendTime)
     }
 }
 
-bool AnimationClip::isPlaying() const
+bool AnimationClip::isPlaying() const noexcept
 {
     return (isClipStateBitSet(CLIP_IS_PLAYING_BIT) && !isClipStateBitSet(CLIP_IS_PAUSED_BIT));
 }

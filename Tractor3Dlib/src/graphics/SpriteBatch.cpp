@@ -153,7 +153,7 @@ SpriteBatch* SpriteBatch::create(Texture* texture, Effect* effect, unsigned int 
     return batch;
 }
 
-void SpriteBatch::start() { _batch->start(); }
+void SpriteBatch::start() noexcept { _batch->start(); }
 
 void SpriteBatch::draw(const Rectangle& dst, const Rectangle& src, const Vector4& color)
 {

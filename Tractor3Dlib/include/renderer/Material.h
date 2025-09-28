@@ -125,7 +125,7 @@ class Material : public RenderState
      *
      * @return The specified technique.
      */
-    Technique* getTechnique(const std::string& id) const;
+    Technique* getTechnique(const std::string& id) const noexcept;
 
     /**
      * Returns this material's current technique.
@@ -139,7 +139,7 @@ class Material : public RenderState
      *
      * @param id ID of the technique to set.
      */
-    void setTechnique(const std::string& id);
+    void setTechnique(const std::string& id) noexcept;
 
     /**
      * @see RenderState::setNodeBinding

@@ -472,9 +472,9 @@ void SceneLoader::applyNodeUrls(SceneNode& sceneNode, Node* parent)
     // Iterate backwards over the properties list so we can remove properties as we go
     // without danger of indexing out of bounds.
     bool hasURL = false;
-    for (int j = (int)sceneNode._properties.size() - 1; j >= 0; --j)
+    for (auto it = sceneNode._properties.rbegin(); it != sceneNode._properties.rend(); ++it)
     {
-        SceneNodeProperty& snp = sceneNode._properties[j];
+        const auto& snp = *it;
         if (snp._type != SceneNodeProperty::URL) continue; // skip nodes without urls
 
         hasURL = true;
@@ -506,8 +506,10 @@ void SceneLoader::applyNodeUrls(SceneNode& sceneNode, Node* parent)
             processExternalFile(sceneNode, parent, file, id);
         }
 
+        // Convert reverse iterator to forward iterator for erase
+        auto forward_it = std::next(it).base();
         // Remove the 'url' node property since we are done applying it.
-        sceneNode._properties.erase(sceneNode._properties.begin() + j);
+        sceneNode._properties.erase(forward_it);
 
         // Processed URL property, no need to inspect remaining properties
         break;

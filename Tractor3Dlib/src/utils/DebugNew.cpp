@@ -149,7 +149,7 @@ void* debugAlloc(std::size_t size, const char* file, int line)
 
         // Walk up the stack and store the program counters.
         memset(rec->pc, 0, sizeof(rec->pc));
-        for (int i = 0; i < MAX_STACK_FRAMES; i++)
+        for (size_t i = 0; i < MAX_STACK_FRAMES; i++)
         {
             rec->pc[i] = stackFrame.AddrPC.Offset;
             if (!StackWalk64(machineType,
@@ -210,7 +210,7 @@ void printStackTrace(MemoryAllocationRecord* rec)
 
     // Resolve the program counter to the corresponding function names.
     unsigned int pc;
-    for (int i = 0; i < MAX_STACK_FRAMES; i++)
+    for (size_t i = 0; i < MAX_STACK_FRAMES; i++)
     {
         // Check to see if we are at the end of the stack trace.
         pc = rec->pc[i];

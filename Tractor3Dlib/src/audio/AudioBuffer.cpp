@@ -71,7 +71,7 @@ AudioBuffer::~AudioBuffer()
         ov_clear(&_streamStateOgg->oggFile);
     }
 
-    for (int i = 0; i < STREAMING_BUFFER_QUEUE_SIZE; i++)
+    for (size_t i = 0; i < STREAMING_BUFFER_QUEUE_SIZE; i++)
     {
         if (_alBufferQueue[i])
         {

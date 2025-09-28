@@ -556,7 +556,7 @@ void PhysicsController::update(float elapsedTime)
 
         if (_status == Listener::DEACTIVATED)
         {
-            for (int i = 0; i < _world->getNumCollisionObjects(); i++)
+            for (size_t i = 0; i < _world->getNumCollisionObjects(); i++)
             {
                 assert(_world->getCollisionObjectArray()[i]);
                 if (_world->getCollisionObjectArray()[i]->isActive())
@@ -569,7 +569,7 @@ void PhysicsController::update(float elapsedTime)
         else
         {
             bool allInactive = true;
-            for (int i = 0; i < _world->getNumCollisionObjects(); i++)
+            for (size_t i = 0; i < _world->getNumCollisionObjects(); i++)
             {
                 assert(_world->getCollisionObjectArray()[i]);
                 if (_world->getCollisionObjectArray()[i]->isActive())
@@ -1438,7 +1438,7 @@ void PhysicsController::removeConstraint(PhysicsConstraint* constraint)
     assert(_world);
 
     // Find the constraint and remove it from the physics world.
-    for (int i = _world->getNumConstraints() - 1; i >= 0; i--)
+    for (size_t i = _world->getNumConstraints() - 1; i >= 0; i--)
     {
         btTypedConstraint* currentConstraint = _world->getConstraint(i);
         if (constraint->_constraint == currentConstraint)

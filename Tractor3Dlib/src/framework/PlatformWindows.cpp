@@ -1328,7 +1328,7 @@ bool Platform::launchURL(const std::string& url)
     int len = MultiByteToWideChar(CP_ACP, 0, urlPtr, -1, nullptr, 0);
     wchar_t* wurl = new wchar_t[len];
     MultiByteToWideChar(CP_ACP, 0, urlPtr, -1, wurl, len);
-    int r = (int)ShellExecute(nullptr, nullptr, wurl, nullptr, nullptr, SW_SHOWNORMAL);
+    INT_PTR r = reinterpret_cast<INT_PTR>(ShellExecute(nullptr, nullptr, wurl, nullptr, nullptr, SW_SHOWNORMAL));
     SAFE_DELETE_ARRAY(wurl);
     return (r > 32);
 }

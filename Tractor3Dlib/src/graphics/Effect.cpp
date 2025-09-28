@@ -383,7 +383,7 @@ Effect* Effect::createFromSource(const std::string& vshPath,
             GLint attribSize;
             GLenum attribType;
             GLint attribLocation;
-            for (int i = 0; i < activeAttributes; ++i)
+            for (size_t i = 0; i < activeAttributes; ++i)
             {
                 // Query attribute info.
                 GL_ASSERT(
@@ -413,7 +413,7 @@ Effect* Effect::createFromSource(const std::string& vshPath,
             GLenum uniformType;
             GLint uniformLocation;
             unsigned int samplerIndex = 0;
-            for (int i = 0; i < activeUniforms; ++i)
+            for (size_t i = 0; i < activeUniforms; ++i)
             {
                 // Query uniform info.
                 GL_ASSERT(glGetActiveUniform(program,

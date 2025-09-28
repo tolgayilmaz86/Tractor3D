@@ -37,7 +37,7 @@ Theme::Style::Style(const Style& copy)
     _tw = copy._tw;
     _th = copy._th;
 
-    for (int i = 0; i < OVERLAY_MAX; i++)
+    for (size_t i = 0; i < OVERLAY_MAX; i++)
     {
         if (copy._overlays[i])
             _overlays[i] = new Theme::Style::Overlay(*copy._overlays[i]);

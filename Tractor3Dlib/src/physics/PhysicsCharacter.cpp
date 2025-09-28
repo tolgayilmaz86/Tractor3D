@@ -607,7 +607,7 @@ bool PhysicsCharacter::fixCollision(btCollisionWorld* world)
 
     // Handle all collisions/overlapping pairs.
     btScalar maxPenetration = btScalar(0.0);
-    for (int i = 0, count = pairCache->getNumOverlappingPairs(); i < count; ++i)
+    for (size_t i = 0, count = pairCache->getNumOverlappingPairs(); i < count; ++i)
     {
         _manifoldArray.resize(0);
 
@@ -618,7 +618,7 @@ bool PhysicsCharacter::fixCollision(btCollisionWorld* world)
             collisionPair->m_algorithm->getAllContactManifolds(_manifoldArray);
         }
 
-        for (int j = 0, manifoldCount = _manifoldArray.size(); j < manifoldCount; ++j)
+        for (size_t j = 0, manifoldCount = _manifoldArray.size(); j < manifoldCount; ++j)
         {
             btPersistentManifold* manifold = _manifoldArray[j];
             assert(manifold);
@@ -633,7 +633,7 @@ bool PhysicsCharacter::fixCollision(btCollisionWorld* world)
                                                                              : manifold->getBody0()));
             if (!object || object->getType() == PhysicsCollisionObject::GHOST_OBJECT) continue;
 
-            for (int p = 0, contactCount = manifold->getNumContacts(); p < contactCount; ++p)
+            for (size_t p = 0, contactCount = manifold->getNumContacts(); p < contactCount; ++p)
             {
                 const btManifoldPoint& pt = manifold->getContactPoint(p);
 

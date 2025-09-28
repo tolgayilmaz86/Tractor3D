@@ -259,7 +259,7 @@ void PhysicsVehicle::update(float elapsedTime, float steering, float braking, fl
     }
 
     PhysicsVehicleWheel* wheel;
-    for (int i = 0; i < _vehicle->getNumWheels(); i++)
+    for (size_t i = 0; i < _vehicle->getNumWheels(); i++)
     {
         wheel = getWheel(i);
 

@@ -23,7 +23,7 @@ Vector3 Vector3::fromColor(unsigned int color)
 {
     float components[3];
     int componentIndex = 0;
-    for (int i = 2; i >= 0; --i)
+    for (size_t i = 2; i >= 0; --i)
     {
         int component = (color >> i * 8) & 0x0000ff;
 

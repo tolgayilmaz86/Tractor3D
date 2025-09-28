@@ -760,7 +760,7 @@ void ScriptController::initialize()
     char** argv;
     Game::getInstance()->getArguments(&argc, &argv);
     args << "arg = { }\n";
-    for (int i = 0; i < argc; ++i)
+    for (size_t i = 0; i < argc; ++i)
     {
         args << "arg[" << (i) << "] = [[" << argv[i] << "]]\n";
     }

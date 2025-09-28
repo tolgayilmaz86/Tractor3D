@@ -15,7 +15,7 @@ void AudioSample::initialize()
     _formBackground = Form::create("res/common/audio/background.form");
 
     const char* buttons[] = { "playButton", "pauseButton", "resumeButton", "rewindButton", "stopButton" };
-    for (int i = 0; i < sizeof(buttons) / sizeof(uintptr_t); i++)
+    for (size_t i = 0; i < sizeof(buttons) / sizeof(uintptr_t); i++)
     {
         Button* button = static_cast<Button*>(_formBackground->getControl(buttons[i]));
         button->addListener(this, Control::Listener::RELEASE);

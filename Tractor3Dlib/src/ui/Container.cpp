@@ -46,7 +46,7 @@ static bool sortControlsByZOrder(Control* c1, Control* c2);
 
 void Container::clearContacts()
 {
-    for (int i = 0; i < MAX_CONTACT_INDICES; ++i)
+    for (size_t i = 0; i < MAX_CONTACT_INDICES; ++i)
         _contactIndices[i] = false;
 }
 
@@ -1491,7 +1491,7 @@ bool Container::mouseEventScroll(Mouse::MouseEvent evt, int x, int y, int wheelD
 
 bool Container::inContact()
 {
-    for (int i = 0; i < MAX_CONTACT_INDICES; ++i)
+    for (size_t i = 0; i < MAX_CONTACT_INDICES; ++i)
     {
         if (_contactIndices[i]) return true;
     }

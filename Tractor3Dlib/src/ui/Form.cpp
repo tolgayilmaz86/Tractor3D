@@ -314,9 +314,9 @@ bool Form::screenToForm(Control* ctrl, int* x, int* y)
 
 Control* Form::findInputControl(int* x, int* y, bool focus, unsigned int contactIndex)
 {
-    for (int i = (int)__forms.size() - 1; i >= 0; --i)
+    // reverse iterate becaus of thez index and ui added on tope each other in stack manner
+    for (Form* form : std::views::reverse(__forms))
     {
-        Form* form = __forms[i];
         if (!form || !form->isEnabled() || !form->isVisible()) continue;
 
         // Convert to local form coordinates

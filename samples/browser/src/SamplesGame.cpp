@@ -290,7 +290,7 @@ void SamplesGame::addSample(const std::string& category,
 
     int index = -1;
     const int size = (int)_categories->size();
-    for (int i = 0; i < size; ++i)
+    for (size_t i = 0; i < size; ++i)
     {
         if ((*_categories)[i].compare(categoryString) == 0)
         {

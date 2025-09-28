@@ -20,13 +20,13 @@ Gamepad::Gamepad(const std::string& formPath) : _handle((GamepadHandle)INT_MAX)
     _form->setConsumeInputEvents(false);
     _name = "Virtual";
 
-    for (int i = 0; i < 2; ++i)
+    for (size_t i = 0; i < 2; ++i)
     {
         _uiJoysticks[i] = nullptr;
         _triggers[i] = 0.0f;
     }
 
-    for (int i = 0; i < 20; ++i)
+    for (size_t i = 0; i < 20; ++i)
     {
         _uiButtons[i] = nullptr;
     }
@@ -43,7 +43,7 @@ Gamepad::Gamepad(GamepadHandle handle,
       _triggerCount(triggerCount), _name(name)
 {
     constexpr auto numberOfTriggers = 2;
-    for (int i = 0; i < numberOfTriggers; ++i)
+    for (size_t i = 0; i < numberOfTriggers; ++i)
     {
         _triggers[i] = 0.0f;
     }

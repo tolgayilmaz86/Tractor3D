@@ -324,7 +324,7 @@ void BoundingBox::transform(const Matrix& matrix)
     matrix.transformPoint(&corners[0]);
     Vector3 newMin = corners[0];
     Vector3 newMax = corners[0];
-    for (int i = 1; i < 8; i++)
+    for (size_t i = 1; i < 8; i++)
     {
         matrix.transformPoint(&corners[i]);
         updateMinMax(&corners[i], &newMin, &newMax);

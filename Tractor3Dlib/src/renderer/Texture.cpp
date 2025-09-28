@@ -1144,7 +1144,7 @@ Texture* Texture::createCompressedDDS(const std::string& path)
                     for (size_t i = 0; i < header.dwMipMapCount; ++i)
                     {
                         dds_mip_level& level = mipLevels[i + face * header.dwMipMapCount];
-                        for (int j = 0; j < level.size; j += 3)
+                        for (size_t j = 0; j < level.size; j += 3)
                         {
                             pixel = &level.data[j];
                             r = pixel[ridx];
@@ -1164,7 +1164,7 @@ Texture* Texture::createCompressedDDS(const std::string& path)
                     for (size_t i = 0; i < header.dwMipMapCount; ++i)
                     {
                         dds_mip_level& level = mipLevels[i + face * header.dwMipMapCount];
-                        for (int j = 0; j < level.size; j += 4)
+                        for (size_t j = 0; j < level.size; j += 4)
                         {
                             pixel = &level.data[j];
                             r = pixel[ridx];

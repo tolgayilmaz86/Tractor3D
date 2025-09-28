@@ -535,7 +535,7 @@ void Font::drawText(const std::string& text,
 
         assert(_glyphs);
         assert(_batch);
-        for (int i = startIndex; i < (int)tokenLength && i >= 0; i += iteration)
+        for (size_t i = startIndex; i < (int)tokenLength && i >= 0; i += iteration)
         {
             char c = token[i];
             int glyphIndex = c - 32; // HACK for ASCII
@@ -1050,7 +1050,7 @@ void Font::measureText(const std::string& text,
     }
 
     // Determine left-most x coordinate and largest width out of lines that have not been clipped.
-    for (int i = clippedTop; i < (int)lines.size() - clippedBottom; ++i)
+    for (size_t i = clippedTop; i < (int)lines.size() - clippedBottom; ++i)
     {
         if (lines[i].x < x)
         {
@@ -1492,7 +1492,7 @@ int Font::getIndexOrLocation(const std::string& text,
         }
 
         assert(_glyphs);
-        for (int i = startIndex; i < (int)tokenLength && i >= 0; i += iteration)
+        for (size_t i = startIndex; i < (int)tokenLength && i >= 0; i += iteration)
         {
             char c = token[i];
             int glyphIndex = c - 32; // HACK for ASCII

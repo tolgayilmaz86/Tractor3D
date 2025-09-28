@@ -88,7 +88,7 @@ HeightField* HeightField::create(const std::string& path,
         float* heights = heightfield->getArray();
         unsigned char* data = image->getData();
         int idx;
-        for (int y = image->getHeight() - 1, i = 0; y >= 0; --y)
+        for (size_t y = image->getHeight() - 1, i = 0; y >= 0; --y)
         {
             for (size_t x = 0, w = image->getWidth(); x < w; ++x)
             {

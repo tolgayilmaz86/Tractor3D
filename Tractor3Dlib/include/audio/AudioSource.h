@@ -184,7 +184,7 @@ class AudioSource : public Ref, public Transform::Listener
     /**
      * Hidden copy assignment operator.
      */
-    AudioSource& operator=(const AudioSource&);
+    AudioSource& operator=(const AudioSource&) = delete;
 
     /**
      * Sets the node for this audio source.

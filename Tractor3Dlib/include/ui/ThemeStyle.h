@@ -73,7 +73,7 @@ class Theme::Style
         /**
          * Hidden copy assignment operator.
          */
-        Overlay& operator=(const Overlay&);
+        Overlay& operator=(const Overlay&) = delete;
 
         static Overlay* create();
 
@@ -203,7 +203,7 @@ class Theme::Style
     /**
      * Hidden copy assignment operator.
      */
-    Style& operator=(const Style&);
+    Style& operator=(const Style&) = delete;
 
     /**
      * Returns the Id of this Style.

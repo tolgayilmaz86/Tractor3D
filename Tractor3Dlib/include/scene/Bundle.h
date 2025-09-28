@@ -112,13 +112,19 @@ class Bundle : public Ref
     unsigned int getVersionMinor() const { return (unsigned int)_version[1]; }
 
   private:
+    /**
+     * Internal structure to hold skin data while loading.
+     */
+    struct MeshSkinData
+    {
+        MeshSkin* skin{ nullptr };
+        std::vector<std::string> joints{};
+        std::vector<Matrix> inverseBindPoseMatrices{};
+    };
+
     class Reference
     {
       public:
-        std::string id{};
-        unsigned int type{ 0 };
-        unsigned int offset{ 0 };
-
         /**
          * Constructor.
          */
@@ -128,38 +134,54 @@ class Bundle : public Ref
          * Destructor.
          */
         ~Reference() = default;
+
+      public:
+        std::string id{};
+        unsigned int type{ 0 };
+        unsigned int offset{ 0 };
     };
 
-    struct MeshSkinData
+    class MeshPartData
     {
-        MeshSkin* skin;
-        std::vector<std::string> joints;
-        std::vector<Matrix> inverseBindPoseMatrices;
-    };
-
-    struct MeshPartData
-    {
+      public:
+        /**
+         * Constructor.
+         */
         MeshPartData();
+
+        /**
+         * Destructor.
+         */
         ~MeshPartData();
 
+      public:
         Mesh::PrimitiveType primitiveType;
         Mesh::IndexFormat indexFormat;
-        unsigned int indexCount;
-        unsigned char* indexData;
+        unsigned int indexCount{ 0 };
+        unsigned char* indexData{ nullptr };
     };
 
-    struct MeshData
+    class MeshData
     {
-        MeshData(const VertexFormat& vertexFormat);
+      public:
+        /**
+         * Constructor.
+         */
+        explicit MeshData(const VertexFormat& vertexFormat);
+
+        /**
+         * Destructor.
+         */
         ~MeshData();
 
+      public:
         VertexFormat vertexFormat;
-        unsigned int vertexCount;
-        unsigned char* vertexData;
+        unsigned int vertexCount{ 0 };
+        unsigned char* vertexData{ nullptr };
         BoundingBox boundingBox;
         BoundingSphere boundingSphere;
-        Mesh::PrimitiveType primitiveType;
-        std::vector<MeshPartData*> parts;
+        Mesh::PrimitiveType primitiveType{ Mesh::TRIANGLES };
+        std::vector<MeshPartData*> parts{};
     };
 
     explicit Bundle(const std::string& path);
@@ -172,7 +194,7 @@ class Bundle : public Ref
     /**
      * Hidden copy assignment operator.
      */
-    Bundle& operator=(const Bundle&);
+    Bundle& operator=(const Bundle&) = delete;
 
     /**
      * Finds a reference by ID.

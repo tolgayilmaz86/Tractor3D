@@ -721,7 +721,7 @@ class Node : public Transform, public Ref
     /**
      * Hidden copy assignment operator.
      */
-    Node& operator=(const Node&);
+    Node& operator=(const Node&) = delete;
 
     PhysicsCollisionObject* setCollisionObject(Properties* properties);
 
@@ -822,12 +822,12 @@ class NodeCloneContext
     /**
      * Hidden copy constructor.
      */
-    NodeCloneContext(const NodeCloneContext&);
+    NodeCloneContext(const NodeCloneContext&) = delete;
 
     /**
      * Hidden copy assignment operator.
      */
-    NodeCloneContext& operator=(const NodeCloneContext&);
+    NodeCloneContext& operator=(const NodeCloneContext&) = delete;
 
     std::map<const Animation*, Animation*> _clonedAnimations{};
     std::map<const Node*, Node*> _clonedNodes{};

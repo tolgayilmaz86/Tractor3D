@@ -131,7 +131,7 @@ class Light : public Ref
     /**
      * Hidden copy assignment operator.
      */
-    Light& operator=(const Light&);
+    Light& operator=(const Light&) = delete;
 
     /**
      * Returns the light type.

@@ -104,7 +104,7 @@ class AIState : public Ref
     /**
      * Hidden copy assignment operator.
      */
-    AIState& operator=(const AIState&);
+    AIState& operator=(const AIState&) = delete;
 
     /**
      * Called by AIStateMachine when this state is being entered.

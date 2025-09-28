@@ -160,7 +160,7 @@ class Model : public Ref, public Drawable
     /**
      * Hidden copy assignment operator.
      */
-    Model& operator=(const Model&);
+    Model& operator=(const Model&) = delete;
 
     /**
      * @see Drawable::setNode

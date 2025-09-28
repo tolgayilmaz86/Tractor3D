@@ -361,7 +361,7 @@ class MaterialParameter : public AnimationTarget, public Ref
     /**
      * Hidden copy assignment operator.
      */
-    MaterialParameter& operator=(const MaterialParameter&);
+    MaterialParameter& operator=(const MaterialParameter&) = delete;
 
     /**
      * Interface implemented by templated method bindings for simple storage and iteration.
@@ -387,7 +387,7 @@ class MaterialParameter : public AnimationTarget, public Ref
         /**
          * Hidden copy assignment operator.
          */
-        MethodBinding& operator=(const MethodBinding&);
+        MethodBinding& operator=(const MethodBinding&) = delete;
 
         MaterialParameter* _parameter;
         bool _autoBinding;

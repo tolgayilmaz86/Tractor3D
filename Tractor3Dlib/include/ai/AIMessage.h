@@ -253,7 +253,7 @@ class AIMessage
     /**
      * Hidden copy assignment operator.
      */
-    AIMessage& operator=(const AIMessage&);
+    AIMessage& operator=(const AIMessage&) = delete;
 
     /**
      * Destructor (hidden - use AIMessage::destroy instead).

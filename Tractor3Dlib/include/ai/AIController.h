@@ -60,7 +60,7 @@ class AIController
     /**
      * Hidden copy assignment operator.
      */
-    AIController& operator=(const AIController&);
+    AIController& operator=(const AIController&) = delete;
 
     /**
      * Called during startup to initialize the AIController.

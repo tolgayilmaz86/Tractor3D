@@ -1858,10 +1858,7 @@ Bundle::MeshPartData::MeshPartData()
 
 Bundle::MeshPartData::~MeshPartData() { SAFE_DELETE_ARRAY(indexData); }
 
-Bundle::MeshData::MeshData(const VertexFormat& vertexFormat)
-    : vertexFormat(vertexFormat), vertexCount(0), vertexData(nullptr), primitiveType(Mesh::TRIANGLES)
-{
-}
+Bundle::MeshData::MeshData(const VertexFormat& vertexFormat) : vertexFormat(vertexFormat) {}
 
 Bundle::MeshData::~MeshData()
 {

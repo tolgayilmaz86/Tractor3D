@@ -103,7 +103,7 @@ class VertexAttributeBinding : public Ref
     /**
      * Hidden copy assignment operator.
      */
-    VertexAttributeBinding& operator=(const VertexAttributeBinding&);
+    VertexAttributeBinding& operator=(const VertexAttributeBinding&) = delete;
 
     static VertexAttributeBinding* create(std::shared_ptr<Mesh> mesh,
                                           const VertexFormat& vertexFormat,

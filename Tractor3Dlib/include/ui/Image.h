@@ -89,7 +89,7 @@ class Image : public Ref
     /**
      * Hidden copy assignment operator.
      */
-    Image& operator=(const Image&);
+    Image& operator=(const Image&) = delete;
 
     unsigned char* _data;
     Format _format;

@@ -366,7 +366,7 @@ class Mesh
     /**
      * Hidden copy assignment operator.
      */
-    Mesh& operator=(const Mesh&);
+    Mesh& operator=(const Mesh&) = delete;
 
     std::string _url;
     const VertexFormat _vertexFormat;

@@ -456,7 +456,7 @@ class Curve : public Ref
         /**
          * Hidden copy assignment operator.
          */
-        Point& operator=(const Point&);
+        Point& operator=(const Point&) = delete;
     };
 
     /**
@@ -485,7 +485,7 @@ class Curve : public Ref
     /**
      * Hidden copy assignment operator.
      */
-    Curve& operator=(const Curve&);
+    Curve& operator=(const Curve&) = delete;
 
     /**
      * Bezier interpolation function.

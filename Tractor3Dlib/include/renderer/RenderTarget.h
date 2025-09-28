@@ -99,7 +99,7 @@ class RenderTarget : public Ref
     /**
      * Hidden copy assignment operator.
      */
-    RenderTarget& operator=(const RenderTarget&);
+    RenderTarget& operator=(const RenderTarget&) = delete;
 
     std::string _id;
     Texture* _texture;

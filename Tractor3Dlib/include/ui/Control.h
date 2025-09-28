@@ -1039,7 +1039,7 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
     /**
      * Hidden copy assignment operator.
      */
-    Control& operator=(const Control&);
+    Control& operator=(const Control&) = delete;
 
     /**
      * Internal method for setting the X position of the control.

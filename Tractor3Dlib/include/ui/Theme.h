@@ -258,7 +258,7 @@ class Theme : public Ref
         /**
          * Hidden copy assignment operator.
          */
-        ImageList& operator=(const ImageList&);
+        ImageList& operator=(const ImageList&) = delete;
 
         static ImageList* create(float tw, float th, Properties* properties);
 
@@ -335,7 +335,7 @@ class Theme : public Ref
         /**
          * Hidden copy assignment operator.
          */
-        Skin& operator=(const Skin&);
+        Skin& operator=(const Skin&) = delete;
 
         static Skin* create(const std::string& id,
                             float tw,
@@ -377,7 +377,7 @@ class Theme : public Ref
     /**
      * Hidden copy assignment operator.
      */
-    Theme& operator=(const Theme&);
+    Theme& operator=(const Theme&) = delete;
 
     void setProjectionMatrix(const Matrix& matrix);
 

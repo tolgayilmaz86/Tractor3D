@@ -277,7 +277,7 @@ class PhysicsVehicleWheel : public PhysicsCollisionObject
     /**
      * Private copy assignment operator.
      */
-    PhysicsVehicleWheel& operator=(const PhysicsVehicleWheel&);
+    PhysicsVehicleWheel& operator=(const PhysicsVehicleWheel&) = delete;
 
     /**
      * Creates a vehicle wheel physics object from the specified properties object.

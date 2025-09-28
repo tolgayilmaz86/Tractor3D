@@ -18,13 +18,13 @@
 #include <cstring>
 #include <vector>
 #include <ranges>
+#include <algorithm>
 #include <list>
 #include <set>
 #include <stack>
 #include <map>
 #include <unordered_map>
 #include <queue>
-#include <algorithm>
 #include <limits>
 #include <functional>
 #include <bitset>

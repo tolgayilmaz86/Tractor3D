@@ -136,7 +136,7 @@ class AIAgent : public Ref
     /**
      * Hidden copy assignment operator.
      */
-    AIAgent& operator=(const AIAgent&);
+    AIAgent& operator=(const AIAgent&) = delete;
 
     /**
      * Set the node this agent is attached to.

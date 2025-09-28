@@ -77,7 +77,7 @@ class Technique : public RenderState
     /**
      * Hidden copy assignment operator.
      */
-    Technique& operator=(const Technique&);
+    Technique& operator=(const Technique&) = delete;
 
     Technique* clone(Material* material, NodeCloneContext& context) const;
 

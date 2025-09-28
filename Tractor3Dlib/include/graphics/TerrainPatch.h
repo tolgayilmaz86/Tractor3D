@@ -64,7 +64,7 @@ class TerrainPatch : public Camera::Listener
     /**
      * Hidden copy assignment operator.
      */
-    TerrainPatch& operator=(const TerrainPatch&);
+    TerrainPatch& operator=(const TerrainPatch&) = delete;
 
     /**
      * Destructor.
@@ -79,7 +79,7 @@ class TerrainPatch : public Camera::Listener
 
         ~Layer();
 
-        Layer& operator=(const Layer&);
+        Layer& operator=(const Layer&) = delete;
 
         int index;
         int row;

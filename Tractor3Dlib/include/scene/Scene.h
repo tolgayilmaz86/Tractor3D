@@ -271,7 +271,7 @@ class Scene : public Ref
     /**
      * Hidden copy assignment operator.
      */
-    Scene& operator=(const Scene&);
+    Scene& operator=(const Scene&) = delete;
 
     /**
      * Visits the given node and all of its children recursively.

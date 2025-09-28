@@ -118,7 +118,7 @@ class Joint : public Node
     /**
      * Hidden copy assignment operator.
      */
-    Joint& operator=(const Joint&);
+    Joint& operator=(const Joint&) = delete;
 
     void addSkin(MeshSkin* skin);
 

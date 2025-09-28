@@ -35,7 +35,7 @@ class AudioBuffer : public Ref
     /**
      * Hidden copy assignment operator.
      */
-    AudioBuffer& operator=(const AudioBuffer&);
+    AudioBuffer& operator=(const AudioBuffer&) = delete;
 
     /**
      * Creates an audio buffer from a file.

@@ -4,138 +4,17 @@
 
 #include "scene/Scene.h"
 
-namespace tractor
+namespace
 {
-
-Sprite::Sprite()
-    : Drawable(), _width(0), _height(0), _offset(OFFSET_BOTTOM_LEFT), _anchor(Vector2(0.5f, 0.5f)),
-      _flipFlags(FLIP_NONE), _frames(nullptr), _frameCount(1), _frameStride(0), _framePadding(1),
-      _frameIndex(0), _opacity(1.0f), _color(Vector4::one()), _blendMode(BLEND_ALPHA),
-      _batch(nullptr)
-{
-}
-
-Sprite::~Sprite()
-{
-    SAFE_DELETE_ARRAY(_frames);
-    SAFE_DELETE(_batch);
-}
-
-Sprite& Sprite::operator=(const Sprite& sprite) { return *this; }
-
-Sprite* Sprite::create(const std::string& imagePath, float width, float height, Effect* effect)
-{
-    return Sprite::create(imagePath, width, height, Rectangle(0, 0, -1, -1), 1, effect);
-}
-
-Sprite* Sprite::create(const std::string& imagePath,
-                       float width,
-                       float height,
-                       const Rectangle& source,
-                       unsigned int frameCount,
-                       Effect* effect)
-{
-    assert(width >= -1 && height >= -1);
-    assert(source.width >= -1 && source.height >= -1);
-    assert(frameCount > 0);
-
-    SpriteBatch* batch = SpriteBatch::create(imagePath, effect);
-    batch->getSampler()->setWrapMode(Texture::CLAMP, Texture::CLAMP);
-    batch->getSampler()->setFilterMode(Texture::Filter::LINEAR, Texture::Filter::LINEAR);
-    batch->getStateBlock()->setDepthWrite(false);
-    batch->getStateBlock()->setDepthTest(true);
-
-    unsigned int imageWidth = batch->getSampler()->getTexture()->getWidth();
-    unsigned int imageHeight = batch->getSampler()->getTexture()->getHeight();
-    if (width == -1) width = imageWidth;
-    if (height == -1) height = imageHeight;
-
-    Sprite* sprite = new Sprite();
-    sprite->_width = width;
-    sprite->_height = height;
-    sprite->_batch = batch;
-    sprite->_frameCount = frameCount;
-    sprite->_frames = new Rectangle[frameCount];
-    sprite->_frames[0] = source;
-    if (sprite->_frames[0].width == -1.0f) sprite->_frames[0].width = imageWidth;
-    if (sprite->_frames[0].height == -1.0f) sprite->_frames[0].height = imageHeight;
-    return sprite;
-}
-
-static bool parseBlendMode(const std::string& str, Sprite::BlendMode* blend)
-{
-    assert(blend);
-
-    if (str.empty())
-    {
-        *blend = Sprite::BLEND_NONE;
-        return false;
-    }
-
-    if (str == "BLEND_ALPHA")
-    {
-        *blend = Sprite::BLEND_ALPHA;
-    }
-    else if (str == "BLEND_ADDITIVE")
-    {
-        *blend = Sprite::BLEND_ADDITIVE;
-    }
-    else if (str == "BLEND_MULTIPLIED")
-    {
-        *blend = Sprite::BLEND_MULTIPLIED;
-    }
-    else if (str != "BLEND_NONE")
-    {
-        GP_ERROR("Failed to get corresponding sprite blend mode for unsupported value '%s'.",
-                 str.c_str());
-        *blend = Sprite::BLEND_NONE;
-        return false;
-    }
-    else
-    {
-        *blend = Sprite::BLEND_NONE;
-    }
-
-    return true;
-}
-
-static bool parseFlipFlags(const std::string& str, Sprite::FlipFlags* flip)
-{
-    assert(flip);
-
-    if (str.empty())
-    {
-        *flip = Sprite::FLIP_NONE;
-        return false;
-    }
-
-    if (str == "FLIP_VERTICAL")
-    {
-        *flip = Sprite::FLIP_VERTICAL;
-    }
-    else if (str == "FLIP_HORIZONTAL")
-    {
-        *flip = Sprite::FLIP_HORIZONTAL;
-    }
-    else if (str == "FLIP_VERTICAL_HORIZONTAL")
-    {
-        *flip = (Sprite::FlipFlags)(Sprite::FLIP_VERTICAL | Sprite::FLIP_HORIZONTAL);
-    }
-    else if (str != "FLIP_NONE")
-    {
-        GP_ERROR("Failed to get corresponding sprite flip flag for unsupported value '%s'.",
-                 str.c_str());
-        *flip = Sprite::FLIP_NONE;
-        return false;
-    }
-    else
-    {
-        *flip = Sprite::FLIP_NONE;
-    }
-
-    return true;
-}
-
+using namespace tractor;
+/**
+ * Parses a string to get the corresponding sprite offset enum value.
+ *
+ * @param str The string to parse.
+ * @param offset The sprite offset enum value that is set based on the parsed string.
+ * @return true if the string was successfully parsed; false if the string is empty or
+ *         could not be parsed.
+ */
 static bool parseOffset(const std::string& str, Sprite::Offset* offset)
 {
     assert(offset);
@@ -219,6 +98,145 @@ static bool parseOffset(const std::string& str, Sprite::Offset* offset)
     }
 
     return true;
+}
+
+/**
+ * Parses a string to get the corresponding sprite blend mode enum value.
+ *
+ * @param str The string to parse.
+ * @param blend The sprite blend mode enum value that is set based on the parsed string.
+ * @return true if the string was successfully parsed; false if the string is empty or
+ *         could not be parsed.
+ */
+static bool parseBlendMode(const std::string& str, Sprite::BlendMode* blend)
+{
+    assert(blend);
+
+    if (str.empty())
+    {
+        *blend = Sprite::BLEND_NONE;
+        return false;
+    }
+
+    if (str == "BLEND_ALPHA")
+    {
+        *blend = Sprite::BLEND_ALPHA;
+    }
+    else if (str == "BLEND_ADDITIVE")
+    {
+        *blend = Sprite::BLEND_ADDITIVE;
+    }
+    else if (str == "BLEND_MULTIPLIED")
+    {
+        *blend = Sprite::BLEND_MULTIPLIED;
+    }
+    else if (str != "BLEND_NONE")
+    {
+        GP_ERROR("Failed to get corresponding sprite blend mode for unsupported value '%s'.",
+                 str.c_str());
+        *blend = Sprite::BLEND_NONE;
+        return false;
+    }
+    else
+    {
+        *blend = Sprite::BLEND_NONE;
+    }
+
+    return true;
+}
+
+/**
+ * Parses a string to get the corresponding sprite flip flags enum value.
+ *
+ * @param str The string to parse.
+ * @param flip The sprite flip flags enum value that is set based on the parsed string.
+ * @return true if the string was successfully parsed; false if the string is empty or
+ *         could not be parsed.
+ */
+static bool parseFlipFlags(const std::string& str, Sprite::FlipFlags* flip)
+{
+    assert(flip);
+
+    if (str.empty())
+    {
+        *flip = Sprite::FLIP_NONE;
+        return false;
+    }
+
+    if (str == "FLIP_VERTICAL")
+    {
+        *flip = Sprite::FLIP_VERTICAL;
+    }
+    else if (str == "FLIP_HORIZONTAL")
+    {
+        *flip = Sprite::FLIP_HORIZONTAL;
+    }
+    else if (str == "FLIP_VERTICAL_HORIZONTAL")
+    {
+        *flip = (Sprite::FlipFlags)(Sprite::FLIP_VERTICAL | Sprite::FLIP_HORIZONTAL);
+    }
+    else if (str != "FLIP_NONE")
+    {
+        GP_ERROR("Failed to get corresponding sprite flip flag for unsupported value '%s'.",
+                 str.c_str());
+        *flip = Sprite::FLIP_NONE;
+        return false;
+    }
+    else
+    {
+        *flip = Sprite::FLIP_NONE;
+    }
+
+    return true;
+}
+} // namespace
+
+namespace tractor
+{
+
+Sprite::~Sprite()
+{
+    SAFE_DELETE_ARRAY(_frames);
+    SAFE_DELETE(_batch);
+}
+
+Sprite* Sprite::create(const std::string& imagePath, float width, float height, Effect* effect)
+{
+    return Sprite::create(imagePath, width, height, Rectangle(0, 0, -1, -1), 1, effect);
+}
+
+Sprite* Sprite::create(const std::string& imagePath,
+                       float width,
+                       float height,
+                       const Rectangle& source,
+                       unsigned int frameCount,
+                       Effect* effect)
+{
+    assert(width >= -1 && height >= -1);
+    assert(source.width >= -1 && source.height >= -1);
+    assert(frameCount > 0);
+
+    SpriteBatch* batch = SpriteBatch::create(imagePath, effect);
+    batch->getSampler()->setWrapMode(Texture::CLAMP, Texture::CLAMP);
+    batch->getSampler()->setFilterMode(Texture::Filter::LINEAR, Texture::Filter::LINEAR);
+    batch->getStateBlock()->setDepthWrite(false);
+    batch->getStateBlock()->setDepthTest(true);
+
+    unsigned int imageWidth = batch->getSampler()->getTexture()->getWidth();
+    unsigned int imageHeight = batch->getSampler()->getTexture()->getHeight();
+    if (width == -1) width = imageWidth;
+    if (height == -1) height = imageHeight;
+
+    Sprite* sprite = new Sprite();
+    sprite->_width = width;
+    sprite->_height = height;
+    sprite->_batch = batch;
+    sprite->_frameCount = frameCount;
+    sprite->_frames = new Rectangle[frameCount];
+    sprite->_frames[0] = source;
+    if (sprite->_frames[0].width == -1.0f) sprite->_frames[0].width = imageWidth;
+    if (sprite->_frames[0].height == -1.0f) sprite->_frames[0].height = imageHeight;
+    return sprite;
 }
 
 Sprite* Sprite::create(Properties* properties)
@@ -370,22 +388,6 @@ Sprite* Sprite::create(Properties* properties)
     return sprite;
 }
 
-float Sprite::getWidth() const { return _width; }
-
-float Sprite::getHeight() const { return _height; }
-
-void Sprite::setOffset(Sprite::Offset offset) { _offset = offset; }
-
-Sprite::Offset Sprite::getOffset() const { return _offset; }
-
-void Sprite::setAnchor(const Vector2& anchor) { _anchor = anchor; }
-
-const Vector2& Sprite::getAnchor() const { return _anchor; }
-
-void Sprite::setFlip(int flipFlags) { _flipFlags = flipFlags; }
-
-int Sprite::getFlip() const { return _flipFlags; }
-
 void Sprite::setFrameSource(unsigned int frameIndex, const Rectangle& source)
 {
     assert(frameIndex < _frameCount);
@@ -445,26 +447,6 @@ void Sprite::computeFrames(unsigned int frameStride, unsigned int framePadding)
     }
 }
 
-unsigned int Sprite::getFrameCount() const { return _frameCount; }
-
-unsigned int Sprite::getFramePadding() const { return _framePadding; }
-
-unsigned int Sprite::getFrameStride() const { return _frameStride; }
-
-void Sprite::setFrameIndex(unsigned int index) { _frameIndex = index; }
-
-unsigned int Sprite::getFrameIndex() const { return _frameIndex; }
-
-void Sprite::setOpacity(float opacity) { _opacity = opacity; }
-
-float Sprite::getOpacity() const { return _opacity; }
-
-void Sprite::setColor(const Vector4& color) { _color = color; }
-
-const Vector4& Sprite::getColor() const { return _color; }
-
-Sprite::BlendMode Sprite::getBlendMode() const { return _blendMode; }
-
 void Sprite::setBlendMode(BlendMode mode)
 {
     switch (mode)
@@ -492,12 +474,6 @@ void Sprite::setBlendMode(BlendMode mode)
             break;
     }
 }
-
-Texture::Sampler* Sprite::getSampler() const { return _batch->getSampler(); }
-
-RenderState::StateBlock* Sprite::getStateBlock() const { return _batch->getStateBlock(); }
-
-Material* Sprite::getMaterial() const { return _batch->getMaterial(); }
 
 unsigned int Sprite::draw(bool wireframe)
 {

@@ -126,7 +126,7 @@ class AIStateMachine
     /**
      * Hidden copy assignment operator.
      */
-    AIStateMachine& operator=(const AIStateMachine&);
+    AIStateMachine& operator=(const AIStateMachine&) = delete;
 
     /**
      * Sends a message to change the state of this state machine.

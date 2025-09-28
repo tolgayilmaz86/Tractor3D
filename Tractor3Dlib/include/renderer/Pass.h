@@ -95,7 +95,7 @@ class Pass : public RenderState
     /**
      * Hidden copy assignment operator.
      */
-    Pass& operator=(const Pass&);
+    Pass& operator=(const Pass&) = delete;
 
     /**
      * Clones the Pass and assigns it the given Technique.

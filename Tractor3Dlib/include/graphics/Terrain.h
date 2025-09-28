@@ -297,7 +297,7 @@ class Terrain : public Ref, public Drawable, public Transform::Listener
     /**
      * Hidden copy assignment operator.
      */
-    Terrain& operator=(const Terrain&);
+    Terrain& operator=(const Terrain&) = delete;
 
     /**
      * Destructor.

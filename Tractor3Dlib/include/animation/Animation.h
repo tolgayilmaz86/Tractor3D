@@ -131,7 +131,7 @@ class Animation : public Ref
         Channel(const Channel& copy, Animation* animation, AnimationTarget* target);
         Channel(const Channel&); // Hidden copy constructor.
         ~Channel();
-        Channel& operator=(const Channel&); // Hidden copy assignment operator.
+        Channel& operator=(const Channel&) = delete;
         Curve* getCurve() const;
 
         Animation* _animation;    // Reference to the animation this channel belongs to.
@@ -183,7 +183,7 @@ class Animation : public Ref
     /**
      * Hidden copy assignment operator.
      */
-    Animation& operator=(const Animation&);
+    Animation& operator=(const Animation&) = delete;
 
     /**
      * Creates the default clip.

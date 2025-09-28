@@ -751,7 +751,7 @@ class ParticleEmitter : public Ref, public Drawable
     /**
      * Hidden copy assignment operator.
      */
-    ParticleEmitter& operator=(const ParticleEmitter&);
+    ParticleEmitter& operator=(const ParticleEmitter&) = delete;
 
     // Generates a scalar within the range defined by min and max.
     float generateScalar(float min, float max);

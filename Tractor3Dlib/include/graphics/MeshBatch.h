@@ -174,7 +174,7 @@ class MeshBatch
     /**
      * Hidden copy assignment operator.
      */
-    MeshBatch& operator=(const MeshBatch&);
+    MeshBatch& operator=(const MeshBatch&) = delete;
 
     void add(const void* vertices,
              size_t size,

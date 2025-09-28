@@ -133,7 +133,7 @@ class MeshSkin : public Transform::Listener
     /**
      * Hidden copy assignment operator.
      */
-    MeshSkin& operator=(const MeshSkin&);
+    MeshSkin& operator=(const MeshSkin&) = delete;
 
     /**
      * Clones the MeshSkin and the joints that it references.

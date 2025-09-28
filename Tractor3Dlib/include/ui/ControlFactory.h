@@ -73,7 +73,7 @@ class ControlFactory
     /**
      * Assignment operator
      */
-    ControlFactory& operator=(const ControlFactory&);
+    ControlFactory& operator=(const ControlFactory&) = delete;
 
     /**
      * Creates a controls from the set of core and custom controls registered.

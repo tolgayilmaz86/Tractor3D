@@ -155,7 +155,7 @@ class Texture : public Ref
         /**
          * Hidden copy assignment operator.
          */
-        Sampler& operator=(const Sampler&);
+        Sampler& operator=(const Sampler&) = delete;
 
         Texture* _texture;
         Wrap _wrapS;
@@ -321,7 +321,7 @@ class Texture : public Ref
     /**
      * Hidden copy assignment operator.
      */
-    Texture& operator=(const Texture&);
+    Texture& operator=(const Texture&) = delete;
 
     static Texture* createCompressedPVRTC(const std::string& path);
 

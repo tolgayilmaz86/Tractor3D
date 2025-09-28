@@ -211,7 +211,7 @@ class FrameBuffer : public Ref
     /**
      * Hidden copy assignment operator.
      */
-    FrameBuffer& operator=(const FrameBuffer&);
+    FrameBuffer& operator=(const FrameBuffer&) = delete;
 
     void setRenderTarget(RenderTarget* target, unsigned int index, GLenum textureTarget);
 
@@ -219,7 +219,7 @@ class FrameBuffer : public Ref
 
     static void finalize();
 
-    static bool isPowerOfTwo(unsigned int value);
+    static bool isPowerOfTwo(unsigned int value) = delete;
 
     std::string _id;
     FrameBufferHandle _handle;

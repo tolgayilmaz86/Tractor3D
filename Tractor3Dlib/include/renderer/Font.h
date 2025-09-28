@@ -327,7 +327,7 @@ class Font : public Ref
     /**
      * Hidden copy assignment operator.
      */
-    Font& operator=(const Font&);
+    Font& operator=(const Font&) = delete;
 
     /**
      * Creates a font with the given characteristics from the specified glyph array and texture map.

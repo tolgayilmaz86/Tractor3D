@@ -238,7 +238,7 @@ class Effect : public Ref
     /**
      * Hidden copy assignment operator.
      */
-    Effect& operator=(const Effect&);
+    Effect& operator=(const Effect&) = delete;
 
     static Effect* createFromSource(const std::string& vshPath,
                                     const std::string& vshSource,
@@ -301,7 +301,7 @@ class Uniform
     /**
      * Hidden copy assignment operator.
      */
-    Uniform& operator=(const Uniform&);
+    Uniform& operator=(const Uniform&) = delete;
 
     std::string _name;
     GLint _location;

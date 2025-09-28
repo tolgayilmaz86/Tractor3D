@@ -110,7 +110,7 @@ class Logger
     /**
      * Hidden copy assignment operator.
      */
-    Logger& operator=(const Logger&);
+    Logger& operator=(const Logger&) = delete;
 
     static State _state[3];
 };

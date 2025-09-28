@@ -626,7 +626,7 @@ class RenderState : public Ref
     /**
      * Hidden copy assignment operator.
      */
-    RenderState& operator=(const RenderState&);
+    RenderState& operator=(const RenderState&) = delete;
 
     // Internal auto binding handler methods.
     const Matrix& autoBindingGetWorldMatrix() const;

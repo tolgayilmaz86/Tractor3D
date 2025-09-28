@@ -105,7 +105,7 @@ class DepthStencilTarget : public Ref
     /**
      * Hidden copy assignment operator.
      */
-    DepthStencilTarget& operator=(const DepthStencilTarget&);
+    DepthStencilTarget& operator=(const DepthStencilTarget&) = delete;
 
     std::string _id;
     Format _format;

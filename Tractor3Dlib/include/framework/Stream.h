@@ -157,8 +157,8 @@ class Stream
     Stream() {};
 
   private:
-    Stream(const Stream&);            // Hidden copy constructor.
-    Stream& operator=(const Stream&); // Hidden copy assignment operator.
+    Stream(const Stream&) = delete;            // Hidden copy constructor.
+    Stream& operator=(const Stream&) = delete; // Hidden copy assignment operator.
 };
 
 } // namespace tractor

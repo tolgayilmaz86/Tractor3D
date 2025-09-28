@@ -349,7 +349,7 @@ class Camera : public Ref, public Transform::Listener
     /**
      * Hidden copy assignment operator.
      */
-    Camera& operator=(const Camera&);
+    Camera& operator=(const Camera&) = delete;
 
     /**
      * Clones the camera and returns a new camera.

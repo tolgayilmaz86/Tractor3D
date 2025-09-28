@@ -137,14 +137,14 @@ class Sprite : public Ref, public Drawable, public AnimationTarget
      *
      * @return The width of the sprite.
      */
-    float getWidth() const;
+    float getWidth() const { return _width; }
 
     /**
      * Gets the height of the sprite.
      *
      * @return The height of the sprite.
      */
-    float getHeight() const;
+    float getHeight() const { return _height; }
 
     /**
      * Sets the offset used for how much to locally adjust the bounds of the sprite.
@@ -153,7 +153,7 @@ class Sprite : public Ref, public Drawable, public AnimationTarget
      *
      * @param offset The offset used for how much to locally adjust the bounds of the sprite.
      */
-    void setOffset(Offset offset);
+    void setOffset(Offset offset) { _offset = offset; }
 
     /**
      * Gets the offset used for how much to locally adjust the bounds of the sprite.
@@ -162,21 +162,21 @@ class Sprite : public Ref, public Drawable, public AnimationTarget
      *
      * @return The offset used for how much to locally adjust the bounds of the sprite.
      */
-    Offset getOffset() const;
+    Offset getOffset() const { return _offset; }
 
     /**
      * Sets the anchor which is a origin ratio of the sprite width and height from [0.0,1.0].
      *
      * @param anchor The anchor which is a origin ratio of the sprite width and height from [0.0,1.0].
      */
-    void setAnchor(const Vector2& anchor);
+    void setAnchor(const Vector2& anchor) { _anchor = anchor; }
 
     /**
      * Gets the anchor which is a origin ratio of the sprite width and height from [0.0,1.0].
      *
      * @return The anchor which is a origin ratio of the sprite width and height from [0.0,1.0].
      */
-    const Vector2& getAnchor() const;
+    const Vector2& getAnchor() const { return _anchor; }
 
     /**
      * Sets the flip flags used for rendering the sprite.
@@ -184,7 +184,7 @@ class Sprite : public Ref, public Drawable, public AnimationTarget
      * @param flipFlags The flip flags used for rendering the sprite.
      * @see Sprite::FlipFlags
      */
-    void setFlip(int flipFlags);
+    void setFlip(int flipFlags) { _flipFlags = flipFlags; }
 
     /**
      * Gets the flip flags used for rendering the sprite.
@@ -192,7 +192,7 @@ class Sprite : public Ref, public Drawable, public AnimationTarget
      * @return The flip flags used for rendering the sprite.
      * @see Sprite::FlipFlags
      */
-    int getFlip() const;
+    int getFlip() const { return _flipFlags; }
 
     /**
      * Sets the source region from the source image.
@@ -227,7 +227,7 @@ class Sprite : public Ref, public Drawable, public AnimationTarget
      *
      * @return The total number of frames this sprite can render.
      */
-    unsigned int getFrameCount() const;
+    unsigned int getFrameCount() const { return _frameCount; }
 
     /**
      * Gets the number of frames to travel across before
@@ -235,7 +235,7 @@ class Sprite : public Ref, public Drawable, public AnimationTarget
      *
      * @return The total number of frames this sprite can render.
      */
-    unsigned int getFrameStride() const;
+    unsigned int getFrameStride() const { return _frameStride; }
 
     /**
      * Gets the source padding in pixels around the source region.
@@ -243,21 +243,21 @@ class Sprite : public Ref, public Drawable, public AnimationTarget
      * @return The source flip flags from the source image.
      * @see Sprite::FlipFlags
      */
-    unsigned int getFramePadding() const;
+    unsigned int getFramePadding() const { return _framePadding; }
 
     /**
      * Sets the current frame index to be rendered.
      *
      * @param index The current frame index to be rendered.
      */
-    void setFrameIndex(unsigned int index);
+    void setFrameIndex(unsigned int index) { _frameIndex = index; }
 
     /**
      * Gets the current frame index to be rendered.
      *
      * @return The current frame index to be rendered.
      */
-    unsigned int getFrameIndex() const;
+    unsigned int getFrameIndex() const { return _frameIndex; }
 
     /**
      * Sets the opacity for the sprite.
@@ -266,7 +266,7 @@ class Sprite : public Ref, public Drawable, public AnimationTarget
      *
      * @param opacity The opacity for the sprite.
      */
-    void setOpacity(float opacity);
+    void setOpacity(float opacity) { _opacity = opacity; }
 
     /**
      * Gets the opacity for the sprite.
@@ -275,21 +275,21 @@ class Sprite : public Ref, public Drawable, public AnimationTarget
      *
      * @return The opacity for the sprite.
      */
-    float getOpacity() const;
+    float getOpacity() const { return _opacity; }
 
     /**
      * Sets the color (RGBA) for the sprite.
      *
      * @param color The color(RGBA) for the sprite.
      */
-    void setColor(const Vector4& color);
+    void setColor(const Vector4& color) { _color = color; }
 
     /**
      * Gets the color (RGBA) for the sprite.
      *
      * @return The color(RGBA) for the sprite.
      */
-    const Vector4& getColor() const;
+    const Vector4& getColor() const { return _color; }
 
     /**
      * Sets the blend mode for the sprite.
@@ -305,7 +305,7 @@ class Sprite : public Ref, public Drawable, public AnimationTarget
      * @return The blend mode for the sprite.
      * @see Sprite::BlendMode
      */
-    BlendMode getBlendMode() const;
+    BlendMode getBlendMode() const { return _blendMode; }
 
     /**
      * Gets the texture sampler used when sampling the texture.
@@ -314,7 +314,7 @@ class Sprite : public Ref, public Drawable, public AnimationTarget
      *
      * @return The texture sampler used when sampling the texture.
      */
-    Texture::Sampler* getSampler() const;
+    Texture::Sampler* getSampler() const { return _batch->getSampler(); }
 
     /**
      * Gets the StateBlock for the SpriteBatch.
@@ -325,14 +325,14 @@ class Sprite : public Ref, public Drawable, public AnimationTarget
      *
      * @return The StateBlock for this SpriteBatch.
      */
-    RenderState::StateBlock* getStateBlock() const;
+    RenderState::StateBlock* getStateBlock() const { return _batch->getStateBlock(); }
 
     /**
      * Gets the material used by sprite batch.
      *
      * @return The material used by the sprite batch.
      */
-    Material* getMaterial() const;
+    Material* getMaterial() const { return _batch->getMaterial(); }
 
     /**
      * @see Drawable::draw
@@ -343,7 +343,7 @@ class Sprite : public Ref, public Drawable, public AnimationTarget
     /**
      * Constructor.
      */
-    Sprite();
+    Sprite() = default;
 
     /**
      * Destructor.
@@ -353,7 +353,7 @@ class Sprite : public Ref, public Drawable, public AnimationTarget
     /**
      * operator=
      */
-    Sprite& operator=(const Sprite& sprite);
+    Sprite& operator=(const Sprite& sprite) { return *this; }
 
     /**
      * @see Drawable::clone
@@ -381,20 +381,20 @@ class Sprite : public Ref, public Drawable, public AnimationTarget
     void setAnimationPropertyValue(int propertyId, AnimationValue* value, float blendWeight = 1.0f);
 
   private:
-    float _width;
-    float _height;
-    Offset _offset;
-    Vector2 _anchor;
-    int _flipFlags;
-    Rectangle* _frames;
-    unsigned int _frameCount;
-    unsigned int _frameStride;
-    unsigned int _framePadding;
-    unsigned int _frameIndex;
-    SpriteBatch* _batch;
-    float _opacity;
-    Vector4 _color;
-    BlendMode _blendMode;
+    float _width{ 0.0f };
+    float _height{ 0.0f };
+    Offset _offset{ OFFSET_BOTTOM_LEFT };
+    Vector2 _anchor{ 0.5f, 0.5f };
+    int _flipFlags{ FLIP_NONE };
+    Rectangle* _frames{ nullptr };
+    unsigned int _frameCount{ 1 };
+    unsigned int _frameStride{ 0 };
+    unsigned int _framePadding{ 1 };
+    unsigned int _frameIndex{ 0 };
+    SpriteBatch* _batch{ nullptr };
+    float _opacity{ 1.0f };
+    Vector4 _color{ Vector4::one() };
+    BlendMode _blendMode{ BLEND_ALPHA };
 };
 
 } // namespace tractor

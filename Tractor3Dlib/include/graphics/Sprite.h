@@ -348,7 +348,7 @@ class Sprite : public Ref, public Drawable, public AnimationTarget
     /**
      * Destructor.
      */
-    ~Sprite();
+    ~Sprite() = default;
 
     /**
      * operator=
@@ -363,7 +363,7 @@ class Sprite : public Ref, public Drawable, public AnimationTarget
     /**
      * @see AnimationTarget::getPropertyId
      */
-    int getPropertyId(TargetType type, const char* propertyIdStr);
+    int getPropertyId(TargetType type, const std::string& propertyIdStr);
 
     /**
      * @see AnimationTarget::getAnimationPropertyComponentCount
@@ -386,15 +386,15 @@ class Sprite : public Ref, public Drawable, public AnimationTarget
     Offset _offset{ OFFSET_BOTTOM_LEFT };
     Vector2 _anchor{ 0.5f, 0.5f };
     int _flipFlags{ FLIP_NONE };
-    Rectangle* _frames{ nullptr };
     unsigned int _frameCount{ 1 };
     unsigned int _frameStride{ 0 };
     unsigned int _framePadding{ 1 };
     unsigned int _frameIndex{ 0 };
-    SpriteBatch* _batch{ nullptr };
     float _opacity{ 1.0f };
     Vector4 _color{ Vector4::one() };
     BlendMode _blendMode{ BLEND_ALPHA };
+    std::unique_ptr<Rectangle[]> _frames;
+    std::shared_ptr<SpriteBatch> _batch;
 };
 
 } // namespace tractor

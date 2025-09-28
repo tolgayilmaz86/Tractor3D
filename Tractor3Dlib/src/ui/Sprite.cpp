@@ -194,12 +194,6 @@ static bool parseFlipFlags(const std::string& str, Sprite::FlipFlags* flip)
 namespace tractor
 {
 
-Sprite::~Sprite()
-{
-    SAFE_DELETE_ARRAY(_frames);
-    SAFE_DELETE(_batch);
-}
-
 Sprite* Sprite::create(const std::string& imagePath, float width, float height, Effect* effect)
 {
     return Sprite::create(imagePath, width, height, Rectangle(0, 0, -1, -1), 1, effect);
@@ -230,12 +224,14 @@ Sprite* Sprite::create(const std::string& imagePath,
     Sprite* sprite = new Sprite();
     sprite->_width = width;
     sprite->_height = height;
-    sprite->_batch = batch;
+    sprite->_batch = std::shared_ptr<SpriteBatch>(batch);
+
     sprite->_frameCount = frameCount;
-    sprite->_frames = new Rectangle[frameCount];
+    sprite->_frames = std::make_unique<Rectangle[]>(frameCount);
     sprite->_frames[0] = source;
     if (sprite->_frames[0].width == -1.0f) sprite->_frames[0].width = imageWidth;
     if (sprite->_frames[0].height == -1.0f) sprite->_frames[0].height = imageHeight;
+
     return sprite;
 }
 
@@ -582,32 +578,31 @@ Drawable* Sprite::clone(NodeCloneContext& context)
     spriteClone->_opacity = _opacity;
     spriteClone->_color = _color;
     spriteClone->_blendMode = _blendMode;
-    spriteClone->_frames = new Rectangle[_frameCount];
-    memcpy(spriteClone->_frames, _frames, sizeof(Rectangle) * _frameCount);
     spriteClone->_frameCount = _frameCount;
     spriteClone->_frameStride = _frameStride;
     spriteClone->_framePadding = _framePadding;
     spriteClone->_frameIndex = _frameIndex;
     spriteClone->_batch = _batch;
 
+    spriteClone->_frames = std::make_unique<Rectangle[]>(_frameCount);
+    std::copy(_frames.get(), _frames.get() + _frameCount, spriteClone->_frames.get());
+
     return spriteClone;
 }
 
-int Sprite::getPropertyId(TargetType type, const char* propertyIdStr)
+int Sprite::getPropertyId(TargetType type, const std::string& propertyIdStr)
 {
-    assert(propertyIdStr);
-
     if (type == AnimationTarget::TRANSFORM)
     {
-        if (strcmp(propertyIdStr, "ANIMATE_OPACITY") == 0)
+        if (propertyIdStr == "ANIMATE_OPACITY")
         {
             return Sprite::ANIMATE_OPACITY;
         }
-        else if (strcmp(propertyIdStr, "ANIMATE_COLOR") == 0)
+        else if (propertyIdStr == "ANIMATE_COLOR")
         {
             return Sprite::ANIMATE_COLOR;
         }
-        else if (strcmp(propertyIdStr, "ANIMATE_KEYFRAME") == 0)
+        else if (propertyIdStr == "ANIMATE_KEYFRAME")
         {
             return Sprite::ANIMATE_KEYFRAME;
         }

@@ -501,7 +501,7 @@ class Node : public Transform, public Ref
      *
      * @return The pointer to this node's physics collision object.
      */
-    PhysicsCollisionObject* getCollisionObject() const noexcept { return _collisionObject; }
+    PhysicsCollisionObject* getCollisionObject() const noexcept { return _collisionObject.get(); }
 
     /**
      * Sets (or disables) the physics collision object for this node.
@@ -753,7 +753,7 @@ class Node : public Transform, public Ref
     /** The audio source component attached to this node. */
     AudioSource* _audioSource{ nullptr };
     /** The collision object component attached to this node. */
-    PhysicsCollisionObject* _collisionObject{ nullptr };
+    std::unique_ptr<PhysicsCollisionObject> _collisionObject;
     /** The AI agent component attached to this node. */
     mutable AIAgent* _agent{ nullptr };
     /** The user object component attached to this node. */

@@ -49,8 +49,6 @@ Bundle::~Bundle()
     {
         __bundleCache.erase(itr);
     }
-
-    SAFE_DELETE_ARRAY(_references);
 }
 
 template <class T> bool Bundle::readArray(unsigned int* length, T** ptr)
@@ -215,7 +213,8 @@ Bundle* Bundle::create(const std::string& path)
     for (size_t i = 0; i < refCount; ++i)
     {
         if ((refs[i].id = readString(stream.get())).empty()
-            || stream->read(&refs[i].type, 4, 1) != 1 || stream->read(&refs[i].offset, 4, 1) != 1)
+            || stream->read(&refs[i].type, 4, 1) != 1 
+            || stream->read(&refs[i].offset, 4, 1) != 1)
         {
             GP_WARN("Failed to read ref number %d for bundle '%s'.", i, path);
             SAFE_DELETE_ARRAY(refs);
@@ -227,8 +226,8 @@ Bundle* Bundle::create(const std::string& path)
     Bundle* bundle = new Bundle(path);
     bundle->_version[0] = version[0];
     bundle->_version[1] = version[1];
-    bundle->_referenceCount = refCount;
-    bundle->_references = refs;
+    bundle->_references = std::unique_ptr<Reference[]>(refs);
+    bundle->_referencesSpan = std::span<Reference>(bundle->_references.get(), refCount);
     bundle->_stream = std::move(stream);
 
     return bundle;
@@ -239,14 +238,9 @@ Bundle::Reference* Bundle::find(const std::string& id) const
     assert(_references);
 
     // Search the ref table for the given id (case-sensitive).
-    for (size_t i = 0; i < _referenceCount; ++i)
-    {
-        if (_references[i].id == id)
-        {
-            // Found a match
-            return &_references[i];
-        }
-    }
+    for (auto& ref : _referencesSpan)
+        if (ref.id == id)
+            return &ref;
 
     return nullptr;
 }
@@ -272,11 +266,11 @@ const std::string& Bundle::getIdFromOffset(unsigned int offset) const
     if (offset > 0)
     {
         assert(_references);
-        for (size_t i = 0; i < _referenceCount; ++i)
+        for (auto& ref : _referencesSpan)
         {
-            if (_references[i].offset == offset)
+            if (ref.offset == offset)
             {
-                return _references[i].id;
+                return ref.id;
             }
         }
     }
@@ -336,22 +330,21 @@ Bundle::Reference* Bundle::seekToFirstType(unsigned int type)
     assert(_references);
     assert(_stream);
 
-    for (size_t i = 0; i < _referenceCount; ++i)
+    for (auto& ref : _referencesSpan)
     {
-        Reference* ref = &_references[i];
-        if (ref->type == type)
+        if (ref.type == type)
         {
-            // Found a match.
-            if (_stream->seek(ref->offset, SEEK_SET) == false)
+            if (_stream->seek(ref.offset, SEEK_SET) == false)
             {
                 GP_ERROR("Failed to seek to object '%s' in bundle '%s'.",
-                         ref->id.c_str(),
+                         ref.id.c_str(),
                          _path.c_str());
                 return nullptr;
             }
-            return ref;
+            return &ref;
         }
     }
+
     return nullptr;
 }
 
@@ -441,16 +434,15 @@ Scene* Bundle::loadScene(const std::string& id)
     // Parse animations.
     assert(_references);
     assert(_stream);
-    for (size_t i = 0; i < _referenceCount; ++i)
+    for (auto& ref : _referencesSpan)
     {
-        Reference* ref = &_references[i];
-        if (ref->type == BUNDLE_TYPE_ANIMATIONS)
+        if (ref.type == BUNDLE_TYPE_ANIMATIONS)
         {
             // Found a match.
-            if (_stream->seek(ref->offset, SEEK_SET) == false)
+            if (_stream->seek(ref.offset, SEEK_SET) == false)
             {
                 GP_ERROR("Failed to seek to object '%s' in bundle '%s'.",
-                         ref->id.c_str(),
+                         ref.id.c_str(),
                          _path.c_str());
                 return nullptr;
             }
@@ -478,15 +470,14 @@ Node* Bundle::loadNode(const std::string& id, Scene* sceneContext)
     if (node) resolveJointReferences(sceneContext, node);
 
     // Load all animations targeting any nodes or mesh skins under this node's hierarchy.
-    for (size_t i = 0; i < _referenceCount; i++)
+    for (auto& ref : _referencesSpan)
     {
-        Reference* ref = &_references[i];
-        if (ref->type == BUNDLE_TYPE_ANIMATIONS)
+        if (ref.type == BUNDLE_TYPE_ANIMATIONS)
         {
-            if (_stream->seek(ref->offset, SEEK_SET) == false)
+            if (_stream->seek(ref.offset, SEEK_SET) == false)
             {
                 GP_ERROR("Failed to seek to object '%s' in bundle '%s'.",
-                         ref->id.c_str(),
+                         ref.id.c_str(),
                          _path.c_str());
                 SAFE_DELETE(_trackedNodes);
                 return nullptr;
@@ -496,7 +487,7 @@ Node* Bundle::loadNode(const std::string& id, Scene* sceneContext)
             unsigned int animationCount;
             if (!read(&animationCount))
             {
-                GP_ERROR("Failed to read the number of animations for object '%s'.", ref->id.c_str());
+                GP_ERROR("Failed to read the number of animations for object '%s'.", ref.id.c_str());
                 SAFE_DELETE(_trackedNodes);
                 return nullptr;
             }
@@ -1843,7 +1834,7 @@ const std::string& Bundle::getObjectId(unsigned int index) const
 {
     assert(_references);
 
-    if (index >= _referenceCount)
+    if (index >= _referencesSpan.size())
     {
         return EMPTY_STRING;
     }

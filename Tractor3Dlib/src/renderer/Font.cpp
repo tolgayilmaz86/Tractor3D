@@ -8,16 +8,10 @@
 #include "renderer/Text.h"
 #include "scene/Bundle.h"
 
-// Default font shaders
-#define FONT_VSH "res/shaders/font.vert"
-#define FONT_FSH "res/shaders/font.frag"
-
 namespace tractor
 {
 
 static std::vector<Font*> __fontCache;
-
-static Effect* __fontEffect = nullptr;
 
 Font::~Font()
 {
@@ -28,8 +22,6 @@ Font::~Font()
         __fontCache.erase(itr);
     }
 
-    SAFE_DELETE(_batch);
-    SAFE_DELETE_ARRAY(_glyphs);
     SAFE_RELEASE(_texture);
 
     // Free child fonts
@@ -103,29 +95,24 @@ Font* Font::create(const std::string& family,
     assert(glyphs);
     assert(texture);
 
+    std::string defines{};
+    if (format == DISTANCE_FIELD) defines = "DISTANCE_FIELD";
+
+    // Default font shaders
+    constexpr auto FONT_VSH = "res/shaders/font.vert";
+    constexpr auto FONT_FSH = "res/shaders/font.frag";
+
     // Create the effect for the font's sprite batch.
-    if (__fontEffect == nullptr)
+    Effect* fontEffect = std::move(Effect::createFromFile(FONT_VSH, FONT_FSH, defines));
+    if (fontEffect == nullptr)
     {
-        std::string defines;
-        if (format == DISTANCE_FIELD) defines = "DISTANCE_FIELD";
-        __fontEffect = std::move(Effect::createFromFile(FONT_VSH, FONT_FSH, defines));
-        if (__fontEffect == nullptr)
-        {
-            GP_WARN("Failed to create effect for font.");
-            SAFE_RELEASE(texture);
-            return nullptr;
-        }
-    }
-    else
-    {
-        __fontEffect->addRef();
+        GP_WARN("Failed to create effect for font.");
+        SAFE_RELEASE(texture);
+        return nullptr;
     }
 
     // Create batch for the font.
-    SpriteBatch* batch = SpriteBatch::create(texture, __fontEffect, 128);
-
-    // Release __fontEffect since the SpriteBatch keeps a reference to it
-    SAFE_RELEASE(__fontEffect)
+    auto batch = std::unique_ptr<SpriteBatch>(SpriteBatch::create(texture, fontEffect, 128));
 
     if (batch == nullptr)
     {
@@ -147,11 +134,11 @@ Font* Font::create(const std::string& family,
     font->_style = style;
     font->_size = size;
     font->_texture = texture;
-    font->_batch = batch;
+    font->_batch = std::move(batch);
 
     // Copy the glyphs array.
-    font->_glyphs = new Glyph[glyphCount];
-    memcpy(font->_glyphs, glyphs, sizeof(Glyph) * glyphCount);
+    font->_glyphs = std::make_unique<Glyph[]>(glyphCount);
+    std::memcpy(font->_glyphs.get(), glyphs, sizeof(Glyph) * glyphCount);
     font->_glyphCount = glyphCount;
 
     return font;
@@ -205,10 +192,7 @@ void Font::finish()
     if (_batch->isStarted()) _batch->finish();
 
     for (auto& font : _sizes)
-    {
-        SpriteBatch* batch = font->_batch;
-        if (batch->isStarted()) batch->finish();
-    }
+        if (font->_batch->isStarted()) font->_batch->finish();
 }
 
 Font* Font::findClosestSize(int size)
@@ -349,7 +333,7 @@ void Font::drawText(const std::string& text,
                     int index = c - 32; // HACK for ASCII
                     if (index >= 0 && index < (int)_glyphCount)
                     {
-                        Glyph& g = _glyphs[index];
+                        Glyph& g = _glyphs.get()[index];
 
                         if (getFormat() == DISTANCE_FIELD)
                         {
@@ -1783,10 +1767,10 @@ void Font::addLineInfo(const Rectangle& area,
 
 SpriteBatch* Font::getSpriteBatch(unsigned int size) const
 {
-    if (size == 0) return _batch;
+    if (size == 0) return _batch.get();
 
     // Find the closest sized child font
-    return const_cast<Font*>(this)->findClosestSize(size)->_batch;
+    return const_cast<Font*>(this)->findClosestSize(size)->_batch.get();
 }
 
 Font::Justify Font::getJustify(const std::string& justify)

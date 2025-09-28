@@ -21,8 +21,6 @@ VertexFormat::VertexFormat(const Element* elements, unsigned int elementCount) :
     }
 }
 
-VertexFormat::~VertexFormat() {}
-
 const VertexFormat::Element& VertexFormat::getElement(unsigned int index) const
 {
     assert(index < _elements.size());

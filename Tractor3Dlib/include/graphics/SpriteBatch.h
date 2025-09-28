@@ -511,7 +511,7 @@ class SpriteBatch
                     float& v2);
 
   private:
-    MeshBatch* _batch{ nullptr };
+    std::unique_ptr<MeshBatch> _batch;
     Texture::Sampler* _sampler{ nullptr };
     bool _customEffect{ false };
     float _textureWidthRatio{ 0.0f };

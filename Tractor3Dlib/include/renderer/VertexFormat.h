@@ -99,7 +99,7 @@ class VertexFormat
     /**
      * Destructor.
      */
-    ~VertexFormat();
+    ~VertexFormat() = default;
 
     /**
      * Gets the vertex element at the specified index.

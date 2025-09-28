@@ -42,7 +42,6 @@ Node::~Node()
     SAFE_RELEASE(_camera);
     SAFE_RELEASE(_light);
     SAFE_RELEASE(_audioSource);
-    SAFE_DELETE(_collisionObject);
     SAFE_RELEASE(_userObject);
     setAgent(nullptr);
 }
@@ -932,44 +931,45 @@ PhysicsCollisionObject* Node::setCollisionObject(PhysicsCollisionObject::Type ty
                                                  int group,
                                                  int mask)
 {
-    SAFE_DELETE(_collisionObject);
+    _collisionObject.release();
 
     switch (type)
     {
         case PhysicsCollisionObject::RIGID_BODY:
         {
-            _collisionObject =
+            _collisionObject = std::unique_ptr<PhysicsCollisionObject>(
                 new PhysicsRigidBody(this,
                                      shape,
                                      rigidBodyParameters ? *rigidBodyParameters
                                                          : PhysicsRigidBody::Parameters(),
                                      group,
-                                     mask);
+                                     mask));
         }
         break;
 
         case PhysicsCollisionObject::GHOST_OBJECT:
         {
-            _collisionObject = new PhysicsGhostObject(this, shape, group, mask);
+            _collisionObject = std::unique_ptr<PhysicsCollisionObject>(
+                new PhysicsGhostObject(this, shape, group, mask));
         }
         break;
 
         case PhysicsCollisionObject::CHARACTER:
         {
-            _collisionObject =
+            _collisionObject = std::unique_ptr<PhysicsCollisionObject>(
                 new PhysicsCharacter(this,
                                      shape,
-                                     rigidBodyParameters ? rigidBodyParameters->mass : 1.0f);
+                                     rigidBodyParameters ? rigidBodyParameters->mass : 1.0f));
         }
         break;
 
         case PhysicsCollisionObject::VEHICLE:
         {
-            _collisionObject =
+            _collisionObject = std::unique_ptr<PhysicsCollisionObject>(
                 new PhysicsVehicle(this,
                                    shape,
                                    rigidBodyParameters ? *rigidBodyParameters
-                                                       : PhysicsRigidBody::Parameters());
+                                                       : PhysicsRigidBody::Parameters()));
         }
         break;
 
@@ -986,11 +986,11 @@ PhysicsCollisionObject* Node::setCollisionObject(PhysicsCollisionObject::Type ty
             // IMPORTANT: The VEHICLE must come before the VEHICLE_WHEEL in the ".scene"
             // (properties) file!
             //
-            _collisionObject =
+            _collisionObject = std::unique_ptr<PhysicsCollisionObject>(
                 new PhysicsVehicleWheel(this,
                                         shape,
                                         rigidBodyParameters ? *rigidBodyParameters
-                                                            : PhysicsRigidBody::Parameters());
+                                                            : PhysicsRigidBody::Parameters()));
         }
         break;
 
@@ -998,13 +998,13 @@ PhysicsCollisionObject* Node::setCollisionObject(PhysicsCollisionObject::Type ty
             break; // Already deleted, Just don't add a new collision object back.
     }
 
-    return _collisionObject;
+    return _collisionObject.get();
 }
 
 PhysicsCollisionObject* Node::setCollisionObject(const std::string& url)
 {
     // Load the collision object properties from file.
-    Properties* properties = Properties::create(url);
+    auto properties = std::unique_ptr<Properties>(Properties::create(url));
     if (properties == nullptr)
     {
         GP_ERROR("Failed to load collision object file: %s", url);
@@ -1012,15 +1012,14 @@ PhysicsCollisionObject* Node::setCollisionObject(const std::string& url)
     }
 
     PhysicsCollisionObject* collisionObject = setCollisionObject(
-        properties->getNamespace().length() > 0 ? properties : properties->getNextNamespace());
-    SAFE_DELETE(properties);
+        properties->getNamespace().length() > 0 ? properties.get() : properties->getNextNamespace());
 
     return collisionObject;
 }
 
 PhysicsCollisionObject* Node::setCollisionObject(Properties* properties)
 {
-    SAFE_DELETE(_collisionObject);
+    _collisionObject.release();
 
     // Check if the properties is valid.
     if (!properties || properties->getNamespace() != "collisionObject")
@@ -1034,19 +1033,19 @@ PhysicsCollisionObject* Node::setCollisionObject(Properties* properties)
     {
         if (type == "CHARACTER")
         {
-            _collisionObject = PhysicsCharacter::create(this, properties);
+            _collisionObject = std::unique_ptr<PhysicsCollisionObject>(PhysicsCharacter::create(this, properties));
         }
         else if (type == "GHOST_OBJECT")
         {
-            _collisionObject = PhysicsGhostObject::create(this, properties);
+            _collisionObject = std::unique_ptr<PhysicsCollisionObject>(PhysicsGhostObject::create(this, properties));
         }
         else if (type == "RIGID_BODY")
         {
-            _collisionObject = PhysicsRigidBody::create(this, properties);
+            _collisionObject = std::unique_ptr<PhysicsCollisionObject>(PhysicsRigidBody::create(this, properties));
         }
         else if (type == "VEHICLE")
         {
-            _collisionObject = PhysicsVehicle::create(this, properties);
+            _collisionObject = std::unique_ptr<PhysicsCollisionObject>(PhysicsVehicle::create(this, properties));
         }
         else if (type == "VEHICLE_WHEEL")
         {
@@ -1061,7 +1060,7 @@ PhysicsCollisionObject* Node::setCollisionObject(Properties* properties)
             // IMPORTANT: The VEHICLE must come before the VEHICLE_WHEEL in the ".scene"
             // (properties) file!
             //
-            _collisionObject = PhysicsVehicleWheel::create(this, properties);
+            _collisionObject = std::unique_ptr<PhysicsCollisionObject>(PhysicsVehicleWheel::create(this, properties));
         }
         else
         {
@@ -1076,7 +1075,7 @@ PhysicsCollisionObject* Node::setCollisionObject(Properties* properties)
         return nullptr;
     }
 
-    return _collisionObject;
+    return _collisionObject.get();
 }
 
 AIAgent* Node::getAgent() const

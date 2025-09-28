@@ -411,10 +411,10 @@ class Font : public Ref
     unsigned int _size{0};
     std::vector<Font*> _sizes{}; // stores additional font sizes of the same family
     float _spacing{0.0f};
-    Glyph* _glyphs{ nullptr };
+    std::unique_ptr<Glyph[]> _glyphs;
     unsigned int _glyphCount{0};
     Texture* _texture{ nullptr };
-    SpriteBatch* _batch{ nullptr };
+    std::unique_ptr<SpriteBatch> _batch;
     Rectangle _viewport{};
     MaterialParameter* _cutoffParam{ nullptr };
 };

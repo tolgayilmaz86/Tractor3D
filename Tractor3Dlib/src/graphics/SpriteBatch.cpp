@@ -34,7 +34,6 @@ static Effect* __spriteEffect = nullptr;
 
 SpriteBatch::~SpriteBatch()
 {
-    SAFE_DELETE(_batch);
     SAFE_RELEASE(_sampler);
 
     if (!_customEffect)
@@ -42,7 +41,7 @@ SpriteBatch::~SpriteBatch()
         if (__spriteEffect && __spriteEffect->getRefCount() == 1)
         {
             __spriteEffect->release();
-            __spriteEffect = NULL;
+            __spriteEffect = nullptr;
         }
         else
         {
@@ -124,19 +123,19 @@ SpriteBatch* SpriteBatch::create(Texture* texture, Effect* effect, unsigned int 
     VertexFormat vertexFormat(vertexElements, 3);
 
     // Create the mesh batch
-    MeshBatch* meshBatch =
+    auto meshBatch = std::unique_ptr<MeshBatch>(
         MeshBatch::create(vertexFormat,
                           Mesh::TRIANGLE_STRIP,
                           material,
                           true,
-                          initialCapacity > 0 ? initialCapacity : SPRITE_BATCH_DEFAULT_SIZE);
+                          initialCapacity > 0 ? initialCapacity : SPRITE_BATCH_DEFAULT_SIZE));
     material->release(); // don't call SAFE_RELEASE since material is used below
 
     // Create the batch
     SpriteBatch* batch = new SpriteBatch();
     batch->_sampler = sampler;
     batch->_customEffect = customEffect;
-    batch->_batch = meshBatch;
+    batch->_batch = std::move(meshBatch);
     batch->_textureWidthRatio = 1.0f / (float)texture->getWidth();
     batch->_textureHeightRatio = 1.0f / (float)texture->getHeight();
 

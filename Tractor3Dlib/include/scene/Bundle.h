@@ -87,7 +87,8 @@ class Bundle : public Ref
     /**
      * Returns the number of top-level objects in this bundle.
      */
-    unsigned int getObjectCount() const noexcept { return _referenceCount; }
+    size_t getObjectCount() const noexcept { return _referencesSpan.size(); }
+
     /**
      * Gets the unique identifier of the top-level object at the specified index in this bundle.
      *
@@ -474,10 +475,10 @@ class Bundle : public Ref
 
   private:
     unsigned char _version[2]{ 0, 0 };
-    unsigned int _referenceCount{ 0 };
     std::string _path{};
     std::string _materialPath{};
-    Reference* _references{ nullptr };
+    std::unique_ptr<Reference[]> _references;
+    std::span<Reference> _referencesSpan;
     std::unique_ptr<Stream> _stream{ nullptr };
     std::vector<MeshSkinData*> _meshSkins{};
     std::map<std::string, Node*>* _trackedNodes{ nullptr };

@@ -33,6 +33,24 @@ class AnimationClip : public Ref, public ScriptTarget
     static const unsigned int REPEAT_INDEFINITE = 0;
 
     /**
+     * Constructor.
+     */
+    AnimationClip() = default;
+
+    /**
+     * Constructor.
+     */
+    AnimationClip(const std::string& id,
+                  Animation* animation,
+                  unsigned long startTime,
+                  unsigned long endTime);
+
+    /**
+     * Destructor.
+     */
+    ~AnimationClip();
+
+    /**
      * Defines an animation event listener.
      */
     class Listener
@@ -330,25 +348,7 @@ class AnimationClip : public Ref, public ScriptTarget
     /**
      * Constructor.
      */
-    AnimationClip(const std::string& id,
-                  Animation* animation,
-                  unsigned long startTime,
-                  unsigned long endTime);
-
-    /**
-     * Constructor.
-     */
-    AnimationClip() = default;
-
-    /**
-     * Constructor.
-     */
     AnimationClip(const AnimationClip& copy);
-
-    /**
-     * Destructor.
-     */
-    ~AnimationClip();
 
     /**
      * Hidden copy assignment operator.

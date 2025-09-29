@@ -10,16 +10,10 @@ namespace tractor
 {
 
 Pass::Pass(const std::string& id, Technique* technique)
-    : _id(id), _technique(technique), _effect(nullptr), _vaBinding(nullptr)
+    : _id(id), _technique(technique)
 {
     RenderState::_parent = _technique;
 }
-
-// Pass::Pass(const char* id, Technique* technique, Effect* effect) :
-//   _id(id ? id : ""), _technique(technique), _effect(effect), _vaBinding(nullptr)
-//{
-//   RenderState::_parent = _technique;
-// }
 
 Pass::~Pass()
 {

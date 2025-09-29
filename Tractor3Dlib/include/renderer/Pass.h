@@ -107,10 +107,10 @@ class Pass : public RenderState
      */
     Pass* clone(Technique* technique, NodeCloneContext& context) const;
 
-    std::string _id;
-    Technique* _technique;
-    Effect* _effect;
-    VertexAttributeBinding* _vaBinding;
+    std::string _id{};
+    Technique* _technique{ nullptr };
+    Effect* _effect{ nullptr };
+    VertexAttributeBinding* _vaBinding{ nullptr };
 };
 
 } // namespace tractor

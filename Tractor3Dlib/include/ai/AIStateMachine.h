@@ -6,8 +6,6 @@
 namespace tractor
 {
 
-class AIAgent;
-
 /**
  * Defines a simple AI state machine that can be used to program logic
  * for an AIAgent in a game.
@@ -33,6 +31,16 @@ class AIStateMachine
     friend class AIState;
 
   public:
+    /**
+     * Constructor.
+     */
+    AIStateMachine(AIAgent* agent);
+
+    /**
+     * Destructor.
+     */
+    ~AIStateMachine();
+
     /**
      * Returns the AIAgent that owns this state machine.
      *
@@ -108,16 +116,6 @@ class AIStateMachine
     bool setState(AIState* state);
 
   private:
-    /**
-     * Constructor.
-     */
-    AIStateMachine(AIAgent* agent);
-
-    /**
-     * Destructor.
-     */
-    ~AIStateMachine();
-
     /**
      * Hidden copy constructor.
      */

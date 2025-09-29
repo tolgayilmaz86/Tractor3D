@@ -76,14 +76,14 @@ class AIAgent : public Ref
      *
      * @return The Node this agent is assigned to.
      */
-    Node* getNode() const noexcept;
+    Node* getNode() const noexcept { return _node; }
 
     /**
      * Returns the state machine for the AIAgent.
      *
      * @return The agent's state machine.
      */
-    AIStateMachine* getStateMachine();
+    AIStateMachine* getStateMachine() const noexcept { return _stateMachine.get(); }
 
     /**
      * Determines if this AIAgent is currently enabled.
@@ -95,7 +95,7 @@ class AIAgent : public Ref
      *
      * @return true if the agent is enabled, false otherwise.
      */
-    bool isEnabled() const noexcept;
+    bool isEnabled() const noexcept { return (_node && _enabled); }
 
     /**
      * Sets whether this AIAgent is enabled.
@@ -106,14 +106,14 @@ class AIAgent : public Ref
      *
      * @param enabled true if the AIAgent should be enabled, false otherwise.
      */
-    void setEnabled(bool enabled);
+    void setEnabled(bool enabled) noexcept { _enabled = enabled; }
 
     /**
      * Sets an event listener for this AIAgent.
      *
      * @param listener The new AIAgent listener, or nullptr to remove any existing listener.
      */
-    void setListener(Listener* listener);
+    void setListener(Listener* listener) noexcept { _listener = listener; }
 
   private:
     /**
@@ -126,7 +126,7 @@ class AIAgent : public Ref
      *
      * Hidden, use SAFE_RELEASE instead.
      */
-    virtual ~AIAgent();
+    virtual ~AIAgent() = default;
 
     /**
      * Hidden copy constructor.
@@ -141,7 +141,7 @@ class AIAgent : public Ref
     /**
      * Set the node this agent is attached to.
      */
-    void setNode(Node* node);
+    void setNode(Node* node) noexcept { _node = node; }
 
     /**
      * Called by the AIController to process a message for the AIAgent.
@@ -157,11 +157,11 @@ class AIAgent : public Ref
      */
     void update(float elapsedTime);
 
-    AIStateMachine* _stateMachine;
-    Node* _node;
-    bool _enabled;
-    Listener* _listener;
-    AIAgent* _next;
+    std::unique_ptr<AIStateMachine> _stateMachine;
+    Node* _node{ nullptr };
+    bool _enabled{ true };
+    Listener* _listener{ nullptr };
+    AIAgent* _next{ nullptr };
 };
 
 } // namespace tractor

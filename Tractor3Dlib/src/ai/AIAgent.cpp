@@ -8,12 +8,9 @@ namespace tractor
 {
 
 AIAgent::AIAgent()
-    : _stateMachine(nullptr), _node(nullptr), _enabled(true), _listener(nullptr), _next(nullptr)
 {
-    _stateMachine = new AIStateMachine(this);
+    _stateMachine = std::make_unique<AIStateMachine>(this);
 }
-
-AIAgent::~AIAgent() { SAFE_DELETE(_stateMachine); }
 
 AIAgent* AIAgent::create() { return new AIAgent(); }
 
@@ -23,18 +20,6 @@ const std::string& AIAgent::getId() const
 
     return EMPTY_STRING;
 }
-
-Node* AIAgent::getNode() const noexcept { return _node; }
-
-void AIAgent::setNode(Node* node) { _node = node; }
-
-AIStateMachine* AIAgent::getStateMachine() { return _stateMachine; }
-
-bool AIAgent::isEnabled() const noexcept { return (_node && _enabled); }
-
-void AIAgent::setEnabled(bool enabled) { _enabled = enabled; }
-
-void AIAgent::setListener(Listener* listener) { _listener = listener; }
 
 void AIAgent::update(float elapsedTime) { _stateMachine->update(elapsedTime); }
 

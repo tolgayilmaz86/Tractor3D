@@ -144,8 +144,8 @@ class VertexFormat
     static const char* toString(Usage usage);
 
   private:
-    std::vector<Element> _elements;
-    unsigned int _vertexSize;
+    std::vector<Element> _elements{};
+    unsigned int _vertexSize{0};
 };
 
 } // namespace tractor

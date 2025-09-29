@@ -5,7 +5,7 @@
 namespace tractor
 {
 
-VertexFormat::VertexFormat(const Element* elements, unsigned int elementCount) : _vertexSize(0)
+VertexFormat::VertexFormat(const Element* elements, unsigned int elementCount)
 {
     assert(elements);
 

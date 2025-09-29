@@ -72,16 +72,9 @@ class Animation : public Ref
     AnimationClip* getClip(const std::string& clipId = EMPTY_STRING);
 
     /**
-     * Returns the AnimationClip at the given index.
-     *
-     * @param index Index of the clip to return.
-     */
-    AnimationClip* getClip(unsigned int index) const;
-
-    /**
      * Returns the number of animation clips in this animation.
      */
-    unsigned int getClipCount() const noexcept;
+    size_t getClipCount() const noexcept;
 
     /**
      * Plays the AnimationClip with the specified name.
@@ -198,7 +191,7 @@ class Animation : public Ref
     /**
      * Adds a clip to this Animation.
      */
-    void addClip(AnimationClip* clip);
+    void addClip(std::unique_ptr<AnimationClip> clip);
 
     /**
      * Finds the clip with the given ID.
@@ -256,8 +249,8 @@ class Animation : public Ref
     std::string _id;                     // The Animation's ID.
     unsigned long _duration;             // the length of the animation (in milliseconds).
     std::vector<Channel*> _channels;     // The channels within this Animation.
-    AnimationClip* _defaultClip;         // The Animation's default clip.
-    std::vector<AnimationClip*>* _clips; // All the clips created from this Animation.
+    std::unique_ptr<AnimationClip> _defaultClip; // The Animation's default clip.
+    std::unordered_map<std::string, std::unique_ptr<AnimationClip>> _clipsMap; // All the clips created from this Animation.
 };
 
 } // namespace tractor

@@ -21,21 +21,21 @@ class PhysicsSpringConstraint : public PhysicsGenericConstraint
      *
      * @param damping The angular damping value.
      */
-    inline void setAngularDampingX(float damping);
+    void setAngularDampingX(float damping) { setDamping(ANGULAR_X, damping); }
 
     /**
      * Sets the angular damping along the constraint's local Y axis.
      *
      * @param damping The angular damping value.
      */
-    inline void setAngularDampingY(float damping);
+    void setAngularDampingY(float damping) { setDamping(ANGULAR_Y, damping); }
 
     /**
      * Sets the angular damping along the constraint's local Z axis.
      *
      * @param damping The angular damping value.
      */
-    inline void setAngularDampingZ(float damping);
+    void setAngularDampingZ(float damping) { setDamping(ANGULAR_Z, damping); }
 
     /**
      * Sets the angular strength along the constraint's local X axis.
@@ -45,7 +45,7 @@ class PhysicsSpringConstraint : public PhysicsGenericConstraint
      *
      * @param strength The angular strength value.
      */
-    inline void setAngularStrengthX(float strength);
+    void setAngularStrengthX(float strength) { setStrength(ANGULAR_X, strength); }
 
     /**
      * Sets the angular strength along the constraint's local Y axis.
@@ -55,7 +55,7 @@ class PhysicsSpringConstraint : public PhysicsGenericConstraint
      *
      * @param strength The angular strength value.
      */
-    inline void setAngularStrengthY(float strength);
+    void setAngularStrengthY(float strength) { setStrength(ANGULAR_Y, strength); }
 
     /**
      * Sets the angular strength along the constraint's local Z axis.
@@ -65,28 +65,28 @@ class PhysicsSpringConstraint : public PhysicsGenericConstraint
      *
      * @param strength The angular strength value.
      */
-    inline void setAngularStrengthZ(float strength);
+    void setAngularStrengthZ(float strength) { setStrength(ANGULAR_Z, strength); }
 
     /**
      * Sets the linear damping along the constraint's local X axis.
      *
      * @param damping The linear damping value.
      */
-    inline void setLinearDampingX(float damping);
+    void setLinearDampingX(float damping) { setDamping(LINEAR_X, damping); }
 
     /**
      * Sets the linear damping along the constraint's local Y axis.
      *
      * @param damping The linear damping value.
      */
-    inline void setLinearDampingY(float damping);
+    void setLinearDampingY(float damping) { setDamping(LINEAR_Y, damping); }
 
     /**
      * Sets the linear damping along the constraint's local Z axis.
      *
      * @param damping The linear damping value.
      */
-    inline void setLinearDampingZ(float damping);
+    void setLinearDampingZ(float damping) { setDamping(LINEAR_Z, damping); }
 
     /**
      * Sets the linear strength along the constraint's local X axis.
@@ -96,7 +96,7 @@ class PhysicsSpringConstraint : public PhysicsGenericConstraint
      *
      * @param strength The linear strength value.
      */
-    inline void setLinearStrengthX(float strength);
+    void setLinearStrengthX(float strength) { setStrength(LINEAR_X, strength); }
 
     /**
      * Sets the linear strength along the constraint's local Y axis.
@@ -106,7 +106,7 @@ class PhysicsSpringConstraint : public PhysicsGenericConstraint
      *
      * @param strength The linear strength value.
      */
-    inline void setLinearStrengthY(float strength);
+    void setLinearStrengthY(float strength) { setStrength(LINEAR_Y, strength); }
 
     /**
      * Sets the linear strength along the constraint's local Z axis.
@@ -116,7 +116,7 @@ class PhysicsSpringConstraint : public PhysicsGenericConstraint
      *
      * @param strength The linear strength value.
      */
-    inline void setLinearStrengthZ(float strength);
+    void setLinearStrengthZ(float strength) { setStrength(LINEAR_Z, strength); }
 
   private:
     // Represents the different properties that
@@ -189,5 +189,3 @@ class PhysicsSpringConstraint : public PhysicsGenericConstraint
 };
 
 } // namespace tractor
-
-#include "physics/PhysicsSpringConstraint.inl"

@@ -128,49 +128,73 @@ class PhysicsRigidBody : public PhysicsCollisionObject, public Transform::Listen
      *
      * @return The mass.
      */
-    inline float getMass() const;
+    inline float getMass() const { return _mass; }
 
     /**
      * Gets the rigid body's friction.
      *
      * @return The friction.
      */
-    inline float getFriction() const;
+    inline float getFriction() const
+    {
+        assert(_body);
+        return _body->getFriction();
+    }
 
     /**
      * Sets the rigid body's friction.
      *
      * @param friction The friction.
      */
-    inline void setFriction(float friction);
+    inline void setFriction(float friction)
+    {
+        assert(_body);
+        _body->setFriction(friction);
+    }
 
     /**
      * Gets the rigid body's restitution.
      *
      * @return The restitution.
      */
-    inline float getRestitution() const;
+    inline float getRestitution() const
+    {
+        assert(_body);
+        return _body->getRestitution();
+    }
 
     /**
      * Sets the rigid body's restitution (or bounciness).
      *
      * @param restitution The restitution.
      */
-    inline void setRestitution(float restitution);
+    inline void setRestitution(float restitution)
+    {
+        assert(_body);
+        _body->setRestitution(restitution);
+    }
 
     /**
      * Gets the rigid body's linear damping.
      *
      * @return The linear damping.
      */
-    inline float getLinearDamping() const;
+    inline float getLinearDamping() const
+    {
+        assert(_body);
+        return _body->getLinearDamping();
+    }
 
     /**
      * Gets the rigid body's angular damping.
      *
      * @return The angular damping.
      */
-    inline float getAngularDamping() const;
+    inline float getAngularDamping() const
+    {
+        assert(_body);
+        return _body->getAngularDamping();
+    }
 
     /**
      * Sets the rigid body's linear and angular damping.
@@ -178,21 +202,34 @@ class PhysicsRigidBody : public PhysicsCollisionObject, public Transform::Listen
      * @param linearDamping The linear damping; between 0.0 (minimum) and 1.0 (maximum).
      * @param angularDamping The angular damping; between 0.0 (minimum) and 1.0 (maximum).
      */
-    inline void setDamping(float linearDamping, float angularDamping);
+    inline void setDamping(float linearDamping, float angularDamping)
+    {
+        assert(_body);
+        _body->setDamping(linearDamping, angularDamping);
+    }
 
     /**
      * Gets the rigid body's linear velocity.
      *
      * @return The linear velocity.
      */
-    inline Vector3 getLinearVelocity() const;
+    inline Vector3 getLinearVelocity() const
+    {
+        assert(_body);
+        const btVector3& v = _body->getLinearVelocity();
+        return Vector3(v.x(), v.y(), v.z());
+    }
 
     /**
      * Sets the rigid body's linear velocity.
      *
      * @param velocity The linear velocity.
      */
-    inline void setLinearVelocity(const Vector3& velocity);
+    inline void setLinearVelocity(const Vector3& velocity)
+    {
+        assert(_body);
+        _body->setLinearVelocity(BV(velocity));
+    }
 
     /**
      * Sets the rigid body's linear velocity.
@@ -201,21 +238,34 @@ class PhysicsRigidBody : public PhysicsCollisionObject, public Transform::Listen
      * @param y The y coordinate of the linear velocity vector.
      * @param z The z coordinate of the linear velocity vector.
      */
-    inline void setLinearVelocity(float x, float y, float z);
+    inline void setLinearVelocity(float x, float y, float z)
+    {
+        assert(_body);
+        _body->setLinearVelocity(btVector3(x, y, z));
+    }
 
     /**
      * Gets the rigid body's angular velocity.
      *
      * @return The angular velocity.
      */
-    inline Vector3 getAngularVelocity() const;
+    inline Vector3 getAngularVelocity() const
+    {
+        assert(_body);
+        const btVector3& v = _body->getAngularVelocity();
+        return Vector3(v.x(), v.y(), v.z());
+    }
 
     /**
      * Sets the rigid body's angular velocity.
      *
      * @param velocity The angular velocity.
      */
-    inline void setAngularVelocity(const Vector3& velocity);
+    inline void setAngularVelocity(const Vector3& velocity)
+    {
+        assert(_body);
+        _body->setAngularVelocity(BV(velocity));
+    }
 
     /**
      * Sets the rigid body's angular velocity.
@@ -224,21 +274,34 @@ class PhysicsRigidBody : public PhysicsCollisionObject, public Transform::Listen
      * @param y The y coordinate of the angular velocity vector.
      * @param z The z coordinate of the angular velocity vector.
      */
-    inline void setAngularVelocity(float x, float y, float z);
+    inline void setAngularVelocity(float x, float y, float z)
+    {
+        assert(_body);
+        _body->setAngularVelocity(btVector3(x, y, z));
+    }
 
     /**
      * Gets the rigid body's anisotropic friction.
      *
      * @return The anisotropic friction.
      */
-    inline Vector3 getAnisotropicFriction() const;
+    inline Vector3 getAnisotropicFriction() const
+    {
+        assert(_body);
+        const btVector3& af = _body->getAnisotropicFriction();
+        return Vector3(af.x(), af.y(), af.z());
+    }
 
     /**
      * Sets the rigid body's anisotropic friction.
      *
      * @param friction The anisotropic friction.
      */
-    inline void setAnisotropicFriction(const Vector3& friction);
+    inline void setAnisotropicFriction(const Vector3& friction)
+    {
+        assert(_body);
+        _body->setAnisotropicFriction(BV(friction));
+    }
 
     /**
      * Sets the rigid body's anisotropic friction.
@@ -247,7 +310,11 @@ class PhysicsRigidBody : public PhysicsCollisionObject, public Transform::Listen
      * @param y The y coordinate of the anisotropic friction.
      * @param z The z coordinate of the anisotropic friction.
      */
-    inline void setAnisotropicFriction(float x, float y, float z);
+    inline void setAnisotropicFriction(float x, float y, float z)
+    {
+        assert(_body);
+        _body->setAnisotropicFriction(btVector3(x, y, z));
+    }
 
     /**
      * Gets the gravity that affects the rigid body (this can
@@ -255,14 +322,23 @@ class PhysicsRigidBody : public PhysicsCollisionObject, public Transform::Listen
      *
      * @return The gravity.
      */
-    inline Vector3 getGravity() const;
+    inline Vector3 getGravity() const
+    {
+        assert(_body);
+        const btVector3& g = _body->getGravity();
+        return Vector3(g.x(), g.y(), g.z());
+    }
 
     /**
      * Sets the rigid body's gravity (this overrides the global gravity for this rigid body).
      *
      * @param gravity The gravity.
      */
-    inline void setGravity(const Vector3& gravity);
+    inline void setGravity(const Vector3& gravity)
+    {
+        assert(_body);
+        _body->setGravity(BV(gravity));
+    }
 
     /**
      * Sets the rigid body's gravity (this overrides the global gravity for this rigid body).
@@ -271,14 +347,23 @@ class PhysicsRigidBody : public PhysicsCollisionObject, public Transform::Listen
      * @param y The y coordinate of the gravity vector.
      * @param z The z coordinate of the gravity vector.
      */
-    inline void setGravity(float x, float y, float z);
+    inline void setGravity(float x, float y, float z)
+    {
+        assert(_body);
+        _body->setGravity(btVector3(x, y, z));
+    }
 
     /**
      * Gets the rigid body's angular factor.
      *
      * @return The angular factor.
      */
-    inline Vector3 getAngularFactor() const;
+    inline Vector3 getAngularFactor() const
+    {
+        assert(_body);
+        const btVector3& f = _body->getAngularFactor();
+        return Vector3(f.x(), f.y(), f.z());
+    }
 
     /**
      * Sets the rigid body's angular factor.  x, y, z coordinates correspond to world
@@ -287,7 +372,11 @@ class PhysicsRigidBody : public PhysicsCollisionObject, public Transform::Listen
      *
      * @param angularFactor angular factor vector
      */
-    inline void setAngularFactor(const Vector3& angularFactor);
+    inline void setAngularFactor(const Vector3& angularFactor)
+    {
+        assert(_body);
+        _body->setAngularFactor(BV(angularFactor));
+    }
 
     /**
      * Sets the rigid body's angular factor.  x, y, z coordinates correspond to world
@@ -298,14 +387,23 @@ class PhysicsRigidBody : public PhysicsCollisionObject, public Transform::Listen
      * @param y The y coordinate of the angular factor vector.
      * @param z The z coordinate of the angular factor vector.
      */
-    inline void setAngularFactor(float x, float y, float z);
+    inline void setAngularFactor(float x, float y, float z)
+    {
+        assert(_body);
+        _body->setAngularFactor(btVector3(x, y, z));
+    }
 
     /**
      * Gets the rigid body's linear factor.
      *
      * @return The linear factor.
      */
-    inline Vector3 getLinearFactor() const;
+    inline Vector3 getLinearFactor() const
+    {
+        assert(_body);
+        const btVector3& f = _body->getLinearFactor();
+        return Vector3(f.x(), f.y(), f.z());
+    }
 
     /**
      * Sets the rigid body's linear factor.  x, y, z coordinates correspond to world
@@ -314,7 +412,11 @@ class PhysicsRigidBody : public PhysicsCollisionObject, public Transform::Listen
      *
      * @param linearFactor linear factor vector
      */
-    inline void setLinearFactor(const Vector3& linearFactor);
+    inline void setLinearFactor(const Vector3& angularFactor)
+    {
+        assert(_body);
+        _body->setLinearFactor(BV(angularFactor));
+    }
 
     /**
      * Sets the rigid body's linear factor.  x, y, z coordinates correspond to world
@@ -325,7 +427,11 @@ class PhysicsRigidBody : public PhysicsCollisionObject, public Transform::Listen
      * @param y The y coordinate of the linear factor vector.
      * @param z The z coordinate of the linear factor vector.
      */
-    inline void setLinearFactor(float x, float y, float z);
+    inline void setLinearFactor(float x, float y, float z)
+    {
+        assert(_body);
+        _body->setLinearFactor(btVector3(x, y, z));
+    }
 
     /**
      * Sets whether the rigid body is a kinematic rigid body or not.
@@ -355,7 +461,11 @@ class PhysicsRigidBody : public PhysicsCollisionObject, public Transform::Listen
      *
      * @return Whether the rigid body is static.
      */
-    bool isStatic() const;
+    inline bool isStatic() const
+    {
+        assert(_body);
+        return _body->isStaticObject();
+    }
 
     /**
      * Applies the given force to the rigid body (optionally, from the given relative position).
@@ -454,5 +564,3 @@ class PhysicsRigidBody : public PhysicsCollisionObject, public Transform::Listen
 };
 
 } // namespace tractor
-
-#include "physics/PhysicsRigidBody.inl"

@@ -15,8 +15,6 @@ Vector2::Vector2(const Vector2& p1, const Vector2& p2) { set(p1, p2); }
 
 Vector2::Vector2(const Vector2& copy) { set(copy); }
 
-Vector2::~Vector2() {}
-
 const Vector2& Vector2::zero()
 {
     static Vector2 value(0.0f, 0.0f);

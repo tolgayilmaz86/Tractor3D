@@ -30,8 +30,6 @@ Vector4 Vector4::fromColor(unsigned int color)
     return value;
 }
 
-Vector4::~Vector4() {}
-
 const Vector4& Vector4::zero()
 {
     static Vector4 value(0.0f, 0.0f, 0.0f, 0.0f);

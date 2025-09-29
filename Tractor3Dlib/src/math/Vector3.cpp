@@ -34,8 +34,6 @@ Vector3 Vector3::fromColor(unsigned int color)
     return value;
 }
 
-Vector3::~Vector3() {}
-
 const Vector3& Vector3::zero()
 {
     static Vector3 value(0.0f, 0.0f, 0.0f);

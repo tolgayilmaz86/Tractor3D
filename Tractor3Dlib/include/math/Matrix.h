@@ -119,7 +119,7 @@ class Matrix
     /**
      * Destructor.
      */
-    ~Matrix();
+    ~Matrix() = default;
 
     /**
      * Returns the identity matrix:
@@ -910,7 +910,12 @@ class Matrix
      * @param m The matrix to add.
      * @return The matrix sum.
      */
-    inline const Matrix operator+(const Matrix& m) const;
+    const Matrix operator+(const Matrix& m) const
+    {
+        Matrix result(*this);
+        result.add(m);
+        return result;
+    }
 
     /**
      * Adds the given matrix to this matrix.
@@ -918,7 +923,11 @@ class Matrix
      * @param m The matrix to add.
      * @return This matrix, after the addition occurs.
      */
-    inline Matrix& operator+=(const Matrix& m);
+    Matrix& operator+=(const Matrix& m)
+    {
+        add(m);
+        return *this;
+    }
 
     /**
      * Calculates the difference of this matrix with the given matrix.
@@ -928,7 +937,12 @@ class Matrix
      * @param m The matrix to subtract.
      * @return The matrix difference.
      */
-    inline const Matrix operator-(const Matrix& m) const;
+    const Matrix operator-(const Matrix& m) const
+    {
+        Matrix result(*this);
+        result.subtract(m);
+        return result;
+    }
 
     /**
      * Subtracts the given matrix from this matrix.
@@ -936,7 +950,11 @@ class Matrix
      * @param m The matrix to subtract.
      * @return This matrix, after the subtraction occurs.
      */
-    inline Matrix& operator-=(const Matrix& m);
+    Matrix& operator-=(const Matrix& m)
+    {
+        subtract(m);
+        return *this;
+    }
 
     /**
      * Calculates the negation of this matrix.
@@ -945,7 +963,12 @@ class Matrix
      *
      * @return The negation of this matrix.
      */
-    inline const Matrix operator-() const;
+    const Matrix operator-() const
+    {
+        Matrix m(*this);
+        m.negate();
+        return m;
+    }
 
     /**
      * Calculates the matrix product of this matrix with the given matrix.
@@ -955,7 +978,12 @@ class Matrix
      * @param m The matrix to multiply by.
      * @return The matrix product.
      */
-    inline const Matrix operator*(const Matrix& m) const;
+    const Matrix operator*(const Matrix& m) const
+    {
+        Matrix result(*this);
+        result.multiply(m);
+        return result;
+    }
 
     /**
      * Right-multiplies this matrix by the given matrix.
@@ -963,7 +991,11 @@ class Matrix
      * @param m The matrix to multiply by.
      * @return This matrix, after the multiplication occurs.
      */
-    inline Matrix& operator*=(const Matrix& m);
+    Matrix& operator*=(const Matrix& m)
+    {
+        multiply(m);
+        return *this;
+    }
 
   private:
     static Matrix createBillboardHelper(const Vector3& objectPosition,
@@ -981,7 +1013,11 @@ class Matrix
  * @param m The matrix to transform by.
  * @return This vector, after the transformation occurs.
  */
-inline Vector3& operator*=(Vector3& v, const Matrix& m);
+inline Vector3& operator*=(Vector3& v, const Matrix& m)
+{
+    m.transformVector(&v);
+    return v;
+}
 
 /**
  * Transforms the given vector by the given matrix.
@@ -992,7 +1028,12 @@ inline Vector3& operator*=(Vector3& v, const Matrix& m);
  * @param v The vector to transform.
  * @return The resulting transformed vector.
  */
-inline const Vector3 operator*(const Matrix& m, const Vector3& v);
+inline const Vector3 operator*(const Matrix& m, const Vector3& v)
+{
+    Vector3 x;
+    m.transformVector(v, &x);
+    return x;
+}
 
 /**
  * Transforms the given vector by the given matrix.
@@ -1003,7 +1044,11 @@ inline const Vector3 operator*(const Matrix& m, const Vector3& v);
  * @param m The matrix to transform by.
  * @return This vector, after the transformation occurs.
  */
-inline Vector4& operator*=(Vector4& v, const Matrix& m);
+inline Vector4& operator*=(Vector4& v, const Matrix& m)
+{
+    m.transformVector(&v);
+    return v;
+}
 
 /**
  * Transforms the given vector by the given matrix.
@@ -1014,8 +1059,12 @@ inline Vector4& operator*=(Vector4& v, const Matrix& m);
  * @param v The vector to transform.
  * @return The resulting transformed vector.
  */
-inline const Vector4 operator*(const Matrix& m, const Vector4& v);
+inline const Vector4 operator*(const Matrix& m, const Vector4& v)
+{
+    Vector4 x;
+    m.transformVector(v, &x);
+    return x;
+}
 
 } // namespace tractor
 
-#include "math/Matrix.inl"

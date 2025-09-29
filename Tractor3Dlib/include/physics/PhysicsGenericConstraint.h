@@ -23,28 +23,65 @@ class PhysicsGenericConstraint : public PhysicsConstraint
      *
      * @return The rotation offset.
      */
-    inline const Quaternion& getRotationOffsetA() const;
+    inline const Quaternion& getRotationOffsetA() const
+    {
+        if (!_rotationOffsetA) _rotationOffsetA = new Quaternion();
+
+        assert(_constraint);
+        btQuaternion ro =
+            static_cast<btGeneric6DofConstraint*>(_constraint)->getFrameOffsetA().getRotation();
+        _rotationOffsetA->set(ro.x(), ro.y(), ro.z(), ro.w());
+        return *_rotationOffsetA;
+    }
 
     /**
      * Gets the rotation offset for the second rigid body in the constraint.
      *
      * @return The rotation offset.
      */
-    inline const Quaternion& getRotationOffsetB() const;
+
+  inline const Quaternion& getRotationOffsetB() const
+    {
+        if (!_rotationOffsetB) _rotationOffsetB = new Quaternion();
+
+        assert(_constraint);
+        btQuaternion ro =
+            static_cast<btGeneric6DofConstraint*>(_constraint)->getFrameOffsetB().getRotation();
+        _rotationOffsetB->set(ro.x(), ro.y(), ro.z(), ro.w());
+        return *_rotationOffsetB;
+    }
 
     /**
      * Gets the translation offset for the first rigid body in the constraint.
      *
      * @return The translation offset.
      */
-    inline const Vector3& getTranslationOffsetA() const;
+    inline const Vector3& getTranslationOffsetA() const
+    {
+        if (!_translationOffsetA) _translationOffsetA = new Vector3();
+
+        assert(_constraint);
+        btVector3 to =
+            static_cast<btGeneric6DofConstraint*>(_constraint)->getFrameOffsetA().getOrigin();
+        _translationOffsetA->set(to.x(), to.y(), to.z());
+        return *_translationOffsetA;
+    }
 
     /**
      * Gets the translation offset for the second rigid body in the constraint.
      *
      * @return The translation offset.
      */
-    inline const Vector3& getTranslationOffsetB() const;
+    inline const Vector3& getTranslationOffsetB() const
+    {
+        if (!_translationOffsetB) _translationOffsetB = new Vector3();
+
+        assert(_constraint);
+        btVector3 to =
+            static_cast<btGeneric6DofConstraint*>(_constraint)->getFrameOffsetB().getOrigin();
+        _translationOffsetB->set(to.x(), to.y(), to.z());
+        return *_translationOffsetB;
+    }
 
     /**
      * Sets the lower angular limits (as Euler angle limits) along the constraint's local
@@ -52,7 +89,11 @@ class PhysicsGenericConstraint : public PhysicsConstraint
      *
      * @param limits The lower angular limits (as Euler angle limits) along the local X, Y, and Z axes.
      */
-    inline void setAngularLowerLimit(const Vector3& limits);
+    inline void setAngularLowerLimit(const Vector3& limits)
+    {
+        assert(_constraint);
+        ((btGeneric6DofConstraint*)_constraint)->setAngularLowerLimit(BV(limits));
+    }
 
     /**
      * Sets the upper angular limits (as Euler angle limits) along the constraint's local
@@ -60,7 +101,11 @@ class PhysicsGenericConstraint : public PhysicsConstraint
      *
      * @param limits The upper angular limits (as Euler angle limits) along the local X, Y, and Z axes.
      */
-    inline void setAngularUpperLimit(const Vector3& limits);
+    inline void setAngularUpperLimit(const Vector3& limits)
+    {
+        assert(_constraint);
+        ((btGeneric6DofConstraint*)_constraint)->setAngularUpperLimit(BV(limits));
+    }
 
     /**
      * Sets the lower linear limits along the constraint's local
@@ -68,7 +113,11 @@ class PhysicsGenericConstraint : public PhysicsConstraint
      *
      * @param limits The lower linear limits along the local X, Y, and Z axes.
      */
-    inline void setLinearLowerLimit(const Vector3& limits);
+    inline void setLinearLowerLimit(const Vector3& limits)
+    {
+        assert(_constraint);
+        ((btGeneric6DofConstraint*)_constraint)->setLinearLowerLimit(BV(limits));
+    }
 
     /**
      * Sets the upper linear limits along the constraint's local
@@ -76,35 +125,163 @@ class PhysicsGenericConstraint : public PhysicsConstraint
      *
      * @param limits The upper linear limits along the local X, Y, and Z axes.
      */
-    inline void setLinearUpperLimit(const Vector3& limits);
+    inline void setLinearUpperLimit(const Vector3& limits)
+    {
+        assert(_constraint);
+        ((btGeneric6DofConstraint*)_constraint)->setLinearUpperLimit(BV(limits));
+    }
 
     /**
      * Sets the rotation offset for the first rigid body in the constraint.
      *
      * @param rotationOffset The rotation offset.
      */
-    inline void setRotationOffsetA(const Quaternion& rotationOffset);
+    inline void setRotationOffsetA(const Quaternion& rotationOffset)
+    {
+        assert(_constraint);
+        static_cast<btGeneric6DofConstraint*>(_constraint)
+            ->getFrameOffsetA()
+            .setRotation(BQ(rotationOffset));
+    }
 
     /**
      * Sets the rotation offset for the second rigid body in the constraint.
      *
      * @param rotationOffset The rotation offset.
      */
-    inline void setRotationOffsetB(const Quaternion& rotationOffset);
+    inline void setRotationOffsetB(const Quaternion& rotationOffset)
+    {
+        assert(_constraint);
+        static_cast<btGeneric6DofConstraint*>(_constraint)
+            ->getFrameOffsetB()
+            .setRotation(BQ(rotationOffset));
+    }
 
     /**
      * Sets the translation offset for the first rigid body in the constraint.
      *
      * @param translationOffset The translation offset.
      */
-    inline void setTranslationOffsetA(const Vector3& translationOffset);
+    inline void setTranslationOffsetA(const Vector3& translationOffset)
+    {
+        assert(_constraint);
+        static_cast<btGeneric6DofConstraint*>(_constraint)
+            ->getFrameOffsetA()
+            .setOrigin(BV(translationOffset));
+    }
 
     /**
      * Sets the translation offset for the second rigid body in the constraint.
      *
      * @param translationOffset The translation offset.
      */
-    inline void setTranslationOffsetB(const Vector3& translationOffset);
+    inline void setTranslationOffsetB(const Vector3& translationOffset)
+    {
+        assert(_constraint);
+        static_cast<btGeneric6DofConstraint*>(_constraint)
+            ->getFrameOffsetB()
+            .setOrigin(BV(translationOffset));
+    }
+
+    inline const Quaternion& PgetRotationOffsetA() const
+    {
+        if (!_rotationOffsetA) _rotationOffsetA = new Quaternion();
+
+        assert(_constraint);
+        btQuaternion ro =
+            static_cast<btGeneric6DofConstraint*>(_constraint)->getFrameOffsetA().getRotation();
+        _rotationOffsetA->set(ro.x(), ro.y(), ro.z(), ro.w());
+        return *_rotationOffsetA;
+    }
+
+    inline const Quaternion& PgetRotationOffsetB() const
+    {
+        if (!_rotationOffsetB) _rotationOffsetB = new Quaternion();
+
+        assert(_constraint);
+        btQuaternion ro =
+            static_cast<btGeneric6DofConstraint*>(_constraint)->getFrameOffsetB().getRotation();
+        _rotationOffsetB->set(ro.x(), ro.y(), ro.z(), ro.w());
+        return *_rotationOffsetB;
+    }
+
+    inline const Vector3& PgetTranslationOffsetA() const
+    {
+        if (!_translationOffsetA) _translationOffsetA = new Vector3();
+
+        assert(_constraint);
+        btVector3 to =
+            static_cast<btGeneric6DofConstraint*>(_constraint)->getFrameOffsetA().getOrigin();
+        _translationOffsetA->set(to.x(), to.y(), to.z());
+        return *_translationOffsetA;
+    }
+
+    inline const Vector3& PgetTranslationOffsetB() const
+    {
+        if (!_translationOffsetB) _translationOffsetB = new Vector3();
+
+        assert(_constraint);
+        btVector3 to =
+            static_cast<btGeneric6DofConstraint*>(_constraint)->getFrameOffsetB().getOrigin();
+        _translationOffsetB->set(to.x(), to.y(), to.z());
+        return *_translationOffsetB;
+    }
+
+    inline void PsetAngularLowerLimit(const Vector3& limits)
+    {
+        assert(_constraint);
+        ((btGeneric6DofConstraint*)_constraint)->setAngularLowerLimit(BV(limits));
+    }
+
+    inline void PsetAngularUpperLimit(const Vector3& limits)
+    {
+        assert(_constraint);
+        ((btGeneric6DofConstraint*)_constraint)->setAngularUpperLimit(BV(limits));
+    }
+
+    inline void PsetLinearLowerLimit(const Vector3& limits)
+    {
+        assert(_constraint);
+        ((btGeneric6DofConstraint*)_constraint)->setLinearLowerLimit(BV(limits));
+    }
+
+    inline void PsetLinearUpperLimit(const Vector3& limits)
+    {
+        assert(_constraint);
+        ((btGeneric6DofConstraint*)_constraint)->setLinearUpperLimit(BV(limits));
+    }
+
+    inline void PsetRotationOffsetA(const Quaternion& rotationOffset)
+    {
+        assert(_constraint);
+        static_cast<btGeneric6DofConstraint*>(_constraint)
+            ->getFrameOffsetA()
+            .setRotation(BQ(rotationOffset));
+    }
+
+    inline void PsetRotationOffsetB(const Quaternion& rotationOffset)
+    {
+        assert(_constraint);
+        static_cast<btGeneric6DofConstraint*>(_constraint)
+            ->getFrameOffsetB()
+            .setRotation(BQ(rotationOffset));
+    }
+
+    inline void PsetTranslationOffsetA(const Vector3& translationOffset)
+    {
+        assert(_constraint);
+        static_cast<btGeneric6DofConstraint*>(_constraint)
+            ->getFrameOffsetA()
+            .setOrigin(BV(translationOffset));
+    }
+
+    inline void PsetTranslationOffsetB(const Vector3& translationOffset)
+    {
+        assert(_constraint);
+        static_cast<btGeneric6DofConstraint*>(_constraint)
+            ->getFrameOffsetB()
+            .setOrigin(BV(translationOffset));
+    }
 
   protected:
     /**
@@ -160,5 +337,3 @@ class PhysicsGenericConstraint : public PhysicsConstraint
 };
 
 } // namespace tractor
-
-#include "physics/PhysicsGenericConstraint.inl"

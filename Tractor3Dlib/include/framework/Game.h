@@ -6,6 +6,7 @@
 #include "ai/AIController.h"
 #include "animation/AnimationController.h"
 #include "audio/AudioController.h"
+#include "framework/Platform.h"
 #include "graphics/Rectangle.h"
 #include "input/Gamepad.h"
 #include "input/Gesture.h"
@@ -111,14 +112,14 @@ class Game
      *
      * @return The current game state.
      */
-    inline State getState() const;
+    constexpr Game::State getState() const { return _state; }
 
     /**
      * Determines if the game has been initialized.
      *
      * @return true if the game initialization has completed, false otherwise.
      */
-    inline bool isInitialized() const;
+    constexpr bool isInitialized() const { return _initialized; }
 
     /**
      * Returns the game configuration object.
@@ -165,35 +166,35 @@ class Game
      *
      * @return The current frame rate.
      */
-    inline unsigned int getFrameRate() const;
+    constexpr unsigned int getFrameRate() const { return _frameRate; }
 
     /**
      * Gets the game window width.
      *
      * @return The game window width.
      */
-    inline unsigned int getWidth() const;
+    constexpr unsigned int getWidth() const { return _width; }
 
     /**
      * Gets the game window height.
      *
      * @return The game window height.
      */
-    inline unsigned int getHeight() const;
+    constexpr unsigned int getHeight() const { return _height; }
 
     /**
      * Gets the aspect ratio of the window. (width / height)
      *
      * @return The aspect ratio of the window.
      */
-    inline float getAspectRatio() const;
+    constexpr float getAspectRatio() const { return (float)_width / (float)_height; }
 
     /**
      * Gets the game current viewport.
      *
      * The default viewport is Rectangle(0, 0, Game::getWidth(), Game::getHeight()).
      */
-    inline const Rectangle& getViewport() const;
+    constexpr const Rectangle& getViewport() const { return _viewport; }
 
     /**
      * Sets the game current viewport.
@@ -239,7 +240,7 @@ class Game
      *
      * @return The audio controller for this game.
      */
-    inline AudioController* getAudioController() const;
+    constexpr AudioController* getAudioController() const { return _audioController; }
 
     /**
      * Gets the animation controller for managing control of animations
@@ -247,7 +248,7 @@ class Game
      *
      * @return The animation controller for this game.
      */
-    inline AnimationController* getAnimationController() const;
+    constexpr AnimationController* getAnimationController() const { return _animationController; }
 
     /**
      * Gets the physics controller for managing control of physics
@@ -255,7 +256,7 @@ class Game
      *
      * @return The physics controller for this game.
      */
-    inline PhysicsController* getPhysicsController() const;
+    constexpr PhysicsController* getPhysicsController() const { return _physicsController; }
 
     /**
      * Gets the AI controller for managing control of artificial
@@ -263,7 +264,7 @@ class Game
      *
      * @return The AI controller for this game.
      */
-    inline AIController* getAIController() const;
+    constexpr AIController* getAIController() const { return _aiController; }
 
     /**
      * Gets the script controller for managing control of Lua scripts
@@ -271,7 +272,7 @@ class Game
      *
      * @return The script controller for this game.
      */
-    inline ScriptController* getScriptController() const;
+    constexpr ScriptController* getScriptController() const { return _scriptController; }
 
     /**
      * Gets the audio listener for 3D audio.
@@ -285,7 +286,7 @@ class Game
      *
      * @param display true when virtual keyboard needs to be displayed; false otherwise.
      */
-    inline void displayKeyboard(bool display);
+    inline void displayKeyboard(bool display) { Platform::displayKeyboard(display); }
 
     /**
      * Keyboard callback on keyPress events.
@@ -343,14 +344,14 @@ class Game
      *
      * @return true if a mouse is supported, false otherwise.
      */
-    inline bool hasMouse();
+    inline bool hasMouse() { return Platform::hasMouse(); }
 
     /**
      * Gets whether mouse input is currently captured.
      *
      * @return is the mouse captured.
      */
-    inline bool isMouseCaptured();
+    inline bool isMouseCaptured() { return Platform::isMouseCaptured(); }
 
     /**
      * Enables or disables mouse capture.
@@ -363,21 +364,21 @@ class Game
      *
      * @param captured true to enable mouse capture mode, false to disable it.
      */
-    inline void setMouseCaptured(bool captured);
+    inline void setMouseCaptured(bool captured) { Platform::setMouseCaptured(captured); }
 
     /**
      * Sets the visibility of the platform cursor.
      *
      * @param visible true to show the platform cursor, false to hide it.
      */
-    inline void setCursorVisible(bool visible);
+    inline void setCursorVisible(bool visible) { Platform::setCursorVisible(visible); }
 
     /**
      * Determines whether the platform cursor is currently visible.
      *
      * @return true if the platform cursor is visible, false otherwise.
      */
-    inline bool isCursorVisible();
+    inline bool isCursorVisible() { return Platform::isCursorVisible(); }
 
     /**
      * Determines whether a specified gesture event is supported.
@@ -492,7 +493,7 @@ class Game
      *
      * @return The number of gamepads currently connected to the system.
      */
-    inline unsigned int getGamepadCount() const;
+    inline unsigned int getGamepadCount() const { return Gamepad::getGamepadCount(); }
 
     /**
      * Gets the gamepad at the specified index.
@@ -509,47 +510,49 @@ class Game
      * @param preferPhysical true if you prefer return a physical if exist; false if only virtual.
      * @return The gamepad at the specified index.
      */
-    inline Gamepad* getGamepad(unsigned int index, bool preferPhysical = true) const;
-
+    inline Gamepad* getGamepad(unsigned int index, bool preferPhysical =true) const
+    {
+        return Gamepad::getGamepad(index, preferPhysical);
+    }
     /**
      * Sets whether multi-sampling is to be enabled/disabled. Default is disabled.
      *
      * @param enabled true sets multi-sampling to be enabled, false to be disabled.
      */
-    inline void setMultiSampling(bool enabled);
+    inline void setMultiSampling(bool enabled) { Platform::setMultiSampling(enabled); }
 
     /**
      * Is multi-sampling enabled.
      *
      * @return true if multi-sampling is enabled.
      */
-    inline bool isMultiSampling() const;
+    inline bool isMultiSampling() const { return Platform::isMultiSampling(); }
 
     /**
      * Sets multi-touch is to be enabled/disabled. Default is disabled.
      *
      * @param enabled true sets multi-touch is enabled, false to be disabled.
      */
-    inline void setMultiTouch(bool enabled);
+    inline void setMultiTouch(bool enabled) { Platform::setMultiTouch(enabled); }
 
     /**
      * Is multi-touch mode enabled.
      *
      * @return true if multi-touch is enabled.
      */
-    inline bool isMultiTouch() const;
+    inline bool isMultiTouch() const { return Platform::isMultiTouch(); }
 
     /**
      * Whether this game is allowed to exit programmatically.
      *
      * @return true if a programmatic exit is allowed.
      */
-    inline bool canExit() const;
+    inline bool canExit() const { return Platform::canExit(); }
 
     /**
      * Whether this game has accelerometer support.
      */
-    inline bool hasAccelerometer() const;
+    inline bool hasAccelerometer() const { return Platform::hasAccelerometer(); }
 
     /**
      * Gets the current accelerometer values for use as an indication of device
@@ -561,7 +564,10 @@ class Game
      * @param pitch The pitch angle returned (in degrees). Zero if hasAccelerometer() returns false.
      * @param roll The roll angle returned (in degrees). Zero if hasAccelerometer() returns false.
      */
-    inline void getAccelerometerValues(float* pitch, float* roll);
+    inline void getAccelerometerValues(float* pitch, float* roll)
+    {
+        Platform::getAccelerometerValues(pitch, roll);
+    }
 
     /**
      * Gets sensor values (raw), if equipped, allowing a distinction between device acceleration
@@ -580,7 +586,10 @@ class Game
                                 float* accelZ,
                                 float* gyroX,
                                 float* gyroY,
-                                float* gyroZ);
+                                float* gyroZ)
+    {
+        return Platform::getSensorValues(accelX, accelY, accelZ, gyroX, gyroY, gyroZ);
+    }
 
     /**
      * Gets the command line arguments.
@@ -632,7 +641,7 @@ class Game
      *
      * @return True if URL was opened successfully, false otherwise.
      */
-    bool launchURL(const std::string& url) const;
+    inline bool launchURL(const std::string& url) const { return Platform::launchURL(url); }
 
   protected:
     /**
@@ -670,8 +679,12 @@ class Game
      *
      * This is useful for rendering splash screens.
      */
-    template <class T> void renderOnce(T* instance, std::function<void(void*)>, void* cookie);
-
+    template <class T> void renderOnce(T* instance, std::function<void(void*)> method, void* data)
+    {
+        assert(instance);
+        method(data);
+        Platform::swapBuffers();
+    }
     /**
      * Renders a single frame once and then swaps it to the display.
      * This calls the given script function, which should take no parameters and return nothing (void).
@@ -765,10 +778,10 @@ class Game
     unsigned int _width;            // The game's display width.
     unsigned int _height;           // The game's display height.
     Rectangle _viewport;            // the games's current viewport.
-    Vector4 _clearColor;     // The clear color value last used for clearing the color buffer.
-    float _clearDepth;       // The clear depth value last used for clearing the depth buffer.
-    int _clearStencil;       // The clear stencil value last used for clearing the stencil buffer.
-    std::unique_ptr<Properties> _properties; // Game configuration properties object.
+    Vector4 _clearColor; // The clear color value last used for clearing the color buffer.
+    float _clearDepth;   // The clear depth value last used for clearing the depth buffer.
+    int _clearStencil;   // The clear stencil value last used for clearing the stencil buffer.
+    std::unique_ptr<Properties> _properties;   // Game configuration properties object.
     AnimationController* _animationController; // Controls the scheduling and running of animations.
     AudioController* _audioController;     // Controls audio sources that are playing in the game.
     PhysicsController* _physicsController; // Controls the simulation of a physics scene and entities.
@@ -785,5 +798,3 @@ class Game
 };
 
 } // namespace tractor
-
-#include "Game.inl"

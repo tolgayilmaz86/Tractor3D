@@ -1,8 +1,7 @@
 #pragma once
 
-#include "pch.h"
-
 #include "math/Vector3.h"
+#include "math/Quaternion.h"
 
 namespace tractor
 {
@@ -23,7 +22,7 @@ class PhysicsConstraint
      *
      * @return The impulse needed to break the constraint.
      */
-    inline float getBreakingImpulse() const;
+    float getBreakingImpulse() const { return _constraint->getBreakingImpulseThreshold(); }
 
     /**
      * Sets the impulse needed to break the constraint
@@ -33,21 +32,21 @@ class PhysicsConstraint
      *
      * @param impulse The impulse needed to break the constraint.
      */
-    inline void setBreakingImpulse(float impulse);
+    void setBreakingImpulse(float impulse) { _constraint->setBreakingImpulseThreshold(impulse); }
 
     /**
      * Gets whether the constraint is enabled or not.
      *
      * @return Whether the constraint is enabled or not.
      */
-    inline bool isEnabled() const;
+    bool isEnabled() const { return _constraint->isEnabled(); }
 
     /**
      * Sets whether the constraint is enabled or not.
      *
      * @param enabled Whether the constraint is enabled or not.
      */
-    inline void setEnabled(bool enabled);
+    void setEnabled(bool enabled) { _constraint->setEnabled(enabled); }
 
     /**
      * Calculates the midpoint between the given nodes' centers of mass.
@@ -117,5 +116,3 @@ class PhysicsConstraint
 };
 
 } // namespace tractor
-
-#include "physics/PhysicsConstraint.inl"

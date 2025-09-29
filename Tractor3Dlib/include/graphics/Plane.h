@@ -220,7 +220,11 @@ class Plane
      * @param matrix The matrix to transform by.
      * @return This plane, after the transformation occurs.
      */
-    inline Plane& operator*=(const Matrix& matrix);
+    Plane& operator*=(const Matrix& matrix)
+    {
+        transform(matrix);
+        return *this;
+    }
 
   private:
     /**
@@ -239,8 +243,10 @@ class Plane
  * @param plane The plane to transform.
  * @return The resulting transformed plane.
  */
-inline const Plane operator*(const Matrix& matrix, const Plane& plane);
-
+inline const Plane operator*(const Matrix& matrix, const Plane& plane)
+{
+    Plane p(plane);
+    p.transform(matrix);
+    return p;
+}
 } // namespace tractor
-
-#include "graphics/Plane.inl"

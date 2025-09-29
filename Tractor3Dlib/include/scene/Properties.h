@@ -87,9 +87,6 @@ struct Property
     const char* fileName = spriteTexture->getString("fileName");
     int width = spriteTexture->getInt("width");
     int height = spriteTexture->getInt("height");
-
-    // Deleting the top-level Properties object will clean up all nested namespaces.
-    SAFE_DELETE(properties);
  @endverbatim
 
  * On the other hand, if the structure of the file is not known in advance its

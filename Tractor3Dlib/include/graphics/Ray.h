@@ -1,6 +1,7 @@
 #pragma once
 
 #include "math/Vector3.h"
+#include "math/Matrix.h"
 
 namespace tractor
 {
@@ -175,7 +176,11 @@ class Ray
      * @param matrix The matrix to transform by.
      * @return This ray, after the transformation occurs.
      */
-    inline Ray& operator*=(const Matrix& matrix);
+    Ray& operator*=(const Matrix& matrix)
+    {
+        transform(matrix);
+        return *this;
+    }
 
   private:
     /**
@@ -194,8 +199,11 @@ class Ray
  * @param ray The ray to transform.
  * @return The resulting transformed ray.
  */
-inline const Ray operator*(const Matrix& matrix, const Ray& ray);
-
+inline const Ray operator*(const Matrix& matrix, const Ray& ray)
+{
+    Ray r(ray);
+    r.transform(matrix);
+    return r;
+}
 } // namespace tractor
 
-#include "graphics/Ray.inl"

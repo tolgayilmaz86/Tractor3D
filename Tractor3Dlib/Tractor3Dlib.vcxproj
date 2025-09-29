@@ -15,26 +15,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <None Include="include\framework\Game.inl" />
-    <None Include="include\graphics\BoundingBox.inl" />
-    <None Include="include\graphics\BoundingSphere.inl" />
-    <None Include="include\graphics\MeshBatch.inl" />
-    <None Include="include\graphics\Plane.inl" />
-    <None Include="include\graphics\Ray.inl" />
-    <None Include="include\math\MathUtil.inl" />
-    <None Include="include\math\MathUtilNeon.inl" />
-    <None Include="include\math\Matrix.inl" />
-    <None Include="include\math\Quaternion.inl" />
-    <None Include="include\math\Vector2.inl" />
-    <None Include="include\math\Vector3.inl" />
-    <None Include="include\math\Vector4.inl" />
-    <None Include="include\physics\PhysicsConstraint.inl" />
-    <None Include="include\physics\PhysicsFixedConstraint.inl" />
-    <None Include="include\physics\PhysicsGenericConstraint.inl" />
-    <None Include="include\physics\PhysicsRigidBody.inl" />
-    <None Include="include\physics\PhysicsSpringConstraint.inl" />
-    <None Include="include\scripting\ScriptController.inl" />
-    <None Include="include\ui\Image.inl" />
     <None Include="res\materials\terrain.material" />
     <None Include="res\shaders\colored.frag" />
     <None Include="res\shaders\colored.vert" />

@@ -158,7 +158,11 @@ class BoundingSphere
      * @param matrix The matrix to transform by.
      * @return This bounding sphere, after the transformation occurs.
      */
-    inline BoundingSphere& operator*=(const Matrix& matrix);
+    BoundingSphere& operator*=(const Matrix& matrix)
+    {
+        transform(matrix);
+        return *this;
+    }
 
   private:
     float distance(const BoundingSphere& sphere, const Vector3&);
@@ -173,8 +177,11 @@ class BoundingSphere
  * @param sphere The bounding sphere to transform.
  * @return The resulting transformed bounding sphere.
  */
-inline const BoundingSphere operator*(const Matrix& matrix, const BoundingSphere& sphere);
+inline const BoundingSphere operator*(const Matrix& matrix, const BoundingSphere& sphere)
+{
+    BoundingSphere s(sphere);
+    s.transform(matrix);
+    return s;
+}
 
 } // namespace tractor
-
-#include "graphics/BoundingSphere.inl"

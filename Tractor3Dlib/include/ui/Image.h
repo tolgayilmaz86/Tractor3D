@@ -52,28 +52,28 @@ class Image : public Ref
      * @return The image's pixel data.
      * @script{ignore}
      */
-    inline unsigned char* getData() const;
+    constexpr unsigned char* getData() const { return _data; }
 
     /**
      * Gets the image's format.
      *
      * @return The image's format.
      */
-    inline Format getFormat() const;
+    constexpr Image::Format getFormat() const { return _format; }
 
     /**
      * Gets the height of the image.
      *
      * @return The height of the image.
      */
-    inline unsigned int getHeight() const;
+    constexpr unsigned int getHeight() const { return _height; }
 
     /**
      * Gets the width of the image.
      *
      * @return The width of the image.
      */
-    inline unsigned int getWidth() const;
+    constexpr unsigned int getWidth() const { return _width; }
 
   private:
     /**
@@ -98,5 +98,3 @@ class Image : public Ref
 };
 
 } // namespace tractor
-
-#include "Image.inl"

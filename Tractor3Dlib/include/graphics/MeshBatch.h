@@ -77,7 +77,8 @@ class MeshBatch
      *
      * @return The material used to draw the batch.
      */
-    inline Material* getMaterial() const;
+    constexpr Material* getMaterial() const noexcept { return _material; }
+
 
     /**
      * Adds a group of primitives to the batch.
@@ -102,7 +103,10 @@ class MeshBatch
     void add(const T* vertices,
              unsigned int vertexCount,
              const unsigned short* indices = nullptr,
-             unsigned int indexCount = 0);
+             unsigned int indexCount = 0)
+    {
+        add(vertices, sizeof(T), vertexCount, indices, indexCount);
+    }
 
     /**
      * Adds a group of primitives to the batch.
@@ -204,5 +208,3 @@ class MeshBatch
 };
 
 } // namespace tractor
-
-#include "graphics/MeshBatch.inl"

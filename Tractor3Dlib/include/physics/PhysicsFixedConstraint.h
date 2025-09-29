@@ -34,24 +34,34 @@ class PhysicsFixedConstraint : public PhysicsGenericConstraint
     /**
      * Protected to prevent usage.
      */
-    inline void setAngularLowerLimit(const Vector3& limit);
+    inline void setAngularLowerLimit(const Vector3& limit)
+    {
+        PhysicsGenericConstraint::setAngularLowerLimit(limit);
+    }
 
     /**
      * Protected to prevent usage.
      */
-    inline void setAngularUpperLimit(const Vector3& limit);
+    inline void setAngularUpperLimit(const Vector3& limit)
+    {
+        PhysicsGenericConstraint::setAngularUpperLimit(limit);
+    }
 
     /**
      * Protected to prevent usage.
      */
-    inline void setLinearLowerLimit(const Vector3& limit);
+    inline void setLinearLowerLimit(const Vector3& limit)
+    {
+        PhysicsGenericConstraint::setLinearLowerLimit(limit);
+    }
 
     /**
      * Protected to prevent usage.
      */
-    inline void setLinearUpperLimit(const Vector3& limit);
+    inline void setLinearUpperLimit(const Vector3& limit)
+    {
+        PhysicsGenericConstraint::setLinearUpperLimit(limit);
+    }
 };
 
 } // namespace tractor
-
-#include "physics/PhysicsFixedConstraint.inl"

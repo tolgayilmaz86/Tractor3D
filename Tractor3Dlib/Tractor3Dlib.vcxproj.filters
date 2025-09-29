@@ -153,66 +153,6 @@
     <None Include="res\ui\default.theme">
       <Filter>res\ui</Filter>
     </None>
-    <None Include="include\framework\Game.inl">
-      <Filter>include\framework</Filter>
-    </None>
-    <None Include="include\graphics\BoundingBox.inl">
-      <Filter>include\graphics</Filter>
-    </None>
-    <None Include="include\graphics\BoundingSphere.inl">
-      <Filter>include\graphics</Filter>
-    </None>
-    <None Include="include\graphics\MeshBatch.inl">
-      <Filter>include\graphics</Filter>
-    </None>
-    <None Include="include\graphics\Plane.inl">
-      <Filter>include\graphics</Filter>
-    </None>
-    <None Include="include\graphics\Ray.inl">
-      <Filter>include\graphics</Filter>
-    </None>
-    <None Include="include\math\MathUtil.inl">
-      <Filter>include\math</Filter>
-    </None>
-    <None Include="include\math\MathUtilNeon.inl">
-      <Filter>include\math</Filter>
-    </None>
-    <None Include="include\math\Matrix.inl">
-      <Filter>include\math</Filter>
-    </None>
-    <None Include="include\math\Quaternion.inl">
-      <Filter>include\math</Filter>
-    </None>
-    <None Include="include\math\Vector2.inl">
-      <Filter>include\math</Filter>
-    </None>
-    <None Include="include\math\Vector3.inl">
-      <Filter>include\math</Filter>
-    </None>
-    <None Include="include\math\Vector4.inl">
-      <Filter>include\math</Filter>
-    </None>
-    <None Include="include\ui\Image.inl">
-      <Filter>include\ui</Filter>
-    </None>
-    <None Include="include\scripting\ScriptController.inl">
-      <Filter>include\scripting</Filter>
-    </None>
-    <None Include="include\physics\PhysicsConstraint.inl">
-      <Filter>include\physics</Filter>
-    </None>
-    <None Include="include\physics\PhysicsFixedConstraint.inl">
-      <Filter>include\physics</Filter>
-    </None>
-    <None Include="include\physics\PhysicsGenericConstraint.inl">
-      <Filter>include\physics</Filter>
-    </None>
-    <None Include="include\physics\PhysicsRigidBody.inl">
-      <Filter>include\physics</Filter>
-    </None>
-    <None Include="include\physics\PhysicsSpringConstraint.inl">
-      <Filter>include\physics</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\ui\default-theme.png">
@@ -705,9 +645,6 @@
     <ClInclude Include="include\math\Matrix.h">
       <Filter>include\math</Filter>
     </ClInclude>
-    <ClInclude Include="include\math\Quaternion.h">
-      <Filter>include\math</Filter>
-    </ClInclude>
     <ClInclude Include="include\math\Transform.h">
       <Filter>include\math</Filter>
     </ClInclude>
@@ -902,6 +839,9 @@
     </ClInclude>
     <ClInclude Include="include\utils\StringUtil.h">
       <Filter>include\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\math\Quaternion.h">
+      <Filter>include\math</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

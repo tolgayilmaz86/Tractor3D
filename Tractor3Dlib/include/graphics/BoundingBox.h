@@ -213,7 +213,11 @@ class BoundingBox
      * @param matrix The matrix to transform by.
      * @return This bounding box, after the transformation occurs.
      */
-    inline BoundingBox& operator*=(const Matrix& matrix);
+    BoundingBox& operator*=(const Matrix& matrix)
+    {
+        transform(matrix);
+        return *this;
+    }
 };
 
 /**
@@ -223,8 +227,11 @@ class BoundingBox
  * @param box The bounding box to transform.
  * @return The resulting transformed bounding box.
  */
-inline const BoundingBox operator*(const Matrix& matrix, const BoundingBox& box);
+inline const BoundingBox operator*(const Matrix& matrix, const BoundingBox& box)
+{
+    BoundingBox b(box);
+    b.transform(matrix);
+    return b;
+}
 
 } // namespace tractor
-
-#include "graphics/BoundingBox.inl"

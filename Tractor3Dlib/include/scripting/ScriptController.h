@@ -1447,5 +1447,3 @@ class ScriptUtil
 };
 
 } // namespace tractor
-
-#include "ScriptController.inl"

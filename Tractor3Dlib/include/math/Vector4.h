@@ -83,7 +83,7 @@ class Vector4
     /**
      * Destructor.
      */
-    ~Vector4();
+    ~Vector4() = default;
 
     /**
      * Returns the zero vector.
@@ -348,7 +348,12 @@ class Vector4
      * @param v The vector to add.
      * @return The vector sum.
      */
-    inline const Vector4 operator+(const Vector4& v) const;
+    const Vector4 operator+(const Vector4& v) const
+    {
+        Vector4 result(*this);
+        result.add(v);
+        return result;
+    }
 
     /**
      * Adds the given vector to this vector.
@@ -356,7 +361,11 @@ class Vector4
      * @param v The vector to add.
      * @return This vector, after the addition occurs.
      */
-    inline Vector4& operator+=(const Vector4& v);
+    Vector4& operator+=(const Vector4& v)
+    {
+        add(v);
+        return *this;
+    }
 
     /**
      * Calculates the sum of this vector with the given vector.
@@ -366,7 +375,12 @@ class Vector4
      * @param v The vector to add.
      * @return The vector sum.
      */
-    inline const Vector4 operator-(const Vector4& v) const;
+    const Vector4 operator-(const Vector4& v) const
+    {
+        Vector4 result(*this);
+        result.subtract(v);
+        return result;
+    }
 
     /**
      * Subtracts the given vector from this vector.
@@ -374,7 +388,11 @@ class Vector4
      * @param v The vector to subtract.
      * @return This vector, after the subtraction occurs.
      */
-    inline Vector4& operator-=(const Vector4& v);
+    Vector4& operator-=(const Vector4& v)
+    {
+        subtract(v);
+        return *this;
+    }
 
     /**
      * Calculates the negation of this vector.
@@ -383,7 +401,12 @@ class Vector4
      *
      * @return The negation of this vector.
      */
-    inline const Vector4 operator-() const;
+    const Vector4 operator-() const
+    {
+        Vector4 result(*this);
+        result.negate();
+        return result;
+    }
 
     /**
      * Calculates the scalar product of this vector with the given value.
@@ -393,7 +416,12 @@ class Vector4
      * @param x The value to scale by.
      * @return The scaled vector.
      */
-    inline const Vector4 operator*(float x) const;
+    const Vector4 operator*(float x) const
+    {
+        Vector4 result(*this);
+        result.scale(x);
+        return result;
+    }
 
     /**
      * Scales this vector by the given value.
@@ -401,7 +429,11 @@ class Vector4
      * @param x The value to scale by.
      * @return This vector, after the scale occurs.
      */
-    inline Vector4& operator*=(float x);
+    Vector4& operator*=(float x)
+    {
+        scale(x);
+        return *this;
+    }
 
     /**
      * Returns the components of this vector divided by the given constant
@@ -411,7 +443,10 @@ class Vector4
      * @param x the constant to divide this vector with
      * @return a smaller vector
      */
-    inline const Vector4 operator/(float x) const;
+    const Vector4 operator/(const float x) const
+    {
+        return Vector4(this->x / x, this->y / x, this->z / x, this->w / x);
+    }
 
     /**
      * Determines if this vector is less than the given vector.
@@ -420,7 +455,22 @@ class Vector4
      *
      * @return True if this vector is less than the given vector, false otherwise.
      */
-    inline bool operator<(const Vector4& v) const;
+    bool operator<(const Vector4& v) const
+    {
+        if (x == v.x)
+        {
+            if (y == v.y)
+            {
+                if (z == v.z)
+                {
+                    return w < v.w;
+                }
+                return z < v.z;
+            }
+            return y < v.y;
+        }
+        return x < v.x;
+    }
 
     /**
      * Determines if this vector is equal to the given vector.
@@ -429,7 +479,7 @@ class Vector4
      *
      * @return True if this vector is equal to the given vector, false otherwise.
      */
-    inline bool operator==(const Vector4& v) const;
+    bool operator==(const Vector4& v) const { return x == v.x && y == v.y && z == v.z && w == v.w; }
 
     /**
      * Determines if this vector is not equal to the given vector.
@@ -438,7 +488,7 @@ class Vector4
      *
      * @return True if this vector is not equal to the given vector, false otherwise.
      */
-    inline bool operator!=(const Vector4& v) const;
+    bool operator!=(const Vector4& v) const { return x != v.x || y != v.y || z != v.z || w != v.w; }
 };
 
 /**
@@ -448,8 +498,11 @@ class Vector4
  * @param v The vector to scale.
  * @return The scaled vector.
  */
-inline const Vector4 operator*(float x, const Vector4& v);
+inline const Vector4 operator*(float x, const Vector4& v)
+{
+    Vector4 result(v);
+    result.scale(x);
+    return result;
+}
 
 } // namespace tractor
-
-#include "math/Vector4.inl"

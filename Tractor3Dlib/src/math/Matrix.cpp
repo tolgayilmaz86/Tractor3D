@@ -38,8 +38,6 @@ Matrix::Matrix(const float* m) { set(m); }
 
 Matrix::Matrix(const Matrix& copy) { memcpy(m, copy.m, MATRIX_SIZE); }
 
-Matrix::~Matrix() {}
-
 const Matrix& Matrix::identity()
 {
     static Matrix m(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);

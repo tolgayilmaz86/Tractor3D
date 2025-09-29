@@ -386,15 +386,25 @@ class Quaternion
      * @param q The quaternion to multiply.
      * @return The quaternion product.
      */
-    inline const Quaternion operator*(const Quaternion& q) const;
+    const Quaternion operator*(const Quaternion& q) const
+    {
+        Quaternion result(*this);
+        result.multiply(q);
+        return result;
+    }
 
     /**
+     * Multiplies this quaternion with the given quaternion.
      * Multiplies this quaternion with the given quaternion.
      *
      * @param q The quaternion to multiply.
      * @return This quaternion, after the multiplication occurs.
      */
-    inline Quaternion& operator*=(const Quaternion& q);
+    Quaternion& operator*=(const Quaternion& q)
+    {
+        multiply(q);
+        return *this;
+    }
 
   private:
     /**
@@ -439,5 +449,3 @@ class Quaternion
 };
 
 } // namespace tractor
-
-#include "math/Quaternion.inl"

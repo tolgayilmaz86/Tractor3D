@@ -490,6 +490,9 @@
     <ClCompile Include="src\pch.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\framework\FileStream.cpp">
+      <Filter>src\framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ai\AIAgent.h">
@@ -842,6 +845,9 @@
     </ClInclude>
     <ClInclude Include="include\math\Quaternion.h">
       <Filter>include\math</Filter>
+    </ClInclude>
+    <ClInclude Include="include\framework\FileStream.h">
+      <Filter>include\framework</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

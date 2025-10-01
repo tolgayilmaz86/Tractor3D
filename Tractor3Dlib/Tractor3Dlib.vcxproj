@@ -53,6 +53,7 @@
     <ClCompile Include="src\audio\AudioController.cpp" />
     <ClCompile Include="src\audio\AudioListener.cpp" />
     <ClCompile Include="src\audio\AudioSource.cpp" />
+    <ClCompile Include="src\framework\FileStream.cpp" />
     <ClCompile Include="src\framework\FileSystem.cpp" />
     <ClCompile Include="src\framework\Game.cpp" />
     <ClCompile Include="src\framework\tractor-main-windows.cpp" />
@@ -168,6 +169,7 @@
     <ClInclude Include="include\audio\AudioController.h" />
     <ClInclude Include="include\audio\AudioListener.h" />
     <ClInclude Include="include\audio\AudioSource.h" />
+    <ClInclude Include="include\framework\FileStream.h" />
     <ClInclude Include="include\framework\FileSystem.h" />
     <ClInclude Include="include\framework\Game.h" />
     <ClInclude Include="include\framework\Platform.h" />

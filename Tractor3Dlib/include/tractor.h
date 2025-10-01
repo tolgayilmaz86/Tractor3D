@@ -2,6 +2,7 @@
 #include "pch.h"
 
 #include "framework/FileSystem.h"
+#include "framework/FileStream.h"
 #include "framework/Game.h"
 #include "framework/Platform.h"
 #include "framework/ScreenDisplayer.h"

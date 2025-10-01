@@ -40,7 +40,7 @@ class FileSystem
     /**
      * Destructor.
      */
-    ~FileSystem();
+    ~FileSystem() = default;
 
     /**
      * Sets the path to the root of the resources folder for the game.
@@ -167,22 +167,6 @@ class FileSystem
     static std::unique_ptr<Stream> open(const std::string& path, size_t streamMode = READ);
 
     /**
-     * Opens the specified file.
-     *
-     * The file at the specified location is opened, relative to the currently set
-     * resource path.
-     *
-     * @param filePath The path to the file to be opened, relative to the currently set resource path.
-     * @param mode The mode used to open the file, passed directly to fopen.
-     *
-     * @return A pointer to a FILE object that can be used to identify the stream or nullptr on error.
-     *
-     * @see setResourcePath(const std::string&)
-     * @script{ignore}
-     */
-    static FILE* openFile(const std::string& filePath, const std::string& mode);
-
-    /**
      * Reads the entire contents of the specified file and returns its contents.
      *
      * The returned character array is allocated with new[] and must therefore
@@ -265,7 +249,7 @@ class FileSystem
     /**
      * Constructor.
      */
-    FileSystem();
+    FileSystem() = default;
 };
 
 } // namespace tractor

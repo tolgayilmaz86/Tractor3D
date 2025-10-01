@@ -299,12 +299,8 @@ class PropertiesParser
         // If we are not at the end of the file, then since we found a
         // non-whitespace character, we put the cursor back in front of it.
         if (c != EOF)
-        {
             if (stream->seek(-1, SEEK_CUR) == false)
-            {
                 GP_ERROR("Failed to seek backwards one character after skipping whitespace.");
-            }
-        }
     }
 
     //-----------------------------------------------------------------------------------------------------------------

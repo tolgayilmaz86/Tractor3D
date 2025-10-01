@@ -74,7 +74,7 @@ class Animation : public Ref
     /**
      * Returns the number of animation clips in this animation.
      */
-    size_t getClipCount() const noexcept;
+    size_t getClipCount() const noexcept { return _clipsMap.size(); }
 
     /**
      * Plays the AnimationClip with the specified name.
@@ -191,7 +191,7 @@ class Animation : public Ref
     /**
      * Adds a clip to this Animation.
      */
-    void addClip(std::unique_ptr<AnimationClip> clip);
+    void addClip(AnimationClip* clip);
 
     /**
      * Finds the clip with the given ID.
@@ -245,12 +245,14 @@ class Animation : public Ref
      */
     Animation* clone(Channel* channel, AnimationTarget* target);
 
-    AnimationController* _controller;    // The AnimationController that this Animation will run on.
-    std::string _id;                     // The Animation's ID.
-    unsigned long _duration;             // the length of the animation (in milliseconds).
-    std::vector<Channel*> _channels;     // The channels within this Animation.
-    std::unique_ptr<AnimationClip> _defaultClip; // The Animation's default clip.
-    std::unordered_map<std::string, std::unique_ptr<AnimationClip>> _clipsMap; // All the clips created from this Animation.
+    AnimationController* _controller{
+        nullptr
+    }; // The AnimationController that this Animation will run on.
+    std::string _id;                        // The Animation's ID.
+    unsigned long _duration{ 0L };          // the length of the animation (in milliseconds).
+    std::vector<Channel*> _channels;        // The channels within this Animation.
+    AnimationClip* _defaultClip{ nullptr }; // The Animation's default clip.
+    std::unordered_map<std::string, AnimationClip*> _clipsMap; // All the clips created from this Animation.
 };
 
 } // namespace tractor

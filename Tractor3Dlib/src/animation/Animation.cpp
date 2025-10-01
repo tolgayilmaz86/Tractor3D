@@ -9,10 +9,10 @@
 #include "math/Transform.h"
 #include "scene/Properties.h"
 
-#define ANIMATION_INDEFINITE_STR "INDEFINITE"
-#define ANIMATION_DEFAULT_CLIP 0
-#define ANIMATION_ROTATE_OFFSET 0
-#define ANIMATION_SRT_OFFSET 3
+constexpr auto ANIMATION_INDEFINITE_STR = "INDEFINITE";
+constexpr auto ANIMATION_DEFAULT_CLIP = 0;
+constexpr auto ANIMATION_ROTATE_OFFSET = 0;
+constexpr auto ANIMATION_SRT_OFFSET = 3;
 
 namespace tractor
 {
@@ -24,7 +24,7 @@ Animation::Animation(const std::string& id,
                      unsigned int* keyTimes,
                      float* keyValues,
                      unsigned int type)
-    : _controller(Game::getInstance()->getAnimationController()), _id(id), _duration(0L)
+    : _controller(Game::getInstance()->getAnimationController()), _id(id)
 {
     createChannel(target, propertyId, keyCount, keyTimes, keyValues, type);
 
@@ -42,8 +42,7 @@ Animation::Animation(const std::string& id,
                      float* keyInValue,
                      float* keyOutValue,
                      unsigned int type)
-    : _controller(Game::getInstance()->getAnimationController()), _id(id), _duration(0L),
-      _defaultClip(nullptr)
+    : _controller(Game::getInstance()->getAnimationController()), _id(id)
 {
     createChannel(target, propertyId, keyCount, keyTimes, keyValues, keyInValue, keyOutValue, type);
     // Release the animation because a newly created animation has a ref count of 1 and the channels hold the ref to animation.
@@ -52,8 +51,7 @@ Animation::Animation(const std::string& id,
 }
 
 Animation::Animation(const std::string& id)
-    : _controller(Game::getInstance()->getAnimationController()), _id(id), _duration(0L),
-      _defaultClip(nullptr)
+    : _controller(Game::getInstance()->getAnimationController()), _id(id)
 {
 }
 
@@ -66,11 +64,21 @@ Animation::~Animation()
         if (_defaultClip->isClipStateBitSet(AnimationClip::CLIP_IS_PLAYING_BIT))
         {
             assert(_controller);
-            _controller->unschedule(_defaultClip.get());
+            _controller->unschedule(_defaultClip);
         }
     }
+    SAFE_RELEASE(_defaultClip);
 
-    _clipsMap.clear();
+
+        for (auto& [clipId, clipPtr] : _clipsMap)
+        {
+            if (clipPtr && clipPtr->isClipStateBitSet(AnimationClip::CLIP_IS_PLAYING_BIT))
+            {
+                _controller->unschedule(clipPtr);
+            }
+            SAFE_RELEASE(clipPtr);
+        }
+        _clipsMap.clear();
 }
 
 Animation::Channel::Channel(Animation* animation,
@@ -129,13 +137,11 @@ void Animation::createClips(const std::string& url)
 
 AnimationClip* Animation::createClip(const std::string& id, unsigned long begin, unsigned long end)
 {
-    auto clip = std::make_unique<AnimationClip>(id, this, begin, end);
+    auto clip = new AnimationClip(id, this, begin, end);
 
-    auto cacheClip = clip.get();
+    addClip(clip);
 
-    addClip(std::move(clip));
-
-    return cacheClip;
+    return clip;
 }
 
 AnimationClip* Animation::getClip(const std::string& id)
@@ -145,15 +151,13 @@ AnimationClip* Animation::getClip(const std::string& id)
     {
         if (!_defaultClip) createDefaultClip();
 
-        return _defaultClip.get();
+        return _defaultClip;
     }
     else
     {
         return findClip(id);
     }
 }
-
-size_t Animation::getClipCount() const noexcept { return _clipsMap.size(); }
 
 void Animation::play(const std::string& clipId)
 {
@@ -215,7 +219,7 @@ bool Animation::targets(AnimationTarget* target) const
 
 void Animation::createDefaultClip()
 {
-    _defaultClip = std::make_unique<AnimationClip>("default_clip", this, 0.0f, _duration);
+    _defaultClip = new AnimationClip("default_clip", this, 0.0f, _duration);
 }
 
 void Animation::createClips(Properties* animationProperties, unsigned int frameCount)
@@ -262,14 +266,11 @@ void Animation::createClips(Properties* animationProperties, unsigned int frameC
     }
 }
 
-void Animation::addClip(std::unique_ptr<AnimationClip> clip)
-{
-    _clipsMap.insert({ clip->getId(), std::move(clip) });
-}
+void Animation::addClip(AnimationClip* clip) { _clipsMap.insert({ clip->getId(), clip }); }
 
 AnimationClip* Animation::findClip(const std::string& id) const
 {
-    if (auto clip = _clipsMap.find(id); clip != _clipsMap.end()) return clip->second.get();
+    if (auto clip = _clipsMap.find(id); clip != _clipsMap.end()) return clip->second;
 
     return nullptr;
 }
@@ -451,11 +452,10 @@ Animation* Animation::clone(Channel* channel, AnimationTarget* target)
 
     // Clone the clips
 
-    if (_defaultClip)
-        animation->_defaultClip = std::unique_ptr<AnimationClip>(_defaultClip->clone(animation));
+    if (_defaultClip) animation->_defaultClip = _defaultClip->clone(animation);
 
     for (const auto& [clipId, clipPtr] : _clipsMap)
-        animation->_clipsMap[clipId] = std::unique_ptr<AnimationClip>(clipPtr->clone(animation));
+        animation->addClip(clipPtr->clone(animation));
 
     return animation;
 }

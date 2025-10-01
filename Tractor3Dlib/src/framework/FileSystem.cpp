@@ -1,23 +1,18 @@
 #include "pch.h"
 
-#include <direct.h>
 #include <framework/FileSystem.h>
 #include <framework/Platform.h>
 #include <framework/Stream.h>
 #include <scene/Properties.h>
-#include <stdio.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <tchar.h>
-#include <windows.h>
-#define gp_stat _stat
-#define gp_stat_struct struct stat
+
+#include <filesystem>
+#include <fstream>
 
 namespace tractor
 {
 
 /** @script{ignore} */
-static std::string __resourcePath("./");
+static std::string g_resourcePath("./");
 static std::string __assetPath("");
 static std::map<std::string, std::string> __aliases;
 
@@ -37,7 +32,7 @@ static void getFullPath(const std::string& path, std::string& fullPath)
     }
     else
     {
-        fullPath.assign(__resourcePath);
+        fullPath.assign(g_resourcePath);
         fullPath += FileSystem::resolvePath(path);
     }
 }
@@ -68,37 +63,20 @@ class FileStream : public Stream
     static std::unique_ptr<FileStream> create(const std::string& filePath, const std::string& mode);
 
   private:
-    FileStream(FILE* file);
+    FileStream(std::unique_ptr<std::fstream> stream);
 
   private:
-    struct FileCloser
-    {
-        void operator()(FILE* file) const
-        {
-            if (file)
-            {
-                fclose(file);
-            }
-        }
-    };
-
-    std::unique_ptr<FILE, FileCloser> _file;
+    std::unique_ptr<std::fstream> _stream;
     bool _canRead{ false };
     bool _canWrite{ false };
 };
 
-/////////////////////////////
-
-FileSystem::FileSystem() {}
-
-FileSystem::~FileSystem() {}
-
 void FileSystem::setResourcePath(const std::string& path)
 {
-    __resourcePath = path.empty() ? "" : path;
+    g_resourcePath = path.empty() ? "" : path;
 }
 
-std::string FileSystem::getResourcePath() { return __resourcePath; }
+std::string FileSystem::getResourcePath() { return g_resourcePath; }
 
 void FileSystem::loadResourceAliases(const std::string& aliasFilePath)
 {
@@ -150,49 +128,12 @@ std::string FileSystem::resolvePath(const std::string& path)
     return path;
 }
 
-bool FileSystem::listFiles(const std::string& dirPath, std::vector<std::string>& files)
-{
-    std::string path(FileSystem::getResourcePath());
-    if (not dirPath.empty())
-    {
-        path.append(dirPath);
-    }
-
-    path.append("/*");
-    // Convert char to wchar
-    std::basic_string<TCHAR> wPath;
-    wPath.assign(path.begin(), path.end());
-
-    WIN32_FIND_DATA FindFileData;
-    HANDLE hFind = FindFirstFile(wPath.c_str(), &FindFileData);
-    if (hFind == INVALID_HANDLE_VALUE)
-    {
-        return false;
-    }
-    do
-    {
-        // Add to the list if this is not a directory
-        if ((FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
-        {
-            // Convert wchar to char
-            std::basic_string<TCHAR> wfilename(FindFileData.cFileName);
-            std::string filename;
-            filename.assign(wfilename.begin(), wfilename.end());
-            files.push_back(filename);
-        }
-    } while (FindNextFile(hFind, &FindFileData) != 0);
-
-    FindClose(hFind);
-    return true;
-}
-
 bool FileSystem::fileExists(const std::string& filePath)
 {
     std::string fullPath;
     getFullPath(filePath, fullPath);
 
-    gp_stat_struct s;
-    return stat(fullPath.c_str(), &s) == 0;
+    return std::filesystem::exists(fullPath);
 }
 
 std::unique_ptr<Stream> FileSystem::open(const std::string& path, size_t streamMode)
@@ -204,17 +145,6 @@ std::unique_ptr<Stream> FileSystem::open(const std::string& path, size_t streamM
     getFullPath(path, fullPath);
     auto stream = FileStream::create(fullPath, modeStr);
     return std::move(stream);
-}
-
-FILE* FileSystem::openFile(const std::string& filePath, const std::string& mode)
-{
-    std::string fullPath;
-    getFullPath(filePath, fullPath);
-
-    createFileFromAsset(filePath);
-
-    FILE* fp = fopen(fullPath.c_str(), mode.c_str());
-    return fp;
 }
 
 char* FileSystem::readAll(const std::string& filePath, int* fileSize)
@@ -257,14 +187,9 @@ bool FileSystem::isAbsolutePath(const std::string& filePath)
 {
     if (filePath.empty()) return false;
 
-    if (filePath[1] != '\0')
-    {
-        char first = filePath[0];
-        return (filePath[1] == ':'
-                && ((first >= 'a' && first <= 'z') || (first >= 'A' && first <= 'Z')));
-    }
-
-    return false;
+    namespace fs = std::filesystem;
+    fs::path p(filePath);
+    return p.is_absolute();
 }
 
 void FileSystem::setAssetPath(const std::string& path) { __assetPath = path; }
@@ -277,50 +202,34 @@ std::string FileSystem::getDirectoryName(const std::string& path)
 {
     if (path.empty()) return EMPTY_STRING;
 
-    char drive[_MAX_DRIVE];
-    char dir[_MAX_DIR];
-    _splitpath(path.c_str(), drive, dir, nullptr, nullptr);
-
-    std::string dirname;
-    size_t driveLength = strlen(drive);
-    if (driveLength > 0)
-    {
-        dirname.reserve(driveLength + strlen(dir));
-        dirname.append(drive);
-        dirname.append(dir);
-    }
-    else
-    {
-        dirname.assign(dir);
-    }
+    namespace fs = std::filesystem;
+    fs::path p(path);
+    std::string dirname = p.parent_path().string();
     std::replace(dirname.begin(), dirname.end(), '\\', '/');
+    dirname.append("/");
+
     return dirname;
 }
 
 std::string FileSystem::getExtension(const std::string& path)
 {
-    // Find the last occurrence of '.' in the path
-    auto pos = path.find_last_of('.');
-    if (pos == std::string::npos || pos == path.length() - 1)
-    {
-        // No '.' found or '.' is the last character (no extension)
-        return EMPTY_STRING;
-    }
+    namespace fs = std::filesystem;
+    fs::path p(path);
+    std::string ext = p.extension().string();
 
-    // Extract the extension (including the '.')
-    std::string ext = path.substr(pos);
+    if (ext.empty()) return EMPTY_STRING;
 
-    // Convert the extension to uppercase
+    // Convert to uppercase
     std::transform(ext.begin(), ext.end(), ext.begin(), [](auto c) { return std::toupper(c); });
 
     return ext;
 }
 
-FileStream::FileStream(FILE* file) : _file(file) {}
+FileStream::FileStream(std::unique_ptr<std::fstream> stream) : _stream(std::move(stream)) {}
 
 FileStream::~FileStream()
 {
-    if (_file)
+    if (_stream && _stream->is_open())
     {
         close();
     }
@@ -328,89 +237,145 @@ FileStream::~FileStream()
 
 std::unique_ptr<FileStream> FileStream::create(const std::string& filePath, const std::string& mode)
 {
-    FILE* file = fopen(filePath.c_str(), mode.c_str());
+    namespace fs = std::filesystem;
 
-    if (!file) return nullptr;
+    fs::path path(filePath);
 
-    auto stream = std::unique_ptr<FileStream>(new FileStream(file));
+    // Convert C-style mode to ios::openmode
+    std::ios::openmode iosMode = std::ios::binary;
 
-    // Set read/write flags based on the mode string
-    stream->_canRead = mode.find('r') != std::string::npos;
-    stream->_canWrite = mode.find('w') != std::string::npos;
+    if (mode.find('r') != std::string::npos)
+    {
+        iosMode |= std::ios::in;
+    }
+    if (mode.find('w') != std::string::npos)
+    {
+        iosMode |= std::ios::out | std::ios::trunc;
+    }
+    if (mode.find('a') != std::string::npos)
+    {
+        iosMode |= std::ios::out | std::ios::app;
+    }
+    if (mode.find('+') != std::string::npos)
+    {
+        iosMode |= std::ios::in | std::ios::out;
+    }
+
+    auto fstream = std::make_unique<std::fstream>(path, iosMode);
+
+    if (!fstream->is_open())
+    {
+        return nullptr;
+    }
+
+    auto stream = std::unique_ptr<FileStream>(new FileStream(std::move(fstream)));
+
+    // Set read/write flags based on the mode
+    stream->_canRead = (iosMode & std::ios::in) != 0;
+    stream->_canWrite = (iosMode & std::ios::out) != 0;
 
     return stream;
 }
 
-bool FileStream::canRead() { return _file && _canRead; }
+bool FileStream::canRead() { return _stream && _stream->is_open() && _canRead; }
 
-bool FileStream::canWrite() { return _file && _canWrite; }
+bool FileStream::canWrite() { return _stream && _stream->is_open() && _canWrite; }
 
-bool FileStream::canSeek() { return _file != nullptr; }
+bool FileStream::canSeek() { return _stream && _stream->is_open(); }
 
 void FileStream::close()
 {
-    if (_file) fclose(_file.get());
-    _file.reset(); // Explicitly reset the unique_ptr to close the file
+    if (_stream && _stream->is_open()) _stream->close();
 }
 
 size_t FileStream::read(void* ptr, size_t size, size_t count)
 {
-    if (!_file) return 0;
-    return fread(ptr, size, count, _file.get());
+    if (!_stream || !canRead()) return 0;
+
+    _stream->read(static_cast<char*>(ptr), size * count);
+    return _stream->gcount() / size;
 }
 
 char* FileStream::readLine(char* str, int num)
 {
-    if (!_file) return 0;
-    return fgets(str, num, _file.get());
+    if (!_stream || !canRead()) return nullptr;
+
+    _stream->getline(str, num);
+    return (_stream->gcount() > 0) ? str : nullptr;
 }
 
 size_t FileStream::write(const void* ptr, size_t size, size_t count)
 {
-    if (!_file) return 0;
-    return fwrite(ptr, size, count, _file.get());
+    if (!_stream || !canWrite()) return 0;
+
+    auto before = _stream->tellp();
+    _stream->write(static_cast<const char*>(ptr), size * count);
+    auto after = _stream->tellp();
+
+    return (after - before) / size;
 }
 
 bool FileStream::eof()
 {
-    if (!_file || feof(_file.get())) return true;
-    return ((size_t)position()) >= length();
+    if (!_stream) return true;
+    return _stream->eof();
 }
 
 size_t FileStream::length()
 {
-    size_t len = 0;
-    if (canSeek())
-    {
-        long int pos = position();
-        if (seek(0, SEEK_END))
-        {
-            len = position();
-        }
-        seek(pos, SEEK_SET);
-    }
-    return len;
+    if (!canSeek()) return 0;
+
+    auto current = _stream->tellg();
+    _stream->seekg(0, std::ios::end);
+    auto length = _stream->tellg();
+    _stream->seekg(current);
+
+    return static_cast<size_t>(length);
 }
 
 long int FileStream::position()
 {
-    if (!_file) return -1;
-    return ftell(_file.get());
+    if (!_stream) return -1;
+    return static_cast<long int>(_stream->tellg());
 }
 
+/**
+ * @brief Moves the file stream's read and write position to a specified location.
+ * @param offset The number of bytes to offset from the origin.
+ * @param origin The reference position from which to apply the offset. Should be one of SEEK_SET (beginning), SEEK_CUR (current position), or SEEK_END (end).
+ * @return True if the seek operation was successful; otherwise, false.
+ */
 bool FileStream::seek(long int offset, int origin)
 {
-    if (!_file) return false;
-    return fseek(_file.get(), offset, origin) == 0;
+    if (!canSeek()) return false;
+
+    std::ios::seekdir dir;
+    switch (origin)
+    {
+        case SEEK_SET:
+            dir = std::ios::beg;
+            break;
+        case SEEK_CUR:
+            dir = std::ios::cur;
+            break;
+        case SEEK_END:
+            dir = std::ios::end;
+            break;
+        default:
+            return false;
+    }
+
+    _stream->seekg(offset, dir);
+    return _stream->good();
 }
 
 bool FileStream::rewind()
 {
-    if (canSeek())
-    {
-        ::rewind(_file.get());
-        return true;
-    }
-    return false;
+    if (!canSeek()) return false;
+
+    _stream->seekg(0, std::ios::beg);
+    _stream->clear(); // Clear any error flags
+
+    return true;
 }
 } // namespace tractor

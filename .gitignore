@@ -427,3 +427,13 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+samples/browser/res/shaders/
+samples/browser/res/ui/
+samples/character/res/shaders/
+samples/character/res/ui/
+samples/racer/res/ui/
+samples/spaceship/res/shaders/
+samples/spaceship/res/ui/
+/samples/browser/res/logo_powered_white.png
+/samples/character/res/logo_powered_white.png
+/samples/racer/res/logo_powered_white.png

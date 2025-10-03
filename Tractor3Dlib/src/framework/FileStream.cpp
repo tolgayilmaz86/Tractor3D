@@ -70,7 +70,9 @@ size_t FileStream::read(void* ptr, size_t size, size_t count)
     if (!_stream || !canRead()) return 0;
 
     _stream->read(static_cast<char*>(ptr), size * count);
-    return _stream->gcount() / size;
+
+    std::streamsize bytesRead = _stream->gcount();
+    return static_cast<size_t>(bytesRead / size);
 }
 
 char* FileStream::readLine(char* str, int num)
@@ -136,17 +138,33 @@ bool FileStream::seek(long int offset, int origin)
             return false;
     }
 
+    // Clear error flags FIRST (including EOF)
+    _stream->clear();
     _stream->seekg(offset, dir);
-    return _stream->good();
+
+    // Check if seek failed
+    if (_stream->fail())
+    {
+        _stream->clear(); // Clear the fail bit for future operations
+        return false;
+    }
+
+    // Also update write position if stream is open for writing
+    if (_canWrite)
+    {
+        _stream->seekp(offset, dir);
+    }
+
+    return true;
 }
 
 bool FileStream::rewind()
 {
     if (!canSeek()) return false;
 
-    _stream->seekg(0, std::ios::beg);
     _stream->clear(); // Clear any error flags
+    _stream->seekg(0, std::ios::beg);
 
-    return true;
+    return _stream->good();
 }
 } // namespace tractor

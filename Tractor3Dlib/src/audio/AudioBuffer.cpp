@@ -380,6 +380,14 @@ bool AudioBuffer::loadWav(Stream* stream, ALuint buffer, bool streamed, AudioStr
     return false;
 }
 
+/**
+ * @brief Loads Ogg Vorbis audio data from a stream into an OpenAL buffer.
+ * @param stream Pointer to the input stream containing Ogg Vorbis audio data.
+ * @param buffer OpenAL buffer identifier where the audio data will be loaded.
+ * @param streamed Indicates whether the audio should be streamed (true) or fully loaded (false).
+ * @param streamState Pointer to an AudioStreamStateOgg structure used to maintain Ogg streaming state.
+ * @return Returns true if the Ogg audio data was successfully loaded into the buffer; otherwise, returns false.
+ */
 bool AudioBuffer::loadOgg(Stream* stream, ALuint buffer, bool streamed, AudioStreamStateOgg* streamState)
 {
     assert(stream);
@@ -392,7 +400,7 @@ bool AudioBuffer::loadOgg(Stream* stream, ALuint buffer, bool streamed, AudioStr
 
     stream->rewind();
 
-    ov_callbacks callbacks;
+    ov_callbacks callbacks{};
     callbacks.read_func = readStream;
     callbacks.seek_func = seekStream;
     callbacks.close_func = closeStream;

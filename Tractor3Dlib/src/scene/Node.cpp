@@ -931,13 +931,11 @@ PhysicsCollisionObject* Node::setCollisionObject(PhysicsCollisionObject::Type ty
                                                  int group,
                                                  int mask)
 {
-    _collisionObject.release();
-
     switch (type)
     {
         case PhysicsCollisionObject::RIGID_BODY:
         {
-            _collisionObject = std::unique_ptr<PhysicsCollisionObject>(
+            _collisionObject.reset(
                 new PhysicsRigidBody(this,
                                      shape,
                                      rigidBodyParameters ? *rigidBodyParameters
@@ -949,14 +947,14 @@ PhysicsCollisionObject* Node::setCollisionObject(PhysicsCollisionObject::Type ty
 
         case PhysicsCollisionObject::GHOST_OBJECT:
         {
-            _collisionObject = std::unique_ptr<PhysicsCollisionObject>(
+            _collisionObject.reset(
                 new PhysicsGhostObject(this, shape, group, mask));
         }
         break;
 
         case PhysicsCollisionObject::CHARACTER:
         {
-            _collisionObject = std::unique_ptr<PhysicsCollisionObject>(
+            _collisionObject.reset(
                 new PhysicsCharacter(this,
                                      shape,
                                      rigidBodyParameters ? rigidBodyParameters->mass : 1.0f));
@@ -965,7 +963,7 @@ PhysicsCollisionObject* Node::setCollisionObject(PhysicsCollisionObject::Type ty
 
         case PhysicsCollisionObject::VEHICLE:
         {
-            _collisionObject = std::unique_ptr<PhysicsCollisionObject>(
+            _collisionObject.reset(
                 new PhysicsVehicle(this,
                                    shape,
                                    rigidBodyParameters ? *rigidBodyParameters
@@ -986,7 +984,7 @@ PhysicsCollisionObject* Node::setCollisionObject(PhysicsCollisionObject::Type ty
             // IMPORTANT: The VEHICLE must come before the VEHICLE_WHEEL in the ".scene"
             // (properties) file!
             //
-            _collisionObject = std::unique_ptr<PhysicsCollisionObject>(
+            _collisionObject.reset(
                 new PhysicsVehicleWheel(this,
                                         shape,
                                         rigidBodyParameters ? *rigidBodyParameters
@@ -1019,8 +1017,6 @@ PhysicsCollisionObject* Node::setCollisionObject(const std::string& url)
 
 PhysicsCollisionObject* Node::setCollisionObject(Properties* properties)
 {
-    _collisionObject.release();
-
     // Check if the properties is valid.
     if (!properties || properties->getNamespace() != "collisionObject")
     {
@@ -1033,19 +1029,19 @@ PhysicsCollisionObject* Node::setCollisionObject(Properties* properties)
     {
         if (type == "CHARACTER")
         {
-            _collisionObject = std::unique_ptr<PhysicsCollisionObject>(PhysicsCharacter::create(this, properties));
+            _collisionObject.reset(PhysicsCharacter::create(this, properties));
         }
         else if (type == "GHOST_OBJECT")
         {
-            _collisionObject = std::unique_ptr<PhysicsCollisionObject>(PhysicsGhostObject::create(this, properties));
+            _collisionObject.reset(PhysicsGhostObject::create(this, properties));
         }
         else if (type == "RIGID_BODY")
         {
-            _collisionObject = std::unique_ptr<PhysicsCollisionObject>(PhysicsRigidBody::create(this, properties));
+            _collisionObject.reset(PhysicsRigidBody::create(this, properties));
         }
         else if (type == "VEHICLE")
         {
-            _collisionObject = std::unique_ptr<PhysicsCollisionObject>(PhysicsVehicle::create(this, properties));
+            _collisionObject.reset(PhysicsVehicle::create(this, properties));
         }
         else if (type == "VEHICLE_WHEEL")
         {
@@ -1060,7 +1056,7 @@ PhysicsCollisionObject* Node::setCollisionObject(Properties* properties)
             // IMPORTANT: The VEHICLE must come before the VEHICLE_WHEEL in the ".scene"
             // (properties) file!
             //
-            _collisionObject = std::unique_ptr<PhysicsCollisionObject>(PhysicsVehicleWheel::create(this, properties));
+            _collisionObject.reset(PhysicsVehicleWheel::create(this, properties));
         }
         else
         {

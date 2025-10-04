@@ -34,7 +34,7 @@ class Theme::Style
      *
      * @return The theme this style belongs to.
      */
-    Theme* getTheme() const;
+    Theme* getTheme() const noexcept { return _theme; }
 
   private:
     /**
@@ -89,7 +89,7 @@ class Theme::Style
 
         void setSkinColor(const Vector4& color);
 
-        const Vector4& getSkinColor() const;
+        const Vector4& getSkinColor() const noexcept;
 
         void setSkinRegion(const Rectangle& region, float tw, float th);
 
@@ -208,44 +208,59 @@ class Theme::Style
     /**
      * Returns the Id of this Style.
      */
-    const std::string& getId() const;
+    const std::string& getId() const noexcept { return _id; }
 
     /**
      * Gets an overlay from the overlay type.
      */
-    Overlay* getOverlay(OverlayType overlayType) const;
+    Theme::Style::Overlay* getOverlay(OverlayType overlayType) const noexcept
+    {
+        return _overlays[overlayType];
+    }
 
     /**
      * Gets the Padding region of this style.
      */
-    const Theme::Padding& getPadding() const;
+    const Theme::Padding& getPadding() const noexcept { return _padding; }
 
     /**
      * Gets the Margin region of this style.
      */
-    const Theme::Margin& getMargin() const;
+    const Theme::Margin& getMargin() const noexcept { return _margin; }
 
     /**
      * Set this size of this Style's padding.
      *
      * Padding is the space between a Control's content (all icons and text) and its border.
      */
-    void setPadding(float top, float bottom, float left, float right);
+    void setPadding(float top, float bottom, float left, float right)
+    {
+        _padding.top = top;
+        _padding.bottom = bottom;
+        _padding.left = left;
+        _padding.right = right;
+    }
 
     /**
      * Set the size of this Style's margin.
      *
      * The margin is used by Layouts other than AbsoluteLayout to put space between Controls.
      */
-    void setMargin(float top, float bottom, float left, float right);
+    void setMargin(float top, float bottom, float left, float right)
+    {
+        _margin.top = top;
+        _margin.bottom = bottom;
+        _margin.left = left;
+        _margin.right = right;
+    }
 
-    Theme* _theme;
-    std::string _id;
-    float _tw;
-    float _th;
-    Theme::Margin _margin;
-    Theme::Padding _padding;
-    Overlay* _overlays[OVERLAY_MAX];
+    Theme* _theme{ nullptr };
+    std::string _id{};
+    float _tw{ 0 };
+    float _th{ 0 };
+    Theme::Margin _margin{};
+    Theme::Padding _padding{};
+    Overlay* _overlays[OVERLAY_MAX]{ nullptr };
 };
 
 } // namespace tractor

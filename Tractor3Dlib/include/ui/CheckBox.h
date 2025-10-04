@@ -38,7 +38,7 @@ class CheckBox : public Button
      * @return The type name of this class: "CheckBox"
      * @see ScriptTarget::getTypeName()
      */
-    const std::string& getTypeName() const;
+    const std::string& getTypeName() const noexcept;
 
     /**
      * Gets whether this checkbox is checked.

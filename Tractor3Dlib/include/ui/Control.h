@@ -244,28 +244,28 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
      * @return The type name of this class: "Control"
      * @see ScriptTarget::getTypeName()
      */
-    const std::string& getTypeName() const;
+    const std::string& getTypeName() const noexcept;
 
     /**
      * Get this control's ID string.
      *
      * @return This control's ID.
      */
-    const std::string& getId() const;
+    const std::string& getId() const noexcept { return _id; }
 
     /**
      * Sets this control's ID string.
      *
      * @param id The new control ID.
      */
-    void setId(const std::string& id);
+    void setId(const std::string& id) noexcept { _id = id; }
 
     /**
      * Get the x coordinate of this control.
      *
      * @return The x coordinate of this control.
      */
-    float getX() const;
+    float getX() const noexcept { return _bounds.x; }
 
     /**
      * Sets the X coordinate for the control.
@@ -277,21 +277,21 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
      * @param percentage True if the value should be interpreted as a percentage (0-1), false if it
      * is regular number.
      */
-    void setX(float x, bool percentage = false);
+    void setX(float x, bool percentage = false) noexcept;
 
     /**
      * Determines if the X coordinate of this control computed as a percentage of its parent container.
      *
      * @return True if the X value is computed as a percentage of its parent container.
      */
-    bool isXPercentage() const;
+    bool isXPercentage() const noexcept;
 
     /**
      * Get the y coordinate of this control.
      *
      * @return The y coordinate of this control.
      */
-    float getY() const;
+    float getY() const noexcept { return _bounds.y; }
 
     /**
      * Sets the Y coordinate for the control.
@@ -303,21 +303,21 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
      * @param percentage True if the value should be interpreted as a percentage (0-1), false if it
      * is regular number.
      */
-    void setY(float y, bool percentage = false);
+    void setY(float y, bool percentage = false) noexcept;
 
     /**
      * Determines if the Y coordinate of this control is computed as a percentage of its parent container.
      *
      * @return True if the Y value is computed as a percentage of its parent container.
      */
-    bool isYPercentage() const;
+    bool isYPercentage() const noexcept;
 
     /**
      * Get the width of this control.
      *
      * @return The width of this control.
      */
-    float getWidth() const;
+    float getWidth() const noexcept { return _bounds.width; }
 
     /**
      * Set the desired width of the control, including it's border and padding, before clipping.
@@ -338,14 +338,14 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
      *
      * @return True if the width is computed as a percentage of its parent container.
      */
-    bool isWidthPercentage() const;
+    bool isWidthPercentage() const noexcept;
 
     /**
      * Get the height of this control.
      *
      * @return The height of this control.
      */
-    float getHeight() const;
+    float getHeight() const noexcept { return _bounds.height; }
 
     /**
      * Set the desired height of the control, including it's border and padding, before clipping.
@@ -359,14 +359,14 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
      * @param percentage True if the value should be interpreted as a percentage (0-1), false if it
      * is regular number.
      */
-    void setHeight(float height, bool percentage = false);
+    void setHeight(float height, bool percentage = false) noexcept;
 
     /**
      * Determines if the height of this control is computed as a percentage of its parent container.
      *
      * @return True if the height is computed as a percentage of its parent container.
      */
-    bool isHeightPercentage() const;
+    bool isHeightPercentage() const noexcept;
 
     /**
      * Set the position of this control relative to its parent container.
@@ -378,7 +378,7 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
      * @param x The x coordinate.
      * @param y The y coordinate.
      */
-    void setPosition(float x, float y);
+    void setPosition(float x, float y) noexcept;
 
     /**
      * Set the desired size of this control, including its border and padding, before clipping.
@@ -392,7 +392,7 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
      * @param width The new width.
      * @param height The new height.
      */
-    void setSize(float width, float height);
+    void setSize(float width, float height) noexcept;
 
     /**
      * Get the bounds of this control, relative to its parent container and including its
@@ -400,7 +400,7 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
      *
      * @return The bounds of this control.
      */
-    const Rectangle& getBounds() const;
+    const Rectangle& getBounds() const noexcept { return _bounds; }
 
     /**
      * Set the bounds of this control, relative to its parent container and including its
@@ -414,7 +414,7 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
      *
      * @param bounds The new bounds to set.
      */
-    void setBounds(const Rectangle& bounds);
+    void setBounds(const Rectangle& bounds) noexcept;
 
     /**
      * Get the absolute bounds of this control, in pixels, including border and padding,
@@ -427,49 +427,49 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
      *
      * @return The absolute bounds of this control.
      */
-    const Rectangle& getAbsoluteBounds() const;
+    const Rectangle& getAbsoluteBounds() const noexcept { return _absoluteBounds; }
 
     /**
      * Get the bounds of this control, relative to its parent container, after clipping.
      *
      * @return The bounds of this control.
      */
-    const Rectangle& getClipBounds() const;
+    const Rectangle& getClipBounds() const noexcept { return _clipBounds; }
 
     /**
      * Get the content area of this control, in screen coordinates, after clipping.
      *
      * @return The clipping area of this control.
      */
-    const Rectangle& getClip() const;
+    const Rectangle& getClip() const noexcept { return _viewportClipBounds; }
 
     /**
      * Returns the auto sizing mode for this control.
      *
      * @return The auto size mode for this control.
      */
-    AutoSize getAutoSize() const;
+    AutoSize getAutoSize() const noexcept { return _autoSize; }
 
     /**
      * Sets the auto size mode for this control.
      *
      * @param mode The new auto size mode for this control.
      */
-    void setAutoSize(AutoSize mode);
+    void setAutoSize(AutoSize mode) noexcept;
 
     /**
      * Set the alignment of this control within its parent container.
      *
      * @param alignment This control's alignment.
      */
-    void setAlignment(Alignment alignment);
+    void setAlignment(Alignment alignment) noexcept;
 
     /**
      * Get the alignment of this control within its parent container.
      *
      * @return The alignment of this control within its parent container.
      */
-    Alignment getAlignment() const;
+    Alignment getAlignment() const noexcept { return _alignment; }
 
     /**
      * Set the size of this control's border.
@@ -761,7 +761,7 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
      *
      * @return true if the control is visible; false if not visible.
      */
-    bool isVisible() const;
+    bool isVisible() const noexcept { return _visible; }
 
     /**
      * Determines if this control is visible in its hierarchy.
@@ -801,7 +801,7 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
      *
      * @return Whether this control is currently enabled.
      */
-    bool isEnabled() const;
+    bool isEnabled() const noexcept { return (_state != DISABLED); }
 
     /**
      * Determines if this control is enabled in its hierarchy.
@@ -816,7 +816,7 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
      *
      * @return This control's current state.
      */
-    State getState() const;
+    State getState() const noexcept;
 
     /**
      * Set whether this control consumes input events,
@@ -824,21 +824,21 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
      *
      * @param consume Whether this control consumes input events.
      */
-    void setConsumeInputEvents(bool consume);
+    void setConsumeInputEvents(bool consume) noexcept { _consumeInputEvents = consume; }
 
     /**
      * Get whether this control consumes touch events.
      *
      * @return Whether this control consumes touch events.
      */
-    bool getConsumeInputEvents();
+    bool getConsumeInputEvents() const noexcept { return _consumeInputEvents; }
 
     /**
      * Get this control's style.
      *
      * @return This control's style.
      */
-    Theme::Style* getStyle() const;
+    Theme::Style* getStyle() const { return _style; }
 
     /**
      * Set the style this control will use when rendering.
@@ -850,14 +850,14 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
     /**
      * Returns the theme for this control.
      */
-    Theme* getTheme() const;
+    Theme* getTheme() const { return _style ? _style->getTheme() : nullptr; }
 
     /**
      * Get this control's z-index.
      *
      * @return This control's z-index.
      */
-    int getZIndex() const;
+    int getZIndex() const noexcept { return _zIndex; }
 
     /**
      * Set this control's z-index.
@@ -871,21 +871,21 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
      *
      * @return True if this control accepts focus, false if it does not.
      */
-    bool canFocus() const;
+    bool canFocus() const noexcept { return _canFocus; }
 
     /**
      * Sets whether or not the control accepts input focus.
      *
      * @param acceptsFocus True if the control should accept input focus, false otherwise.
      */
-    void setCanFocus(bool acceptsFocus);
+    void setCanFocus(bool acceptsFocus) { _canFocus = acceptsFocus; }
 
     /**
      * Determines if this control is currently in focus.
      *
      * @return True if the control is currently in focus.
      */
-    bool hasFocus() const;
+    bool hasFocus() const noexcept;
 
     /**
      * Sets input focus to this control.
@@ -904,7 +904,7 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
      *
      * @return This control's focus index.
      */
-    int getFocusIndex() const;
+    int getFocusIndex() const noexcept { return _focusIndex; }
 
     /**
      * Set this control's focus index.
@@ -917,21 +917,21 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
      *
      * @param focusIndex The new focus index.
      */
-    void setFocusIndex(int focusIndex);
+    void setFocusIndex(int focusIndex) noexcept { _focusIndex = focusIndex; }
 
     /**
      * Returns whether this Control object is a Container or not.
      *
      * @return true if this object is of class Container, false otherwise.
      */
-    virtual bool isContainer() const;
+    virtual bool isContainer() const { return false; }
 
     /**
      * Returns this control's parent, or nullptr if this control does not have a parent.
      *
      * @return This control's parent.
      */
-    Control* getParent() const;
+    Control* getParent() const noexcept;
 
     /**
      * Determines if this control is a child (at any level of hierarchy) of the
@@ -1049,7 +1049,7 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
      *
      * @see setX(float, bool)
      */
-    void setXInternal(float x, bool percentage = false);
+    void setXInternal(float x, bool percentage = false) noexcept;
 
     /**
      * Internal method for setting the Y position of the control.
@@ -1059,7 +1059,7 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
      *
      * @see setY(float, bool)
      */
-    void setYInternal(float x, bool percentage = false);
+    void setYInternal(float x, bool percentage = false) noexcept;
 
     /**
      * Internal method for setting the width of the control.
@@ -1072,7 +1072,7 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
      *
      * @see setWidth(float, bool)
      */
-    void setWidthInternal(float width, bool percentage = false);
+    void setWidthInternal(float width, bool percentage = false) noexcept;
 
     /**
      * Internal method for setting the height of the control.
@@ -1085,14 +1085,14 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
      *
      * @see setHeight(float, bool)
      */
-    void setHeightInternal(float height, bool percentage = false);
+    void setHeightInternal(float height, bool percentage = false) noexcept;
 
     /**
      * Get the overlay type corresponding to this control's current state.
      *
      * @return The overlay type corresponding to this control's current state.
      */
-    Theme::Style::OverlayType getOverlayType() const;
+    Theme::Style::OverlayType getOverlayType() const noexcept;
 
     /**
      * Touch callback on touch events.  Controls return true if they consume the touch event.
@@ -1141,7 +1141,7 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
      *
      * @param gamepad The gamepad whose one or more buttons have changed.
      */
-    virtual bool gamepadButtonEvent(Gamepad* gamepad);
+    virtual bool gamepadButtonEvent(Gamepad* gamepad) { return false; }
 
     /**
      * Gamepad callback on gamepad trigger changes.
@@ -1149,7 +1149,7 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
      * @param gamepad The gamepad whose one or more buttons have changed.
      * @param index The index of the trigger that changed.
      */
-    virtual bool gamepadTriggerEvent(Gamepad* gamepad, unsigned int index);
+    virtual bool gamepadTriggerEvent(Gamepad* gamepad, unsigned int index) { return false; }
 
     /**
      * Gamepad callback on gamepad analog joystick changes.
@@ -1157,7 +1157,7 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
      * @param gamepad The gamepad whose one or more buttons have changed.
      * @param index The index of the joystick that changed.
      */
-    virtual bool gamepadJoystickEvent(Gamepad* gamepad, unsigned int index);
+    virtual bool gamepadJoystickEvent(Gamepad* gamepad, unsigned int index) { return false; }
 
     /**
      * Called each frame to update this control and its children.
@@ -1257,7 +1257,7 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
      *
      * @return The number of draw calls issued.
      */
-    virtual unsigned int drawImages(Form* form, const Rectangle& clip);
+    virtual unsigned int drawImages(Form* form, const Rectangle& position) { return 0; }
 
     /**
      * Draw this control's text.
@@ -1272,7 +1272,7 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
      *
      * @return The number of draw calls issued.
      */
-    virtual unsigned int drawText(Form* form, const Rectangle& clip);
+    virtual unsigned int drawText(Form* form, const Rectangle& position) { return 0; }
 
     /**
      * Initializes the control.
@@ -1315,7 +1315,7 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
      *
      * @param evt The event type.
      */
-    virtual void controlEvent(Control::Listener::EventType evt);
+    virtual void controlEvent(Listener::EventType evt) {}
 
     /**
      * Sets dirty bits for the control.
@@ -1324,14 +1324,14 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
      *
      * @param bits Dirty bits to set.
      */
-    void setDirty(int bits);
+    void setDirty(int bits) noexcept { _dirtyBits |= bits; }
 
     /**
      * Determines if the specified bit is dirty.
      *
      * @param bit The bit to check.
      */
-    bool isDirty(int bit) const;
+    bool isDirty(int bit) const noexcept { return (_dirtyBits & bit) == bit; }
 
     /**
      * Gets the Alignment by string.
@@ -1371,103 +1371,103 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
     /**
      * The Control's ID.
      */
-    std::string _id;
+    std::string _id{};
 
     /**
      * Bits indicating whether bounds values are absolute values or percentages.
      */
-    int _boundsBits;
+    int _boundsBits{ 0 };
 
     /**
      * Local bounds, relative to parent container's clipping window, possibly stored as percentages
      * (see _boundsBits).
      */
-    Rectangle _relativeBounds;
+    Rectangle _relativeBounds{};
 
     /**
      * Local bounds, relative to parent container's clipping window, and desired size.
      */
-    Rectangle _bounds;
+    Rectangle _bounds{};
 
     /**
      * Local bounds, relative to parent container's clipping window, including border and padding, after clipping.
      */
-    Rectangle _clipBounds;
+    Rectangle _clipBounds{};
 
     /**
      * Absolute bounds, including border and padding, before clipping.
      */
-    Rectangle _absoluteBounds;
+    Rectangle _absoluteBounds{};
 
     /**
      * Absolute bounds, including border and padding, after clipping.
      */
-    Rectangle _absoluteClipBounds;
+    Rectangle _absoluteClipBounds{};
 
     /**
      * Absolute bounds of content area (i.e. without border and padding), before clipping.
      */
-    Rectangle _viewportBounds;
+    Rectangle _viewportBounds{};
 
     /**
      * Absolute bounds of content area (i.e. without border and padding), after clipping.
      */
-    Rectangle _viewportClipBounds;
+    Rectangle _viewportClipBounds{};
 
     /**
      * Control dirty bits.
      */
-    int _dirtyBits;
+    int _dirtyBits{ DIRTY_BOUNDS | DIRTY_STATE };
 
     /**
      * Flag for whether the Control consumes input events.
      */
-    bool _consumeInputEvents;
+    bool _consumeInputEvents{ true };
 
     /**
      * The Control's Alignment
      */
-    Alignment _alignment;
+    Alignment _alignment{ ALIGN_TOP_LEFT };
 
     /**
      * The Control's auto size mode.
      */
-    AutoSize _autoSize;
+    AutoSize _autoSize{ AUTO_SIZE_BOTH };
 
     /**
      * Listeners map of EventType's to a list of Listeners.
      */
-    std::map<Control::Listener::EventType, std::list<Control::Listener*>*>* _listeners;
+    std::map<Control::Listener::EventType, std::list<Control::Listener*>*>* _listeners{ nullptr };
 
     /**
      * The Control's Theme::Style.
      */
-    Theme::Style* _style;
+    Theme::Style* _style{ nullptr };
 
     /**
      * The control is not visible and _state become DISABLED if false.
      */
-    bool _visible;
+    bool _visible{ true };
 
     /**
      * The current opacity of the control.
      */
-    float _opacity;
+    float _opacity{ 0.0f };
 
     /**
      * The z-order of the control.
      */
-    int _zIndex;
+    int _zIndex{ -1 };
 
     /**
      * The contact index assigned to this control.
      */
-    int _contactIndex;
+    int _contactIndex{ INVALID_CONTACT_INDEX };
 
     /**
      * The focus order of the control.
      */
-    int _focusIndex;
+    int _focusIndex{ 0 };
 
     /**
      * Whether or not the control accepts input focus.
@@ -1477,12 +1477,12 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
     /**
      * This control's current state.
      */
-    State _state;
+    State _state{ NORMAL };
 
     /**
      * The control's parent container.
      */
-    Container* _parent;
+    Container* _parent{ nullptr };
 
   private:
     /*
@@ -1496,7 +1496,7 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
 
     Theme::Style::Overlay** getOverlays(unsigned char overlayTypes, Theme::Style::Overlay** overlays);
 
-    Theme::Style::Overlay* getOverlay(Control::State state) const;
+    Theme::Style::Overlay* getOverlay(Control::State state) const noexcept;
 
     void overrideStyle();
 
@@ -1512,8 +1512,8 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
 
     void addSpecificListener(Control::Listener* listener, Control::Listener::EventType eventType);
 
-    bool _styleOverridden;
-    Theme::Skin* _skin;
+    bool _styleOverridden{ false };
+    Theme::Skin* _skin{ nullptr };
 };
 
 } // namespace tractor

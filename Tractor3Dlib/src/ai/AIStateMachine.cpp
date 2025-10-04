@@ -61,14 +61,12 @@ void AIStateMachine::removeState(AIState* state)
     }
 }
 
-AIState* AIStateMachine::getState(const std::string& id) const
+AIState* AIStateMachine::getState(const std::string& id) const noexcept
 {
     for (AIState* state : _states)
     {
         if (state->getId() == std::string_view{ id })
-        {
             return state;
-        }
     }
 
     return nullptr;

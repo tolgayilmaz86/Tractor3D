@@ -54,35 +54,6 @@ Theme::Style::~Style()
     }
 }
 
-Theme* Theme::Style::getTheme() const { return _theme; }
-
-const std::string& Theme::Style::getId() const { return _id; }
-
-Theme::Style::Overlay* Theme::Style::getOverlay(OverlayType overlayType) const
-{
-    return _overlays[overlayType];
-}
-
-void Theme::Style::setMargin(float top, float bottom, float left, float right)
-{
-    _margin.top = top;
-    _margin.bottom = bottom;
-    _margin.left = left;
-    _margin.right = right;
-}
-
-const Theme::Margin& Theme::Style::getMargin() const { return _margin; }
-
-void Theme::Style::setPadding(float top, float bottom, float left, float right)
-{
-    _padding.top = top;
-    _padding.bottom = bottom;
-    _padding.left = left;
-    _padding.right = right;
-}
-
-const Theme::Padding& Theme::Style::getPadding() const { return _padding; }
-
 /*************************
  * Theme::Style::Overlay *
  *************************/
@@ -171,7 +142,7 @@ void Theme::Style::Overlay::setSkinColor(const Vector4& color)
     }
 }
 
-const Vector4& Theme::Style::Overlay::getSkinColor() const
+const Vector4& Theme::Style::Overlay::getSkinColor() const noexcept
 {
     if (_skin)
     {

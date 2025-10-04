@@ -5,11 +5,7 @@
 namespace tractor
 {
 
-ImageControl::ImageControl()
-    : _srcRegion(Rectangle::empty()), _dstRegion(Rectangle::empty()), _batch(nullptr), _tw(0.0f),
-      _th(0.0f), _uvs(Theme::UVs::full())
-{
-}
+constexpr auto TYPE_NAME = "ImageControl";
 
 ImageControl::~ImageControl() { SAFE_DELETE(_batch); }
 
@@ -56,11 +52,7 @@ void ImageControl::initialize(const std::string& typeName, Theme::Style* style, 
     }
 }
 
-const std::string& ImageControl::getTypeName() const
-{
-    static const std::string TYPE_NAME = "ImageControl";
-    return TYPE_NAME;
-}
+const std::string& ImageControl::getTypeName() const noexcept { return TYPE_NAME; }
 
 void ImageControl::setImage(const std::string& path)
 {

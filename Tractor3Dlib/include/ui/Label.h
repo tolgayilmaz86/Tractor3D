@@ -36,7 +36,7 @@ class Label : public Control
      * @return The type name of this class: "Label"
      * @see ScriptTarget::getTypeName()
      */
-    const std::string& getTypeName() const;
+    const std::string& getTypeName() const noexcept;
 
     /**
      * Set the text for this label to display.
@@ -119,22 +119,22 @@ class Label : public Control
     /**
      * The text displayed by this label.
      */
-    std::string _text;
+    std::string _text{};
 
     /**
      * The font being used to display the label.
      */
-    Font* _font;
+    Font* _font{ nullptr };
 
     /**
      * The text color being used to display the label.
      */
-    Vector4 _textColor;
+    Vector4 _textColor{ 1.0f, 1.0f, 1.0f, 1.0f };
 
     /**
      * The position and size of this control's text area, before clipping.  Used for text alignment.
      */
-    Rectangle _textBounds;
+    Rectangle _textBounds{};
 
   private:
     /**

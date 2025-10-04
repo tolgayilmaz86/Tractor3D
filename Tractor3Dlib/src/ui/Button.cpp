@@ -37,7 +37,7 @@ void Button::initialize(const std::string& typeName, Theme::Style* style, Proper
     }
 }
 
-const std::string& Button::getTypeName() const
+const std::string& Button::getTypeName() const noexcept
 {
     static const std::string TYPE_NAME = "Button";
     return TYPE_NAME;

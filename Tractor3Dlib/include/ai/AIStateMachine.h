@@ -82,7 +82,7 @@ class AIStateMachine
      *
      * @return The state with the given ID, or nullptr if no such state exists.
      */
-    AIState* getState(const std::string& id) const;
+    AIState* getState(const std::string& id) const noexcept;
 
     /**
      * Returns the active state for this state machine.

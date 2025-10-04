@@ -7,39 +7,38 @@
 #include "scene/Node.h"
 
 // Camera dirty bits
-#define CAMERA_DIRTY_VIEW 1
-#define CAMERA_DIRTY_PROJ 2
-#define CAMERA_DIRTY_VIEW_PROJ 4
-#define CAMERA_DIRTY_INV_VIEW 8
-#define CAMERA_DIRTY_INV_VIEW_PROJ 16
-#define CAMERA_DIRTY_BOUNDS 32
-#define CAMERA_DIRTY_ALL                                                                           \
-    (CAMERA_DIRTY_VIEW | CAMERA_DIRTY_PROJ | CAMERA_DIRTY_VIEW_PROJ | CAMERA_DIRTY_INV_VIEW        \
-     | CAMERA_DIRTY_INV_VIEW_PROJ | CAMERA_DIRTY_BOUNDS)
+constexpr auto CAMERA_DIRTY_VIEW = 1;
+constexpr auto CAMERA_DIRTY_PROJ = 2;
+constexpr auto CAMERA_DIRTY_VIEW_PROJ = 4;
+constexpr auto CAMERA_DIRTY_INV_VIEW = 8;
+constexpr auto CAMERA_DIRTY_INV_VIEW_PROJ = 16;
+constexpr auto CAMERA_DIRTY_BOUNDS = 32;
+constexpr auto CAMERA_DIRTY_ALL =
+    (CAMERA_DIRTY_VIEW | CAMERA_DIRTY_PROJ | CAMERA_DIRTY_VIEW_PROJ | CAMERA_DIRTY_INV_VIEW
+     | CAMERA_DIRTY_INV_VIEW_PROJ | CAMERA_DIRTY_BOUNDS);
 
 // Other misc camera bits
-#define CAMERA_CUSTOM_PROJECTION 64
+constexpr auto CAMERA_CUSTOM_PROJECTION = 64;
 
 namespace tractor
 {
 
 Camera::Camera(float fieldOfView, float aspectRatio, float nearPlane, float farPlane)
     : _type(PERSPECTIVE), _fieldOfView(fieldOfView), _aspectRatio(aspectRatio),
-      _nearPlane(nearPlane), _farPlane(farPlane), _bits(CAMERA_DIRTY_ALL), _node(nullptr),
-      _listeners(nullptr)
+      _nearPlane(nearPlane), _farPlane(farPlane), _bits(CAMERA_DIRTY_ALL)
 {
 }
 
 Camera::Camera(float zoomX, float zoomY, float aspectRatio, float nearPlane, float farPlane)
     : _type(ORTHOGRAPHIC), _aspectRatio(aspectRatio), _nearPlane(nearPlane), _farPlane(farPlane),
-      _bits(CAMERA_DIRTY_ALL), _node(nullptr), _listeners(nullptr)
+      _bits(CAMERA_DIRTY_ALL)
 {
     // Orthographic camera.
     _zoom[0] = zoomX;
     _zoom[1] = zoomY;
 }
 
-Camera::~Camera() { SAFE_DELETE(_listeners); }
+Camera::~Camera() { _listeners.clear(); }
 
 Camera* Camera::createPerspective(float fieldOfView, float aspectRatio, float nearPlane, float farPlane)
 {
@@ -128,7 +127,6 @@ Camera* Camera::create(Properties* properties)
 
     return camera;
 }
-
 
 float Camera::getFieldOfView() const
 {
@@ -435,7 +433,7 @@ void Camera::pickRay(const Rectangle& viewport, float x, float y, Ray* dst) cons
     dst->set(nearPoint, direction);
 }
 
-Camera* Camera::clone(NodeCloneContext& context)
+Camera* Camera::clone(NodeCloneContext& context) const
 {
     Camera* cameraClone = nullptr;
     if (getCameraType() == PERSPECTIVE)
@@ -466,9 +464,7 @@ void Camera::transformChanged(Transform* transform, long cookie)
 
 void Camera::cameraChanged()
 {
-    if (_listeners == nullptr) return;
-
-    for (auto listener : *_listeners)
+    for (auto listener : _listeners)
     {
         listener->cameraChanged(this);
     }
@@ -478,22 +474,17 @@ void Camera::addListener(Camera::Listener* listener)
 {
     assert(listener);
 
-    if (_listeners == nullptr) _listeners = new std::list<Camera::Listener*>();
-
-    _listeners->push_back(listener);
+    _listeners.push_back(listener);
 }
 
 void Camera::removeListener(Camera::Listener* listener)
 {
     assert(listener);
 
-    if (_listeners)
+    auto iter = std::find(_listeners.begin(), _listeners.end(), listener);
+    if (iter != _listeners.end())
     {
-        auto iter = std::find(_listeners->begin(), _listeners->end(), listener);
-        if (iter != _listeners->end())
-        {
-            _listeners->erase(iter);
-        }
+        _listeners.erase(iter);
     }
 }
 

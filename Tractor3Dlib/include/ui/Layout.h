@@ -52,7 +52,7 @@ class Layout : public Ref
      *
      * @return The type of this layout.
      */
-    virtual Type getType() = 0;
+    virtual Type getType() const noexcept = 0;
 
   protected:
     /**

@@ -4,6 +4,9 @@
 
 namespace tractor
 {
+
+constexpr auto TYPE_NAME{ "JoystickControl" };
+
 JoystickControl::~JoystickControl()
 {
     if (_innerSizePixels) SAFE_DELETE(_innerSizePixels);
@@ -27,13 +30,10 @@ Control* JoystickControl::create(Theme::Style* style, Properties* properties)
     return joystickControl;
 }
 
-const std::string& JoystickControl::getTypeName() const
+const std::string& JoystickControl::getTypeName() const noexcept
 {
-    static const std::string TYPE_NAME = "JoystickControl";
     return TYPE_NAME;
 }
-
-const Vector2& JoystickControl::getValue() const noexcept { return _value; }
 
 void JoystickControl::setInnerRegionSize(const Vector2& size,
                                          bool isWidthPercentage,
@@ -56,7 +56,7 @@ void JoystickControl::setInnerRegionSize(const Vector2& size,
 }
 
 const Vector2& JoystickControl::getInnerRegionSize(bool* isWidthPercentage,
-                                                   bool* isHeightPercentage) const
+                                                   bool* isHeightPercentage) const noexcept
 {
     if (isWidthPercentage)
     {
@@ -101,7 +101,7 @@ void JoystickControl::setOuterRegionSize(const Vector2& size,
 }
 
 const Vector2& JoystickControl::getOuterRegionSize(bool* isWidthPercentage,
-                                                   bool* isHeightPercentage) const
+                                                   bool* isHeightPercentage) const noexcept
 {
     if (isWidthPercentage)
     {
@@ -125,13 +125,13 @@ const Vector2& JoystickControl::getOuterRegionSize(bool* isWidthPercentage,
         return Vector2::zero();
 }
 
-void JoystickControl::setRelative(bool relative) { _relative = relative; }
+void JoystickControl::setRelative(bool relative) noexcept{ _relative = relative; }
 
 bool JoystickControl::isRelative() const noexcept { return _relative; }
 
 unsigned int JoystickControl::getIndex() const noexcept { return _index; }
 
-void JoystickControl::setBoundsBit(bool set, int& bitSetOut, int bit)
+void JoystickControl::setBoundsBit(bool set, int& bitSetOut, int bit) noexcept
 {
     if (set)
     {
@@ -152,7 +152,7 @@ void JoystickControl::setRadius(float radius, bool isPercentage)
 
 float JoystickControl::getRadius() const noexcept { return _radiusCoord; }
 
-bool JoystickControl::isRadiusPercentage() const
+bool JoystickControl::isRadiusPercentage() const noexcept
 {
     return _boundsBits & BOUNDS_RADIUS_PERCENTAGE_BIT;
 }
@@ -266,7 +266,7 @@ Theme::ThemeImage* JoystickControl::getNonEmptyImage(const std::string& id, Cont
     return image->getId() == id ? image : nullptr;
 }
 
-void JoystickControl::updateAbsoluteSizes()
+void JoystickControl::updateAbsoluteSizes() noexcept
 {
     const Control::State state = getState();
 

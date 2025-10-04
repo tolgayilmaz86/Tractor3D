@@ -50,7 +50,7 @@ void RadioButton::initialize(const std::string& typeName, Theme::Style* style, P
     }
 }
 
-const std::string& RadioButton::getTypeName() const
+const std::string& RadioButton::getTypeName() const noexcept
 {
     static const std::string TYPE_NAME = "RadioButton";
     return TYPE_NAME;

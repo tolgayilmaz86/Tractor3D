@@ -9,7 +9,7 @@ namespace tractor
 {
 
 AudioController::AudioController()
-    : _alcDevice(NULL), _alcContext(NULL), _pausingSource(NULL), _streamingThreadActive(true)
+    : _alcDevice(nullptr), _alcContext(nullptr), _pausingSource(nullptr), _streamingThreadActive(true)
 {
 }
 
@@ -17,14 +17,14 @@ AudioController::~AudioController() {}
 
 void AudioController::initialize()
 {
-    _alcDevice = alcOpenDevice(NULL);
+    _alcDevice = alcOpenDevice(nullptr);
     if (!_alcDevice)
     {
         GP_ERROR("Unable to open OpenAL device.\n");
         return;
     }
 
-    _alcContext = alcCreateContext(_alcDevice, NULL);
+    _alcContext = alcCreateContext(_alcDevice, nullptr);
     ALCenum alcErr = alcGetError(_alcDevice);
     if (!_alcContext || alcErr != ALC_NO_ERROR)
     {

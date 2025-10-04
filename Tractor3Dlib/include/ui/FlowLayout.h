@@ -21,7 +21,7 @@ class FlowLayout : public Layout
      *
      * @return Layout::LAYOUT_FLOW
      */
-    Layout::Type getType() { return Layout::LAYOUT_FLOW; }
+    Layout::Type getType() const noexcept { return Layout::LAYOUT_FLOW; }
 
     /**
      * Returns the horizontal spacing between controls in the layout.

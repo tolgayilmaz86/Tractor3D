@@ -132,7 +132,7 @@ void Form::initialize(const std::string& typeName, Theme::Style* style, Properti
     if (updateBoundsInternal(Vector2::zero())) updateBoundsInternal(Vector2::zero());
 }
 
-Form* Form::getForm(const std::string& id)
+Form* Form::getForm(const std::string& id) noexcept
 {
     for (const auto& form : __forms)
         if (id == form->getId())
@@ -148,11 +148,11 @@ Control* Form::getActiveControl(unsigned int touchPoint)
     return __activeControl[touchPoint];
 }
 
-Control* Form::getFocusControl() { return __focusControl; }
+Control* Form::getFocusControl() noexcept { return __focusControl; }
 
 void Form::clearFocus() { setFocusControl(nullptr); }
 
-const std::string& Form::getTypeName() const
+const std::string& Form::getTypeName() const noexcept
 {
     static const std::string TYPE_NAME = "Form";
     return TYPE_NAME;
@@ -197,7 +197,7 @@ void Form::startBatch(SpriteBatch* batch)
     }
 }
 
-void Form::finishBatch(SpriteBatch* batch)
+void Form::finishBatch(SpriteBatch* batch) const
 {
     if (!_batched)
         batch->finish();

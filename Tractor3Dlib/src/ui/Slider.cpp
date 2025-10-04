@@ -49,7 +49,7 @@ void Slider::initialize(const std::string& typeName, Theme::Style* style, Proper
     setValue(_value);
 }
 
-const std::string& Slider::getTypeName() const
+const std::string& Slider::getTypeName() const noexcept
 {
     static const std::string TYPE_NAME = "Slider";
     return TYPE_NAME;

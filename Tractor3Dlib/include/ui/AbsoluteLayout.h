@@ -20,7 +20,7 @@ class AbsoluteLayout : public Layout
      *
      * @return Layout::LAYOUT_ABSOLUTE
      */
-    Layout::Type getType();
+    Layout::Type getType() const noexcept;
 
   protected:
     /**

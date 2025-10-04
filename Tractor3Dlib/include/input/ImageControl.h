@@ -39,7 +39,7 @@ class ImageControl : public Control
      * @return The type name of this class: "ImageControl"
      * @see ScriptTarget::getTypeName()
      */
-    const std::string& getTypeName() const;
+    const std::string& getTypeName() const noexcept;
 
     /**
      * Set the path of the image for this ImageControl to display.
@@ -101,7 +101,7 @@ class ImageControl : public Control
     const Rectangle& getRegionDst() const noexcept;
 
   protected:
-    ImageControl();
+    ImageControl() = default;
 
     virtual ~ImageControl();
 
@@ -133,17 +133,17 @@ class ImageControl : public Control
     ImageControl(const ImageControl& copy);
 
     // Source region.
-    Rectangle _srcRegion;
+    Rectangle _srcRegion{ Rectangle::empty() };
     // Destination region.
-    Rectangle _dstRegion;
-    SpriteBatch* _batch;
+    Rectangle _dstRegion{ Rectangle::empty() };
+    SpriteBatch* _batch{ nullptr };
 
     // One over texture width and height, for use when calculating UVs from a new source region.
-    float _tw;
-    float _th;
+    float _tw{ 0.0f };
+    float _th{ 0.0f };
 
     // Calculated UVs.
-    Theme::UVs _uvs;
+    Theme::UVs _uvs{ Theme::UVs::full() };
 };
 
 } // namespace tractor

@@ -36,7 +36,7 @@ class JoystickControl : public Control
      * @return The type name of this class: "JoystickControl"
      * @see ScriptTarget::getTypeName()
      */
-    const std::string& getTypeName() const;
+    const std::string& getTypeName() const noexcept;
 
     /**
      * Add a listener to be notified of specific events affecting
@@ -55,7 +55,7 @@ class JoystickControl : public Control
      *
      * @return The value of the joystick.
      */
-    const Vector2& getValue() const noexcept;
+    const Vector2& getValue() const noexcept { return _value; }
 
     /**
      * Sets the image size of the inner region of the joystick. Does not do anything if there is no
@@ -83,7 +83,7 @@ class JoystickControl : public Control
      * @return The image size of the inner region of the joystick. (x, y) == (width, height)
      */
     const Vector2& getInnerRegionSize(bool* isWidthPercentage = nullptr,
-                                      bool* isHeightPercentage = nullptr) const;
+                                      bool* isHeightPercentage = nullptr) const noexcept;
 
     /**
      * Sets the image size of the outer region of the joystick. Does not do anything if there is no
@@ -111,7 +111,7 @@ class JoystickControl : public Control
      * @return The image size of the outer region of the joystick. (x, y) == (width, height)
      */
     const Vector2& getOuterRegionSize(bool* isWidthPercentage = nullptr,
-                                      bool* isHeightPercentage = nullptr) const;
+                                      bool* isHeightPercentage = nullptr) const noexcept;
 
     /**
      * Sets whether relative positioning is enabled or not.
@@ -120,7 +120,7 @@ class JoystickControl : public Control
      *
      * @param relative Whether relative positioning should be enabled or not.
      */
-    void setRelative(bool relative);
+    void setRelative(bool relative) noexcept;
 
     /**
      * Gets whether absolute positioning is enabled or not.
@@ -158,7 +158,7 @@ class JoystickControl : public Control
      *
      * @return True if the radius of joystick motion is a percentage value of the relative size of this control
      */
-    bool isRadiusPercentage() const;
+    bool isRadiusPercentage() const noexcept;
 
   protected:
     /**
@@ -227,9 +227,9 @@ class JoystickControl : public Control
 
     Theme::ThemeImage* getNonEmptyImage(const std::string& id, Control::State state);
 
-    void updateAbsoluteSizes();
+    void updateAbsoluteSizes() noexcept;
 
-    void setBoundsBit(bool set, int& bitSetOut, int bit);
+    void setBoundsBit(bool set, int& bitSetOut, int bit) noexcept;
 
     float _radiusCoord{ 1.0f };
     Vector2* _innerRegionCoord{ nullptr };
@@ -239,10 +239,10 @@ class JoystickControl : public Control
     float _radiusPixels{ 1.0f };
     Vector2* _innerSizePixels{ nullptr };
     Vector2* _outerSizePixels{ nullptr };
-    Rectangle _screenRegionPixels;
+    Rectangle _screenRegionPixels{};
     bool _relative{ true };
-    Vector2 _value;
-    Vector2 _displacement;
+    Vector2 _value{ Vector2::zero() };
+    Vector2 _displacement{ Vector2::zero() };
     unsigned int _index{ 0 };
 };
 

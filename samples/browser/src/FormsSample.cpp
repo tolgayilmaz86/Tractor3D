@@ -207,6 +207,7 @@ void FormsSample::update(float elapsedTime)
     // If no controls are in focus, then we poll the gamepad for movement input.
     if (Form::getFocusControl() == nullptr)
     {
+        // TODO: form not moving with joysticks
         if (!_joysticks[0].isZero())
         {
             _formNodeParent->translate(0.5f * speedFactor * _joysticks[0].x,

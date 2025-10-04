@@ -9,12 +9,9 @@
 namespace tractor
 {
 
+constexpr auto TYPE_NAME = "Control";
+
 Control::Control()
-    : _id(""), _boundsBits(0), _dirtyBits(DIRTY_BOUNDS | DIRTY_STATE), _consumeInputEvents(true),
-      _alignment(ALIGN_TOP_LEFT), _autoSize(AUTO_SIZE_BOTH), _listeners(nullptr), _style(nullptr),
-      _visible(true), _opacity(0.0f), _zIndex(-1), _contactIndex(INVALID_CONTACT_INDEX),
-      _focusIndex(-1), _canFocus(false), _state(NORMAL), _parent(nullptr), _styleOverridden(false),
-      _skin(nullptr)
 {
     GP_REGISTER_SCRIPT_EVENTS();
 }
@@ -73,7 +70,7 @@ void Control::initialize(const std::string& typeName, Theme::Style* style, Prope
     {
         // The style passed is in our parent control's style.
         // Attempt to load our own style from our parent style's theme.
-        auto styleName = properties->getString("style", typeName);
+        const auto& styleName = properties->getString("style", typeName);
         if (style)
         {
             // The passed in style is our parent control's style : attempt to load our style from it.
@@ -253,19 +250,9 @@ void Control::initialize(const std::string& typeName, Theme::Style* style, Prope
     }
 }
 
-const std::string& Control::getTypeName() const
-{
-    static const std::string TYPE_NAME = "Control";
-    return TYPE_NAME;
-}
+const std::string& Control::getTypeName() const noexcept { return TYPE_NAME; }
 
-const std::string& Control::getId() const { return _id; }
-
-void Control::setId(const std::string& id) { _id = id; }
-
-float Control::getX() const { return _bounds.x; }
-
-void Control::setX(float x, bool percentage)
+void Control::setX(float x, bool percentage) noexcept
 {
     if (_relativeBounds.x != x || percentage != ((_boundsBits & BOUNDS_X_PERCENTAGE_BIT) != 0))
     {
@@ -274,7 +261,7 @@ void Control::setX(float x, bool percentage)
     }
 }
 
-void Control::setXInternal(float x, bool percentage)
+void Control::setXInternal(float x, bool percentage) noexcept
 {
     _relativeBounds.x = x;
     if (percentage)
@@ -288,11 +275,12 @@ void Control::setXInternal(float x, bool percentage)
     }
 }
 
-bool Control::isXPercentage() const { return (_boundsBits & BOUNDS_X_PERCENTAGE_BIT) != 0; }
+bool Control::isXPercentage() const noexcept
+{
+    return (_boundsBits & BOUNDS_X_PERCENTAGE_BIT) != 0;
+}
 
-float Control::getY() const { return _bounds.y; }
-
-void Control::setY(float y, bool percentage)
+void Control::setY(float y, bool percentage) noexcept
 {
     if (_relativeBounds.y != y || percentage != ((_boundsBits & BOUNDS_Y_PERCENTAGE_BIT) != 0))
     {
@@ -301,7 +289,7 @@ void Control::setY(float y, bool percentage)
     }
 }
 
-void Control::setYInternal(float y, bool percentage)
+void Control::setYInternal(float y, bool percentage) noexcept
 {
     _relativeBounds.y = y;
     if (percentage)
@@ -315,9 +303,10 @@ void Control::setYInternal(float y, bool percentage)
     }
 }
 
-bool Control::isYPercentage() const { return (_boundsBits & BOUNDS_Y_PERCENTAGE_BIT) != 0; }
-
-float Control::getWidth() const { return _bounds.width; }
+bool Control::isYPercentage() const noexcept
+{
+    return (_boundsBits & BOUNDS_Y_PERCENTAGE_BIT) != 0;
+}
 
 void Control::setWidth(float width, bool percentage)
 {
@@ -331,7 +320,7 @@ void Control::setWidth(float width, bool percentage)
     }
 }
 
-void Control::setWidthInternal(float width, bool percentage)
+void Control::setWidthInternal(float width, bool percentage) noexcept
 {
     _relativeBounds.width = width;
     if (percentage)
@@ -345,11 +334,12 @@ void Control::setWidthInternal(float width, bool percentage)
     }
 }
 
-bool Control::isWidthPercentage() const { return (_boundsBits & BOUNDS_WIDTH_PERCENTAGE_BIT) != 0; }
+bool Control::isWidthPercentage() const noexcept
+{
+    return (_boundsBits & BOUNDS_WIDTH_PERCENTAGE_BIT) != 0;
+}
 
-float Control::getHeight() const { return _bounds.height; }
-
-void Control::setHeight(float height, bool percentage)
+void Control::setHeight(float height, bool percentage) noexcept
 {
     _autoSize = (AutoSize)(_autoSize & ~AUTO_SIZE_HEIGHT);
 
@@ -361,7 +351,7 @@ void Control::setHeight(float height, bool percentage)
     }
 }
 
-void Control::setHeightInternal(float height, bool percentage)
+void Control::setHeightInternal(float height, bool percentage) noexcept
 {
     _relativeBounds.height = height;
     if (percentage)
@@ -375,26 +365,24 @@ void Control::setHeightInternal(float height, bool percentage)
     }
 }
 
-bool Control::isHeightPercentage() const
+bool Control::isHeightPercentage() const noexcept
 {
     return (_boundsBits & BOUNDS_HEIGHT_PERCENTAGE_BIT) != 0;
 }
 
-void Control::setPosition(float x, float y)
+void Control::setPosition(float x, float y) noexcept
 {
     setX(x);
     setY(y);
 }
 
-void Control::setSize(float width, float height)
+void Control::setSize(float width, float height) noexcept
 {
     setWidth(width);
     setHeight(height);
 }
 
-const Rectangle& Control::getBounds() const { return _bounds; }
-
-void Control::setBounds(const Rectangle& bounds)
+void Control::setBounds(const Rectangle& bounds) noexcept
 {
     setX(bounds.x);
     setY(bounds.y);
@@ -402,13 +390,7 @@ void Control::setBounds(const Rectangle& bounds)
     setHeight(bounds.height);
 }
 
-const Rectangle& Control::getAbsoluteBounds() const { return _absoluteBounds; }
-
-const Rectangle& Control::getClipBounds() const { return _clipBounds; }
-
-const Rectangle& Control::getClip() const { return _viewportClipBounds; }
-
-void Control::setAlignment(Alignment alignment)
+void Control::setAlignment(Alignment alignment) noexcept
 {
     if (_alignment != alignment)
     {
@@ -417,11 +399,7 @@ void Control::setAlignment(Alignment alignment)
     }
 }
 
-Control::Alignment Control::getAlignment() const { return _alignment; }
-
-Control::AutoSize Control::getAutoSize() const { return _autoSize; }
-
-void Control::setAutoSize(AutoSize mode)
+void Control::setAutoSize(AutoSize mode) noexcept
 {
     if (_autoSize != mode)
     {
@@ -453,8 +431,6 @@ void Control::setVisible(bool visible)
     }
 }
 
-bool Control::isVisible() const { return _visible; }
-
 bool Control::isVisibleInHierarchy() const
 {
     if (!_visible) return false;
@@ -464,11 +440,10 @@ bool Control::isVisibleInHierarchy() const
     return true;
 }
 
-bool Control::canFocus() const { return _canFocus; }
-
-void Control::setCanFocus(bool acceptsFocus) { _canFocus = acceptsFocus; }
-
-bool Control::hasFocus() const { return (Form::getFocusControl() == this); }
+bool Control::hasFocus() const noexcept
+{
+    return (Form::getFocusControl() == this);
+}
 
 bool Control::setFocus()
 {
@@ -512,8 +487,6 @@ void Control::setEnabled(bool enabled)
         setDirty(DIRTY_STATE);
     }
 }
-
-bool Control::isEnabled() const { return (_state != DISABLED); }
 
 bool Control::isEnabledInHierarchy() const
 {
@@ -798,8 +771,6 @@ bool Control::getTextRightToLeft(State state) const
     return overlay->getTextRightToLeft();
 }
 
-Theme::Style* Control::getStyle() const { return _style; }
-
 void Control::setStyle(Theme::Style* style)
 {
     if (style != _style)
@@ -809,9 +780,7 @@ void Control::setStyle(Theme::Style* style)
     }
 }
 
-Theme* Control::getTheme() const { return _style ? _style->getTheme() : nullptr; }
-
-Control::State Control::getState() const
+Control::State Control::getState() const noexcept
 {
     if (Form::getFocusControl() == this)
     {
@@ -822,7 +791,7 @@ Control::State Control::getState() const
     return _state;
 }
 
-Theme::Style::OverlayType Control::getOverlayType() const
+Theme::Style::OverlayType Control::getOverlayType() const noexcept
 {
     switch (getState())
     {
@@ -841,12 +810,6 @@ Theme::Style::OverlayType Control::getOverlayType() const
     }
 }
 
-void Control::setConsumeInputEvents(bool consume) { _consumeInputEvents = consume; }
-
-bool Control::getConsumeInputEvents() { return _consumeInputEvents; }
-
-int Control::getZIndex() const { return _zIndex; }
-
 void Control::setZIndex(int zIndex)
 {
     if (zIndex != _zIndex)
@@ -859,10 +822,6 @@ void Control::setZIndex(int zIndex)
         }
     }
 }
-
-int Control::getFocusIndex() const { return _focusIndex; }
-
-void Control::setFocusIndex(int focusIndex) { _focusIndex = focusIndex; }
 
 void Control::addListener(Control::Listener* listener, int eventFlags)
 {
@@ -957,12 +916,6 @@ bool Control::mouseEvent(Mouse::MouseEvent evt, int x, int y, int wheelDelta)
     return false;
 }
 
-bool Control::gamepadButtonEvent(Gamepad* gamepad) { return false; }
-
-bool Control::gamepadTriggerEvent(Gamepad* gamepad, unsigned int index) { return false; }
-
-bool Control::gamepadJoystickEvent(Gamepad* gamepad, unsigned int index) { return false; }
-
 void Control::notifyListeners(Control::Listener::EventType eventType)
 {
     // This method runs untrusted code by notifying listeners of events.
@@ -993,12 +946,6 @@ void Control::notifyListeners(Control::Listener::EventType eventType)
 
     this->release();
 }
-
-void Control::controlEvent(Control::Listener::EventType evt) {}
-
-void Control::setDirty(int bits) { _dirtyBits |= bits; }
-
-bool Control::isDirty(int bit) const { return (_dirtyBits & bit) == bit; }
 
 void Control::update(float elapsedTime)
 {
@@ -1387,12 +1334,6 @@ unsigned int Control::drawBorder(Form* form, const Rectangle& clip)
     return drawCalls;
 }
 
-unsigned int Control::drawImages(Form* form, const Rectangle& position) { return 0; }
-
-unsigned int Control::drawText(Form* form, const Rectangle& position) { return 0; }
-
-bool Control::isContainer() const { return false; }
-
 Control::State Control::getState(const std::string& state)
 {
     if (state.empty())
@@ -1438,7 +1379,7 @@ Theme::ThemeImage* Control::getImage(const std::string& id, State state)
     return image ? image : _style->getTheme()->_emptyImage;
 }
 
-Control* Control::getParent() const { return _parent; }
+Control* Control::getParent() const noexcept { return _parent; }
 
 bool Control::isChild(Control* control) const
 {
@@ -1593,7 +1534,7 @@ Theme::Style::Overlay** Control::getOverlays(unsigned char overlayTypes,
     return overlays;
 }
 
-Theme::Style::Overlay* Control::getOverlay(State state) const
+Theme::Style::Overlay* Control::getOverlay(State state) const noexcept
 {
     assert(_style);
 

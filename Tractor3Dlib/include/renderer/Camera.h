@@ -1,5 +1,7 @@
 #pragma once
 
+#include <list>
+
 #include "graphics/Frustum.h"
 #include "graphics/Rectangle.h"
 #include "math/Transform.h"
@@ -357,7 +359,7 @@ class Camera : public Ref, public Transform::Listener
      * @param context The clone context.
      * @return The newly created camera.
      */
-    Camera* clone(NodeCloneContext& context);
+    Camera* clone(NodeCloneContext& context) const;
 
     /**
      * Sets the node associated with this camera.
@@ -372,11 +374,11 @@ class Camera : public Ref, public Transform::Listener
     void cameraChanged();
 
     Camera::Type _type;
-    float _fieldOfView;
-    float _zoom[2];
-    float _aspectRatio;
-    float _nearPlane;
-    float _farPlane;
+    float _fieldOfView{ 0.0f };
+    float _zoom[2]{ 0.0f, 0.0f };
+    float _aspectRatio{ 0.0f };
+    float _nearPlane{ 0.0f };
+    float _farPlane{ 0.0f };
     mutable Matrix _view;
     mutable Matrix _projection;
     mutable Matrix _viewProjection;
@@ -384,8 +386,8 @@ class Camera : public Ref, public Transform::Listener
     mutable Matrix _inverseViewProjection;
     mutable Frustum _bounds;
     mutable int _bits;
-    Node* _node;
-    std::list<Camera::Listener*>* _listeners;
+    Node* _node{ nullptr };
+    std::list<Camera::Listener*> _listeners;
 };
 
 } // namespace tractor

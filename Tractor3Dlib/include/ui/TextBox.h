@@ -56,7 +56,7 @@ class TextBox : public Label
      * @return The type name of this class: "TextBox"
      * @see ScriptTarget::getTypeName()
      */
-    const std::string& getTypeName() const;
+    const std::string& getTypeName() const noexcept;
 
     /**
      * Returns the current location of the caret with the text of this TextBox.
@@ -77,7 +77,7 @@ class TextBox : public Label
      *
      * @return The last key pressed within this text box.
      */
-    int getLastKeypress();
+    int getLastKeypress() const noexcept { return _lastKeypress; }
 
     /**
      * Set the character displayed in password mode.

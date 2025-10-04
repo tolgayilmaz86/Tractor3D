@@ -28,7 +28,7 @@ AbsoluteLayout* AbsoluteLayout::create()
     return __instance;
 }
 
-Layout::Type AbsoluteLayout::getType() { return Layout::LAYOUT_ABSOLUTE; }
+Layout::Type AbsoluteLayout::getType() const noexcept { return Layout::LAYOUT_ABSOLUTE; }
 
 void AbsoluteLayout::update(const Container* container)
 {

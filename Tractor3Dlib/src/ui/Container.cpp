@@ -186,7 +186,7 @@ void Container::addControls(Properties* properties)
     sortControls();
 }
 
-const std::string& Container::getTypeName() const
+const std::string& Container::getTypeName() const noexcept
 {
     static const std::string TYPE_NAME = "Container";
     return TYPE_NAME;

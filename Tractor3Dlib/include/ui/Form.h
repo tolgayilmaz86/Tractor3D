@@ -65,7 +65,7 @@ class Form : public Drawable, public Container
      *
      * @return A form with the given ID, or null if one was not found.
      */
-    static Form* getForm(const std::string& id);
+    static Form* getForm(const std::string& id) noexcept;
 
     /**
      * Returns the currently active control within the UI system.
@@ -85,7 +85,7 @@ class Form : public Drawable, public Container
      *
      * @return The current control in focus, or nullptr if no controls are in focus.
      */
-    static Control* getFocusControl();
+    static Control* getFocusControl() noexcept;
 
     /**
      * Removes focus from any currently focused UI control.
@@ -100,7 +100,7 @@ class Form : public Drawable, public Container
      * @return The type name of this class: "Form"
      * @see ScriptTarget::getTypeName
      */
-    const std::string& getTypeName() const;
+    const std::string& getTypeName() const noexcept;
 
     /**
      * @see Container#isForm()
@@ -236,7 +236,7 @@ class Form : public Drawable, public Container
     /**
      * Called during drawing to signal completion of drawing into a batch.
      */
-    void finishBatch(SpriteBatch* batch);
+    void finishBatch(SpriteBatch* batch) const;
 
     /**
      * Unproject a point (from a mouse or touch event) into the scene and then project it onto the form.

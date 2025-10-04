@@ -64,7 +64,7 @@ class Button : public Label
      * @return The type name of this class: "Button"
      * @see ScriptTarget::getTypeName()
      */
-    const std::string& getTypeName() const;
+    const std::string& getTypeName() const noexcept;
 
     /**
      * Gets the data binding index for this control.

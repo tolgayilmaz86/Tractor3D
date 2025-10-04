@@ -60,10 +60,8 @@ class GameScriptTarget : public ScriptTarget
 };
 
 Game::Game()
-    : _initialized(false), _state(UNINITIALIZED), _pausedCount(0), _frameLastFPS(0), _frameCount(0),
-      _frameRate(0), _width(0), _height(0), _clearDepth(1.0f), _clearStencil(0), _timeEvents(nullptr)
 {
-    assert(__gameInstance == NULL);
+    assert(__gameInstance == nullptr);
     _timeEvents = new std::priority_queue<TimeEvent, std::vector<TimeEvent>, std::less<TimeEvent>>();
 
     __gameInstance = this;
@@ -82,7 +80,7 @@ Game::~Game()
     printMemoryLeaks();
 #endif
 
-    __gameInstance = NULL;
+    __gameInstance = nullptr;
 }
 
 Game* Game::getInstance()
@@ -436,7 +434,7 @@ void Game::frame()
 
 void Game::renderOnce(const char* function)
 {
-    _scriptController->executeFunction<void>(function, NULL);
+    _scriptController->executeFunction<void>(function, nullptr);
     Platform::swapBuffers();
 }
 
@@ -523,7 +521,7 @@ void Game::clear(ClearFlags flags,
 
 AudioListener* Game::getAudioListener()
 {
-    if (_audioListener == NULL)
+    if (_audioListener == nullptr)
     {
         _audioListener = new AudioListener();
     }
@@ -802,7 +800,7 @@ void Game::loadGamepads()
         // If there are, create and initialize them.
         _properties->rewind();
         Properties* inner = _properties->getNextNamespace();
-        while (inner != NULL)
+        while (inner != nullptr)
         {
             std::string spaceName(inner->getNamespace());
             // This namespace was accidentally named "gamepads" originally but we'll keep this check

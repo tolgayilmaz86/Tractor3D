@@ -38,7 +38,7 @@ void Label::initialize(const std::string& typeName, Theme::Style* style, Propert
     }
 }
 
-const std::string& Label::getTypeName() const
+const std::string& Label::getTypeName() const noexcept
 {
     static const std::string TYPE_NAME = "Label";
     return TYPE_NAME;

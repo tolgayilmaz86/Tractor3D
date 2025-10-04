@@ -35,7 +35,7 @@ void CheckBox::initialize(const std::string& typeName, Theme::Style* style, Prop
     }
 }
 
-const std::string& CheckBox::getTypeName() const
+const std::string& CheckBox::getTypeName() const noexcept
 {
     static const std::string TYPE_NAME = "CheckBox";
     return TYPE_NAME;

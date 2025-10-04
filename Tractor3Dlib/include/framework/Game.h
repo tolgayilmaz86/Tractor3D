@@ -510,7 +510,7 @@ class Game
      * @param preferPhysical true if you prefer return a physical if exist; false if only virtual.
      * @return The gamepad at the specified index.
      */
-    inline Gamepad* getGamepad(unsigned int index, bool preferPhysical =true) const
+    inline Gamepad* getGamepad(unsigned int index, bool preferPhysical = true) const
     {
         return Gamepad::getGamepad(index, preferPhysical);
     }
@@ -767,30 +767,38 @@ class Game
     void gestureDropEventInternal(int x, int y);
     void gamepadEventInternal(Gamepad::GamepadEvent evt, Gamepad* gamepad);
 
-    bool _initialized;              // If game has initialized yet.
-    State _state;                   // The game state.
-    unsigned int _pausedCount;      // Number of times pause() has been called.
-    static double _pausedTimeLast;  // The last time paused.
-    static double _pausedTimeTotal; // The total time paused.
-    double _frameLastFPS;           // The last time the frame count was updated.
-    unsigned int _frameCount;       // The current frame count.
-    unsigned int _frameRate;        // The current frame rate.
-    unsigned int _width;            // The game's display width.
-    unsigned int _height;           // The game's display height.
-    Rectangle _viewport;            // the games's current viewport.
-    Vector4 _clearColor; // The clear color value last used for clearing the color buffer.
-    float _clearDepth;   // The clear depth value last used for clearing the depth buffer.
-    int _clearStencil;   // The clear stencil value last used for clearing the stencil buffer.
-    std::unique_ptr<Properties> _properties;   // Game configuration properties object.
-    AnimationController* _animationController; // Controls the scheduling and running of animations.
-    AudioController* _audioController;     // Controls audio sources that are playing in the game.
-    PhysicsController* _physicsController; // Controls the simulation of a physics scene and entities.
-    AIController* _aiController;           // Controls AI simulation.
-    AudioListener* _audioListener;         // The audio listener in 3D space.
-    std::priority_queue<TimeEvent, std::vector<TimeEvent>, std::less<TimeEvent>>*
-        _timeEvents;                     // Contains the scheduled time events.
-    ScriptController* _scriptController; // Controls the scripting engine.
-    ScriptTarget* _scriptTarget;         // Script target for the game
+    bool _initialized{ false };           // If game has initialized yet.
+    State _state{ State::UNINITIALIZED }; // The game state.
+    unsigned int _pausedCount{ 0 };       // Number of times pause() has been called.
+    static double _pausedTimeLast;        // The last time paused.
+    static double _pausedTimeTotal;       // The total time paused.
+    double _frameLastFPS{ 0.0 };          // The last time the frame count was updated.
+    unsigned int _frameCount{ 0 };        // The current frame count.
+    unsigned int _frameRate{ 0 };         // The current frame rate.
+    unsigned int _width{ 0 };             // The game's display width.
+    unsigned int _height{ 0 };            // The game's display height.
+    Rectangle _viewport{ 0, 0, 0, 0 };    // the games's current viewport.
+    Vector4 _clearColor{ 0.0f,
+                         0.0f,
+                         0.0f,
+                         0.0f }; // The clear color value last used for clearing the color buffer.
+    float _clearDepth{ 0.0f };   // The clear depth value last used for clearing the depth buffer.
+    int _clearStencil{ 0 }; // The clear stencil value last used for clearing the stencil buffer.
+    std::unique_ptr<Properties> _properties; // Game configuration properties object.
+    AnimationController* _animationController{
+        nullptr
+    }; // Controls the scheduling and running of animations.
+    AudioController* _audioController{ nullptr }; // Controls audio sources that are playing in the game.
+    PhysicsController* _physicsController{
+        nullptr
+    }; // Controls the simulation of a physics scene and entities.
+    AIController* _aiController{ nullptr };   // Controls AI simulation.
+    AudioListener* _audioListener{ nullptr }; // The audio listener in 3D space.
+    std::priority_queue<TimeEvent, std::vector<TimeEvent>, std::less<TimeEvent>>* _timeEvents{
+        nullptr
+    }; // Contains the scheduled time events.
+    ScriptController* _scriptController{ nullptr }; // Controls the scripting engine.
+    ScriptTarget* _scriptTarget{ nullptr };         // Script target for the game
 
     // Note: Do not add STL object member variables on the stack; this will cause false memory leaks to be reported.
 

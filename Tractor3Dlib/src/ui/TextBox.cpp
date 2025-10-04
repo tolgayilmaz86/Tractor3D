@@ -6,6 +6,8 @@
 namespace tractor
 {
 
+constexpr auto TYPE_NAME = "TextBox";
+
 TextBox::TextBox()
     : _caretLocation(0), _lastKeypress(0), _fontSize(0), _caretImage(nullptr), _passwordChar('*'),
       _inputMode(TEXT), _ctrlPressed(false), _shiftPressed(false)
@@ -40,11 +42,7 @@ void TextBox::initialize(const std::string& typeName, Theme::Style* style, Prope
     }
 }
 
-const std::string& TextBox::getTypeName() const
-{
-    static const std::string TYPE_NAME = "TextBox";
-    return TYPE_NAME;
-}
+const std::string& TextBox::getTypeName() const noexcept { return TYPE_NAME; }
 
 void TextBox::addListener(Control::Listener* listener, int eventFlags)
 {
@@ -55,8 +53,6 @@ void TextBox::addListener(Control::Listener* listener, int eventFlags)
 
     Control::addListener(listener, eventFlags);
 }
-
-int TextBox::getLastKeypress() { return _lastKeypress; }
 
 void TextBox::setCaretLocation(unsigned int index)
 {

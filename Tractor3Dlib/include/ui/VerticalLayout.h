@@ -24,21 +24,21 @@ class VerticalLayout : public Layout
      *
      * @param bottomToTop Whether to start laying out controls from the bottom of the container.
      */
-    void setBottomToTop(bool bottomToTop) { _bottomToTop = bottomToTop; }
+    void setBottomToTop(bool bottomToTop) noexcept { _bottomToTop = bottomToTop; }
 
     /**
      * Get whether this layout will start laying out controls from the bottom of the container.
      *
      * @return Whether to start laying out controls from the bottom of the container.
      */
-    bool getBottomToTop() { return _bottomToTop; }
+    bool getBottomToTop() const noexcept { return _bottomToTop; }
 
     /**
      * Get the type of this Layout.
      *
      * @return Layout::LAYOUT_VERTICAL
      */
-    Layout::Type getType() { return Layout::LAYOUT_VERTICAL; }
+    Layout::Type getType() const noexcept { return Layout::LAYOUT_VERTICAL; }
 
     /**
      * Returns the vertical spacing between controls in the layout.
@@ -52,7 +52,7 @@ class VerticalLayout : public Layout
      *
      * @param spacing The vertical spacing between controls.
      */
-    void setSpacing(int spacing) { _spacing = spacing; }
+    void setSpacing(int spacing) noexcept { _spacing = spacing; }
 
   protected:
     /**

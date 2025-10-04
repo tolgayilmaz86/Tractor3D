@@ -29,14 +29,6 @@ AIMessage* AIMessage::create(unsigned int id,
 
 void AIMessage::destroy(AIMessage* message) { SAFE_DELETE(message); }
 
-unsigned int AIMessage::getId() const noexcept { return _id; }
-
-const std::string& AIMessage::getSender() const noexcept { return _sender; }
-
-const std::string& AIMessage::getReceiver() const noexcept { return _receiver; }
-
-double AIMessage::getDeliveryTime() const noexcept { return _deliveryTime; }
-
 int AIMessage::getInt(unsigned int index) const
 {
     assert(index < _parameterCount);
@@ -143,8 +135,6 @@ void AIMessage::setString(unsigned int index, const std::string& value)
     _parameters[index].stringValue = value;
     _parameters[index].type = AIMessage::STRING;
 }
-
-unsigned int AIMessage::getParameterCount() const noexcept { return _parameterCount; }
 
 AIMessage::ParameterType AIMessage::getParameterType(unsigned int index) const
 {

@@ -364,10 +364,8 @@ void CharacterGame::update(float elapsedTime)
         // include the ball. This will ensure the boy cannot walk through walls/objects with the
         // basketball.
         PhysicsRigidBody* basketball = (PhysicsRigidBody*)_basketballNode->getCollisionObject();
-        if (basketball->isEnabled())
-        {
-            grabBall();
-        }
+        
+        if (basketball->isEnabled()) grabBall();
 
         // Capture the basketball's old position, and then calculate the basketball's new position in front of the character
         _oldBallPosition = _basketballNode->getTranslationWorld();

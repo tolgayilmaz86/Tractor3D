@@ -9,6 +9,7 @@ constexpr auto TYPE_NAME = "ImageControl";
 
 ImageControl::~ImageControl() { SAFE_DELETE(_batch); }
 
+//-----------------------------------------------------------------------------
 ImageControl* ImageControl::create(const char* id, Theme::Style* style)
 {
     ImageControl* imageControl = new ImageControl();
@@ -17,6 +18,7 @@ ImageControl* ImageControl::create(const char* id, Theme::Style* style)
     return imageControl;
 }
 
+//-----------------------------------------------------------------------------
 Control* ImageControl::create(Theme::Style* style, Properties* properties)
 {
     ImageControl* imageControl = new ImageControl();
@@ -24,6 +26,7 @@ Control* ImageControl::create(Theme::Style* style, Properties* properties)
     return imageControl;
 }
 
+//-----------------------------------------------------------------------------
 void ImageControl::initialize(const std::string& typeName, Theme::Style* style, Properties* properties)
 {
     Control::initialize(typeName, style, properties);
@@ -52,8 +55,10 @@ void ImageControl::initialize(const std::string& typeName, Theme::Style* style, 
     }
 }
 
+//-----------------------------------------------------------------------------
 const std::string& ImageControl::getTypeName() const noexcept { return TYPE_NAME; }
 
+//-----------------------------------------------------------------------------
 void ImageControl::setImage(const std::string& path)
 {
     SAFE_DELETE(_batch);
@@ -66,6 +71,7 @@ void ImageControl::setImage(const std::string& path)
     if (_autoSize != AUTO_SIZE_NONE) setDirty(DIRTY_BOUNDS);
 }
 
+//-----------------------------------------------------------------------------
 void ImageControl::setRegionSrc(float x, float y, float width, float height)
 {
     _srcRegion.set(x, y, width, height);
@@ -76,25 +82,7 @@ void ImageControl::setRegionSrc(float x, float y, float width, float height)
     _uvs.v2 = 1.0f - ((y + height) * _th);
 }
 
-void ImageControl::setRegionSrc(const Rectangle& region)
-{
-    setRegionSrc(region.x, region.y, region.width, region.height);
-}
-
-const Rectangle& ImageControl::getRegionSrc() const noexcept { return _srcRegion; }
-
-void ImageControl::setRegionDst(float x, float y, float width, float height)
-{
-    _dstRegion.set(x, y, width, height);
-}
-
-void ImageControl::setRegionDst(const Rectangle& region)
-{
-    setRegionDst(region.x, region.y, region.width, region.height);
-}
-
-const Rectangle& ImageControl::getRegionDst() const noexcept { return _dstRegion; }
-
+//-----------------------------------------------------------------------------
 unsigned int ImageControl::drawImages(Form* form, const Rectangle& clip)
 {
     if (!_batch) return 0;
@@ -136,6 +124,7 @@ unsigned int ImageControl::drawImages(Form* form, const Rectangle& clip)
     return 1;
 }
 
+//-----------------------------------------------------------------------------
 void ImageControl::updateBounds()
 {
     if (_batch)

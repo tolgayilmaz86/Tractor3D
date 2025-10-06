@@ -7,14 +7,20 @@
 namespace tractor
 {
 
+//-----------------------------------------------------------------------------
 MaterialParameter::MaterialParameter(const std::string& name)
     : _type(MaterialParameter::NONE), _name(name)
 {
     clearValue();
 }
 
+//-----------------------------------------------------------------------------
+MaterialParameter::MethodBinding::MethodBinding(MaterialParameter* param) : _parameter(param) {}
+
+//-----------------------------------------------------------------------------
 MaterialParameter::~MaterialParameter() { clearValue(); }
 
+//-----------------------------------------------------------------------------
 void MaterialParameter::clearValue()
 {
     // Release parameters
@@ -73,6 +79,7 @@ void MaterialParameter::clearValue()
     _type = MaterialParameter::NONE;
 }
 
+//-----------------------------------------------------------------------------
 Texture::Sampler* MaterialParameter::getSampler(unsigned int index) const
 {
     if (_type == MaterialParameter::SAMPLER)
@@ -82,6 +89,7 @@ Texture::Sampler* MaterialParameter::getSampler(unsigned int index) const
     return nullptr;
 }
 
+//-----------------------------------------------------------------------------
 void MaterialParameter::setValue(float value)
 {
     clearValue();
@@ -90,6 +98,7 @@ void MaterialParameter::setValue(float value)
     _type = MaterialParameter::FLOAT;
 }
 
+//-----------------------------------------------------------------------------
 void MaterialParameter::setValue(int value)
 {
     clearValue();
@@ -98,6 +107,7 @@ void MaterialParameter::setValue(int value)
     _type = MaterialParameter::INT;
 }
 
+//-----------------------------------------------------------------------------
 void MaterialParameter::setValue(const float* values, unsigned int count)
 {
     clearValue();
@@ -107,6 +117,7 @@ void MaterialParameter::setValue(const float* values, unsigned int count)
     _type = MaterialParameter::FLOAT_ARRAY;
 }
 
+//-----------------------------------------------------------------------------
 void MaterialParameter::setValue(const int* values, unsigned int count)
 {
     clearValue();
@@ -116,6 +127,7 @@ void MaterialParameter::setValue(const int* values, unsigned int count)
     _type = MaterialParameter::INT_ARRAY;
 }
 
+//-----------------------------------------------------------------------------
 void MaterialParameter::setValue(const Vector2& value)
 {
     clearValue();
@@ -130,6 +142,7 @@ void MaterialParameter::setValue(const Vector2& value)
     _type = MaterialParameter::VECTOR2;
 }
 
+//-----------------------------------------------------------------------------
 void MaterialParameter::setValue(const Vector2* values, unsigned int count)
 {
     assert(values);
@@ -140,6 +153,7 @@ void MaterialParameter::setValue(const Vector2* values, unsigned int count)
     _type = MaterialParameter::VECTOR2;
 }
 
+//-----------------------------------------------------------------------------
 void MaterialParameter::setValue(const Vector3& value)
 {
     clearValue();
@@ -154,6 +168,7 @@ void MaterialParameter::setValue(const Vector3& value)
     _type = MaterialParameter::VECTOR3;
 }
 
+//-----------------------------------------------------------------------------
 void MaterialParameter::setValue(const Vector3* values, unsigned int count)
 {
     assert(values);
@@ -164,6 +179,7 @@ void MaterialParameter::setValue(const Vector3* values, unsigned int count)
     _type = MaterialParameter::VECTOR3;
 }
 
+//-----------------------------------------------------------------------------
 void MaterialParameter::setValue(const Vector4& value)
 {
     clearValue();
@@ -178,6 +194,7 @@ void MaterialParameter::setValue(const Vector4& value)
     _type = MaterialParameter::VECTOR4;
 }
 
+//-----------------------------------------------------------------------------
 void MaterialParameter::setValue(const Vector4* values, unsigned int count)
 {
     assert(values);
@@ -188,6 +205,7 @@ void MaterialParameter::setValue(const Vector4* values, unsigned int count)
     _type = MaterialParameter::VECTOR4;
 }
 
+//-----------------------------------------------------------------------------
 void MaterialParameter::setValue(const Matrix& value)
 {
     // If this parameter is already storing a single dynamic matrix, no need to clear it.
@@ -207,6 +225,7 @@ void MaterialParameter::setValue(const Matrix& value)
     _type = MaterialParameter::MATRIX;
 }
 
+//-----------------------------------------------------------------------------
 void MaterialParameter::setValue(const Matrix* values, unsigned int count)
 {
     assert(values);
@@ -217,6 +236,7 @@ void MaterialParameter::setValue(const Matrix* values, unsigned int count)
     _type = MaterialParameter::MATRIX;
 }
 
+//-----------------------------------------------------------------------------
 void MaterialParameter::setValue(const Texture::Sampler* sampler)
 {
     assert(sampler);
@@ -227,6 +247,7 @@ void MaterialParameter::setValue(const Texture::Sampler* sampler)
     _type = MaterialParameter::SAMPLER;
 }
 
+//-----------------------------------------------------------------------------
 void MaterialParameter::setValue(const Texture::Sampler** samplers, unsigned int count)
 {
     assert(samplers);
@@ -240,6 +261,7 @@ void MaterialParameter::setValue(const Texture::Sampler** samplers, unsigned int
     _type = MaterialParameter::SAMPLER_ARRAY;
 }
 
+//-----------------------------------------------------------------------------
 Texture::Sampler* MaterialParameter::setValue(const std::string& texturePath, bool generateMipmaps)
 {
     clearValue();
@@ -253,8 +275,7 @@ Texture::Sampler* MaterialParameter::setValue(const std::string& texturePath, bo
     return sampler;
 }
 
-void MaterialParameter::setFloat(float value) { setValue(value); }
-
+//-----------------------------------------------------------------------------
 void MaterialParameter::setFloatArray(const float* values, unsigned int count, bool copy)
 {
     assert(values);
@@ -275,6 +296,7 @@ void MaterialParameter::setFloatArray(const float* values, unsigned int count, b
 
 void MaterialParameter::setInt(int value) { setValue(value); }
 
+//-----------------------------------------------------------------------------
 void MaterialParameter::setIntArray(const int* values, unsigned int count, bool copy)
 {
     assert(values);
@@ -293,8 +315,7 @@ void MaterialParameter::setIntArray(const int* values, unsigned int count, bool 
     _type = MaterialParameter::INT_ARRAY;
 }
 
-void MaterialParameter::setVector2(const Vector2& value) { setValue(value); }
-
+//-----------------------------------------------------------------------------
 void MaterialParameter::setVector2Array(const Vector2* values, unsigned int count, bool copy)
 {
     assert(values);
@@ -313,8 +334,7 @@ void MaterialParameter::setVector2Array(const Vector2* values, unsigned int coun
     _type = MaterialParameter::VECTOR2;
 }
 
-void MaterialParameter::setVector3(const Vector3& value) { setValue(value); }
-
+//-----------------------------------------------------------------------------
 void MaterialParameter::setVector3Array(const Vector3* values, unsigned int count, bool copy)
 {
     assert(values);
@@ -333,8 +353,7 @@ void MaterialParameter::setVector3Array(const Vector3* values, unsigned int coun
     _type = MaterialParameter::VECTOR3;
 }
 
-void MaterialParameter::setVector4(const Vector4& value) { setValue(value); }
-
+//-----------------------------------------------------------------------------
 void MaterialParameter::setVector4Array(const Vector4* values, unsigned int count, bool copy)
 {
     assert(values);
@@ -353,8 +372,7 @@ void MaterialParameter::setVector4Array(const Vector4* values, unsigned int coun
     _type = MaterialParameter::VECTOR4;
 }
 
-void MaterialParameter::setMatrix(const Matrix& value) { setValue(value); }
-
+//-----------------------------------------------------------------------------
 void MaterialParameter::setMatrixArray(const Matrix* values, unsigned int count, bool copy)
 {
     assert(values);
@@ -378,8 +396,7 @@ Texture::Sampler* MaterialParameter::setSampler(const char* texturePath, bool ge
     return setValue(texturePath, generateMipmaps);
 }
 
-void MaterialParameter::setSampler(const Texture::Sampler* value) { setValue(value); }
-
+//-----------------------------------------------------------------------------
 void MaterialParameter::setSamplerArray(const Texture::Sampler** values, unsigned int count, bool copy)
 {
     assert(values);
@@ -401,6 +418,7 @@ void MaterialParameter::setSamplerArray(const Texture::Sampler** values, unsigne
     _type = MaterialParameter::SAMPLER_ARRAY;
 }
 
+//-----------------------------------------------------------------------------
 void MaterialParameter::bind(Effect* effect)
 {
     assert(effect);
@@ -474,6 +492,7 @@ void MaterialParameter::bind(Effect* effect)
     }
 }
 
+//-----------------------------------------------------------------------------
 void MaterialParameter::bindValue(Node* node, const char* binding)
 {
     assert(binding);
@@ -564,6 +583,7 @@ void MaterialParameter::bindValue(Node* node, const char* binding)
     }
 }
 
+//-----------------------------------------------------------------------------
 unsigned int MaterialParameter::getAnimationPropertyComponentCount(int propertyId) const
 {
     switch (propertyId)
@@ -600,6 +620,7 @@ unsigned int MaterialParameter::getAnimationPropertyComponentCount(int propertyI
     return 0;
 }
 
+//-----------------------------------------------------------------------------
 void MaterialParameter::getAnimationPropertyValue(int propertyId, AnimationValue* value)
 {
     assert(value);
@@ -653,6 +674,7 @@ void MaterialParameter::getAnimationPropertyValue(int propertyId, AnimationValue
     }
 }
 
+//-----------------------------------------------------------------------------
 void MaterialParameter::setAnimationPropertyValue(int propertyId,
                                                   AnimationValue* value,
                                                   float blendWeight)
@@ -706,6 +728,7 @@ void MaterialParameter::setAnimationPropertyValue(int propertyId,
     }
 }
 
+//-----------------------------------------------------------------------------
 void MaterialParameter::applyAnimationValue(AnimationValue* value, float blendWeight, int components)
 {
     assert(value);
@@ -717,6 +740,7 @@ void MaterialParameter::applyAnimationValue(AnimationValue* value, float blendWe
             Curve::lerp(blendWeight, _value.floatPtrValue[i], value->getFloat(i));
 }
 
+//-----------------------------------------------------------------------------
 void MaterialParameter::cloneInto(MaterialParameter* materialParameter) const
 {
     assert(materialParameter);
@@ -794,11 +818,6 @@ void MaterialParameter::cloneInto(MaterialParameter* materialParameter) const
 
     NodeCloneContext context;
     this->AnimationTarget::cloneInto(materialParameter, context);
-}
-
-MaterialParameter::MethodBinding::MethodBinding(MaterialParameter* param)
-    : _parameter(param), _autoBinding(false)
-{
 }
 
 } // namespace tractor

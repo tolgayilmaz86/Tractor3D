@@ -145,7 +145,7 @@ class MaterialParameter : public AnimationTarget, public Ref
      *
      * @param value The value to set.
      */
-    void setFloat(float value);
+    void setFloat(float value) { setValue(value); }
 
     /**
      * Stores an array of float values in this parameter.
@@ -175,7 +175,7 @@ class MaterialParameter : public AnimationTarget, public Ref
      *
      * @param value The value to set.
      */
-    void setVector2(const Vector2& value);
+    void setVector2(const Vector2& value) { setValue(value); }
 
     /**
      * Stores an array of Vector2 values in this parameter.
@@ -193,7 +193,7 @@ class MaterialParameter : public AnimationTarget, public Ref
      *
      * @param value The value to set.
      */
-    void setVector3(const Vector3& value);
+    void setVector3(const Vector3& value) { setValue(value); }
 
     /**
      * Stores an array of Vector3 values in this parameter.
@@ -205,7 +205,7 @@ class MaterialParameter : public AnimationTarget, public Ref
      *
      * @param value The value to set.
      */
-    void setVector4(const Vector4& value);
+    void setVector4(const Vector4& value) { setValue(value); }
 
     /**
      * Stores an array of Vector4 values in this parameter.
@@ -223,7 +223,7 @@ class MaterialParameter : public AnimationTarget, public Ref
      *
      * @param value The value to set.
      */
-    void setMatrix(const Matrix& value);
+    void setMatrix(const Matrix& value) { setValue(value); }
 
     /**
      * Stores an array of Matrix values in this parameter.
@@ -251,7 +251,7 @@ class MaterialParameter : public AnimationTarget, public Ref
      *
      * @param value The value to set.
      */
-    void setSampler(const Texture::Sampler* value);
+    void setSampler(const Texture::Sampler* value) { setValue(value); }
 
     /**
      * Stores an array of Sampler values in this parameter.
@@ -389,8 +389,8 @@ class MaterialParameter : public AnimationTarget, public Ref
          */
         MethodBinding& operator=(const MethodBinding&) = delete;
 
-        MaterialParameter* _parameter;
-        bool _autoBinding;
+        MaterialParameter* _parameter{ nullptr };
+        bool _autoBinding{ false };
     };
 
     /**

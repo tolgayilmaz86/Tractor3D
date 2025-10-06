@@ -49,6 +49,7 @@ static bool isVariable(const std::string& str, std::string& outName)
     return false;
 };
 
+//-----------------------------------------------------------------------------
 static std::string getVariableName(const std::string& str)
 {
     // Check if the string matches the variable pattern "${...}"
@@ -425,14 +426,76 @@ class PropertiesParser
 
 namespace tractor
 {
-// Utility functions (shared with SceneLoader).
-/** @script{ignore} */
+
+//-----------------------------------------------------------------------------
 void calculateNamespacePath(const std::string& urlString,
                             std::string& fileString,
-                            std::vector<std::string>& namespacePath);
-/** @script{ignore} */
+                            std::vector<std::string>& namespacePath)
+{
+    // If the url references a specific namespace within the file,
+    // calculate the full namespace path to the final namespace.
+    size_t loc = urlString.rfind("#");
+    if (loc != std::string::npos)
+    {
+        fileString = urlString.substr(0, loc);
+        std::string namespacePathString = urlString.substr(loc + 1);
+        while ((loc = namespacePathString.find("/")) != std::string::npos)
+        {
+            namespacePath.push_back(namespacePathString.substr(0, loc));
+            namespacePathString = namespacePathString.substr(loc + 1);
+        }
+        namespacePath.push_back(namespacePathString);
+    }
+    else
+    {
+        fileString = urlString;
+    }
+}
+
+//-----------------------------------------------------------------------------
 Properties* getPropertiesFromNamespacePath(Properties* properties,
-                                           const std::vector<std::string>& namespacePath);
+                                           const std::vector<std::string>& namespacePath)
+{
+    // If the url references a specific namespace within the file,
+    // return the specified namespace or notify the user if it cannot be found.
+    if (namespacePath.size() > 0)
+    {
+        size_t size = namespacePath.size();
+        properties->rewind();
+        Properties* iter = properties->getNextNamespace();
+        for (size_t i = 0; i < size;)
+        {
+            while (true)
+            {
+                if (iter == nullptr)
+                {
+                    GP_WARN("Failed to load properties object from url.");
+                    return nullptr;
+                }
+
+                if (iter->getId() == namespacePath[i])
+                {
+                    if (i != size - 1)
+                    {
+                        properties = iter->getNextNamespace();
+                        iter = properties;
+                    }
+                    else
+                        properties = iter;
+
+                    i++;
+                    break;
+                }
+
+                iter = properties->getNextNamespace();
+            }
+        }
+
+        return properties;
+    }
+    else
+        return properties;
+}
 
 //-----------------------------------------------------------------------------
 Properties::Properties(const Properties& copy)
@@ -497,7 +560,7 @@ Properties* Properties::create(const std::string& url)
     std::string urlString = url;
     std::string fileString;
     std::vector<std::string> namespacePath;
-    calculateNamespacePath(urlString, fileString, namespacePath);
+    ::calculateNamespacePath(urlString, fileString, namespacePath);
 
     std::unique_ptr<Stream> stream(FileSystem::open(fileString));
     if (stream.get() == nullptr)
@@ -513,7 +576,7 @@ Properties* Properties::create(const std::string& url)
     properties->rewind();
 
     // Get the specified properties object.
-    Properties* p = getPropertiesFromNamespacePath(properties, namespacePath);
+    Properties* p = ::getPropertiesFromNamespacePath(properties, namespacePath);
     if (!p)
     {
         GP_WARN("Failed to load properties from url '%s'.", url);
@@ -1176,76 +1239,6 @@ void Properties::setDirectoryPath(const std::string& path)
     {
         _dirPath->assign(path);
     }
-}
-
-//-----------------------------------------------------------------------------
-void calculateNamespacePath(const std::string& urlString,
-                            std::string& fileString,
-                            std::vector<std::string>& namespacePath)
-{
-    // If the url references a specific namespace within the file,
-    // calculate the full namespace path to the final namespace.
-    size_t loc = urlString.rfind("#");
-    if (loc != std::string::npos)
-    {
-        fileString = urlString.substr(0, loc);
-        std::string namespacePathString = urlString.substr(loc + 1);
-        while ((loc = namespacePathString.find("/")) != std::string::npos)
-        {
-            namespacePath.push_back(namespacePathString.substr(0, loc));
-            namespacePathString = namespacePathString.substr(loc + 1);
-        }
-        namespacePath.push_back(namespacePathString);
-    }
-    else
-    {
-        fileString = urlString;
-    }
-}
-
-//-----------------------------------------------------------------------------
-Properties* getPropertiesFromNamespacePath(Properties* properties,
-                                           const std::vector<std::string>& namespacePath)
-{
-    // If the url references a specific namespace within the file,
-    // return the specified namespace or notify the user if it cannot be found.
-    if (namespacePath.size() > 0)
-    {
-        size_t size = namespacePath.size();
-        properties->rewind();
-        Properties* iter = properties->getNextNamespace();
-        for (size_t i = 0; i < size;)
-        {
-            while (true)
-            {
-                if (iter == nullptr)
-                {
-                    GP_WARN("Failed to load properties object from url.");
-                    return nullptr;
-                }
-
-                if (iter->getId() == namespacePath[i])
-                {
-                    if (i != size - 1)
-                    {
-                        properties = iter->getNextNamespace();
-                        iter = properties;
-                    }
-                    else
-                        properties = iter;
-
-                    i++;
-                    break;
-                }
-
-                iter = properties->getNextNamespace();
-            }
-        }
-
-        return properties;
-    }
-    else
-        return properties;
 }
 
 //-----------------------------------------------------------------------------

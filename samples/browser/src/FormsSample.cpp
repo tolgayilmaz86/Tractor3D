@@ -132,14 +132,7 @@ void FormsSample::formChanged()
     // Add the form to a node to allow it to be placed in 3D space.
     const Rectangle& bounds = _activeForm->getBounds();
     float scale;
-    if (bounds.width >= bounds.height)
-    {
-        scale = 1.0f / bounds.width;
-    }
-    else
-    {
-        scale = 1.0f / bounds.height;
-    }
+    bounds.width >= bounds.height ? (scale = 1.0f / bounds.width) : (scale = 1.0f / bounds.height);
 
     _formNode->setScale(scale, scale, 1.0f);
     _formNodeParent->setTranslation(0, 0, -1.5f);
@@ -226,13 +219,10 @@ void FormsSample::update(float elapsedTime)
     }
 
     if (_gamepad->isButtonDown(Gamepad::BUTTON_A))
-    {
         _formNodeParent->setTranslation(0, 0, -1.5f);
-    }
+
     if (_gamepad->isButtonDown(Gamepad::BUTTON_B))
-    {
         _formNodeParent->setRotation(0, 0, 0, 1);
-    }
 }
 
 void FormsSample::render(float elapsedTime)
@@ -242,14 +232,10 @@ void FormsSample::render(float elapsedTime)
 
     // Draw the forms.
     if (_formSelect)
-    {
         _formSelect->draw();
-    }
 
     if (_activeForm)
-    {
         _activeForm->draw();
-    }
 
     _gamepad->draw();
 }

@@ -65,14 +65,16 @@ class ImageControl : public Control
      *
      * @param region The new source region.
      */
-    void setRegionSrc(const Rectangle& region);
-
+    void setRegionSrc(const Rectangle& region)
+    {
+        setRegionSrc(region.x, region.y, region.width, region.height);
+    }
     /**
      * Get the source region of this ImageControl.
      *
      * @return The source region of this ImageControl.
      */
-    const Rectangle& getRegionSrc() const noexcept;
+    const Rectangle& getRegionSrc() const noexcept { return _srcRegion; }
 
     /**
      * Sets the destination region of this ImageControl.  This is the region
@@ -83,7 +85,10 @@ class ImageControl : public Control
      * @param width The width of the destination region.
      * @param height The height of the destination region.
      */
-    void setRegionDst(float x, float y, float width, float height);
+    void setRegionDst(float x, float y, float width, float height)
+    {
+        _dstRegion.set(x, y, width, height);
+    }
 
     /**
      * Sets the destination region of this ImageControl.  This is the region
@@ -91,14 +96,17 @@ class ImageControl : public Control
      *
      * @param region The new destination region.
      */
-    void setRegionDst(const Rectangle& region);
+    void setRegionDst(const Rectangle& region)
+    {
+        setRegionDst(region.x, region.y, region.width, region.height);
+    }
 
     /**
      * Get the destination region of this ImageControl.
      *
      * @return The destination region of this ImageControl.
      */
-    const Rectangle& getRegionDst() const noexcept;
+    const Rectangle& getRegionDst() const noexcept { return _dstRegion; }
 
   protected:
     ImageControl() = default;

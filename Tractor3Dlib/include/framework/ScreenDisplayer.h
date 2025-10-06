@@ -32,7 +32,7 @@ class ScreenDisplayer
     /**
      * Constructor.
      */
-    ScreenDisplayer();
+    ScreenDisplayer() = default;
 
     /**
      * Destructor.
@@ -69,8 +69,8 @@ class ScreenDisplayer
     static void finish();
 
   private:
-    long _time;
-    double _startTime;
+    long _time{ 0L };
+    double _startTime{ 0.0 };
     static ScreenDisplayer* __scriptInstance;
 };
 

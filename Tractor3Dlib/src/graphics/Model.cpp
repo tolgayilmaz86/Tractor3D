@@ -22,12 +22,14 @@
 
 namespace tractor
 {
+//----------------------------------------------------------------------------
 Model::Model(std::shared_ptr<Mesh> mesh) : Drawable(), _mesh(mesh)
 {
     assert(_mesh);
     _partCount = _mesh->getPartCount();
 }
 
+//----------------------------------------------------------------------------
 Model::~Model()
 {
     SAFE_RELEASE(_material);
@@ -42,6 +44,7 @@ Model::~Model()
     SAFE_DELETE(_skin);
 }
 
+//----------------------------------------------------------------------------
 Model* Model::create(std::shared_ptr<Mesh> mesh)
 {
     assert(mesh);
@@ -49,12 +52,14 @@ Model* Model::create(std::shared_ptr<Mesh> mesh)
     return new Model(mesh);
 }
 
+//----------------------------------------------------------------------------
 unsigned int Model::getMeshPartCount() const
 {
     assert(_mesh);
     return _mesh->getPartCount();
 }
 
+//----------------------------------------------------------------------------
 Material* Model::getMaterial(int partIndex)
 {
     assert(partIndex == -1 || partIndex >= 0);
@@ -78,6 +83,7 @@ Material* Model::getMaterial(int partIndex)
     return m;
 }
 
+//----------------------------------------------------------------------------
 void Model::setMaterial(Material* material, int partIndex)
 {
     assert(partIndex == -1 || (partIndex >= 0 && partIndex < (int)getMeshPartCount()));
@@ -163,6 +169,7 @@ void Model::setMaterial(Material* material, int partIndex)
     }
 }
 
+//----------------------------------------------------------------------------
 Material* Model::setMaterial(const std::string& vshPath,
                              const std::string& fshPath,
                              const std::string& defines,
@@ -204,11 +211,13 @@ Material* Model::setMaterial(const std::string& materialPath, int partIndex)
     return material;
 }
 
+//----------------------------------------------------------------------------
 bool Model::hasMaterial(unsigned int partIndex) const
 {
     return (partIndex < _partCount && _partMaterials && _partMaterials[partIndex]);
 }
 
+//----------------------------------------------------------------------------
 void Model::setSkin(MeshSkin* skin)
 {
     if (_skin != skin)
@@ -222,6 +231,7 @@ void Model::setSkin(MeshSkin* skin)
     }
 }
 
+//----------------------------------------------------------------------------
 void Model::setNode(Node* node)
 {
     Drawable::setNode(node);
@@ -246,6 +256,7 @@ void Model::setNode(Node* node)
     }
 }
 
+//----------------------------------------------------------------------------
 static bool drawWireframe(Mesh* mesh)
 {
     switch (mesh->getPrimitiveType())
@@ -276,6 +287,7 @@ static bool drawWireframe(Mesh* mesh)
     }
 }
 
+//----------------------------------------------------------------------------
 static bool drawWireframe(MeshPart* part)
 {
     unsigned int indexCount = part->getIndexCount();
@@ -328,6 +340,7 @@ static bool drawWireframe(MeshPart* part)
     }
 }
 
+//----------------------------------------------------------------------------
 unsigned int Model::draw(bool wireframe)
 {
     assert(_mesh);
@@ -390,6 +403,7 @@ unsigned int Model::draw(bool wireframe)
     return partCount;
 }
 
+//----------------------------------------------------------------------------
 void Model::setMaterialNodeBinding(Material* material)
 {
     assert(material);
@@ -400,6 +414,7 @@ void Model::setMaterialNodeBinding(Material* material)
     }
 }
 
+//----------------------------------------------------------------------------
 Drawable* Model::clone(NodeCloneContext& context)
 {
     Model* model = Model::create(_mesh);
@@ -440,6 +455,7 @@ Drawable* Model::clone(NodeCloneContext& context)
     return model;
 }
 
+//----------------------------------------------------------------------------
 void Model::validatePartCount()
 {
     assert(_mesh);

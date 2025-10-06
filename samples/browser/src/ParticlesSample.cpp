@@ -19,7 +19,7 @@
 ADD_SAMPLE("Graphics", "Particles", ParticlesSample, 9);
 #endif
 
-#define DEFAULT_PARTICLE_EMITTER "res/common/particles/fire.particle"
+constexpr auto DEFAULT_PARTICLE_EMITTER = "res/common/particles/fire.particle";
 
 const float INPUT_SENSITIVITY = 0.05f;
 const float PANNING_SENSITIVITY = 0.01f;

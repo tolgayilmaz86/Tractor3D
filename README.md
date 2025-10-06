@@ -2,6 +2,7 @@
 
 This document outlines the roadmap and best practices for modernizing the old game engine known as Gameplay3d codebase from its original C++98/11 style to modern C++20. 
 
+The project itself has been dramatically changed so I decided to publish it with a different name, also this aligns with my future improvement plans.
 With regard to Apache 2.0 license this codebase has substantially changed the old engine with some additions and ease of use. 
 Also to keep things simple onl Windows x64 platforms will be supported. 
 
@@ -201,6 +202,89 @@ These changes make the code more concise and less error-prone.
     Matrix Matrix::createOrthographic(float width, float height, float zNearPlane, float zFarPlane)
     ```
 
+    ### more examples
+- **Before:**
+    ```cpp
+    int maxFocusIndex = 0;
+    for( size_t i = 0, count = _controls.size(); i < count; ++i ) {
+        if( _controls[ i ]->_focusIndex > maxFocusIndex )
+            maxFocusIndex = _controls[ i ]->_focusIndex;
+    }
+    ```
+- **After:**
+    ```cpp
+    int maxFocusIndex = 0;
+    if (!_controls.empty())
+    maxFocusIndex = std::ranges::max(_controls | std::views::transform([](const Control* c) {
+    return c->getFocusIndex();
+      }));
+    ```
+
+- **Before:**
+    ```cpp 
+    for (size_t i = 0, count = terrain->_patches.size(); i < count; ++i)
+          terrain->_patches[i]->updateMaterial();
+    ```
+- **After:**
+    ```cpp
+    std::ranges::for_each(terrain->_patches, 
+          [](const auto& patch) {patch->updateMaterial(); });
+    ```
+
+- **Before:**
+    ```cpp
+    std::map<const Event*, std::vector<CallbackFunction>>::iterator itr = _scriptCallbacks->begin();
+    for ( ; itr != _scriptCallbacks->end(); ++itr)
+    {
+        std::vector<CallbackFunction>& callbacks = itr->second;
+        std::vector<CallbackFunction>::iterator itr2 = callbacks.begin();
+        while (itr2 != callbacks.end())
+        {
+            if (itr2->script == script)
+                itr2 = callbacks.erase(itr2);
+            else
+                ++itr2;
+        }
+    }
+    ```
+
+- **After:**
+    ```cpp
+    std::ranges::for_each(*_scriptCallbacks, [script](auto& pair) {
+        auto& callbacks = pair.second;
+        std::erase_if(callbacks, [script](const CallbackFunction& callback) {
+          return callback.script == script;
+          });
+        });
+    ```
+
+    #### Use std to the limits
+- **Before:**
+    ```cpp
+    for (unsigned int i = 0; i < data->vertexCount; i++)
+    {
+        indexData[i] = i;
+    }
+    ```
+
+- **After:**
+    ```cpp
+    std::ranges::copy(std::views::iota(0u, data->vertexCount), indexData);
+    ```
+
+- **Before:**
+    ```cpp
+    for (size_t i = 0; i < MAX_CONTACT_INDICES; ++i)
+    {
+        if (_contactIndices[i]) return true;
+    }
+    return false;
+    ```
+
+- **After:**
+    ```cpp
+    return std::ranges::any_of(_contactIndices, [](bool contact) { return contact; });
+    ```
 
 ### 3. Memory and Resource Management
 
@@ -449,6 +533,7 @@ These changes leverage advanced C++20 features to improve code expressiveness an
 - [ ] Use `lambdas` for repeating steps within a function
 - [ ] Use `std::variant` for unions or to handle multiple types
 - [ ] Prefer `using =` statements instead `typedef`'s
+- [X] Create a folder structure to organize relative objects
 - [X] Use `std::filesystem` for IO operations
 - [-] Make properties logic clearer and maintainable
 - [ ] Investigate `Entity Component Systems (ECS)` instead deep inheritances.

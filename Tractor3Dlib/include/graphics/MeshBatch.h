@@ -83,7 +83,7 @@ class MeshBatch
      *
      * @param capacity The new batch capacity.
      */
-    void setCapacity(unsigned int capacity);
+    void setCapacity(unsigned int capacity) { resize(capacity); }
 
     /**
      * Returns the material for this mesh batch.

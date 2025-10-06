@@ -18,12 +18,8 @@
 
 namespace tractor
 {
-
-Mesh::Mesh(const VertexFormat& vertexFormat)
-    : _vertexFormat(vertexFormat), _vertexCount(0), _vertexBuffer(0), _primitiveType(TRIANGLES),
-      _partCount(0), _dynamic(false)
-{
-}
+//----------------------------------------------------------------------------
+Mesh::Mesh(const VertexFormat& vertexFormat) : _vertexFormat(vertexFormat) {}
 
 Mesh::~Mesh()
 {
@@ -36,6 +32,7 @@ Mesh::~Mesh()
     }
 }
 
+//----------------------------------------------------------------------------
 std::shared_ptr<Mesh> Mesh::createMesh(const VertexFormat& vertexFormat,
                                        unsigned int vertexCount,
                                        bool dynamic)
@@ -56,6 +53,7 @@ std::shared_ptr<Mesh> Mesh::createMesh(const VertexFormat& vertexFormat,
     return mesh;
 }
 
+//----------------------------------------------------------------------------
 std::shared_ptr<Mesh> Mesh::createQuad(float x,
                                        float y,
                                        float width,
@@ -89,6 +87,7 @@ std::shared_ptr<Mesh> Mesh::createQuad(float x,
     return mesh;
 }
 
+//----------------------------------------------------------------------------
 std::shared_ptr<Mesh> Mesh::createQuadFullscreen()
 {
     float x = -1.0f;
@@ -113,6 +112,7 @@ std::shared_ptr<Mesh> Mesh::createQuadFullscreen()
     return mesh;
 }
 
+//----------------------------------------------------------------------------
 std::shared_ptr<Mesh> Mesh::createQuad(const Vector3& p1,
                                        const Vector3& p2,
                                        const Vector3& p3,
@@ -146,6 +146,7 @@ std::shared_ptr<Mesh> Mesh::createQuad(const Vector3& p1,
     return mesh;
 }
 
+//----------------------------------------------------------------------------
 std::shared_ptr<Mesh> Mesh::createLines(Vector3* points, unsigned int pointCount)
 {
     assert(points);
@@ -172,6 +173,7 @@ std::shared_ptr<Mesh> Mesh::createLines(Vector3* points, unsigned int pointCount
     return mesh;
 }
 
+//----------------------------------------------------------------------------
 std::shared_ptr<Mesh> Mesh::createBoundingBox(const BoundingBox& box)
 {
     Vector3 corners[8];
@@ -203,6 +205,7 @@ std::shared_ptr<Mesh> Mesh::createBoundingBox(const BoundingBox& box)
     return mesh;
 }
 
+//----------------------------------------------------------------------------
 void* Mesh::mapVertexBuffer()
 {
     GL_ASSERT(glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer));
@@ -210,8 +213,10 @@ void* Mesh::mapVertexBuffer()
     return (void*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
 }
 
+//----------------------------------------------------------------------------
 bool Mesh::unmapVertexBuffer() { return glUnmapBuffer(GL_ARRAY_BUFFER); }
 
+//----------------------------------------------------------------------------
 void Mesh::setVertexData(const void* vertexData, unsigned int vertexStart, unsigned int vertexCount)
 {
     GL_ASSERT(glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer));
@@ -237,6 +242,7 @@ void Mesh::setVertexData(const void* vertexData, unsigned int vertexStart, unsig
     }
 }
 
+//----------------------------------------------------------------------------
 MeshPart* Mesh::addPart(PrimitiveType primitiveType,
                         IndexFormat indexFormat,
                         unsigned int indexCount,
@@ -250,17 +256,5 @@ MeshPart* Mesh::addPart(PrimitiveType primitiveType,
     }
     return nullptr;
 }
-
-unsigned int Mesh::getPartCount() const noexcept { return _partCount; }
-
-MeshPart* Mesh::getPart(unsigned int index) { return _parts[index].get(); }
-
-const BoundingBox& Mesh::getBoundingBox() const noexcept { return _boundingBox; }
-
-void Mesh::setBoundingBox(const BoundingBox& box) { _boundingBox = box; }
-
-const BoundingSphere& Mesh::getBoundingSphere() const noexcept { return _boundingSphere; }
-
-void Mesh::setBoundingSphere(const BoundingSphere& sphere) { _boundingSphere = sphere; }
 
 } // namespace tractor

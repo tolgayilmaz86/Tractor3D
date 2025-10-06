@@ -22,18 +22,21 @@
 namespace tractor
 {
 
+//----------------------------------------------------------------------------
 Pass::Pass(const std::string& id, Technique* technique)
     : _id(id), _technique(technique)
 {
     RenderState::_parent = _technique;
 }
 
+//----------------------------------------------------------------------------
 Pass::~Pass()
 {
     SAFE_RELEASE(_effect);
     SAFE_RELEASE(_vaBinding);
 }
 
+//----------------------------------------------------------------------------
 bool Pass::initialize(const std::string& vshPath, const std::string& fshPath, const std::string& defines)
 {
     SAFE_RELEASE(_effect);
@@ -54,6 +57,7 @@ bool Pass::initialize(const std::string& vshPath, const std::string& fshPath, co
     return true;
 }
 
+//----------------------------------------------------------------------------
 void Pass::setVertexAttributeBinding(VertexAttributeBinding* binding)
 {
     SAFE_RELEASE(_vaBinding);
@@ -65,6 +69,7 @@ void Pass::setVertexAttributeBinding(VertexAttributeBinding* binding)
     }
 }
 
+//----------------------------------------------------------------------------
 void Pass::bind()
 {
     assert(_effect);
@@ -82,6 +87,7 @@ void Pass::bind()
     }
 }
 
+//----------------------------------------------------------------------------
 void Pass::unbind()
 {
     // If we have a vertex attribute binding, unbind it
@@ -91,6 +97,7 @@ void Pass::unbind()
     }
 }
 
+//----------------------------------------------------------------------------
 Pass* Pass::clone(Technique* technique, NodeCloneContext& context) const
 {
     assert(_effect);

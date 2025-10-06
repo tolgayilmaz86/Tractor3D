@@ -35,7 +35,6 @@ constexpr int RS_STENCIL_WRITE = 256;
 constexpr int RS_STENCIL_FUNC = 512;
 constexpr int RS_STENCIL_OP = 1024;
 constexpr int RS_FRONT_FACE = 2048;
-constexpr unsigned int RS_ALL_ONES = 0xFFFFFFFF;
 
 namespace tractor
 {
@@ -43,6 +42,7 @@ namespace tractor
 RenderState::StateBlock* RenderState::StateBlock::_defaultState = nullptr;
 std::vector<RenderState::AutoBindingResolver*> RenderState::_customAutoBindingResolvers;
 
+//----------------------------------------------------------------------------
 RenderState::~RenderState()
 {
     SAFE_RELEASE(_state);
@@ -54,13 +54,16 @@ RenderState::~RenderState()
     }
 }
 
+//----------------------------------------------------------------------------
 void RenderState::initialize()
 {
     if (StateBlock::_defaultState == nullptr) StateBlock::_defaultState = StateBlock::create();
 }
 
+//----------------------------------------------------------------------------
 void RenderState::finalize() { SAFE_RELEASE(StateBlock::_defaultState); }
 
+//----------------------------------------------------------------------------
 MaterialParameter* RenderState::getParameter(const std::string& name) const
 {
     // Search for an existing parameter with this name.
@@ -73,17 +76,20 @@ MaterialParameter* RenderState::getParameter(const std::string& name) const
     return _parameters.emplace_back(new MaterialParameter(name));
 }
 
+//----------------------------------------------------------------------------
 MaterialParameter* RenderState::getParameterByIndex(unsigned int index)
 {
     return _parameters[index];
 }
 
+//----------------------------------------------------------------------------
 void RenderState::addParameter(MaterialParameter* param)
 {
     _parameters.push_back(param);
     param->addRef();
 }
 
+//----------------------------------------------------------------------------
 void RenderState::removeParameter(const std::string& name)
 {
     auto it = std::ranges::find(_parameters, name, &MaterialParameter::_name);
@@ -94,6 +100,7 @@ void RenderState::removeParameter(const std::string& name)
     }
 }
 
+//----------------------------------------------------------------------------
 /**
  * @script{ignore}
  */
@@ -143,11 +150,13 @@ const char* autoBindingToString(RenderState::AutoBinding autoBinding)
     }
 }
 
+//----------------------------------------------------------------------------
 void RenderState::setParameterAutoBinding(const std::string& name, AutoBinding autoBinding)
 {
     setParameterAutoBinding(name, autoBindingToString(autoBinding));
 }
 
+//----------------------------------------------------------------------------
 void RenderState::setParameterAutoBinding(const std::string& name, const std::string& autoBinding)
 {
     if (autoBinding.empty())
@@ -166,6 +175,7 @@ void RenderState::setParameterAutoBinding(const std::string& name, const std::st
     if (_nodeBinding) applyAutoBinding(name, autoBinding);
 }
 
+//----------------------------------------------------------------------------
 void RenderState::setStateBlock(StateBlock* state)
 {
     if (_state != state)
@@ -177,6 +187,7 @@ void RenderState::setStateBlock(StateBlock* state)
     }
 }
 
+//----------------------------------------------------------------------------
 RenderState::StateBlock* RenderState::getStateBlock() const
 {
     if (not _state) _state = StateBlock::create();
@@ -184,6 +195,7 @@ RenderState::StateBlock* RenderState::getStateBlock() const
     return _state;
 }
 
+//----------------------------------------------------------------------------
 void RenderState::setNodeBinding(Node* node)
 {
     if (_nodeBinding != node)
@@ -210,6 +222,7 @@ void RenderState::setNodeBinding(Node* node)
     }
 }
 
+//----------------------------------------------------------------------------
 void RenderState::applyAutoBinding(const std::string& uniformName, const std::string& autoBinding)
 {
     assert(_nodeBinding);
@@ -295,56 +308,67 @@ void RenderState::applyAutoBinding(const std::string& uniformName, const std::st
         param->_value.method->_autoBinding = true;
 }
 
+//----------------------------------------------------------------------------
 const Matrix& RenderState::autoBindingGetWorldMatrix() const
 {
     return _nodeBinding ? _nodeBinding->getWorldMatrix() : Matrix::identity();
 }
 
+//----------------------------------------------------------------------------
 const Matrix& RenderState::autoBindingGetViewMatrix() const
 {
     return _nodeBinding ? _nodeBinding->getViewMatrix() : Matrix::identity();
 }
 
+//----------------------------------------------------------------------------
 const Matrix& RenderState::autoBindingGetProjectionMatrix() const
 {
     return _nodeBinding ? _nodeBinding->getProjectionMatrix() : Matrix::identity();
 }
 
+//----------------------------------------------------------------------------
 const Matrix& RenderState::autoBindingGetWorldViewMatrix() const
 {
     return _nodeBinding ? _nodeBinding->getWorldViewMatrix() : Matrix::identity();
 }
 
+//----------------------------------------------------------------------------
 const Matrix& RenderState::autoBindingGetViewProjectionMatrix() const
 {
     return _nodeBinding ? _nodeBinding->getViewProjectionMatrix() : Matrix::identity();
 }
 
+//----------------------------------------------------------------------------
 const Matrix& RenderState::autoBindingGetWorldViewProjectionMatrix() const
 {
     return _nodeBinding ? _nodeBinding->getWorldViewProjectionMatrix() : Matrix::identity();
 }
 
+//----------------------------------------------------------------------------
 const Matrix& RenderState::autoBindingGetInverseTransposeWorldMatrix() const
 {
     return _nodeBinding ? _nodeBinding->getInverseTransposeWorldMatrix() : Matrix::identity();
 }
 
+//----------------------------------------------------------------------------
 const Matrix& RenderState::autoBindingGetInverseTransposeWorldViewMatrix() const
 {
     return _nodeBinding ? _nodeBinding->getInverseTransposeWorldViewMatrix() : Matrix::identity();
 }
 
+//----------------------------------------------------------------------------
 Vector3 RenderState::autoBindingGetCameraWorldPosition() const
 {
     return _nodeBinding ? _nodeBinding->getActiveCameraTranslationWorld() : Vector3::zero();
 }
 
+//----------------------------------------------------------------------------
 Vector3 RenderState::autoBindingGetCameraViewPosition() const
 {
     return _nodeBinding ? _nodeBinding->getActiveCameraTranslationView() : Vector3::zero();
 }
 
+//----------------------------------------------------------------------------
 const Vector4* RenderState::autoBindingGetMatrixPalette() const
 {
     Model* model = dynamic_cast<Model*>(_nodeBinding->getDrawable());
@@ -356,6 +380,7 @@ const Vector4* RenderState::autoBindingGetMatrixPalette() const
     return nullptr;
 }
 
+//----------------------------------------------------------------------------
 unsigned int RenderState::autoBindingGetMatrixPaletteSize() const
 {
     Model* model = dynamic_cast<Model*>(_nodeBinding->getDrawable());
@@ -367,12 +392,14 @@ unsigned int RenderState::autoBindingGetMatrixPaletteSize() const
     return 0;
 }
 
+//----------------------------------------------------------------------------
 const Vector3& RenderState::autoBindingGetAmbientColor() const
 {
     Scene* scene = _nodeBinding ? _nodeBinding->getScene() : nullptr;
     return scene ? scene->getAmbientColor() : Vector3::zero();
 }
 
+//----------------------------------------------------------------------------
 void RenderState::bind(Pass* pass)
 {
     assert(pass);
@@ -404,6 +431,7 @@ void RenderState::bind(Pass* pass)
     }
 }
 
+//----------------------------------------------------------------------------
 RenderState* RenderState::getTopmost(RenderState* below) noexcept
 {
     RenderState* rs = this;
@@ -420,6 +448,7 @@ RenderState* RenderState::getTopmost(RenderState* below) noexcept
     return nullptr;
 }
 
+//----------------------------------------------------------------------------
 void RenderState::cloneInto(RenderState* renderState, NodeCloneContext& context) const
 {
     assert(renderState);
@@ -469,27 +498,10 @@ void RenderState::cloneInto(RenderState* renderState, NodeCloneContext& context)
     // 2. _parent should not be set here, since it's set in the constructor of Technique and Pass.
 }
 
-RenderState::StateBlock::StateBlock()
-    : _cullFaceEnabled(false), _depthTestEnabled(false), _depthWriteEnabled(true),
-      _depthFunction(RenderState::DEPTH_LESS), _blendEnabled(false),
-      _blendSrc(RenderState::BLEND_ONE), _blendDst(RenderState::BLEND_ZERO),
-      _cullFaceSide(CULL_FACE_SIDE_BACK), _frontFace(FRONT_FACE_CCW), _stencilTestEnabled(false),
-      _stencilWrite(RS_ALL_ONES), _stencilFunction(RenderState::STENCIL_ALWAYS),
-      _stencilFunctionRef(0), _stencilFunctionMask(RS_ALL_ONES),
-      _stencilOpSfail(RenderState::STENCIL_OP_KEEP), _stencilOpDpfail(RenderState::STENCIL_OP_KEEP),
-      _stencilOpDppass(RenderState::STENCIL_OP_KEEP), _bits(0L)
-{
-}
-
-RenderState::StateBlock::StateBlock(const StateBlock& copy)
-{
-    // Hidden
-}
-
-RenderState::StateBlock::~StateBlock() {}
-
+//----------------------------------------------------------------------------
 RenderState::StateBlock* RenderState::StateBlock::create() { return new RenderState::StateBlock(); }
 
+//----------------------------------------------------------------------------
 void RenderState::StateBlock::bind()
 {
     // When the public bind() is called with no RenderState object passed in,
@@ -502,6 +514,7 @@ void RenderState::StateBlock::bind()
     bindNoRestore();
 }
 
+//----------------------------------------------------------------------------
 void RenderState::StateBlock::bindNoRestore()
 {
     assert(_defaultState);
@@ -596,6 +609,7 @@ void RenderState::StateBlock::bindNoRestore()
     _defaultState->_bits |= _bits;
 }
 
+//----------------------------------------------------------------------------
 void RenderState::StateBlock::restore(long stateOverrideBits)
 {
     assert(_defaultState);
@@ -688,6 +702,7 @@ void RenderState::StateBlock::restore(long stateOverrideBits)
     }
 }
 
+//----------------------------------------------------------------------------
 void RenderState::StateBlock::enableDepthWrite()
 {
     assert(_defaultState);
@@ -703,6 +718,7 @@ void RenderState::StateBlock::enableDepthWrite()
     }
 }
 
+//----------------------------------------------------------------------------
 void RenderState::StateBlock::cloneInto(StateBlock* state)
 {
     assert(state);
@@ -727,6 +743,7 @@ void RenderState::StateBlock::cloneInto(StateBlock* state)
     state->_bits = _bits;
 }
 
+//----------------------------------------------------------------------------
 static bool parseBoolean(const std::string& value)
 {
     if (value.length() == 4)
@@ -738,6 +755,7 @@ static bool parseBoolean(const std::string& value)
     return false;
 }
 
+//----------------------------------------------------------------------------
 static int parseInt(const std::string& value)
 {
     int rValue;
@@ -752,6 +770,7 @@ static int parseInt(const std::string& value)
     return rValue;
 }
 
+//----------------------------------------------------------------------------
 static unsigned int parseUInt(const std::string& value)
 {
     unsigned int rValue;
@@ -766,6 +785,7 @@ static unsigned int parseUInt(const std::string& value)
     return rValue;
 }
 
+//----------------------------------------------------------------------------
 static RenderState::Blend parseBlend(const std::string& value)
 {
     // Convert the string to uppercase for comparison.
@@ -806,6 +826,7 @@ static RenderState::Blend parseBlend(const std::string& value)
     }
 }
 
+//----------------------------------------------------------------------------
 static RenderState::DepthFunction parseDepthFunc(const std::string& value)
 {
     // Convert string to uppercase for comparison
@@ -836,6 +857,7 @@ static RenderState::DepthFunction parseDepthFunc(const std::string& value)
     }
 }
 
+//----------------------------------------------------------------------------
 static RenderState::CullFaceSide parseCullFaceSide(const std::string& value)
 {
     // Convert string to uppercase for comparison
@@ -856,6 +878,7 @@ static RenderState::CullFaceSide parseCullFaceSide(const std::string& value)
     }
 }
 
+//----------------------------------------------------------------------------
 static RenderState::FrontFace parseFrontFace(const std::string& value)
 {
     // Convert string to uppercase for comparison
@@ -874,6 +897,7 @@ static RenderState::FrontFace parseFrontFace(const std::string& value)
     }
 }
 
+//----------------------------------------------------------------------------
 static RenderState::StencilFunction parseStencilFunc(const std::string& value)
 {
     // Convert string to uppercase for comparison
@@ -904,6 +928,7 @@ static RenderState::StencilFunction parseStencilFunc(const std::string& value)
     }
 }
 
+//----------------------------------------------------------------------------
 static RenderState::StencilOperation parseStencilOp(const std::string& value)
 {
     // Convert string to uppercase for comparison
@@ -934,6 +959,7 @@ static RenderState::StencilOperation parseStencilOp(const std::string& value)
     }
 }
 
+//----------------------------------------------------------------------------
 void RenderState::StateBlock::setState(const std::string& name, const std::string& value)
 {
     if (name == "blend")
@@ -1010,6 +1036,7 @@ void RenderState::StateBlock::setState(const std::string& name, const std::strin
     }
 }
 
+//----------------------------------------------------------------------------
 void RenderState::StateBlock::setBlend(bool enabled)
 {
     _blendEnabled = enabled;
@@ -1019,6 +1046,7 @@ void RenderState::StateBlock::setBlend(bool enabled)
         _bits |= RS_BLEND;
 }
 
+//----------------------------------------------------------------------------
 void RenderState::StateBlock::setBlendSrc(Blend blend)
 {
     _blendSrc = blend;
@@ -1029,6 +1057,7 @@ void RenderState::StateBlock::setBlendSrc(Blend blend)
         _bits |= RS_BLEND_FUNC;
 }
 
+//----------------------------------------------------------------------------
 void RenderState::StateBlock::setBlendDst(Blend blend)
 {
     _blendDst = blend;
@@ -1039,6 +1068,7 @@ void RenderState::StateBlock::setBlendDst(Blend blend)
         _bits |= RS_BLEND_FUNC;
 }
 
+//----------------------------------------------------------------------------
 void RenderState::StateBlock::setCullFace(bool enabled)
 {
     _cullFaceEnabled = enabled;
@@ -1048,6 +1078,7 @@ void RenderState::StateBlock::setCullFace(bool enabled)
         _bits |= RS_CULL_FACE;
 }
 
+//----------------------------------------------------------------------------
 void RenderState::StateBlock::setCullFaceSide(CullFaceSide side)
 {
     _cullFaceSide = side;
@@ -1058,6 +1089,7 @@ void RenderState::StateBlock::setCullFaceSide(CullFaceSide side)
         _bits |= RS_CULL_FACE_SIDE;
 }
 
+//----------------------------------------------------------------------------
 void RenderState::StateBlock::setFrontFace(FrontFace winding)
 {
     _frontFace = winding;
@@ -1068,6 +1100,7 @@ void RenderState::StateBlock::setFrontFace(FrontFace winding)
         _bits |= RS_FRONT_FACE;
 }
 
+//----------------------------------------------------------------------------
 void RenderState::StateBlock::setDepthTest(bool enabled)
 {
     _depthTestEnabled = enabled;
@@ -1077,6 +1110,7 @@ void RenderState::StateBlock::setDepthTest(bool enabled)
         _bits |= RS_DEPTH_TEST;
 }
 
+//----------------------------------------------------------------------------
 void RenderState::StateBlock::setDepthWrite(bool enabled)
 {
     _depthWriteEnabled = enabled;
@@ -1086,6 +1120,7 @@ void RenderState::StateBlock::setDepthWrite(bool enabled)
         _bits |= RS_DEPTH_WRITE;
 }
 
+//----------------------------------------------------------------------------
 void RenderState::StateBlock::setDepthFunction(DepthFunction func)
 {
     _depthFunction = func;
@@ -1096,6 +1131,7 @@ void RenderState::StateBlock::setDepthFunction(DepthFunction func)
         _bits |= RS_DEPTH_FUNC;
 }
 
+//----------------------------------------------------------------------------
 void RenderState::StateBlock::setStencilTest(bool enabled)
 {
     _stencilTestEnabled = enabled;
@@ -1105,6 +1141,7 @@ void RenderState::StateBlock::setStencilTest(bool enabled)
         _bits |= RS_STENCIL_TEST;
 }
 
+//----------------------------------------------------------------------------
 void RenderState::StateBlock::setStencilWrite(unsigned int mask)
 {
     _stencilWrite = mask;
@@ -1115,6 +1152,7 @@ void RenderState::StateBlock::setStencilWrite(unsigned int mask)
         _bits |= RS_STENCIL_WRITE;
 }
 
+//----------------------------------------------------------------------------
 void RenderState::StateBlock::setStencilFunction(StencilFunction func, int ref, unsigned int mask)
 {
     _stencilFunction = func;
@@ -1127,6 +1165,7 @@ void RenderState::StateBlock::setStencilFunction(StencilFunction func, int ref, 
         _bits |= RS_STENCIL_FUNC;
 }
 
+//----------------------------------------------------------------------------
 void RenderState::StateBlock::setStencilOperation(StencilOperation sfail,
                                                   StencilOperation dpfail,
                                                   StencilOperation dppass)
@@ -1141,11 +1180,13 @@ void RenderState::StateBlock::setStencilOperation(StencilOperation sfail,
         _bits |= RS_STENCIL_OP;
 }
 
+//----------------------------------------------------------------------------
 RenderState::AutoBindingResolver::AutoBindingResolver()
 {
     _customAutoBindingResolvers.push_back(this);
 }
 
+//----------------------------------------------------------------------------
 RenderState::AutoBindingResolver::~AutoBindingResolver()
 {
     std::vector<RenderState::AutoBindingResolver*>::iterator itr =

@@ -193,7 +193,7 @@ class Terrain : public Ref, public Drawable, public Transform::Listener
     /**
      * Determines if the specified terrain flag is currently set.
      */
-    bool isFlagSet(Flags flag) const;
+    bool isFlagSet(Flags flag) const noexcept { return (_flags & flag) == flag; }
 
     /**
      * Enables or disables the specified terrain flag.
@@ -300,7 +300,7 @@ class Terrain : public Ref, public Drawable, public Transform::Listener
     /**
      * Constructor.
      */
-    Terrain();
+    Terrain() = default;
 
     /**
      * Hidden copy constructor.
@@ -350,14 +350,18 @@ class Terrain : public Ref, public Drawable, public Transform::Listener
      */
     BoundingBox getBoundingBox(bool worldSpace) const;
 
-    std::string _materialPath;
-    HeightField* _heightfield;
-    Vector3 _localScale;
-    std::vector<TerrainPatch*> _patches;
-    Texture::Sampler* _normalMap;
-    unsigned int _flags;
+    std::string _materialPath{};
+    HeightField* _heightfield{nullptr};
+    Vector3 _localScale{};
+    std::vector<TerrainPatch*> _patches{};
+    Texture::Sampler* _normalMap{nullptr};
+    unsigned int _flags{ FRUSTUM_CULLING | LEVEL_OF_DETAIL };
     mutable Matrix _inverseWorldMatrix;
-    mutable unsigned int _dirtyFlags;
+
+    // Terrain dirty flags
+    const unsigned int DIRTY_FLAG_INVERSE_WORLD = 1;
+
+    mutable unsigned int _dirtyFlags{ DIRTY_FLAG_INVERSE_WORLD };
     BoundingBox _boundingBox;
 };
 

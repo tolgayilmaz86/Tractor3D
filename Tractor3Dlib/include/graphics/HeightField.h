@@ -97,7 +97,7 @@ class HeightField : public Ref
      *
      * @return The underlying height array.
      */
-    float* getArray() const;
+    float* getArray() const { return _array; }
 
     /**
      * Returns the height at the specified row and column.

@@ -256,7 +256,7 @@ class AIMessage
     /**
      * Constructor.
      */
-    AIMessage();
+    AIMessage() = default;
 
     /**
      * Hidden copy constructor.
@@ -283,14 +283,14 @@ class AIMessage
 
     void clearParameter(unsigned int index);
 
-    unsigned int _id;
-    std::string _sender;
-    std::string _receiver;
-    double _deliveryTime;
-    Parameter* _parameters;
-    unsigned int _parameterCount;
-    MessageType _messageType;
-    AIMessage* _next;
+    unsigned int _id{ 0 };
+    std::string _sender{};
+    std::string _receiver{};
+    double _deliveryTime{ 0.0 };
+    Parameter* _parameters{ nullptr };
+    unsigned int _parameterCount{ 0 };
+    MessageType _messageType{ MESSAGE_TYPE_CUSTOM };
+    AIMessage* _next{ nullptr };
 };
 
 } // namespace tractor

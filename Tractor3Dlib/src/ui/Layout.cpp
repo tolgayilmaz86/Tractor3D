@@ -22,6 +22,7 @@
 namespace tractor
 {
 
+//----------------------------------------------------------------
 bool Layout::touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex)
 {
     return false;

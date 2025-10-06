@@ -27,17 +27,17 @@ class Vector2
     /**
      * The x coordinate.
      */
-    float x;
+    float x{ 0.0f };
 
     /**
      * The y coordinate.
      */
-    float y;
+    float y{ 0.0f };
 
     /**
      * Constructs a new vector initialized to all zeros.
      */
-    Vector2();
+    Vector2() = default;
 
     /**
      * Constructs a new vector initialized to the specified values.
@@ -194,7 +194,7 @@ class Vector2
      *
      * @return The dot product.
      */
-    float dot(const Vector2& v) const noexcept;
+    float dot(const Vector2& v) const noexcept { return (x * v.x + y * v.y); }
 
     /**
      * Returns the dot product between the specified vectors.
@@ -213,7 +213,7 @@ class Vector2
      *
      * @see lengthSquared
      */
-    float length() const;
+    float length() const { return sqrt(x * x + y * y); }
 
     /**
      * Returns the squared length of this vector.
@@ -227,7 +227,7 @@ class Vector2
      *
      * @see length
      */
-    float lengthSquared() const noexcept;
+    float lengthSquared() const noexcept { return (x * x + y * y); }
 
     /**
      * Negates this vector.

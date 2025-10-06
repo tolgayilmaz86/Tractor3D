@@ -41,7 +41,7 @@ class Effect : public Ref
     /**
      * Hidden constructor (use createEffect instead).
      */
-    Effect();
+    Effect() = default;
 
     /**
      * Hidden destructor (use destroyEffect instead).
@@ -259,8 +259,8 @@ class Effect : public Ref
                                     const std::string& fshSource,
                                     const std::string& defines = EMPTY_STRING);
 
-    GLuint _program;
-    std::string _id;
+    GLuint _program{ 0 };
+    std::string _id{};
     std::map<std::string, VertexAttribute> _vertexAttributes;
     mutable std::map<std::string, Uniform*> _uniforms;
     static Uniform _emptyUniform;

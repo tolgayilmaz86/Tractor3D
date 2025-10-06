@@ -18,10 +18,7 @@
 namespace tractor
 {
 
-Label::Label() : _text(""), _font(nullptr) {}
-
-Label::~Label() {}
-
+//----------------------------------------------------------------
 Label* Label::create(const std::string& id, Theme::Style* style)
 {
     Label* label = new Label();
@@ -30,6 +27,7 @@ Label* Label::create(const std::string& id, Theme::Style* style)
     return label;
 }
 
+//----------------------------------------------------------------
 Control* Label::create(Theme::Style* style, Properties* properties)
 {
     Label* label = new Label();
@@ -37,6 +35,7 @@ Control* Label::create(Theme::Style* style, Properties* properties)
     return label;
 }
 
+//----------------------------------------------------------------
 void Label::initialize(const std::string& typeName, Theme::Style* style, Properties* properties)
 {
     Control::initialize(typeName, style, properties);
@@ -51,12 +50,14 @@ void Label::initialize(const std::string& typeName, Theme::Style* style, Propert
     }
 }
 
+//----------------------------------------------------------------
 const std::string& Label::getTypeName() const noexcept
 {
     static const std::string TYPE_NAME = "Label";
     return TYPE_NAME;
 }
 
+//----------------------------------------------------------------
 void Label::addListener(Control::Listener* listener, int eventFlags)
 {
     if ((eventFlags & Control::Listener::TEXT_CHANGED) == Control::Listener::TEXT_CHANGED)
@@ -71,6 +72,7 @@ void Label::addListener(Control::Listener* listener, int eventFlags)
     Control::addListener(listener, eventFlags);
 }
 
+//----------------------------------------------------------------
 void Label::setText(const std::string& text)
 {
     if (text != _text)
@@ -80,8 +82,7 @@ void Label::setText(const std::string& text)
     }
 }
 
-const std::string& Label::getText() { return _text; }
-
+//----------------------------------------------------------------
 void Label::update(float elapsedTime)
 {
     Control::update(elapsedTime);
@@ -91,6 +92,7 @@ void Label::update(float elapsedTime)
     _textColor.w *= _opacity;
 }
 
+//----------------------------------------------------------------
 void Label::updateState(State state)
 {
     Control::updateState(state);
@@ -98,6 +100,7 @@ void Label::updateState(State state)
     _font = getFont(state);
 }
 
+//----------------------------------------------------------------
 void Label::updateBounds()
 {
     Control::updateBounds();
@@ -123,6 +126,7 @@ void Label::updateBounds()
     }
 }
 
+//----------------------------------------------------------------
 void Label::updateAbsoluteBounds(const Vector2& offset)
 {
     Control::updateAbsoluteBounds(offset);
@@ -133,6 +137,7 @@ void Label::updateAbsoluteBounds(const Vector2& offset)
                     _viewportBounds.height);
 }
 
+//----------------------------------------------------------------
 unsigned int Label::drawText(Form* form, const Rectangle& clip)
 {
     // Draw the text.

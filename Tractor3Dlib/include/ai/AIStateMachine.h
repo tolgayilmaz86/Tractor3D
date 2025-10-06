@@ -157,7 +157,7 @@ class AIStateMachine
     /**
      * Called by AIController to update the state machine each frame.
      */
-    void update(float elapsedTime);
+    void update(float elapsedTime) { _currentState->update(this, elapsedTime); }
 
     AIAgent* _agent;
     AIState* _currentState;

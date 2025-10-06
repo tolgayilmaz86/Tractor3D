@@ -23,10 +23,10 @@ namespace tractor
 
 static AbsoluteLayout* __instance;
 
-AbsoluteLayout::AbsoluteLayout() {}
-
+//----------------------------------------------------------------------------
 AbsoluteLayout::~AbsoluteLayout() { __instance = nullptr; }
 
+//----------------------------------------------------------------------------
 AbsoluteLayout* AbsoluteLayout::create()
 {
     if (!__instance)
@@ -41,8 +41,10 @@ AbsoluteLayout* AbsoluteLayout::create()
     return __instance;
 }
 
+//----------------------------------------------------------------------------
 Layout::Type AbsoluteLayout::getType() const noexcept { return Layout::LAYOUT_ABSOLUTE; }
 
+//----------------------------------------------------------------------------
 void AbsoluteLayout::update(const Container* container)
 {
     // Nothing to do for absolute layout

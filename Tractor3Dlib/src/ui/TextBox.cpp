@@ -21,15 +21,7 @@ namespace tractor
 
 constexpr auto TYPE_NAME = "TextBox";
 
-TextBox::TextBox()
-    : _caretLocation(0), _lastKeypress(0), _fontSize(0), _caretImage(nullptr), _passwordChar('*'),
-      _inputMode(TEXT), _ctrlPressed(false), _shiftPressed(false)
-{
-    _canFocus = true;
-}
-
-TextBox::~TextBox() {}
-
+//----------------------------------------------------------------
 TextBox* TextBox::create(const std::string& id, Theme::Style* style)
 {
     TextBox* textBox = new TextBox();
@@ -38,6 +30,7 @@ TextBox* TextBox::create(const std::string& id, Theme::Style* style)
     return textBox;
 }
 
+//----------------------------------------------------------------
 Control* TextBox::create(Theme::Style* style, Properties* properties)
 {
     TextBox* textBox = new TextBox();
@@ -45,6 +38,7 @@ Control* TextBox::create(Theme::Style* style, Properties* properties)
     return textBox;
 }
 
+//----------------------------------------------------------------
 void TextBox::initialize(const std::string& typeName, Theme::Style* style, Properties* properties)
 {
     Label::initialize(typeName, style, properties);
@@ -55,8 +49,10 @@ void TextBox::initialize(const std::string& typeName, Theme::Style* style, Prope
     }
 }
 
+//----------------------------------------------------------------
 const std::string& TextBox::getTypeName() const noexcept { return TYPE_NAME; }
 
+//----------------------------------------------------------------
 void TextBox::addListener(Control::Listener* listener, int eventFlags)
 {
     if ((eventFlags & Control::Listener::VALUE_CHANGED) == Control::Listener::VALUE_CHANGED)
@@ -67,12 +63,14 @@ void TextBox::addListener(Control::Listener* listener, int eventFlags)
     Control::addListener(listener, eventFlags);
 }
 
+//----------------------------------------------------------------
 void TextBox::setCaretLocation(unsigned int index)
 {
     _caretLocation = index;
     if (_caretLocation > _text.length()) _caretLocation = (unsigned int)_text.length();
 }
 
+//----------------------------------------------------------------
 bool TextBox::touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex)
 {
     if (getState() == ACTIVE)
@@ -93,6 +91,7 @@ bool TextBox::touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int conta
     return Label::touchEvent(evt, x, y, contactIndex);
 }
 
+//----------------------------------------------------------------
 static bool isWhitespace(char c)
 {
     switch (c)
@@ -108,6 +107,7 @@ static bool isWhitespace(char c)
     }
 }
 
+//----------------------------------------------------------------
 static unsigned int findNextWord(const std::string& text, unsigned int from, bool backwards)
 {
     int pos = (int)from;
@@ -141,6 +141,7 @@ static unsigned int findNextWord(const std::string& text, unsigned int from, boo
     return (unsigned int)pos;
 }
 
+//----------------------------------------------------------------
 bool TextBox::keyEvent(Keyboard::KeyEvent evt, int key)
 {
     switch (evt)
@@ -317,6 +318,7 @@ bool TextBox::keyEvent(Keyboard::KeyEvent evt, int key)
     return Label::keyEvent(evt, key);
 }
 
+//----------------------------------------------------------------
 void TextBox::controlEvent(Control::Listener::EventType evt)
 {
     Label::controlEvent(evt);
@@ -335,6 +337,7 @@ void TextBox::controlEvent(Control::Listener::EventType evt)
     }
 }
 
+//----------------------------------------------------------------
 void TextBox::updateState(State state)
 {
     Label::updateState(state);
@@ -343,6 +346,7 @@ void TextBox::updateState(State state)
     _caretImage = getImage("textCaret", state);
 }
 
+//----------------------------------------------------------------
 unsigned int TextBox::drawImages(Form* form, const Rectangle& clip)
 {
     Control::State state = getState();
@@ -392,6 +396,7 @@ unsigned int TextBox::drawImages(Form* form, const Rectangle& clip)
     return 0;
 }
 
+//----------------------------------------------------------------
 unsigned int TextBox::drawText(Form* form, const Rectangle& clip)
 {
     if (_text.size() <= 0) return 0;
@@ -421,6 +426,7 @@ unsigned int TextBox::drawText(Form* form, const Rectangle& clip)
     return 0;
 }
 
+//----------------------------------------------------------------
 void TextBox::setText(const std::string& text)
 {
     Label::setText(text);
@@ -431,6 +437,7 @@ void TextBox::setText(const std::string& text)
     notifyListeners(Control::Listener::TEXT_CHANGED);
 }
 
+//----------------------------------------------------------------
 void TextBox::setCaretLocation(int x, int y)
 {
     Control::State state = getState();
@@ -513,6 +520,7 @@ void TextBox::setCaretLocation(int x, int y)
     }
 }
 
+//----------------------------------------------------------------
 void TextBox::getCaretLocation(Vector2* p)
 {
     assert(p);
@@ -528,6 +536,7 @@ void TextBox::getCaretLocation(Vector2* p)
                                        getTextRightToLeft(state));
 }
 
+//----------------------------------------------------------------
 TextBox::InputMode TextBox::getInputMode(const std::string& inputMode)
 {
     if (inputMode.empty())
@@ -553,6 +562,7 @@ TextBox::InputMode TextBox::getInputMode(const std::string& inputMode)
     return TextBox::TEXT;
 }
 
+//----------------------------------------------------------------
 std::string TextBox::getDisplayedText() const
 {
     std::string displayedText;

@@ -35,6 +35,7 @@ class TerrainAutoBindingResolver : RenderState::AutoBindingResolver
 static TerrainAutoBindingResolver __autoBindingResolver;
 static int __currentPatchIndex = -1;
 
+//----------------------------------------------------------------------------
 TerrainPatch::~TerrainPatch()
 {
     for (size_t i = 0, count = _levels.size(); i < count; ++i)
@@ -57,6 +58,7 @@ TerrainPatch::~TerrainPatch()
     }
 }
 
+//----------------------------------------------------------------------------
 TerrainPatch* TerrainPatch::create(Terrain* terrain,
                                    unsigned int index,
                                    unsigned int row,
@@ -93,6 +95,7 @@ TerrainPatch* TerrainPatch::create(Terrain* terrain,
     return patch;
 }
 
+//----------------------------------------------------------------------------
 Material* TerrainPatch::getMaterial(int index) const
 {
     if (index == -1)
@@ -112,6 +115,7 @@ Material* TerrainPatch::getMaterial(int index) const
     return _levels[index]->model->getMaterial();
 }
 
+//----------------------------------------------------------------------------
 void TerrainPatch::addLOD(float* heights,
                           unsigned int width,
                           unsigned int height,
@@ -354,6 +358,7 @@ void TerrainPatch::addLOD(float* heights,
     // mesh->release();
 }
 
+//----------------------------------------------------------------------------
 void TerrainPatch::deleteLayer(Layer* layer)
 {
     // Release layer samplers
@@ -385,6 +390,7 @@ void TerrainPatch::deleteLayer(Layer* layer)
     SAFE_DELETE(layer);
 }
 
+//----------------------------------------------------------------------------
 int TerrainPatch::addSampler(const std::string& path)
 {
     // TODO: Support shared samplers stored in Terrain class for layers that span all patches
@@ -440,6 +446,7 @@ int TerrainPatch::addSampler(const std::string& path)
     return (int)(_samplers.size() - 1);
 }
 
+//----------------------------------------------------------------------------
 bool TerrainPatch::setLayer(int index,
                             const std::string& texturePath,
                             const Vector2& textureRepeat,
@@ -490,6 +497,7 @@ std::string TerrainPatch::passCallback(Pass* pass, void* cookie)
     return patch->passCreated(pass);
 }
 
+//----------------------------------------------------------------------------
 std::string TerrainPatch::passCreated(Pass* pass)
 {
     // Build preprocessor string to be passed to the terrain shader.
@@ -536,6 +544,7 @@ std::string TerrainPatch::passCreated(Pass* pass)
     return defines.str();
 }
 
+//----------------------------------------------------------------------------
 bool TerrainPatch::updateMaterial()
 {
     if (!(_bits & TERRAINPATCH_DIRTY_MATERIAL)) return true;
@@ -568,6 +577,7 @@ bool TerrainPatch::updateMaterial()
     return true;
 }
 
+//----------------------------------------------------------------------------
 void TerrainPatch::updateNodeBindings()
 {
     __currentPatchIndex = _index;
@@ -578,6 +588,7 @@ void TerrainPatch::updateNodeBindings()
     __currentPatchIndex = -1;
 }
 
+//----------------------------------------------------------------------------
 unsigned int TerrainPatch::draw(bool wireframe)
 {
     Scene* scene = _terrain->_node ? _terrain->_node->getScene() : nullptr;
@@ -600,6 +611,7 @@ unsigned int TerrainPatch::draw(bool wireframe)
     return _levels[_level]->model->draw(wireframe);
 }
 
+//----------------------------------------------------------------------------
 const BoundingBox& TerrainPatch::getBoundingBox(bool worldSpace) const
 {
     if (!worldSpace) return _boundingBox;
@@ -617,6 +629,7 @@ const BoundingBox& TerrainPatch::getBoundingBox(bool worldSpace) const
     return _boundingBoxWorld;
 }
 
+//----------------------------------------------------------------------------
 unsigned int TerrainPatch::computeLOD(Camera* camera, const BoundingBox& worldBounds)
 {
     if (camera != _camera)
@@ -671,22 +684,26 @@ unsigned int TerrainPatch::computeLOD(Camera* camera, const BoundingBox& worldBo
     return _level;
 }
 
+//----------------------------------------------------------------------------
 const Vector3& TerrainPatch::getAmbientColor() const
 {
     Scene* scene = _terrain->_node ? _terrain->_node->getScene() : nullptr;
     return scene ? scene->getAmbientColor() : Vector3::zero();
 }
 
+//----------------------------------------------------------------------------
 float TerrainPatch::computeHeight(float* heights, unsigned int width, unsigned int x, unsigned int z)
 {
     return heights[z * width + x] * _terrain->_localScale.y;
 }
 
+//----------------------------------------------------------------------------
 bool TerrainPatch::LayerCompare::operator()(const Layer* lhs, const Layer* rhs) const
 {
     return (lhs->index < rhs->index);
 }
 
+//----------------------------------------------------------------------------
 bool TerrainAutoBindingResolver::resolveAutoBinding(const std::string& autoBinding,
                                                     Node* node,
                                                     MaterialParameter* parameter)

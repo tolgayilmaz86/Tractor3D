@@ -45,6 +45,7 @@ namespace tractor
 
 static Effect* __spriteEffect = nullptr;
 
+//----------------------------------------------------------------------------
 SpriteBatch::~SpriteBatch()
 {
     SAFE_RELEASE(_sampler);
@@ -63,6 +64,7 @@ SpriteBatch::~SpriteBatch()
     }
 }
 
+//----------------------------------------------------------------------------
 SpriteBatch* SpriteBatch::create(const std::string& texturePath,
                                  Effect* effect,
                                  unsigned int initialCapacity)
@@ -73,6 +75,7 @@ SpriteBatch* SpriteBatch::create(const std::string& texturePath,
     return batch;
 }
 
+//----------------------------------------------------------------------------
 SpriteBatch* SpriteBatch::create(Texture* texture, Effect* effect, unsigned int initialCapacity)
 {
     assert(texture != nullptr);
@@ -165,8 +168,10 @@ SpriteBatch* SpriteBatch::create(Texture* texture, Effect* effect, unsigned int 
     return batch;
 }
 
+//----------------------------------------------------------------------------
 void SpriteBatch::start() noexcept { _batch->start(); }
 
+//----------------------------------------------------------------------------
 void SpriteBatch::draw(const Rectangle& dst, const Rectangle& src, const Vector4& color)
 {
     // Calculate uvs.
@@ -178,6 +183,7 @@ void SpriteBatch::draw(const Rectangle& dst, const Rectangle& src, const Vector4
     draw(dst.x, dst.y, dst.width, dst.height, u1, v1, u2, v2, color);
 }
 
+//----------------------------------------------------------------------------
 void SpriteBatch::draw(const Vector3& dst,
                        const Rectangle& src,
                        const Vector2& scale,
@@ -192,6 +198,7 @@ void SpriteBatch::draw(const Vector3& dst,
     draw(dst.x, dst.y, dst.z, scale.x, scale.y, u1, v1, u2, v2, color);
 }
 
+//----------------------------------------------------------------------------
 void SpriteBatch::draw(const Vector3& dst,
                        const Rectangle& src,
                        const Vector2& scale,
@@ -208,6 +215,7 @@ void SpriteBatch::draw(const Vector3& dst,
     draw(dst, scale.x, scale.y, u1, v1, u2, v2, color, rotationPoint, rotationAngle);
 }
 
+//----------------------------------------------------------------------------
 void SpriteBatch::draw(const Vector3& dst,
                        float width,
                        float height,
@@ -223,6 +231,7 @@ void SpriteBatch::draw(const Vector3& dst,
     draw(dst.x, dst.y, dst.z, width, height, u1, v1, u2, v2, color, rotationPoint, rotationAngle, positionIsCenter);
 }
 
+//----------------------------------------------------------------------------
 void SpriteBatch::draw(float x,
                        float y,
                        float z,
@@ -279,6 +288,7 @@ void SpriteBatch::draw(float x,
     _batch->add(v, 4, indices, 4);
 }
 
+//----------------------------------------------------------------------------
 void SpriteBatch::draw(const Vector3& position,
                        const Vector3& right,
                        const Vector3& forward,
@@ -352,6 +362,7 @@ void SpriteBatch::draw(const Vector3& position,
     _batch->add(v, 4, const_cast<unsigned short*>(indices), 4);
 }
 
+//----------------------------------------------------------------------------
 void SpriteBatch::draw(float x,
                        float y,
                        float width,
@@ -365,6 +376,7 @@ void SpriteBatch::draw(float x,
     draw(x, y, 0, width, height, u1, v1, u2, v2, color);
 }
 
+//----------------------------------------------------------------------------
 void SpriteBatch::draw(float x,
                        float y,
                        float width,
@@ -379,6 +391,7 @@ void SpriteBatch::draw(float x,
     draw(x, y, 0, width, height, u1, v1, u2, v2, color, clip);
 }
 
+//----------------------------------------------------------------------------
 void SpriteBatch::draw(float x,
                        float y,
                        float z,
@@ -398,6 +411,7 @@ void SpriteBatch::draw(float x,
         draw(x, y, z, width, height, u1, v1, u2, v2, color);
 }
 
+//----------------------------------------------------------------------------
 void SpriteBatch::addSprite(float x,
                             float y,
                             float width,
@@ -445,6 +459,7 @@ void SpriteBatch::addSprite(float x,
     }
 }
 
+//----------------------------------------------------------------------------
 void SpriteBatch::draw(SpriteBatch::SpriteVertex* vertices,
                        unsigned int vertexCount,
                        unsigned short* indices,
@@ -456,6 +471,7 @@ void SpriteBatch::draw(SpriteBatch::SpriteVertex* vertices,
     _batch->add(vertices, vertexCount, indices, indexCount);
 }
 
+//----------------------------------------------------------------------------
 void SpriteBatch::draw(float x,
                        float y,
                        float z,
@@ -489,6 +505,7 @@ void SpriteBatch::draw(float x,
     _batch->add(v, 4, indices, 4);
 }
 
+//----------------------------------------------------------------------------
 void SpriteBatch::finish()
 {
     // Finish and draw the batch
@@ -496,11 +513,13 @@ void SpriteBatch::finish()
     _batch->draw();
 }
 
+//----------------------------------------------------------------------------
 RenderState::StateBlock* SpriteBatch::getStateBlock() const
 {
     return _batch->getMaterial()->getStateBlock();
 }
 
+//----------------------------------------------------------------------------
 bool SpriteBatch::clipSprite(const Rectangle& clip,
                              float& x,
                              float& y,

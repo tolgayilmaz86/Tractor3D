@@ -18,12 +18,7 @@
 namespace tractor
 {
 
-MeshPart::MeshPart()
-    : _meshIndex(0), _primitiveType(Mesh::TRIANGLES), _indexCount(0), _indexBuffer(0),
-      _dynamic(false)
-{
-}
-
+//----------------------------------------------------------------------------
 MeshPart::~MeshPart()
 {
     if (_indexBuffer)
@@ -32,6 +27,7 @@ MeshPart::~MeshPart()
     }
 }
 
+//----------------------------------------------------------------------------
 std::unique_ptr<MeshPart> MeshPart::create(unsigned int meshIndex,
                                            Mesh::PrimitiveType primitiveType,
                                            Mesh::IndexFormat indexFormat,
@@ -77,26 +73,19 @@ std::unique_ptr<MeshPart> MeshPart::create(unsigned int meshIndex,
     return std::move(part);
 }
 
-unsigned int MeshPart::getMeshIndex() const noexcept { return _meshIndex; }
-
-Mesh::PrimitiveType MeshPart::getPrimitiveType() const noexcept { return _primitiveType; }
-
-unsigned int MeshPart::getIndexCount() const noexcept { return _indexCount; }
-
-Mesh::IndexFormat MeshPart::getIndexFormat() const noexcept { return _indexFormat; }
-
-IndexBufferHandle MeshPart::getIndexBuffer() const noexcept { return _indexBuffer; }
-
-void* MeshPart::mapIndexBuffer()
+//----------------------------------------------------------------------------
+void* MeshPart::mapIndexBuffer() const
 {
     GL_ASSERT(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer));
 
     return (void*)glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY);
 }
 
+//----------------------------------------------------------------------------
 bool MeshPart::unmapIndexBuffer() { return glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER); }
 
-void MeshPart::setIndexData(const void* indexData, unsigned int indexStart, unsigned int indexCount)
+//----------------------------------------------------------------------------
+void MeshPart::setIndexData(const void* indexData, unsigned int indexStart, unsigned int indexCount) const
 {
     GL_ASSERT(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer));
 
@@ -137,7 +126,5 @@ void MeshPart::setIndexData(const void* indexData, unsigned int indexStart, unsi
                                   indexData));
     }
 }
-
-bool MeshPart::isDynamic() const noexcept { return _dynamic; }
 
 } // namespace tractor

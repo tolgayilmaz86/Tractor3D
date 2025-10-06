@@ -21,19 +21,23 @@
 namespace tractor
 {
 
+//----------------------------------------------------------------------------
 HeightField::HeightField(unsigned int columns, unsigned int rows)
     : _array(nullptr), _cols(columns), _rows(rows)
 {
     _array = new float[columns * rows];
 }
 
+//----------------------------------------------------------------------------
 HeightField::~HeightField() { SAFE_DELETE_ARRAY(_array); }
 
+//----------------------------------------------------------------------------
 HeightField* HeightField::create(unsigned int columns, unsigned int rows)
 {
     return new HeightField(columns, rows);
 }
 
+//----------------------------------------------------------------------------
 /**
  * @script{ignore}
  */
@@ -47,11 +51,13 @@ float normalizedHeightPacked(float r, float g, float b)
     return (256.0f * r + g + 0.00390625f * b) / 65536.0f;
 }
 
+//----------------------------------------------------------------------------
 HeightField* HeightField::createFromImage(const std::string& path, float heightMin, float heightMax)
 {
     return create(path, 0, 0, heightMin, heightMax);
 }
 
+//----------------------------------------------------------------------------
 HeightField* HeightField::createFromRAW(const std::string& path,
                                         unsigned int width,
                                         unsigned int height,
@@ -61,6 +67,7 @@ HeightField* HeightField::createFromRAW(const std::string& path,
     return create(path, width, height, heightMin, heightMax);
 }
 
+//----------------------------------------------------------------------------
 HeightField* HeightField::create(const std::string& path,
                                  unsigned int width,
                                  unsigned int height,
@@ -182,8 +189,7 @@ HeightField* HeightField::create(const std::string& path,
     return heightfield;
 }
 
-float* HeightField::getArray() const { return _array; }
-
+//----------------------------------------------------------------------------
 float HeightField::getHeight(float column, float row) const
 {
     // Clamp to heightfield boundaries
@@ -223,8 +229,10 @@ float HeightField::getHeight(float column, float row) const
     }
 }
 
+//----------------------------------------------------------------------------
 unsigned int HeightField::getColumnCount() const { return _cols; }
 
+//----------------------------------------------------------------------------
 unsigned int HeightField::getRowCount() const { return _rows; }
 
 } // namespace tractor

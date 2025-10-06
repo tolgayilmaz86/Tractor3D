@@ -60,17 +60,17 @@ class VertexFormat
         /**
          * The vertex element usage semantic.
          */
-        Usage usage;
+        Usage usage{ POSITION };
 
         /**
          * The number of values in the vertex element.
          */
-        unsigned int size;
+        unsigned int size{ 0 };
 
         /**
          * Constructor.
          */
-        Element();
+        Element() = default;
 
         /**
          * Constructor.
@@ -149,7 +149,7 @@ class VertexFormat
      *
      * @return true if the elements in this VertexFormat are not equal to the specified one, false otherwise.
      */
-    bool operator!=(const VertexFormat& f) const;
+    bool operator!=(const VertexFormat& f) const { return !(*this == f); }
 
     /**
      * Returns a string representation of a Usage enumeration value.
@@ -158,7 +158,7 @@ class VertexFormat
 
   private:
     std::vector<Element> _elements{};
-    unsigned int _vertexSize{0};
+    unsigned int _vertexSize{ 0 };
 };
 
 } // namespace tractor

@@ -116,10 +116,10 @@ class Joint : public Node
      */
     struct SkinReference
     {
-        MeshSkin* skin;
-        SkinReference* next;
+        MeshSkin* skin{ nullptr };
+        SkinReference* next{ nullptr };
 
-        SkinReference();
+        SkinReference() = default;
         ~SkinReference();
     };
 
@@ -145,7 +145,7 @@ class Joint : public Node
     /**
      * Flag used to mark if the Joint's matrix is dirty.
      */
-    bool _jointMatrixDirty;
+    bool _jointMatrixDirty{ true };
 
     /**
      * Linked list of mesh skins that are referenced by this joint.

@@ -23,7 +23,7 @@ namespace tractor
 {
 
 // Default terrain material path
-#define TERRAIN_MATERIAL "res/materials/terrain.material"
+constexpr auto TERRAIN_MATERIAL = "res/materials/terrain.material";
 
 // The default square size of terrain patches for a terrain that
 // does not have an explicitly specified patch size.
@@ -37,17 +37,10 @@ static const unsigned int DEFAULT_TERRAIN_PATCH_SIZE = 32;
 //
 static const float DEFAULT_TERRAIN_HEIGHT_RATIO = 0.3f;
 
-// Terrain dirty flags
-static const unsigned int DIRTY_FLAG_INVERSE_WORLD = 1;
-
+//----------------------------------------------------------------------------
 static float getDefaultHeight(unsigned int width, unsigned int height);
 
-Terrain::Terrain()
-    : Drawable(), _heightfield(nullptr), _normalMap(nullptr),
-      _flags(FRUSTUM_CULLING | LEVEL_OF_DETAIL), _dirtyFlags(DIRTY_FLAG_INVERSE_WORLD)
-{
-}
-
+//----------------------------------------------------------------------------
 Terrain::~Terrain()
 {
     for (size_t i = 0, count = _patches.size(); i < count; ++i)
@@ -58,13 +51,16 @@ Terrain::~Terrain()
     SAFE_RELEASE(_heightfield);
 }
 
+//----------------------------------------------------------------------------
 Terrain* Terrain::create(const std::string& path) { return create(path, nullptr); }
 
+//----------------------------------------------------------------------------
 Terrain* Terrain::create(Properties* properties)
 {
     return create(properties->getNamespace(), properties);
 }
 
+//----------------------------------------------------------------------------
 Terrain* Terrain::create(const std::string& path, Properties* properties)
 {
     // Terrain properties
@@ -262,6 +258,7 @@ Terrain* Terrain::create(const std::string& path, Properties* properties)
     return terrain;
 }
 
+//----------------------------------------------------------------------------
 Terrain* Terrain::create(HeightField* heightfield,
                          const Vector3& scale,
                          unsigned int patchSize,
@@ -280,6 +277,7 @@ Terrain* Terrain::create(HeightField* heightfield,
                   nullptr);
 }
 
+//----------------------------------------------------------------------------
 Terrain* Terrain::create(HeightField* heightfield,
                          const Vector3& scale,
                          unsigned int patchSize,
@@ -425,6 +423,7 @@ Terrain* Terrain::create(HeightField* heightfield,
     return terrain;
 }
 
+//----------------------------------------------------------------------------
 void Terrain::setNode(Node* node)
 {
     if (_node != node)
@@ -444,11 +443,13 @@ void Terrain::setNode(Node* node)
     }
 }
 
+//----------------------------------------------------------------------------
 void Terrain::transformChanged(Transform* transform, long cookie)
 {
     _dirtyFlags |= DIRTY_FLAG_INVERSE_WORLD;
 }
 
+//----------------------------------------------------------------------------
 const Matrix& Terrain::getInverseWorldMatrix() const
 {
     if (_dirtyFlags & DIRTY_FLAG_INVERSE_WORLD)
@@ -470,6 +471,7 @@ const Matrix& Terrain::getInverseWorldMatrix() const
     return _inverseWorldMatrix;
 }
 
+//----------------------------------------------------------------------------
 bool Terrain::setLayer(int index,
                        const std::string& texturePath,
                        const Vector2& textureRepeat,
@@ -495,8 +497,7 @@ bool Terrain::setLayer(int index,
     return result;
 }
 
-bool Terrain::isFlagSet(Flags flag) const { return (_flags & flag) == flag; }
-
+//----------------------------------------------------------------------------
 void Terrain::setFlag(Flags flag, bool on)
 {
     bool changed = false;
@@ -528,6 +529,7 @@ void Terrain::setFlag(Flags flag, bool on)
     }
 }
 
+//----------------------------------------------------------------------------
 float Terrain::getHeight(float x, float z) const
 {
     // Calculate the correct x, z position relative to the heightfield data.
@@ -561,6 +563,7 @@ float Terrain::getHeight(float x, float z) const
     return height;
 }
 
+//----------------------------------------------------------------------------
 unsigned int Terrain::draw(bool wireframe)
 {
     size_t visibleCount = 0;
@@ -571,12 +574,14 @@ unsigned int Terrain::draw(bool wireframe)
     return visibleCount;
 }
 
+//----------------------------------------------------------------------------
 Drawable* Terrain::clone(NodeCloneContext& context)
 {
     // TODO:
     return nullptr;
 }
 
+//----------------------------------------------------------------------------
 static float getDefaultHeight(unsigned int width, unsigned int height)
 {
     // When terrain height is not specified, we'll use a default height of ~ 0.3 of the image dimensions

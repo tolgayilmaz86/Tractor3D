@@ -19,15 +19,16 @@
 namespace tractor
 {
 
-Script::Script() : _scope(GLOBAL), _env(0) {}
-
+//----------------------------------------------------------------------------
 Script::~Script() { Game::getInstance()->getScriptController()->unloadScript(this); }
 
 bool Script::functionExists(const char* name) const
+//----------------------------------------------------------------------------
 {
     return Game::getInstance()->getScriptController()->functionExists(name, this);
 }
 
+//----------------------------------------------------------------------------
 bool Script::reload()
 {
     ScriptController* sc = Game::getInstance()->getScriptController();

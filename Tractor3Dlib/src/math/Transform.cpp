@@ -24,6 +24,7 @@ namespace tractor
 int Transform::_suspendTransformChanged(0);
 std::vector<Transform*> Transform::_transformsChanged;
 
+//----------------------------------------------------------------------------
 Transform::Transform() : _matrixDirtyBits(0), _listeners(nullptr)
 {
     GP_REGISTER_SCRIPT_EVENTS();
@@ -32,6 +33,7 @@ Transform::Transform() : _matrixDirtyBits(0), _listeners(nullptr)
     _scale.set(Vector3::one());
 }
 
+//----------------------------------------------------------------------------
 Transform::Transform(const Vector3& scale, const Quaternion& rotation, const Vector3& translation)
     : _matrixDirtyBits(0), _listeners(nullptr)
 {
@@ -41,6 +43,7 @@ Transform::Transform(const Vector3& scale, const Quaternion& rotation, const Vec
     set(scale, rotation, translation);
 }
 
+//----------------------------------------------------------------------------
 Transform::Transform(const Vector3& scale, const Matrix& rotation, const Vector3& translation)
     : _matrixDirtyBits(0), _listeners(nullptr)
 {
@@ -50,6 +53,7 @@ Transform::Transform(const Vector3& scale, const Matrix& rotation, const Vector3
     set(scale, rotation, translation);
 }
 
+//----------------------------------------------------------------------------
 Transform::Transform(const Transform& copy) : _matrixDirtyBits(0), _listeners(nullptr)
 {
     GP_REGISTER_SCRIPT_EVENTS();
@@ -58,8 +62,10 @@ Transform::Transform(const Transform& copy) : _matrixDirtyBits(0), _listeners(nu
     set(copy);
 }
 
+//----------------------------------------------------------------------------
 Transform::~Transform() { SAFE_DELETE(_listeners); }
 
+//----------------------------------------------------------------------------
 void Transform::resumeTransformChanged()
 {
     if (_suspendTransformChanged == 0) // We haven't suspended transformChanged() calls, so do nothing.
@@ -92,12 +98,14 @@ void Transform::resumeTransformChanged()
     _suspendTransformChanged--;
 }
 
+//----------------------------------------------------------------------------
 const std::string& Transform::getTypeName() const
 {
     static const std::string TYPE_NAME = "Transform";
     return TYPE_NAME;
 }
 
+//----------------------------------------------------------------------------
 const Matrix& Transform::getMatrix() const
 {
     if (_matrixDirtyBits & (DIRTY_TRANSLATION | DIRTY_ROTATION | DIRTY_SCALE))
@@ -127,36 +135,42 @@ const Matrix& Transform::getMatrix() const
     return _matrix;
 }
 
+//----------------------------------------------------------------------------
 void Transform::getScale(Vector3* scale) const
 {
     assert(scale);
     scale->set(_scale);
 }
 
+//----------------------------------------------------------------------------
 void Transform::getRotation(Quaternion* rotation) const
 {
     assert(rotation);
     rotation->set(_rotation);
 }
 
+//----------------------------------------------------------------------------
 void Transform::getRotation(Matrix* rotation) const
 {
     assert(rotation);
     *rotation = Matrix::createRotation(_rotation);
 }
 
+//----------------------------------------------------------------------------
 float Transform::getRotation(Vector3* axis) const
 {
     assert(axis);
     return _rotation.toAxisAngle(axis);
 }
 
+//----------------------------------------------------------------------------
 void Transform::getTranslation(Vector3* translation) const
 {
     assert(translation);
     translation->set(_translation);
 }
 
+//----------------------------------------------------------------------------
 Vector3 Transform::getForwardVector() const
 {
     Vector3 v;
@@ -164,8 +178,10 @@ Vector3 Transform::getForwardVector() const
     return v;
 }
 
+//----------------------------------------------------------------------------
 void Transform::getForwardVector(Vector3* dst) const { *dst = getMatrix().getForwardVector(); }
 
+//----------------------------------------------------------------------------
 Vector3 Transform::getBackVector() const
 {
     Vector3 v;
@@ -173,8 +189,10 @@ Vector3 Transform::getBackVector() const
     return v;
 }
 
+//----------------------------------------------------------------------------
 void Transform::getBackVector(Vector3* dst) const { *dst = getMatrix().getBackVector(); }
 
+//----------------------------------------------------------------------------
 Vector3 Transform::getUpVector() const
 {
     Vector3 v;
@@ -182,8 +200,10 @@ Vector3 Transform::getUpVector() const
     return v;
 }
 
+//----------------------------------------------------------------------------
 void Transform::getUpVector(Vector3* dst) const { *dst = getMatrix().getUpVector(); }
 
+//----------------------------------------------------------------------------
 Vector3 Transform::getDownVector() const
 {
     Vector3 v;
@@ -191,8 +211,10 @@ Vector3 Transform::getDownVector() const
     return v;
 }
 
+//----------------------------------------------------------------------------
 void Transform::getDownVector(Vector3* dst) const { *dst = getMatrix().getDownVector(); }
 
+//----------------------------------------------------------------------------
 Vector3 Transform::getLeftVector() const
 {
     Vector3 v;
@@ -200,8 +222,10 @@ Vector3 Transform::getLeftVector() const
     return v;
 }
 
+//----------------------------------------------------------------------------
 void Transform::getLeftVector(Vector3* dst) const { *dst = getMatrix().getLeftVector(); }
 
+//----------------------------------------------------------------------------
 Vector3 Transform::getRightVector() const
 {
     Vector3 v;
@@ -209,8 +233,10 @@ Vector3 Transform::getRightVector() const
     return v;
 }
 
+//----------------------------------------------------------------------------
 void Transform::getRightVector(Vector3* dst) const { *dst = getMatrix().getRightVector(); }
 
+//----------------------------------------------------------------------------
 void Transform::rotate(float qx, float qy, float qz, float qw)
 {
     if (isStatic()) return;
@@ -220,6 +246,7 @@ void Transform::rotate(float qx, float qy, float qz, float qw)
     dirty(DIRTY_ROTATION);
 }
 
+//----------------------------------------------------------------------------
 void Transform::rotate(const Quaternion& rotation)
 {
     if (isStatic()) return;
@@ -228,6 +255,7 @@ void Transform::rotate(const Quaternion& rotation)
     dirty(DIRTY_ROTATION);
 }
 
+//----------------------------------------------------------------------------
 void Transform::rotate(const Vector3& axis, float angle)
 {
     if (isStatic()) return;
@@ -239,6 +267,7 @@ void Transform::rotate(const Vector3& axis, float angle)
     dirty(DIRTY_ROTATION);
 }
 
+//----------------------------------------------------------------------------
 void Transform::rotate(const Matrix& rotation)
 {
     if (isStatic()) return;
@@ -249,6 +278,7 @@ void Transform::rotate(const Matrix& rotation)
     dirty(DIRTY_ROTATION);
 }
 
+//----------------------------------------------------------------------------
 void Transform::rotateX(float angle)
 {
     if (isStatic()) return;
@@ -259,6 +289,7 @@ void Transform::rotateX(float angle)
     dirty(DIRTY_ROTATION);
 }
 
+//----------------------------------------------------------------------------
 void Transform::rotateY(float angle)
 {
     if (isStatic()) return;
@@ -269,6 +300,7 @@ void Transform::rotateY(float angle)
     dirty(DIRTY_ROTATION);
 }
 
+//----------------------------------------------------------------------------
 void Transform::rotateZ(float angle)
 {
     if (isStatic()) return;
@@ -279,6 +311,7 @@ void Transform::rotateZ(float angle)
     dirty(DIRTY_ROTATION);
 }
 
+//----------------------------------------------------------------------------
 void Transform::scale(float scale)
 {
     if (isStatic()) return;
@@ -287,6 +320,7 @@ void Transform::scale(float scale)
     dirty(DIRTY_SCALE);
 }
 
+//----------------------------------------------------------------------------
 void Transform::scale(float sx, float sy, float sz)
 {
     if (isStatic()) return;
@@ -297,6 +331,7 @@ void Transform::scale(float sx, float sy, float sz)
     dirty(DIRTY_SCALE);
 }
 
+//----------------------------------------------------------------------------
 void Transform::scale(const Vector3& scale)
 {
     if (isStatic()) return;
@@ -307,6 +342,7 @@ void Transform::scale(const Vector3& scale)
     dirty(DIRTY_SCALE);
 }
 
+//----------------------------------------------------------------------------
 void Transform::scaleX(float sx)
 {
     if (isStatic()) return;
@@ -315,6 +351,7 @@ void Transform::scaleX(float sx)
     dirty(DIRTY_SCALE);
 }
 
+//----------------------------------------------------------------------------
 void Transform::scaleY(float sy)
 {
     if (isStatic()) return;
@@ -323,6 +360,7 @@ void Transform::scaleY(float sy)
     dirty(DIRTY_SCALE);
 }
 
+//----------------------------------------------------------------------------
 void Transform::scaleZ(float sz)
 {
     if (isStatic()) return;
@@ -331,6 +369,7 @@ void Transform::scaleZ(float sz)
     dirty(DIRTY_SCALE);
 }
 
+//----------------------------------------------------------------------------
 void Transform::set(const Vector3& scale, const Quaternion& rotation, const Vector3& translation)
 {
     if (isStatic()) return;
@@ -341,6 +380,7 @@ void Transform::set(const Vector3& scale, const Quaternion& rotation, const Vect
     dirty(DIRTY_TRANSLATION | DIRTY_ROTATION | DIRTY_SCALE);
 }
 
+//----------------------------------------------------------------------------
 void Transform::set(const Vector3& scale, const Matrix& rotation, const Vector3& translation)
 {
     if (isStatic()) return;
@@ -353,6 +393,7 @@ void Transform::set(const Vector3& scale, const Matrix& rotation, const Vector3&
     dirty(DIRTY_TRANSLATION | DIRTY_ROTATION | DIRTY_SCALE);
 }
 
+//----------------------------------------------------------------------------
 void Transform::set(const Vector3& scale, const Vector3& axis, float angle, const Vector3& translation)
 {
     if (isStatic()) return;
@@ -363,6 +404,7 @@ void Transform::set(const Vector3& scale, const Vector3& axis, float angle, cons
     dirty(DIRTY_TRANSLATION | DIRTY_ROTATION | DIRTY_SCALE);
 }
 
+//----------------------------------------------------------------------------
 void Transform::set(const Transform& transform)
 {
     if (isStatic()) return;
@@ -373,6 +415,7 @@ void Transform::set(const Transform& transform)
     dirty(DIRTY_TRANSLATION | DIRTY_ROTATION | DIRTY_SCALE);
 }
 
+//----------------------------------------------------------------------------
 void Transform::setIdentity()
 {
     if (isStatic()) return;
@@ -383,6 +426,7 @@ void Transform::setIdentity()
     dirty(DIRTY_TRANSLATION | DIRTY_ROTATION | DIRTY_SCALE);
 }
 
+//----------------------------------------------------------------------------
 void Transform::setScale(float scale)
 {
     if (isStatic()) return;
@@ -391,6 +435,7 @@ void Transform::setScale(float scale)
     dirty(DIRTY_SCALE);
 }
 
+//----------------------------------------------------------------------------
 void Transform::setScale(float sx, float sy, float sz)
 {
     if (isStatic()) return;
@@ -399,12 +444,14 @@ void Transform::setScale(float sx, float sy, float sz)
     dirty(DIRTY_SCALE);
 }
 
+//----------------------------------------------------------------------------
 void Transform::setScale(const Vector3& scale)
 {
     _scale.set(scale);
     dirty(DIRTY_SCALE);
 }
 
+//----------------------------------------------------------------------------
 void Transform::setScaleX(float sx)
 {
     if (isStatic()) return;
@@ -413,6 +460,7 @@ void Transform::setScaleX(float sx)
     dirty(DIRTY_SCALE);
 }
 
+//----------------------------------------------------------------------------
 void Transform::setScaleY(float sy)
 {
     if (isStatic()) return;
@@ -421,6 +469,7 @@ void Transform::setScaleY(float sy)
     dirty(DIRTY_SCALE);
 }
 
+//----------------------------------------------------------------------------
 void Transform::setScaleZ(float sz)
 {
     if (isStatic()) return;
@@ -429,6 +478,7 @@ void Transform::setScaleZ(float sz)
     dirty(DIRTY_SCALE);
 }
 
+//----------------------------------------------------------------------------
 void Transform::setRotation(const Quaternion& rotation)
 {
     if (isStatic()) return;
@@ -437,6 +487,7 @@ void Transform::setRotation(const Quaternion& rotation)
     dirty(DIRTY_ROTATION);
 }
 
+//----------------------------------------------------------------------------
 void Transform::setRotation(float qx, float qy, float qz, float qw)
 {
     if (isStatic()) return;
@@ -445,6 +496,7 @@ void Transform::setRotation(float qx, float qy, float qz, float qw)
     dirty(DIRTY_ROTATION);
 }
 
+//----------------------------------------------------------------------------
 void Transform::setRotation(const Matrix& rotation)
 {
     if (isStatic()) return;
@@ -455,6 +507,7 @@ void Transform::setRotation(const Matrix& rotation)
     dirty(DIRTY_ROTATION);
 }
 
+//----------------------------------------------------------------------------
 void Transform::setRotation(const Vector3& axis, float angle)
 {
     if (isStatic()) return;
@@ -463,6 +516,7 @@ void Transform::setRotation(const Vector3& axis, float angle)
     dirty(DIRTY_ROTATION);
 }
 
+//----------------------------------------------------------------------------
 void Transform::setTranslation(const Vector3& translation)
 {
     if (isStatic()) return;
@@ -471,6 +525,7 @@ void Transform::setTranslation(const Vector3& translation)
     dirty(DIRTY_TRANSLATION);
 }
 
+//----------------------------------------------------------------------------
 void Transform::setTranslation(float tx, float ty, float tz)
 {
     if (isStatic()) return;
@@ -479,6 +534,7 @@ void Transform::setTranslation(float tx, float ty, float tz)
     dirty(DIRTY_TRANSLATION);
 }
 
+//----------------------------------------------------------------------------
 void Transform::setTranslationX(float tx)
 {
     if (isStatic()) return;
@@ -487,6 +543,7 @@ void Transform::setTranslationX(float tx)
     dirty(DIRTY_TRANSLATION);
 }
 
+//----------------------------------------------------------------------------
 void Transform::setTranslationY(float ty)
 {
     if (isStatic()) return;
@@ -495,6 +552,7 @@ void Transform::setTranslationY(float ty)
     dirty(DIRTY_TRANSLATION);
 }
 
+//----------------------------------------------------------------------------
 void Transform::setTranslationZ(float tz)
 {
     if (isStatic()) return;
@@ -503,6 +561,7 @@ void Transform::setTranslationZ(float tz)
     dirty(DIRTY_TRANSLATION);
 }
 
+//----------------------------------------------------------------------------
 void Transform::translate(float tx, float ty, float tz)
 {
     if (isStatic()) return;
@@ -513,6 +572,7 @@ void Transform::translate(float tx, float ty, float tz)
     dirty(DIRTY_TRANSLATION);
 }
 
+//----------------------------------------------------------------------------
 void Transform::translate(const Vector3& translation)
 {
     if (isStatic()) return;
@@ -523,6 +583,7 @@ void Transform::translate(const Vector3& translation)
     dirty(DIRTY_TRANSLATION);
 }
 
+//----------------------------------------------------------------------------
 void Transform::translateX(float tx)
 {
     if (isStatic()) return;
@@ -531,6 +592,7 @@ void Transform::translateX(float tx)
     dirty(DIRTY_TRANSLATION);
 }
 
+//----------------------------------------------------------------------------
 void Transform::translateY(float ty)
 {
     if (isStatic()) return;
@@ -539,6 +601,7 @@ void Transform::translateY(float ty)
     dirty(DIRTY_TRANSLATION);
 }
 
+//----------------------------------------------------------------------------
 void Transform::translateZ(float tz)
 {
     if (isStatic()) return;
@@ -547,6 +610,7 @@ void Transform::translateZ(float tz)
     dirty(DIRTY_TRANSLATION);
 }
 
+//----------------------------------------------------------------------------
 void Transform::translateLeft(float amount)
 {
     if (isStatic()) return;
@@ -561,6 +625,7 @@ void Transform::translateLeft(float amount)
     translate(left);
 }
 
+//----------------------------------------------------------------------------
 void Transform::translateUp(float amount)
 {
     if (isStatic()) return;
@@ -575,6 +640,7 @@ void Transform::translateUp(float amount)
     translate(up);
 }
 
+//----------------------------------------------------------------------------
 void Transform::translateForward(float amount)
 {
     if (isStatic()) return;
@@ -589,6 +655,7 @@ void Transform::translateForward(float amount)
     translate(forward);
 }
 
+//----------------------------------------------------------------------------
 void Transform::translateSmooth(const Vector3& target, float elapsedTime, float responseTime)
 {
     if (isStatic()) return;
@@ -600,36 +667,42 @@ void Transform::translateSmooth(const Vector3& target, float elapsedTime, float 
     }
 }
 
+//----------------------------------------------------------------------------
 void Transform::transformPoint(Vector3* point)
 {
     getMatrix();
     _matrix.transformPoint(point);
 }
 
+//----------------------------------------------------------------------------
 void Transform::transformPoint(const Vector3& point, Vector3* dst)
 {
     getMatrix();
     _matrix.transformPoint(point, dst);
 }
 
+//----------------------------------------------------------------------------
 void Transform::transformVector(Vector3* normal)
 {
     getMatrix();
     _matrix.transformVector(normal);
 }
 
+//----------------------------------------------------------------------------
 void Transform::transformVector(const Vector3& normal, Vector3* dst)
 {
     getMatrix();
     _matrix.transformVector(normal, dst);
 }
 
+//----------------------------------------------------------------------------
 void Transform::transformVector(float x, float y, float z, float w, Vector3* dst)
 {
     getMatrix();
     _matrix.transformVector(x, y, z, w, dst);
 }
 
+//----------------------------------------------------------------------------
 unsigned int Transform::getAnimationPropertyComponentCount(int propertyId) const
 {
     switch (propertyId)
@@ -659,6 +732,7 @@ unsigned int Transform::getAnimationPropertyComponentCount(int propertyId) const
     }
 }
 
+//----------------------------------------------------------------------------
 void Transform::getAnimationPropertyValue(int propertyId, AnimationValue* value)
 {
     assert(value);
@@ -717,6 +791,7 @@ void Transform::getAnimationPropertyValue(int propertyId, AnimationValue* value)
     }
 }
 
+//----------------------------------------------------------------------------
 void Transform::setAnimationPropertyValue(int propertyId, AnimationValue* value, float blendWeight)
 {
     assert(value);
@@ -821,6 +896,7 @@ void Transform::setAnimationPropertyValue(int propertyId, AnimationValue* value,
     }
 }
 
+//----------------------------------------------------------------------------
 void Transform::dirty(char matrixDirtyBits)
 {
     _matrixDirtyBits |= matrixDirtyBits;
@@ -837,11 +913,13 @@ void Transform::dirty(char matrixDirtyBits)
     }
 }
 
+//----------------------------------------------------------------------------
 bool Transform::isDirty(char matrixDirtyBits) const
 {
     return (_matrixDirtyBits & matrixDirtyBits) == matrixDirtyBits;
 }
 
+//----------------------------------------------------------------------------
 void Transform::suspendTransformChange(Transform* transform)
 {
     assert(transform);
@@ -849,6 +927,7 @@ void Transform::suspendTransformChange(Transform* transform)
     _transformsChanged.push_back(transform);
 }
 
+//----------------------------------------------------------------------------
 void Transform::addListener(Transform::Listener* listener, long cookie)
 {
     assert(listener);
@@ -861,6 +940,7 @@ void Transform::addListener(Transform::Listener* listener, long cookie)
     _listeners->push_back(l);
 }
 
+//----------------------------------------------------------------------------
 void Transform::removeListener(Transform::Listener* listener)
 {
     assert(listener);
@@ -885,6 +965,7 @@ void Transform::removeListener(Transform::Listener* listener)
     }
 }
 
+//----------------------------------------------------------------------------
 void Transform::transformChanged()
 {
     if (_listeners)
@@ -899,6 +980,7 @@ void Transform::transformChanged()
                           dynamic_cast<void*>(this));
 }
 
+//----------------------------------------------------------------------------
 void Transform::cloneInto(Transform* transform, NodeCloneContext& context) const
 {
     assert(transform);
@@ -910,6 +992,7 @@ void Transform::cloneInto(Transform* transform, NodeCloneContext& context) const
     transform->dirty(DIRTY_TRANSLATION | DIRTY_ROTATION | DIRTY_SCALE);
 }
 
+//----------------------------------------------------------------------------
 void Transform::applyAnimationValueRotation(AnimationValue* value, unsigned int index, float blendWeight)
 {
     if (isStatic()) return;

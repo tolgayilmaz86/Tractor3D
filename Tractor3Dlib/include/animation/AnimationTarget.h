@@ -198,7 +198,7 @@ class AnimationTarget
     /**
      * Constructor.
      */
-    AnimationTarget();
+    AnimationTarget() = default;
 
     /**
      * Destructor.
@@ -250,7 +250,7 @@ class AnimationTarget
      * @see TargetType::SCALAR
      * @see TargetType::TRANSFORM
      */
-    TargetType _targetType;
+    TargetType _targetType{ SCALAR };
 
   private:
     /**
@@ -278,7 +278,8 @@ class AnimationTarget
      */
     void convertByValues(float* from, float* by, unsigned int componentCount);
 
-    std::vector<Animation::Channel*>*
-        _animationChannels; // Collection of all animation channels that target the AnimationTarget
+    std::vector<Animation::Channel*>* _animationChannels{
+        nullptr
+    }; // Collection of all animation channels that target the AnimationTarget
 };
 } // namespace tractor

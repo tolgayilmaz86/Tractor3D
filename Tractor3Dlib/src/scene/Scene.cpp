@@ -29,8 +29,10 @@ namespace tractor
 // Global list of active scenes
 static std::vector<Scene*> __sceneList;
 
+//----------------------------------------------------------------------------
 Scene::Scene() { __sceneList.push_back(this); }
 
+//----------------------------------------------------------------------------
 Scene::~Scene()
 {
     // Unbind our active camera from the audio listener
@@ -53,6 +55,7 @@ Scene::~Scene()
     if (itr != __sceneList.end()) __sceneList.erase(itr);
 }
 
+//----------------------------------------------------------------------------
 Scene* Scene::create(const std::string& id)
 {
     Scene* scene = new Scene();
@@ -60,6 +63,7 @@ Scene* Scene::create(const std::string& id)
     return scene;
 }
 
+//----------------------------------------------------------------------------
 Scene* Scene::load(const std::string& filePath)
 {
     if (endsWithIgnoreCase(filePath, ".gpb"))
@@ -76,6 +80,7 @@ Scene* Scene::load(const std::string& filePath)
     return SceneLoader::load(filePath);
 }
 
+//----------------------------------------------------------------------------
 Scene* Scene::getScene(const std::string& id)
 {
     if (!id.empty()) return __sceneList.size() ? __sceneList[0] : nullptr;
@@ -88,6 +93,7 @@ Scene* Scene::getScene(const std::string& id)
     return nullptr;
 }
 
+//----------------------------------------------------------------------------
 Node* Scene::findNode(const std::string& id, bool recursive, bool exactMatch) const
 {
     // Search immediate children first.
@@ -115,6 +121,7 @@ Node* Scene::findNode(const std::string& id, bool recursive, bool exactMatch) co
     return nullptr;
 }
 
+//----------------------------------------------------------------------------
 unsigned int Scene::findNodes(const std::string& id,
                               std::vector<Node*>& nodes,
                               bool recursive,
@@ -145,6 +152,7 @@ unsigned int Scene::findNodes(const std::string& id,
     return count;
 }
 
+//----------------------------------------------------------------------------
 void Scene::visitNode(Node* node, const char* visitMethod)
 {
     ScriptController* sc = Game::getInstance()->getScriptController();
@@ -170,6 +178,7 @@ void Scene::visitNode(Node* node, const char* visitMethod)
     }
 }
 
+//----------------------------------------------------------------------------
 Node* Scene::addNode(const std::string& id)
 {
     Node* node = Node::create(id);
@@ -182,6 +191,7 @@ Node* Scene::addNode(const std::string& id)
     return node;
 }
 
+//----------------------------------------------------------------------------
 void Scene::addNode(Node* node)
 {
     assert(node);
@@ -233,6 +243,7 @@ void Scene::addNode(Node* node)
     }
 }
 
+//----------------------------------------------------------------------------
 void Scene::removeNode(Node* node)
 {
     assert(node);
@@ -256,6 +267,7 @@ void Scene::removeNode(Node* node)
     --_nodeCount;
 }
 
+//----------------------------------------------------------------------------
 void Scene::removeAllNodes()
 {
     while (_lastNode)
@@ -264,6 +276,7 @@ void Scene::removeAllNodes()
     }
 }
 
+//----------------------------------------------------------------------------
 void Scene::setActiveCamera(Camera* camera)
 {
     // Make sure we don't release the camera if the same camera is set twice.
@@ -296,6 +309,7 @@ void Scene::setActiveCamera(Camera* camera)
     }
 }
 
+//----------------------------------------------------------------------------
 void Scene::bindAudioListenerToCamera(bool bind)
 {
     if (_bindAudioListenerToCamera != bind)
@@ -309,11 +323,13 @@ void Scene::bindAudioListenerToCamera(bool bind)
     }
 }
 
+//----------------------------------------------------------------------------
 void Scene::setAmbientColor(float red, float green, float blue)
 {
     _ambientColor.set(red, green, blue);
 }
 
+//----------------------------------------------------------------------------
 void Scene::update(float elapsedTime)
 {
     for (Node* node = _firstNode; node != nullptr; node = node->_nextSibling)
@@ -322,12 +338,14 @@ void Scene::update(float elapsedTime)
     }
 }
 
+//----------------------------------------------------------------------------
 void Scene::reset()
 {
     _nextItr = nullptr;
     _nextReset = true;
 }
 
+//----------------------------------------------------------------------------
 Node* Scene::getNext()
 {
     if (_nextReset)
@@ -360,6 +378,7 @@ Node* Scene::getNext()
     return _nextItr;
 }
 
+//----------------------------------------------------------------------------
 Node* Scene::findNextVisibleSibling(Node* node)
 {
     while (node != nullptr && !isNodeVisible(node))
@@ -369,6 +388,7 @@ Node* Scene::findNextVisibleSibling(Node* node)
     return node;
 }
 
+//----------------------------------------------------------------------------
 bool Scene::isNodeVisible(Node* node)
 {
     if (!node->isEnabled()) return false;

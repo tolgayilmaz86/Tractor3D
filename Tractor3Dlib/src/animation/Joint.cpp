@@ -21,10 +21,13 @@
 namespace tractor
 {
 
-Joint::Joint(const std::string& id) : Node(id), _jointMatrixDirty(true) {}
+//----------------------------------------------------------------------------
+Joint::Joint(const std::string& id) : Node(id) {}
 
+//----------------------------------------------------------------------------
 Joint* Joint::create(const std::string& id) { return new Joint(id); }
 
+//----------------------------------------------------------------------------
 Node* Joint::cloneSingleNode(NodeCloneContext& context) const
 {
     Joint* copy = Joint::create(getId());
@@ -35,12 +38,14 @@ Node* Joint::cloneSingleNode(NodeCloneContext& context) const
     return copy;
 }
 
+//----------------------------------------------------------------------------
 const std::string& Joint::getTypeName() const
 {
     static const std::string TYPE_NAME = "Joint";
     return TYPE_NAME;
 }
 
+//----------------------------------------------------------------------------
 Scene* Joint::getScene() const
 {
     // Overrides Node::getScene() to search the node our skins.
@@ -61,12 +66,14 @@ Scene* Joint::getScene() const
     return Node::getScene();
 }
 
+//----------------------------------------------------------------------------
 void Joint::transformChanged()
 {
     Node::transformChanged();
     _jointMatrixDirty = true;
 }
 
+//----------------------------------------------------------------------------
 void Joint::updateJointMatrix(const Matrix& bindShape, Vector4* matrixPalette)
 {
     // Note: If more than one MeshSkin influences this Joint, we need to skip
@@ -88,12 +95,14 @@ void Joint::updateJointMatrix(const Matrix& bindShape, Vector4* matrixPalette)
     }
 }
 
+//----------------------------------------------------------------------------
 void Joint::setInverseBindPose(const Matrix& m)
 {
     _bindPose = m;
     _jointMatrixDirty = true;
 }
 
+//----------------------------------------------------------------------------
 void Joint::addSkin(MeshSkin* skin)
 {
     if (!_skin.skin)
@@ -114,6 +123,7 @@ void Joint::addSkin(MeshSkin* skin)
     }
 }
 
+//----------------------------------------------------------------------------
 void Joint::removeSkin(MeshSkin* skin)
 {
     if (_skin.skin == skin)
@@ -150,8 +160,7 @@ void Joint::removeSkin(MeshSkin* skin)
     }
 }
 
-Joint::SkinReference::SkinReference() : skin(nullptr), next(nullptr) {}
-
+//----------------------------------------------------------------------------
 Joint::SkinReference::~SkinReference() { SAFE_DELETE(next); }
 
 } // namespace tractor

@@ -22,6 +22,7 @@
 namespace tractor
 {
 
+//----------------------------------------------------------------------------
 void Platform::touchEventInternal(Touch::TouchEvent evt,
                                   int x,
                                   int y,
@@ -34,6 +35,7 @@ void Platform::touchEventInternal(Touch::TouchEvent evt,
     }
 }
 
+//----------------------------------------------------------------------------
 void Platform::keyEventInternal(Keyboard::KeyEvent evt, int key)
 {
     if (!Form::keyEventInternal(evt, key))
@@ -42,6 +44,7 @@ void Platform::keyEventInternal(Keyboard::KeyEvent evt, int key)
     }
 }
 
+//----------------------------------------------------------------------------
 bool Platform::mouseEventInternal(Mouse::MouseEvent evt, int x, int y, int wheelDelta)
 {
     if (Form::mouseEventInternal(evt, x, y, wheelDelta)) return true;
@@ -49,42 +52,50 @@ bool Platform::mouseEventInternal(Mouse::MouseEvent evt, int x, int y, int wheel
     return Game::getInstance()->mouseEventInternal(evt, x, y, wheelDelta);
 }
 
+//----------------------------------------------------------------------------
 void Platform::gestureSwipeEventInternal(int x, int y, int direction)
 {
     Game::getInstance()->gestureSwipeEventInternal(x, y, direction);
 }
 
+//----------------------------------------------------------------------------
 void Platform::gesturePinchEventInternal(int x, int y, float scale)
 {
     Game::getInstance()->gesturePinchEventInternal(x, y, scale);
 }
 
+//----------------------------------------------------------------------------
 void Platform::gestureTapEventInternal(int x, int y)
 {
     Game::getInstance()->gestureTapEventInternal(x, y);
 }
 
+//----------------------------------------------------------------------------
 void Platform::gestureLongTapEventInternal(int x, int y, float duration)
 {
     Game::getInstance()->gestureLongTapEventInternal(x, y, duration);
 }
 
+//----------------------------------------------------------------------------
 void Platform::gestureDragEventInternal(int x, int y)
 {
     Game::getInstance()->gestureDragEventInternal(x, y);
 }
 
+//----------------------------------------------------------------------------
 void Platform::gestureDropEventInternal(int x, int y)
 {
     Game::getInstance()->gestureDropEventInternal(x, y);
 }
 
+//----------------------------------------------------------------------------
 void Platform::resizeEventInternal(unsigned int width, unsigned int height)
 {
     Game::getInstance()->resizeEventInternal(width, height);
     Form::resizeEventInternal(width, height);
 }
 
+//----------------------------------------------------------------------------
 void Platform::gamepadEventConnectedInternal(GamepadHandle handle,
                                              unsigned int buttonCount,
                                              unsigned int joystickCount,
@@ -94,8 +105,10 @@ void Platform::gamepadEventConnectedInternal(GamepadHandle handle,
     Gamepad::add(handle, buttonCount, joystickCount, triggerCount, name);
 }
 
+//----------------------------------------------------------------------------
 void Platform::gamepadEventDisconnectedInternal(GamepadHandle handle) { Gamepad::remove(handle); }
 
+//----------------------------------------------------------------------------
 void Platform::gamepadButtonPressedEventInternal(GamepadHandle handle, Gamepad::ButtonMapping mapping)
 {
     Gamepad* gamepad = Gamepad::getGamepad(handle);
@@ -107,6 +120,7 @@ void Platform::gamepadButtonPressedEventInternal(GamepadHandle handle, Gamepad::
     }
 }
 
+//----------------------------------------------------------------------------
 void Platform::gamepadButtonReleasedEventInternal(GamepadHandle handle, Gamepad::ButtonMapping mapping)
 {
     Gamepad* gamepad = Gamepad::getGamepad(handle);
@@ -118,6 +132,7 @@ void Platform::gamepadButtonReleasedEventInternal(GamepadHandle handle, Gamepad:
     }
 }
 
+//----------------------------------------------------------------------------
 void Platform::gamepadTriggerChangedEventInternal(GamepadHandle handle, unsigned int index, float value)
 {
     Gamepad* gamepad = Gamepad::getGamepad(handle);
@@ -128,6 +143,7 @@ void Platform::gamepadTriggerChangedEventInternal(GamepadHandle handle, unsigned
     }
 }
 
+//----------------------------------------------------------------------------
 void Platform::gamepadJoystickChangedEventInternal(GamepadHandle handle,
                                                    unsigned int index,
                                                    float x,

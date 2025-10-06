@@ -319,7 +319,7 @@ class Texture : public Ref
     /**
      * Constructor.
      */
-    Texture();
+    Texture() = default;
 
     /**
      * Copy constructor.
@@ -363,20 +363,20 @@ class Texture : public Ref
     static GLenum getFormatTexel(Format format);
     static size_t getFormatBPP(Format format);
 
-    std::string _path;
+    std::string _path{};
     TextureHandle _handle;
-    Format _format;
-    Type _type;
-    unsigned int _width;
-    unsigned int _height;
-    bool _mipmapped;
-    bool _cached;
-    bool _compressed;
-    Wrap _wrapS;
-    Wrap _wrapT;
-    Wrap _wrapR;
-    Filter _minFilter;
-    Filter _magFilter;
+    Format _format{ UNKNOWN };
+    Type _type{ (Texture::Type)0 };
+    unsigned int _width{ 0 };
+    unsigned int _height{ 0 };
+    bool _mipmapped{ false };
+    bool _cached{ false };
+    bool _compressed{ false };
+    Wrap _wrapS{ Texture::REPEAT };
+    Wrap _wrapT{ Texture::REPEAT };
+    Wrap _wrapR{ Texture::REPEAT };
+    Filter _minFilter{ Texture::NEAREST_MIPMAP_LINEAR };
+    Filter _magFilter{ Texture::LINEAR };
 
     GLint _internalFormat;
     GLenum _texelType;

@@ -18,32 +18,36 @@
 namespace tractor
 {
 
-Quaternion::Quaternion() : x(0.0f), y(0.0f), z(0.0f), w(1.0f) {}
-
+//----------------------------------------------------------------------------
 Quaternion::Quaternion(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
 
+//----------------------------------------------------------------------------
 Quaternion::Quaternion(float* array) { set(array); }
 
+//----------------------------------------------------------------------------
 Quaternion::Quaternion(const Matrix& m) { set(m); }
 
+//----------------------------------------------------------------------------
 Quaternion::Quaternion(const Vector3& axis, float angle) { set(axis, angle); }
 
+//----------------------------------------------------------------------------
 Quaternion::Quaternion(const Quaternion& copy) { set(copy); }
 
-Quaternion::~Quaternion() {}
-
+//----------------------------------------------------------------------------
 const Quaternion& Quaternion::identity()
 {
     static Quaternion value(0.0f, 0.0f, 0.0f, 1.0f);
     return value;
 }
 
+//----------------------------------------------------------------------------
 const Quaternion& Quaternion::zero()
 {
     static Quaternion value(0.0f, 0.0f, 0.0f, 0.0f);
     return value;
 }
 
+//----------------------------------------------------------------------------
 void Quaternion::createFromEuler(float yaw, float pitch, float roll, Quaternion* dst)
 {
     assert(dst);
@@ -65,8 +69,10 @@ void Quaternion::createFromEuler(float yaw, float pitch, float roll, Quaternion*
     dst->z = cosp * cosy * sinr - sinp * siny * cosr;
 }
 
+//----------------------------------------------------------------------------
 void Quaternion::createFromRotationMatrix(const Matrix& m, Quaternion* dst) { m.getRotation(dst); }
 
+//----------------------------------------------------------------------------
 void Quaternion::createFromAxisAngle(const Vector3& axis, float angle, Quaternion* dst)
 {
     assert(dst);
@@ -82,7 +88,8 @@ void Quaternion::createFromAxisAngle(const Vector3& axis, float angle, Quaternio
     dst->w = cosf(halfAngle);
 }
 
-void Quaternion::computeEuler(float* yaw, float* pitch, float* roll)
+//----------------------------------------------------------------------------
+void Quaternion::computeEuler(float* yaw, float* pitch, float* roll) const
 {
     assert(yaw);
     assert(pitch);
@@ -93,8 +100,10 @@ void Quaternion::computeEuler(float* yaw, float* pitch, float* roll)
     *roll = std::atan2(2 * (w * z + x * y), 1 - 2 * (y * y + z * z));
 }
 
+//----------------------------------------------------------------------------
 void Quaternion::conjugate() { conjugate(this); }
 
+//----------------------------------------------------------------------------
 void Quaternion::conjugate(Quaternion* dst) const
 {
     assert(dst);
@@ -105,8 +114,10 @@ void Quaternion::conjugate(Quaternion* dst) const
     dst->w = w;
 }
 
+//----------------------------------------------------------------------------
 bool Quaternion::inverse() { return inverse(this); }
 
+//----------------------------------------------------------------------------
 bool Quaternion::inverse(Quaternion* dst) const
 {
     assert(dst);
@@ -134,8 +145,10 @@ bool Quaternion::inverse(Quaternion* dst) const
     return true;
 }
 
+//----------------------------------------------------------------------------
 void Quaternion::multiply(const Quaternion& q) { multiply(*this, q, this); }
 
+//----------------------------------------------------------------------------
 void Quaternion::multiply(const Quaternion& q1, const Quaternion& q2, Quaternion* dst)
 {
     assert(dst);
@@ -151,8 +164,10 @@ void Quaternion::multiply(const Quaternion& q1, const Quaternion& q2, Quaternion
     dst->w = w;
 }
 
+//----------------------------------------------------------------------------
 void Quaternion::normalize() { normalize(this); }
 
+//----------------------------------------------------------------------------
 void Quaternion::normalize(Quaternion* dst) const
 {
     assert(dst);
@@ -181,6 +196,7 @@ void Quaternion::normalize(Quaternion* dst) const
     dst->w *= n;
 }
 
+//----------------------------------------------------------------------------
 void Quaternion::rotatePoint(const Vector3& point, Vector3* dst) const
 {
     Quaternion vecQuat;
@@ -199,6 +215,7 @@ void Quaternion::rotatePoint(const Vector3& point, Vector3* dst) const
     dst->set(resQuat.x, resQuat.y, resQuat.z);
 }
 
+//----------------------------------------------------------------------------
 void Quaternion::set(float x, float y, float z, float w)
 {
     this->x = x;
@@ -207,6 +224,7 @@ void Quaternion::set(float x, float y, float z, float w)
     this->w = w;
 }
 
+//----------------------------------------------------------------------------
 void Quaternion::set(float* array)
 {
     assert(array);
@@ -217,13 +235,16 @@ void Quaternion::set(float* array)
     w = array[3];
 }
 
+//----------------------------------------------------------------------------
 void Quaternion::set(const Matrix& m) { Quaternion::createFromRotationMatrix(m, this); }
 
+//----------------------------------------------------------------------------
 void Quaternion::set(const Vector3& axis, float angle)
 {
     Quaternion::createFromAxisAngle(axis, angle, this);
 }
 
+//----------------------------------------------------------------------------
 void Quaternion::set(const Quaternion& q)
 {
     this->x = q.x;
@@ -232,6 +253,7 @@ void Quaternion::set(const Quaternion& q)
     this->w = q.w;
 }
 
+//----------------------------------------------------------------------------
 void Quaternion::setIdentity()
 {
     x = 0.0f;
@@ -240,6 +262,7 @@ void Quaternion::setIdentity()
     w = 1.0f;
 }
 
+//----------------------------------------------------------------------------
 float Quaternion::toAxisAngle(Vector3* axis) const
 {
     Quaternion q(x, y, z, w);
@@ -254,6 +277,7 @@ float Quaternion::toAxisAngle(Vector3* axis) const
     return (2.0f * acos(q.w));
 }
 
+//----------------------------------------------------------------------------
 void Quaternion::lerp(const Quaternion& q1, const Quaternion& q2, float t, Quaternion* dst)
 {
     assert(dst);
@@ -278,12 +302,14 @@ void Quaternion::lerp(const Quaternion& q1, const Quaternion& q2, float t, Quate
     dst->w = t1 * q1.w + t * q2.w;
 }
 
+//----------------------------------------------------------------------------
 void Quaternion::slerp(const Quaternion& q1, const Quaternion& q2, float t, Quaternion* dst)
 {
     assert(dst);
     slerp(q1.x, q1.y, q1.z, q1.w, q2.x, q2.y, q2.z, q2.w, t, &dst->x, &dst->y, &dst->z, &dst->w);
 }
 
+//----------------------------------------------------------------------------
 void Quaternion::squad(const Quaternion& q1,
                        const Quaternion& q2,
                        const Quaternion& s1,
@@ -301,6 +327,7 @@ void Quaternion::squad(const Quaternion& q1,
     slerpForSquad(dstQ, dstS, 2.0f * t * (1.0f - t), dst);
 }
 
+//----------------------------------------------------------------------------
 void Quaternion::slerp(float q1x,
                        float q1y,
                        float q1z,
@@ -412,6 +439,7 @@ void Quaternion::slerp(float q1x,
     *dstz = z * f1;
 }
 
+//----------------------------------------------------------------------------
 void Quaternion::slerpForSquad(const Quaternion& q1, const Quaternion& q2, float t, Quaternion* dst)
 {
     assert(dst);

@@ -63,7 +63,7 @@ class Label : public Control
      *
      * @return The text displayed by this label.
      */
-    const std::string& getText();
+    const std::string& getText() const noexcept { return _text; }
 
     /**
      * Add a listener to be notified of specific events affecting
@@ -81,12 +81,12 @@ class Label : public Control
     /**
      * Constructor.
      */
-    Label();
+    Label() = default;
 
     /**
      * Destructor.
      */
-    virtual ~Label();
+    virtual ~Label() = default;
 
     /**
      * Create a new label control.

@@ -22,6 +22,7 @@
 namespace tractor
 {
 
+//----------------------------------------------------------------------------
 AIStateMachine::AIStateMachine(AIAgent* agent) : _agent(agent)
 {
     assert(agent);
@@ -32,6 +33,7 @@ AIStateMachine::AIStateMachine(AIAgent* agent) : _agent(agent)
     _currentState = AIState::_empty;
 }
 
+//----------------------------------------------------------------------------
 AIStateMachine::~AIStateMachine()
 {
     // Release all states
@@ -53,17 +55,20 @@ AIStateMachine::~AIStateMachine()
     }
 }
 
+//----------------------------------------------------------------------------
 AIState* AIStateMachine::addState(const std::string& id)
 {
     return _states.emplace_back(AIState::create(id));
 }
 
+//----------------------------------------------------------------------------
 void AIStateMachine::addState(AIState* state)
 {
     state->addRef();
     _states.push_back(state);
 }
 
+//----------------------------------------------------------------------------
 void AIStateMachine::removeState(AIState* state)
 {
     std::list<AIState*>::iterator itr = std::find(_states.begin(), _states.end(), state);
@@ -74,6 +79,7 @@ void AIStateMachine::removeState(AIState* state)
     }
 }
 
+//----------------------------------------------------------------------------
 AIState* AIStateMachine::getState(const std::string& id) const noexcept
 {
     for (AIState* state : _states)
@@ -85,6 +91,7 @@ AIState* AIStateMachine::getState(const std::string& id) const noexcept
     return nullptr;
 }
 
+//----------------------------------------------------------------------------
 bool AIStateMachine::hasState(AIState* state) const
 {
     assert(state);
@@ -92,6 +99,7 @@ bool AIStateMachine::hasState(AIState* state) const
     return (std::find(_states.begin(), _states.end(), state) != _states.end());
 }
 
+//----------------------------------------------------------------------------
 AIState* AIStateMachine::setState(const std::string& id)
 {
     AIState* state = getState(id);
@@ -99,6 +107,7 @@ AIState* AIStateMachine::setState(const std::string& id)
     return state;
 }
 
+//----------------------------------------------------------------------------
 bool AIStateMachine::setState(AIState* state)
 {
     if (hasState(state))
@@ -110,6 +119,7 @@ bool AIStateMachine::setState(AIState* state)
     return false;
 }
 
+//----------------------------------------------------------------------------
 void AIStateMachine::sendChangeStateMessage(AIState* newState)
 {
     AIMessage* message = AIMessage::create(0, _agent->getId(), _agent->getId(), 1);
@@ -118,6 +128,7 @@ void AIStateMachine::sendChangeStateMessage(AIState* newState)
     Game::getInstance()->getAIController()->sendMessage(message);
 }
 
+//----------------------------------------------------------------------------
 void AIStateMachine::setStateInternal(AIState* state)
 {
     assert(hasState(state));
@@ -131,7 +142,5 @@ void AIStateMachine::setStateInternal(AIState* state)
     // Fire the enter event for the new state
     _currentState->enter(this);
 }
-
-void AIStateMachine::update(float elapsedTime) { _currentState->update(this, elapsedTime); }
 
 } // namespace tractor

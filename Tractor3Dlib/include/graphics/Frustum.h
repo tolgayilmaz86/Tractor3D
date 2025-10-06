@@ -43,7 +43,7 @@ class Frustum
     /**
      * Constructs the default frustum (corresponds to the identity matrix).
      */
-    Frustum();
+    Frustum() = default;
 
     /**
      * Constructs a new frustum from the specified view projection matrix.
@@ -62,49 +62,49 @@ class Frustum
     /**
      * Destructor.
      */
-    ~Frustum();
+    ~Frustum() = default;
 
     /**
      * Gets the near plane of the frustum.
      *
      * @return near The near plane.
      */
-    const Plane& getNear() const noexcept;
+    const Plane& getNear() const noexcept { return _near; }
 
     /**
      * Gets the far plane of the frustum.
      *
      * @return far The far plane.
      */
-    const Plane& getFar() const noexcept;
+    const Plane& getFar() const noexcept { return _far; }
 
     /**
      * Gets the left plane of the frustum.
      *
      * @return left The left plane.
      */
-    const Plane& getLeft() const noexcept;
+    const Plane& getLeft() const noexcept { return _left; }
 
     /**
      * Gets the right plane of the frustum.
      *
      * @return right The right plane.
      */
-    const Plane& getRight() const noexcept;
+    const Plane& getRight() const noexcept { return _right; }
 
     /**
      * Gets the bottom plane of the frustum.
      *
      * @return bottom The bottom plane.
      */
-    const Plane& getBottom() const noexcept;
+    const Plane& getBottom() const noexcept { return _bottom; }
 
     /**
      * Gets the top plane of the frustum.
      *
      * @return top The top plane.
      */
-    const Plane& getTop() const noexcept;
+    const Plane& getTop() const noexcept { return _top; }
 
     /**
      * Gets the projection matrix corresponding to the frustum in the specified matrix.
@@ -151,7 +151,7 @@ class Frustum
      *
      * @return true if the specified point intersects this frustum; false otherwise.
      */
-    bool intersects(const Vector3& point) const;
+    bool intersects(const Vector3& point) const noexcept;
 
     /**
      * Tests whether this frustum intersects the specified point.
@@ -162,7 +162,7 @@ class Frustum
      *
      * @return true if the specified point intersects this frustum; false otherwise.
      */
-    bool intersects(float x, float y, float z) const;
+    bool intersects(float x, float y, float z) const noexcept;
 
     /**
      * Tests whether this frustum intersects the specified bounding sphere.
@@ -171,7 +171,7 @@ class Frustum
      *
      * @return true if the specified bounding sphere intersects this frustum; false otherwise.
      */
-    bool intersects(const BoundingSphere& sphere) const;
+    bool intersects(const BoundingSphere& sphere) const noexcept;
 
     /**
      * Tests whether this frustum intersects the specified bounding box.
@@ -180,7 +180,7 @@ class Frustum
      *
      * @return true if the specified bounding box intersects this frustum; false otherwise.
      */
-    bool intersects(const BoundingBox& box) const;
+    bool intersects(const BoundingBox& box) const noexcept;
 
     /**
      * Tests whether this frustum intersects the specified plane.
@@ -191,7 +191,7 @@ class Frustum
      *  this plane, Plane::INTERSECTS_FRONT if it is in the positive half-space of this plane,
      *  and Plane::INTERSECTS_INTERSECTING if it intersects this plane.
      */
-    float intersects(const Plane& plane) const;
+    float intersects(const Plane& plane) const noexcept;
 
     /**
      * Tests whether this frustum intersects the specified ray.
@@ -202,7 +202,7 @@ class Frustum
      *  this plane, Plane::INTERSECTS_FRONT if it is in the positive half-space of this plane,
      *  and Plane::INTERSECTS_INTERSECTING if it intersects this plane.
      */
-    float intersects(const Ray& ray) const;
+    float intersects(const Ray& ray) const noexcept;
 
     /**
      * Sets this frustum to the specified frustum.
@@ -230,7 +230,7 @@ class Frustum
     Plane _top;
     Plane _left;
     Plane _right;
-    Matrix _matrix;
+    Matrix _matrix{ Matrix::identity() };
 };
 
 } // namespace tractor

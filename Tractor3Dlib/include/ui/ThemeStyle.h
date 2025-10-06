@@ -77,11 +77,11 @@ class Theme::Style
       private:
         static const int ANIMATE_OPACITY = 1;
 
-        Overlay();
+        Overlay() = default;
 
         Overlay(const Overlay& copy);
 
-        ~Overlay();
+        virtual ~Overlay();
 
         /**
          * Hidden copy assignment operator.
@@ -90,11 +90,11 @@ class Theme::Style
 
         static Overlay* create();
 
-        OverlayType getType();
+        OverlayType getType() const noexcept { return OVERLAY_NORMAL; }
 
-        float getOpacity() const;
+        float getOpacity() const noexcept { return _opacity; }
 
-        void setOpacity(float opacity);
+        void setOpacity(float opacity) noexcept { _opacity = opacity; }
 
         void setBorder(float top, float bottom, float left, float right);
 
@@ -110,25 +110,25 @@ class Theme::Style
 
         const Theme::UVs& getSkinUVs(Theme::Skin::SkinArea area) const;
 
-        Font* getFont() const;
+        Font* getFont() const noexcept { return _font; }
 
         void setFont(Font* font);
 
-        unsigned int getFontSize() const;
+        unsigned int getFontSize() const noexcept { return _fontSize; }
 
-        void setFontSize(unsigned int fontSize);
+        void setFontSize(unsigned int fontSize) noexcept { _fontSize = fontSize; }
 
-        Font::Justify getTextAlignment() const;
+        Font::Justify getTextAlignment() const noexcept { return _alignment; }
 
-        void setTextAlignment(Font::Justify alignment);
+        void setTextAlignment(Font::Justify alignment) { _alignment = alignment; }
 
-        bool getTextRightToLeft() const;
+        bool getTextRightToLeft() const noexcept { return _textRightToLeft; }
 
-        void setTextRightToLeft(bool rightToLeft);
+        void setTextRightToLeft(bool rightToLeft) noexcept { _textRightToLeft = rightToLeft; }
 
-        const Vector4& getTextColor() const;
+        const Vector4& getTextColor() const noexcept { return _textColor; }
 
-        void setTextColor(const Vector4& color);
+        void setTextColor(const Vector4& color) noexcept { _textColor = color; }
 
         const Rectangle& getImageRegion(const std::string& id) const;
 
@@ -167,25 +167,26 @@ class Theme::Style
 
         void setSkin(Theme::Skin* Skin);
 
-        Theme::Skin* getSkin() const;
+        Theme::Skin* getSkin() const noexcept { return _skin; }
 
         void setCursor(Theme::ThemeImage* cursor);
 
-        Theme::ThemeImage* getCursor() const;
+        Theme::ThemeImage* getCursor() const noexcept { return _cursor; }
 
         void setImageList(Theme::ImageList* imageList);
 
-        Theme::ImageList* getImageList() const;
+        Theme::ImageList* getImageList() const noexcept { return _imageList; }
 
-        Skin* _skin;
-        Theme::ThemeImage* _cursor;
-        Theme::ImageList* _imageList;
-        Font* _font;
-        unsigned int _fontSize;
-        Font::Justify _alignment;
-        bool _textRightToLeft;
-        Vector4 _textColor;
-        float _opacity;
+        unsigned int _fontSize{ 0 };
+        bool _textRightToLeft{ false };
+        Font::Justify _alignment{ Font::ALIGN_TOP_LEFT };
+        float _opacity{ 1.0f };
+        Vector4 _textColor{ Vector4::one() };
+
+        Skin* _skin{ nullptr };
+        Theme::ThemeImage* _cursor{ nullptr };
+        Theme::ImageList* _imageList{ nullptr };
+        Font* _font{ nullptr };
     };
 
     /**

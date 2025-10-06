@@ -18,16 +18,19 @@
 namespace tractor
 {
 
-Vector4::Vector4() : x(0.0f), y(0.0f), z(0.0f), w(0.0f) {}
-
+//-----------------------------------------------------------------------------
 Vector4::Vector4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
 
+//-----------------------------------------------------------------------------
 Vector4::Vector4(const float* src) { set(src); }
 
+//-----------------------------------------------------------------------------
 Vector4::Vector4(const Vector4& p1, const Vector4& p2) { set(p1, p2); }
 
+//-----------------------------------------------------------------------------
 Vector4::Vector4(const Vector4& copy) { set(copy); }
 
+//-----------------------------------------------------------------------------
 Vector4 Vector4::fromColor(unsigned int color)
 {
     float components[4];
@@ -43,46 +46,49 @@ Vector4 Vector4::fromColor(unsigned int color)
     return value;
 }
 
+//-----------------------------------------------------------------------------
 const Vector4& Vector4::zero()
 {
     static Vector4 value(0.0f, 0.0f, 0.0f, 0.0f);
     return value;
 }
 
+//-----------------------------------------------------------------------------
 const Vector4& Vector4::one()
 {
     static Vector4 value(1.0f, 1.0f, 1.0f, 1.0f);
     return value;
 }
 
+//-----------------------------------------------------------------------------
 const Vector4& Vector4::unitX()
 {
     static Vector4 value(1.0f, 0.0f, 0.0f, 0.0f);
     return value;
 }
 
+//-----------------------------------------------------------------------------
 const Vector4& Vector4::unitY()
 {
     static Vector4 value(0.0f, 1.0f, 0.0f, 0.0f);
     return value;
 }
 
+//-----------------------------------------------------------------------------
 const Vector4& Vector4::unitZ()
 {
     static Vector4 value(0.0f, 0.0f, 1.0f, 0.0f);
     return value;
 }
 
+//-----------------------------------------------------------------------------
 const Vector4& Vector4::unitW()
 {
     static Vector4 value(0.0f, 0.0f, 0.0f, 1.0f);
     return value;
 }
 
-bool Vector4::isZero() const noexcept { return x == 0.0f && y == 0.0f && z == 0.0f && w == 0.0f; }
-
-bool Vector4::isOne() const noexcept { return x == 1.0f && y == 1.0f && z == 1.0f && w == 1.0f; }
-
+//-----------------------------------------------------------------------------
 float Vector4::angle(const Vector4& v1, const Vector4& v2)
 {
     float dx = v1.w * v2.x - v1.x * v2.w - v1.y * v2.z + v1.z * v2.y;
@@ -92,6 +98,7 @@ float Vector4::angle(const Vector4& v1, const Vector4& v2)
     return atan2f(sqrt(dx * dx + dy * dy + dz * dz) + MATH_FLOAT_SMALL, dot(v1, v2));
 }
 
+//-----------------------------------------------------------------------------
 void Vector4::add(const Vector4& v)
 {
     x += v.x;
@@ -100,6 +107,7 @@ void Vector4::add(const Vector4& v)
     w += v.w;
 }
 
+//-----------------------------------------------------------------------------
 void Vector4::add(const Vector4& v1, const Vector4& v2, Vector4* dst)
 {
     assert(dst);
@@ -110,6 +118,7 @@ void Vector4::add(const Vector4& v1, const Vector4& v2, Vector4* dst)
     dst->w = v1.w + v2.w;
 }
 
+//-----------------------------------------------------------------------------
 void Vector4::clamp(const Vector4& min, const Vector4& max)
 {
     assert(!(min.x > max.x || min.y > max.y || min.z > max.z || min.w > max.w));
@@ -121,6 +130,7 @@ void Vector4::clamp(const Vector4& min, const Vector4& max)
     w = std::clamp(w, min.w, max.w);
 }
 
+//-----------------------------------------------------------------------------
 void Vector4::clamp(const Vector4& v, const Vector4& min, const Vector4& max, Vector4* dst)
 {
     assert(dst);
@@ -133,6 +143,7 @@ void Vector4::clamp(const Vector4& v, const Vector4& min, const Vector4& max, Ve
     dst->w = std::clamp(v.w, min.w, max.w);
 }
 
+//-----------------------------------------------------------------------------
 float Vector4::distance(const Vector4& v) const
 {
     float dx = v.x - x;
@@ -143,6 +154,7 @@ float Vector4::distance(const Vector4& v) const
     return sqrt(dx * dx + dy * dy + dz * dz + dw * dw);
 }
 
+//-----------------------------------------------------------------------------
 float Vector4::distanceSquared(const Vector4& v) const
 {
     float dx = v.x - x;
@@ -153,17 +165,7 @@ float Vector4::distanceSquared(const Vector4& v) const
     return (dx * dx + dy * dy + dz * dz + dw * dw);
 }
 
-float Vector4::dot(const Vector4& v) const { return (x * v.x + y * v.y + z * v.z + w * v.w); }
-
-float Vector4::dot(const Vector4& v1, const Vector4& v2)
-{
-    return (v1.x * v2.x + v1.y * v2.y + v1.z * v2.z + v1.w * v2.w);
-}
-
-float Vector4::length() const noexcept { return sqrt(x * x + y * y + z * z + w * w); }
-
-float Vector4::lengthSquared() const noexcept { return (x * x + y * y + z * z + w * w); }
-
+//-----------------------------------------------------------------------------
 void Vector4::negate()
 {
     x = -x;
@@ -172,12 +174,14 @@ void Vector4::negate()
     w = -w;
 }
 
+//-----------------------------------------------------------------------------
 Vector4& Vector4::normalize()
 {
     normalize(this);
     return *this;
 }
 
+//-----------------------------------------------------------------------------
 void Vector4::normalize(Vector4* dst) const
 {
     assert(dst);
@@ -205,6 +209,7 @@ void Vector4::normalize(Vector4* dst) const
     dst->w *= n;
 }
 
+//-----------------------------------------------------------------------------
 void Vector4::scale(float scalar)
 {
     x *= scalar;
@@ -213,6 +218,7 @@ void Vector4::scale(float scalar)
     w *= scalar;
 }
 
+//-----------------------------------------------------------------------------
 void Vector4::set(float x, float y, float z, float w)
 {
     this->x = x;
@@ -221,6 +227,7 @@ void Vector4::set(float x, float y, float z, float w)
     this->w = w;
 }
 
+//-----------------------------------------------------------------------------
 void Vector4::set(const float* array)
 {
     assert(array);
@@ -231,6 +238,7 @@ void Vector4::set(const float* array)
     w = array[3];
 }
 
+//-----------------------------------------------------------------------------
 void Vector4::set(const Vector4& v)
 {
     this->x = v.x;
@@ -239,6 +247,7 @@ void Vector4::set(const Vector4& v)
     this->w = v.w;
 }
 
+//-----------------------------------------------------------------------------
 void Vector4::set(const Vector4& p1, const Vector4& p2)
 {
     x = p2.x - p1.x;
@@ -247,6 +256,7 @@ void Vector4::set(const Vector4& p1, const Vector4& p2)
     w = p2.w - p1.w;
 }
 
+//-----------------------------------------------------------------------------
 void Vector4::subtract(const Vector4& v)
 {
     x -= v.x;
@@ -255,6 +265,7 @@ void Vector4::subtract(const Vector4& v)
     w -= v.w;
 }
 
+//-----------------------------------------------------------------------------
 void Vector4::subtract(const Vector4& v1, const Vector4& v2, Vector4* dst)
 {
     assert(dst);

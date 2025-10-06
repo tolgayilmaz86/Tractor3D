@@ -12,9 +12,7 @@
  * limitations under the License.
  */
 
-#include "pch.h"
-
-// Framework
+ // Framework
 #include "framework/FileSystem.h"
 #include "framework/FileStream.h"
 #include "framework/Game.h"

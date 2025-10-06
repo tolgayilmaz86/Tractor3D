@@ -24,12 +24,14 @@
 namespace tractor
 {
 
+//----------------------------------------------------------------------------
 ParticleEmitter::ParticleEmitter(unsigned int particleCountMax)
     : Drawable(), _particleCountMax(particleCountMax)
 {
     _particles = new Particle[particleCountMax];
 }
 
+//----------------------------------------------------------------------------
 ParticleEmitter::~ParticleEmitter()
 {
     SAFE_DELETE(_spriteBatch);
@@ -37,6 +39,7 @@ ParticleEmitter::~ParticleEmitter()
     SAFE_DELETE_ARRAY(_spriteTextureCoords);
 }
 
+//----------------------------------------------------------------------------
 ParticleEmitter* ParticleEmitter::create(const std::string& textureFile,
                                          BlendMode blendMode,
                                          unsigned int particleCountMax)
@@ -56,6 +59,7 @@ ParticleEmitter* ParticleEmitter::create(const std::string& textureFile,
     return emitter;
 }
 
+//----------------------------------------------------------------------------
 ParticleEmitter* ParticleEmitter::create(Texture* texture,
                                          BlendMode blendMode,
                                          unsigned int particleCountMax)
@@ -68,6 +72,7 @@ ParticleEmitter* ParticleEmitter::create(Texture* texture,
     return emitter;
 }
 
+//----------------------------------------------------------------------------
 ParticleEmitter* ParticleEmitter::create(const std::string& url)
 {
     auto properties = std::unique_ptr<Properties>(Properties::create(url));
@@ -83,6 +88,7 @@ ParticleEmitter* ParticleEmitter::create(const std::string& url)
     return particle;
 }
 
+//----------------------------------------------------------------------------
 ParticleEmitter* ParticleEmitter::create(Properties* properties)
 {
     if (!properties || properties->getNamespace() != "particle")
@@ -204,6 +210,7 @@ ParticleEmitter* ParticleEmitter::create(Properties* properties)
     return emitter;
 }
 
+//----------------------------------------------------------------------------
 void ParticleEmitter::setTexture(const std::string& texturePath, BlendMode blendMode)
 {
     Texture* texture = Texture::create(texturePath, true);
@@ -218,6 +225,7 @@ void ParticleEmitter::setTexture(const std::string& texturePath, BlendMode blend
     }
 }
 
+//----------------------------------------------------------------------------
 void ParticleEmitter::setTexture(Texture* texture, BlendMode blendMode)
 {
     // Create new batch before releasing old one, in case the same texture
@@ -243,12 +251,14 @@ void ParticleEmitter::setTexture(Texture* texture, BlendMode blendMode)
     setSpriteFrameCoords(1, &texCoord);
 }
 
+//----------------------------------------------------------------------------
 Texture* ParticleEmitter::getTexture() const
 {
     Texture::Sampler* sampler = _spriteBatch ? _spriteBatch->getSampler() : nullptr;
     return sampler ? sampler->getTexture() : nullptr;
 }
 
+//----------------------------------------------------------------------------
 void ParticleEmitter::setEmissionRate(unsigned int rate)
 {
     assert(rate);
@@ -256,12 +266,14 @@ void ParticleEmitter::setEmissionRate(unsigned int rate)
     _timePerEmission = 1000.0f / (float)_emissionRate;
 }
 
+//----------------------------------------------------------------------------
 void ParticleEmitter::start()
 {
     _started = true;
     _lastUpdated = 0;
 }
 
+//----------------------------------------------------------------------------
 bool ParticleEmitter::isActive() const
 {
     if (_started) return true;
@@ -271,6 +283,7 @@ bool ParticleEmitter::isActive() const
     return (_particleCount > 0);
 }
 
+//----------------------------------------------------------------------------
 void ParticleEmitter::emitOnce(unsigned int particleCount)
 {
     assert(_node);
@@ -355,6 +368,7 @@ void ParticleEmitter::emitOnce(unsigned int particleCount)
     }
 }
 
+//----------------------------------------------------------------------------
 void ParticleEmitter::setSize(float startMin, float startMax, float endMin, float endMax)
 {
     _sizeStartMin = startMin;
@@ -363,12 +377,14 @@ void ParticleEmitter::setSize(float startMin, float startMax, float endMin, floa
     _sizeEndMax = endMax;
 }
 
+//----------------------------------------------------------------------------
 void ParticleEmitter::setEnergy(long energyMin, long energyMax)
 {
     _energyMin = energyMin;
     _energyMax = energyMax;
 }
 
+//----------------------------------------------------------------------------
 void ParticleEmitter::setColor(const Vector4& startColor,
                                const Vector4& startColorVar,
                                const Vector4& endColor,
@@ -386,34 +402,40 @@ void ParticleEmitter::setPosition(const Vector3& position, const Vector3& positi
     _positionVar.set(positionVar);
 }
 
+//----------------------------------------------------------------------------
 void ParticleEmitter::setVelocity(const Vector3& velocity, const Vector3& velocityVar)
 {
     _velocity.set(velocity);
     _velocityVar.set(velocityVar);
 }
 
+//----------------------------------------------------------------------------
 void ParticleEmitter::setAcceleration(const Vector3& acceleration, const Vector3& accelerationVar)
 {
     _acceleration.set(acceleration);
     _accelerationVar.set(accelerationVar);
 }
 
+//----------------------------------------------------------------------------
 void ParticleEmitter::setRotationPerParticle(float speedMin, float speedMax)
 {
     _rotationPerParticleSpeedMin = speedMin;
     _rotationPerParticleSpeedMax = speedMax;
 }
 
+//----------------------------------------------------------------------------
 float ParticleEmitter::getRotationPerParticleSpeedMin() const
 {
     return _rotationPerParticleSpeedMin;
 }
 
+//----------------------------------------------------------------------------
 float ParticleEmitter::getRotationPerParticleSpeedMax() const
 {
     return _rotationPerParticleSpeedMax;
 }
 
+//----------------------------------------------------------------------------
 void ParticleEmitter::setRotation(float speedMin,
                                   float speedMax,
                                   const Vector3& axis,
@@ -425,6 +447,7 @@ void ParticleEmitter::setRotation(float speedMin,
     _rotationAxisVar.set(axisVariance);
 }
 
+//----------------------------------------------------------------------------
 void ParticleEmitter::setBlendMode(BlendMode blendMode)
 {
     assert(_spriteBatch);
@@ -458,29 +481,34 @@ void ParticleEmitter::setBlendMode(BlendMode blendMode)
     _spriteBlendMode = blendMode;
 }
 
+//----------------------------------------------------------------------------
 void ParticleEmitter::setSpriteFrameRandomOffset(int maxOffset)
 {
     _spriteFrameRandomOffset = maxOffset;
 }
 
+//----------------------------------------------------------------------------
 void ParticleEmitter::setSpriteFrameDuration(long duration)
 {
     _spriteFrameDuration = duration;
     _spriteFrameDurationSecs = (float)duration / 1000.0f;
 }
 
+//----------------------------------------------------------------------------
 unsigned int ParticleEmitter::getSpriteWidth() const
 {
     return (unsigned int)fabs(_spriteTextureWidth
                               * (_spriteTextureCoords[2] - _spriteTextureCoords[0]));
 }
 
+//----------------------------------------------------------------------------
 unsigned int ParticleEmitter::getSpriteHeight() const
 {
     return (unsigned int)fabs(_spriteTextureHeight
                               * (_spriteTextureCoords[3] - _spriteTextureCoords[1]));
 }
 
+//----------------------------------------------------------------------------
 void ParticleEmitter::setSpriteTexCoords(unsigned int frameCount, float* texCoords)
 {
     assert(frameCount);
@@ -494,6 +522,7 @@ void ParticleEmitter::setSpriteTexCoords(unsigned int frameCount, float* texCoor
     memcpy(_spriteTextureCoords, texCoords, frameCount * 4 * sizeof(float));
 }
 
+//----------------------------------------------------------------------------
 void ParticleEmitter::setSpriteFrameCoords(unsigned int frameCount, Rectangle* frameCoords)
 {
     assert(frameCount);
@@ -517,6 +546,7 @@ void ParticleEmitter::setSpriteFrameCoords(unsigned int frameCount, Rectangle* f
     }
 }
 
+//----------------------------------------------------------------------------
 void ParticleEmitter::setSpriteFrameCoords(unsigned int frameCount, int width, int height)
 {
     assert(width);
@@ -551,6 +581,7 @@ void ParticleEmitter::setSpriteFrameCoords(unsigned int frameCount, int width, i
     SAFE_DELETE_ARRAY(frameCoords);
 }
 
+//----------------------------------------------------------------------------
 void ParticleEmitter::setOrbit(bool orbitPosition, bool orbitVelocity, bool orbitAcceleration)
 {
     _orbitPosition = orbitPosition;
@@ -558,6 +589,7 @@ void ParticleEmitter::setOrbit(bool orbitPosition, bool orbitVelocity, bool orbi
     _orbitAcceleration = orbitAcceleration;
 }
 
+//----------------------------------------------------------------------------
 long ParticleEmitter::generateScalar(long min, long max)
 {
     // Note: this is not a very good RNG, but it should be suitable for our purposes.
@@ -575,11 +607,13 @@ long ParticleEmitter::generateScalar(long min, long max)
     return r;
 }
 
+//----------------------------------------------------------------------------
 float ParticleEmitter::generateScalar(float min, float max)
 {
     return min + (max - min) * MATH_RANDOM_0_1();
 }
 
+//----------------------------------------------------------------------------
 void ParticleEmitter::generateVectorInRect(const Vector3& base, const Vector3& variance, Vector3* dst)
 {
     assert(dst);
@@ -591,6 +625,7 @@ void ParticleEmitter::generateVectorInRect(const Vector3& base, const Vector3& v
     dst->z = base.z + variance.z * MATH_RANDOM_MINUS1_1();
 }
 
+//----------------------------------------------------------------------------
 void ParticleEmitter::generateVectorInEllipsoid(const Vector3& center,
                                                 const Vector3& scale,
                                                 Vector3* dst)
@@ -614,6 +649,7 @@ void ParticleEmitter::generateVectorInEllipsoid(const Vector3& center,
     dst->add(center);
 }
 
+//----------------------------------------------------------------------------
 void ParticleEmitter::generateVector(const Vector3& base,
                                      const Vector3& variance,
                                      Vector3* dst,
@@ -629,6 +665,7 @@ void ParticleEmitter::generateVector(const Vector3& base,
     }
 }
 
+//----------------------------------------------------------------------------
 void ParticleEmitter::generateColor(const Vector4& base, const Vector4& variance, Vector4* dst)
 {
     assert(dst);
@@ -641,6 +678,7 @@ void ParticleEmitter::generateColor(const Vector4& base, const Vector4& variance
     dst->w = base.w + variance.w * MATH_RANDOM_MINUS1_1();
 }
 
+//----------------------------------------------------------------------------
 ParticleEmitter::BlendMode ParticleEmitter::getBlendModeFromString(const std::string& str)
 {
     if (str == "BLEND_NONE" || str == "NONE")
@@ -671,6 +709,7 @@ ParticleEmitter::BlendMode ParticleEmitter::getBlendModeFromString(const std::st
     return BLEND_ALPHA;
 }
 
+//----------------------------------------------------------------------------
 void ParticleEmitter::update(float elapsedTime)
 {
     if (!isActive()) return;
@@ -792,6 +831,7 @@ void ParticleEmitter::update(float elapsedTime)
     }
 }
 
+//----------------------------------------------------------------------------
 unsigned int ParticleEmitter::draw(bool wireframe)
 {
     if (!isActive()) return 0;
@@ -847,6 +887,7 @@ unsigned int ParticleEmitter::draw(bool wireframe)
     return 1;
 }
 
+//----------------------------------------------------------------------------
 Drawable* ParticleEmitter::clone(NodeCloneContext& context)
 {
     // Create a clone of this emitter

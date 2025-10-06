@@ -21,6 +21,7 @@
 namespace tractor
 {
 
+//----------------------------------------------------------------------------
 Text::~Text()
 {
     SAFE_RELEASE(_font);
@@ -28,6 +29,7 @@ Text::~Text()
     _drawFont = nullptr;
 }
 
+//----------------------------------------------------------------------------
 Text* Text::create(const std::string& fontPath,
                    const std::string& str,
                    const Vector4& color,
@@ -62,6 +64,7 @@ Text* Text::create(const std::string& fontPath,
     return text;
 }
 
+//----------------------------------------------------------------------------
 Text* Text::create(Properties* properties)
 {
     // Check if the Properties is valid and has a valid namespace.
@@ -120,6 +123,7 @@ Text* Text::create(Properties* properties)
     return Text::create(fontPath, text, color, size);
 }
 
+//----------------------------------------------------------------------------
 Drawable* Text::clone(NodeCloneContext& context)
 {
     Text* textClone = new Text();
@@ -139,6 +143,7 @@ Drawable* Text::clone(NodeCloneContext& context)
     return textClone;
 }
 
+//----------------------------------------------------------------------------
 unsigned int Text::draw(bool wireframe)
 {
     // Apply scene camera projection and translation offsets
@@ -187,6 +192,7 @@ unsigned int Text::draw(bool wireframe)
     return 1;
 }
 
+//----------------------------------------------------------------------------
 int Text::getPropertyId(TargetType type, const std::string& propertyIdStr)
 {
     if (type == AnimationTarget::TRANSFORM)
@@ -204,6 +210,7 @@ int Text::getPropertyId(TargetType type, const std::string& propertyIdStr)
     return AnimationTarget::getPropertyId(type, propertyIdStr);
 }
 
+//----------------------------------------------------------------------------
 unsigned int Text::getAnimationPropertyComponentCount(int propertyId) const
 {
     switch (propertyId)
@@ -217,6 +224,7 @@ unsigned int Text::getAnimationPropertyComponentCount(int propertyId) const
     }
 }
 
+//----------------------------------------------------------------------------
 void Text::getAnimationPropertyValue(int propertyId, AnimationValue* value)
 {
     assert(value);
@@ -237,6 +245,7 @@ void Text::getAnimationPropertyValue(int propertyId, AnimationValue* value)
     }
 }
 
+//----------------------------------------------------------------------------
 void Text::setAnimationPropertyValue(int propertyId, AnimationValue* value, float blendWeight)
 {
     assert(value);

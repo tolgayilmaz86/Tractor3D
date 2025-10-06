@@ -20,13 +20,17 @@
 
 namespace tractor
 {
+
+//----------------------------------------------------------------------------
 FileStream::FileStream(std::unique_ptr<std::fstream> stream) : _stream(std::move(stream)) {}
 
+//----------------------------------------------------------------------------
 FileStream::~FileStream()
 {
     if (_stream && _stream->is_open()) close();
 }
 
+//----------------------------------------------------------------------------
 std::unique_ptr<FileStream> FileStream::create(const std::string& filePath, const std::string& mode)
 {
     namespace fs = std::filesystem;
@@ -66,17 +70,22 @@ std::unique_ptr<FileStream> FileStream::create(const std::string& filePath, cons
     return stream;
 }
 
+//----------------------------------------------------------------------------
 bool FileStream::canRead() { return _stream && _stream->is_open() && _canRead; }
 
+//----------------------------------------------------------------------------
 bool FileStream::canWrite() { return _stream && _stream->is_open() && _canWrite; }
 
+//----------------------------------------------------------------------------
 bool FileStream::canSeek() { return _stream && _stream->is_open(); }
 
+//----------------------------------------------------------------------------
 void FileStream::close()
 {
     if (_stream && _stream->is_open()) _stream->close();
 }
 
+//----------------------------------------------------------------------------
 size_t FileStream::read(void* ptr, size_t size, size_t count)
 {
     if (!_stream || !canRead()) return 0;
@@ -87,6 +96,7 @@ size_t FileStream::read(void* ptr, size_t size, size_t count)
     return static_cast<size_t>(bytesRead / size);
 }
 
+//----------------------------------------------------------------------------
 char* FileStream::readLine(char* str, int num)
 {
     if (!_stream || !canRead()) return nullptr;
@@ -95,6 +105,7 @@ char* FileStream::readLine(char* str, int num)
     return (_stream->gcount() > 0) ? str : nullptr;
 }
 
+//----------------------------------------------------------------------------
 size_t FileStream::write(const void* ptr, size_t size, size_t count)
 {
     if (!_stream || !canWrite()) return 0;
@@ -106,12 +117,14 @@ size_t FileStream::write(const void* ptr, size_t size, size_t count)
     return (after - before) / size;
 }
 
+//----------------------------------------------------------------------------
 bool FileStream::eof()
 {
     if (!_stream) return true;
     return _stream->eof();
 }
 
+//----------------------------------------------------------------------------
 size_t FileStream::length()
 {
     if (!canSeek()) return 0;
@@ -124,12 +137,14 @@ size_t FileStream::length()
     return static_cast<size_t>(length);
 }
 
+//----------------------------------------------------------------------------
 long int FileStream::position()
 {
     if (!_stream) return -1;
     return static_cast<long int>(_stream->tellg());
 }
 
+//----------------------------------------------------------------------------
 bool FileStream::seek(long int offset, int origin)
 {
     if (!canSeek()) return false;
@@ -170,6 +185,7 @@ bool FileStream::seek(long int offset, int origin)
     return true;
 }
 
+//----------------------------------------------------------------------------
 bool FileStream::rewind()
 {
     if (!canSeek()) return false;

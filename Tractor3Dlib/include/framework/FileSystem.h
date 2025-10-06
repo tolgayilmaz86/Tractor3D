@@ -14,6 +14,8 @@
 #pragma once
 
 #include <string>
+#include <vector>
+#include <memory>
 
 #include "framework/Stream.h"
 

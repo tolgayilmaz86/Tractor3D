@@ -18,8 +18,10 @@
 namespace tractor
 {
 
+//----------------------------------------------------------------
 VerticalLayout* VerticalLayout::create() { return new VerticalLayout(); }
 
+//----------------------------------------------------------------
 void VerticalLayout::update(const Container* container)
 {
     assert(container);

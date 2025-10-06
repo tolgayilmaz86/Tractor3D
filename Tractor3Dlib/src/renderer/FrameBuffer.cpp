@@ -27,6 +27,7 @@ std::vector<FrameBuffer*> FrameBuffer::_frameBuffers;
 FrameBuffer* FrameBuffer::_defaultFrameBuffer = nullptr;
 FrameBuffer* FrameBuffer::_currentFrameBuffer = nullptr;
 
+//----------------------------------------------------------------------------
 FrameBuffer::FrameBuffer(const std::string& id,
                          unsigned int width,
                          unsigned int height,
@@ -35,6 +36,7 @@ FrameBuffer::FrameBuffer(const std::string& id,
 {
 }
 
+//----------------------------------------------------------------------------
 FrameBuffer::~FrameBuffer()
 {
     if (_renderTargets)
@@ -63,6 +65,7 @@ FrameBuffer::~FrameBuffer()
     }
 }
 
+//----------------------------------------------------------------------------
 void FrameBuffer::initialize()
 {
     // Query the current/initial FBO handle and store is as out 'default' frame buffer.
@@ -83,8 +86,10 @@ void FrameBuffer::initialize()
 #endif
 }
 
+//----------------------------------------------------------------------------
 void FrameBuffer::finalize() { SAFE_RELEASE(_defaultFrameBuffer); }
 
+//----------------------------------------------------------------------------
 FrameBuffer* FrameBuffer::create(const std::string& id) { return create(id, 0, 0); }
 
 FrameBuffer* FrameBuffer::create(const std::string& id,
@@ -123,6 +128,7 @@ FrameBuffer* FrameBuffer::create(const std::string& id,
     return frameBuffer;
 }
 
+//----------------------------------------------------------------------------
 FrameBuffer* FrameBuffer::getFrameBuffer(const std::string& id)
 {
     // Search the vector for a matching ID.
@@ -136,6 +142,7 @@ FrameBuffer* FrameBuffer::getFrameBuffer(const std::string& id)
     return nullptr;
 }
 
+//----------------------------------------------------------------------------
 unsigned int FrameBuffer::getWidth() const
 {
     if (_renderTargetCount > 0 && _renderTargets != nullptr && _renderTargets[0] != nullptr)
@@ -144,6 +151,7 @@ unsigned int FrameBuffer::getWidth() const
     return 0;
 }
 
+//----------------------------------------------------------------------------
 unsigned int FrameBuffer::getHeight() const
 {
     if (_renderTargetCount > 0 && _renderTargets != nullptr && _renderTargets[0] != nullptr)
@@ -152,6 +160,7 @@ unsigned int FrameBuffer::getHeight() const
     return 0;
 }
 
+//----------------------------------------------------------------------------
 void FrameBuffer::setRenderTarget(RenderTarget* target, unsigned int index)
 {
     assert(!target
@@ -163,6 +172,7 @@ void FrameBuffer::setRenderTarget(RenderTarget* target, unsigned int index)
     setRenderTarget(target, index, GL_TEXTURE_2D);
 }
 
+//----------------------------------------------------------------------------
 void FrameBuffer::setRenderTarget(RenderTarget* target, Texture::CubeFace face, unsigned int index)
 {
     assert(face >= Texture::POSITIVE_X && face <= Texture::NEGATIVE_Z);
@@ -172,6 +182,7 @@ void FrameBuffer::setRenderTarget(RenderTarget* target, Texture::CubeFace face, 
     setRenderTarget(target, index, GL_TEXTURE_CUBE_MAP_POSITIVE_X + face);
 }
 
+//----------------------------------------------------------------------------
 void FrameBuffer::setRenderTarget(RenderTarget* target, unsigned int index, GLenum textureTarget)
 {
     assert(index < _maxRenderTargets);
@@ -228,6 +239,7 @@ void FrameBuffer::setRenderTarget(RenderTarget* target, unsigned int index, GLen
     }
 }
 
+//----------------------------------------------------------------------------
 RenderTarget* FrameBuffer::getRenderTarget(unsigned int index) const
 {
     assert(_renderTargets);
@@ -238,6 +250,7 @@ RenderTarget* FrameBuffer::getRenderTarget(unsigned int index) const
     return nullptr;
 }
 
+//----------------------------------------------------------------------------
 void FrameBuffer::setDepthStencilTarget(DepthStencilTarget* target)
 {
     if (_depthStencilTarget == target) return;
@@ -287,6 +300,7 @@ void FrameBuffer::setDepthStencilTarget(DepthStencilTarget* target)
     }
 }
 
+//----------------------------------------------------------------------------
 FrameBuffer* FrameBuffer::bind(GLenum type)
 {
     GL_ASSERT(glBindFramebuffer(type, _handle));
@@ -295,6 +309,7 @@ FrameBuffer* FrameBuffer::bind(GLenum type)
     return previousFrameBuffer;
 }
 
+//----------------------------------------------------------------------------
 void FrameBuffer::getScreenshot(Image* image)
 {
     assert(image);
@@ -309,6 +324,7 @@ void FrameBuffer::getScreenshot(Image* image)
     }
 }
 
+//----------------------------------------------------------------------------
 Image* FrameBuffer::createScreenshot(Image::Format format)
 {
     Image* screenshot = Image::create(_currentFrameBuffer->getWidth(),
@@ -320,6 +336,7 @@ Image* FrameBuffer::createScreenshot(Image::Format format)
     return screenshot;
 }
 
+//----------------------------------------------------------------------------
 FrameBuffer* FrameBuffer::bindDefault(GLenum type)
 {
     GL_ASSERT(glBindFramebuffer(type, _defaultFrameBuffer->_handle));

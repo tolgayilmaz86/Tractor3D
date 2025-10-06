@@ -39,12 +39,14 @@ constexpr auto NODE_DIRTY_HIERARCHY = 4;
 namespace tractor
 {
 
+//----------------------------------------------------------------------------
 Node::Node(const std::string& id) : _id(id), _dirtyBits(NODE_DIRTY_ALL)
 {
     GP_REGISTER_SCRIPT_EVENTS();
     _id = id;
 }
 
+//----------------------------------------------------------------------------
 Node::~Node()
 {
     removeAllChildren();
@@ -57,8 +59,10 @@ Node::~Node()
     SAFE_RELEASE(_audioSource);
     SAFE_RELEASE(_userObject);
     setAgent(nullptr);
+    //----------------------------------------------------------------------------
 }
 
+//----------------------------------------------------------------------------
 void Node::addChild(Node* child)
 {
     assert(child);
@@ -106,6 +110,7 @@ void Node::addChild(Node* child)
     }
 }
 
+//----------------------------------------------------------------------------
 void Node::removeChild(Node* child)
 {
     if (child == nullptr || child->_parent != this)
@@ -118,6 +123,7 @@ void Node::removeChild(Node* child)
     SAFE_RELEASE(child);
 }
 
+//----------------------------------------------------------------------------
 void Node::removeAllChildren()
 {
     _dirtyBits &= ~NODE_DIRTY_HIERARCHY;
@@ -129,6 +135,7 @@ void Node::removeAllChildren()
     hierarchyChanged();
 }
 
+//----------------------------------------------------------------------------
 void Node::remove()
 {
     // Re-link our neighbours.
@@ -160,6 +167,7 @@ void Node::remove()
     }
 }
 
+//----------------------------------------------------------------------------
 Node* Node::getRootNode() const
 {
     Node* n = const_cast<Node*>(this);
@@ -170,11 +178,13 @@ Node* Node::getRootNode() const
     return n;
 }
 
+//----------------------------------------------------------------------------
 Node* Node::findNode(const std::string& id, bool recursive, bool exactMatch) const
 {
     return findNode(id, recursive, exactMatch, false);
 }
 
+//----------------------------------------------------------------------------
 Node* Node::findNode(const std::string& id, bool recursive, bool exactMatch, bool skipSkin) const
 {
     // If not skipSkin hierarchy, try searching the skin hierarchy
@@ -337,6 +347,7 @@ void Node::removeTag(const std::string& name)
     }
 }
 
+//----------------------------------------------------------------------------
 void Node::setEnabled(bool enabled)
 {
     if (_enabled != enabled)
@@ -349,6 +360,7 @@ void Node::setEnabled(bool enabled)
     }
 }
 
+//----------------------------------------------------------------------------
 bool Node::isEnabledInHierarchy() const
 {
     if (!_enabled) return false;
@@ -365,6 +377,7 @@ bool Node::isEnabledInHierarchy() const
     return true;
 }
 
+//----------------------------------------------------------------------------
 void Node::update(float elapsedTime)
 {
     for (Node* node = _firstChild; node != nullptr; node = node->_nextSibling)
@@ -377,6 +390,7 @@ void Node::update(float elapsedTime)
     fireScriptEvent<void>(GP_GET_SCRIPT_EVENT(Node, update), dynamic_cast<void*>(this), elapsedTime);
 }
 
+//----------------------------------------------------------------------------
 const Matrix& Node::getWorldMatrix() const
 {
     if (_dirtyBits & NODE_DIRTY_WORLD)
@@ -410,6 +424,7 @@ const Matrix& Node::getWorldMatrix() const
     return _world;
 }
 
+//----------------------------------------------------------------------------
 const Matrix& Node::getWorldViewMatrix() const
 {
     static Matrix worldView;
@@ -417,6 +432,7 @@ const Matrix& Node::getWorldViewMatrix() const
     return worldView;
 }
 
+//----------------------------------------------------------------------------
 const Matrix& Node::getInverseTransposeWorldViewMatrix() const
 {
     static Matrix invTransWorldView;
@@ -426,6 +442,7 @@ const Matrix& Node::getInverseTransposeWorldViewMatrix() const
     return invTransWorldView;
 }
 
+//----------------------------------------------------------------------------
 const Matrix& Node::getInverseTransposeWorldMatrix() const
 {
     static Matrix invTransWorld;
@@ -435,6 +452,7 @@ const Matrix& Node::getInverseTransposeWorldMatrix() const
     return invTransWorld;
 }
 
+//----------------------------------------------------------------------------
 const Matrix& Node::getViewMatrix() const
 {
     Scene* scene = getScene();
@@ -449,6 +467,7 @@ const Matrix& Node::getViewMatrix() const
     }
 }
 
+//----------------------------------------------------------------------------
 const Matrix& Node::getInverseViewMatrix() const
 {
     Scene* scene = getScene();
@@ -463,6 +482,7 @@ const Matrix& Node::getInverseViewMatrix() const
     }
 }
 
+//----------------------------------------------------------------------------
 const Matrix& Node::getProjectionMatrix() const
 {
     Scene* scene = getScene();
@@ -477,6 +497,7 @@ const Matrix& Node::getProjectionMatrix() const
     }
 }
 
+//----------------------------------------------------------------------------
 const Matrix& Node::getViewProjectionMatrix() const
 {
     Scene* scene = getScene();
@@ -491,6 +512,7 @@ const Matrix& Node::getViewProjectionMatrix() const
     }
 }
 
+//----------------------------------------------------------------------------
 const Matrix& Node::getInverseViewProjectionMatrix() const
 {
     Scene* scene = getScene();
@@ -502,6 +524,7 @@ const Matrix& Node::getInverseViewProjectionMatrix() const
     return Matrix::identity();
 }
 
+//----------------------------------------------------------------------------
 const Matrix& Node::getWorldViewProjectionMatrix() const
 {
     // Always re-calculate worldViewProjection matrix since it's extremely difficult
@@ -511,6 +534,7 @@ const Matrix& Node::getWorldViewProjectionMatrix() const
     return worldViewProj;
 }
 
+//----------------------------------------------------------------------------
 Vector3 Node::getTranslationWorld() const
 {
     Vector3 translation;
@@ -518,6 +542,7 @@ Vector3 Node::getTranslationWorld() const
     return translation;
 }
 
+//----------------------------------------------------------------------------
 Vector3 Node::getTranslationView() const
 {
     Vector3 translation;
@@ -526,6 +551,7 @@ Vector3 Node::getTranslationView() const
     return translation;
 }
 
+//----------------------------------------------------------------------------
 Vector3 Node::getForwardVectorView() const
 {
     Vector3 vector = getWorldMatrix().getForwardVector();
@@ -533,6 +559,7 @@ Vector3 Node::getForwardVectorView() const
     return vector;
 }
 
+//----------------------------------------------------------------------------
 Vector3 Node::getActiveCameraTranslationWorld() const
 {
     Scene* scene = getScene();
@@ -551,6 +578,7 @@ Vector3 Node::getActiveCameraTranslationWorld() const
     return Vector3::zero();
 }
 
+//----------------------------------------------------------------------------
 Vector3 Node::getActiveCameraTranslationView() const
 {
     Scene* scene = getScene();
@@ -569,6 +597,7 @@ Vector3 Node::getActiveCameraTranslationView() const
     return Vector3::zero();
 }
 
+//----------------------------------------------------------------------------
 void Node::hierarchyChanged()
 {
     // When our hierarchy changes our world transform is affected, so we must dirty it.
@@ -576,6 +605,7 @@ void Node::hierarchyChanged()
     transformChanged();
 }
 
+//----------------------------------------------------------------------------
 void Node::transformChanged()
 {
     // Our local transform was changed, so mark our world matrices dirty.
@@ -602,6 +632,7 @@ void Node::transformChanged()
     Transform::transformChanged();
 }
 
+//----------------------------------------------------------------------------
 void Node::setBoundsDirty()
 {
     // Mark ourself and our parent nodes as dirty
@@ -611,6 +642,7 @@ void Node::setBoundsDirty()
     if (_parent) _parent->setBoundsDirty();
 }
 
+//----------------------------------------------------------------------------
 Animation* Node::getAnimation(const std::string& id) const
 {
     Animation* animation = ((AnimationTarget*)this)->getAnimation(id);
@@ -668,6 +700,7 @@ Animation* Node::getAnimation(const std::string& id) const
     return nullptr;
 }
 
+//----------------------------------------------------------------------------
 void Node::setCamera(Camera* camera)
 {
     if (_camera == camera) return;
@@ -687,6 +720,7 @@ void Node::setCamera(Camera* camera)
     }
 }
 
+//----------------------------------------------------------------------------
 void Node::setLight(Light* light)
 {
     if (_light == light) return;
@@ -708,6 +742,7 @@ void Node::setLight(Light* light)
     setBoundsDirty();
 }
 
+//----------------------------------------------------------------------------
 void Node::setDrawable(Drawable* drawable)
 {
     if (_drawable != drawable)
@@ -731,6 +766,7 @@ void Node::setDrawable(Drawable* drawable)
     setBoundsDirty();
 }
 
+//----------------------------------------------------------------------------
 const BoundingSphere& Node::getBoundingSphere() const
 {
     if (_dirtyBits & NODE_DIRTY_BOUNDS)
@@ -843,12 +879,14 @@ const BoundingSphere& Node::getBoundingSphere() const
     return _bounds;
 }
 
+//----------------------------------------------------------------------------
 Node* Node::clone() const
 {
     NodeCloneContext context;
     return cloneRecursive(context);
 }
 
+//----------------------------------------------------------------------------
 Node* Node::cloneSingleNode(NodeCloneContext& context) const
 {
     Node* copy = Node::create(getId());
@@ -857,6 +895,7 @@ Node* Node::cloneSingleNode(NodeCloneContext& context) const
     return copy;
 }
 
+//----------------------------------------------------------------------------
 Node* Node::cloneRecursive(NodeCloneContext& context) const
 {
     Node* copy = cloneSingleNode(context);
@@ -874,6 +913,7 @@ Node* Node::cloneRecursive(NodeCloneContext& context) const
     return copy;
 }
 
+//----------------------------------------------------------------------------
 void Node::cloneInto(Node* node, NodeCloneContext& context) const
 {
     assert(node);
@@ -919,6 +959,7 @@ void Node::cloneInto(Node* node, NodeCloneContext& context) const
     // TODO: Clone the rest of the node data.
 }
 
+//----------------------------------------------------------------------------
 void Node::setAudioSource(AudioSource* audio)
 {
     if (_audioSource == audio) return;
@@ -1012,6 +1053,7 @@ PhysicsCollisionObject* Node::setCollisionObject(PhysicsCollisionObject::Type ty
     return _collisionObject.get();
 }
 
+//----------------------------------------------------------------------------
 PhysicsCollisionObject* Node::setCollisionObject(const std::string& url)
 {
     // Load the collision object properties from file.
@@ -1028,6 +1070,7 @@ PhysicsCollisionObject* Node::setCollisionObject(const std::string& url)
     return collisionObject;
 }
 
+//----------------------------------------------------------------------------
 PhysicsCollisionObject* Node::setCollisionObject(Properties* properties)
 {
     // Check if the properties is valid.
@@ -1087,6 +1130,7 @@ PhysicsCollisionObject* Node::setCollisionObject(Properties* properties)
     return _collisionObject.get();
 }
 
+//----------------------------------------------------------------------------
 AIAgent* Node::getAgent() const
 {
     // Lazily create a new Agent for this Node if we don't have one yet.
@@ -1102,6 +1146,7 @@ AIAgent* Node::getAgent() const
     return _agent;
 }
 
+//----------------------------------------------------------------------------
 void Node::setAgent(AIAgent* agent)
 {
     if (agent == _agent) return;
@@ -1123,6 +1168,7 @@ void Node::setAgent(AIAgent* agent)
     }
 }
 
+//----------------------------------------------------------------------------
 Animation* NodeCloneContext::findClonedAnimation(const Animation* animation)
 {
     assert(animation);
@@ -1131,6 +1177,7 @@ Animation* NodeCloneContext::findClonedAnimation(const Animation* animation)
     return it != _clonedAnimations.end() ? it->second : nullptr;
 }
 
+//----------------------------------------------------------------------------
 void NodeCloneContext::registerClonedAnimation(const Animation* original, Animation* clone)
 {
     assert(original);
@@ -1139,6 +1186,7 @@ void NodeCloneContext::registerClonedAnimation(const Animation* original, Animat
     _clonedAnimations[original] = clone;
 }
 
+//----------------------------------------------------------------------------
 Node* NodeCloneContext::findClonedNode(const Node* node)
 {
     assert(node);
@@ -1147,6 +1195,7 @@ Node* NodeCloneContext::findClonedNode(const Node* node)
     return it != _clonedNodes.end() ? it->second : nullptr;
 }
 
+//----------------------------------------------------------------------------
 void NodeCloneContext::registerClonedNode(const Node* original, Node* clone)
 {
     assert(original);

@@ -19,6 +19,7 @@ namespace tractor
 {
 static std::vector<RadioButton*> __radioButtons;
 
+//----------------------------------------------------------------
 RadioButton::~RadioButton()
 {
     // Remove this RadioButton from the global list.
@@ -30,6 +31,7 @@ RadioButton::~RadioButton()
     }
 }
 
+//----------------------------------------------------------------
 RadioButton* RadioButton::create(const std::string& id, Theme::Style* style)
 {
     auto& rb = __radioButtons.emplace_back(new RadioButton());
@@ -39,6 +41,7 @@ RadioButton* RadioButton::create(const std::string& id, Theme::Style* style)
     return rb;
 }
 
+//----------------------------------------------------------------
 Control* RadioButton::create(Theme::Style* style, Properties* properties)
 {
     auto& rb = __radioButtons.emplace_back(new RadioButton());
@@ -47,6 +50,7 @@ Control* RadioButton::create(Theme::Style* style, Properties* properties)
     return rb;
 }
 
+//----------------------------------------------------------------
 void RadioButton::initialize(const std::string& typeName, Theme::Style* style, Properties* properties)
 {
     Button::initialize(typeName, style, properties);
@@ -63,12 +67,14 @@ void RadioButton::initialize(const std::string& typeName, Theme::Style* style, P
     }
 }
 
+//----------------------------------------------------------------
 const std::string& RadioButton::getTypeName() const noexcept
 {
     static const std::string TYPE_NAME = "RadioButton";
     return TYPE_NAME;
 }
 
+//----------------------------------------------------------------
 void RadioButton::setSelected(bool selected)
 {
     if (selected) RadioButton::clearSelected(_groupId);
@@ -81,6 +87,7 @@ void RadioButton::setSelected(bool selected)
     }
 }
 
+//----------------------------------------------------------------
 void RadioButton::addListener(Control::Listener* listener, int eventFlags)
 {
     if ((eventFlags & Control::Listener::TEXT_CHANGED) == Control::Listener::TEXT_CHANGED)
@@ -91,6 +98,7 @@ void RadioButton::addListener(Control::Listener* listener, int eventFlags)
     Control::addListener(listener, eventFlags);
 }
 
+//----------------------------------------------------------------
 void RadioButton::clearSelected(const std::string& groupId)
 {
     for (auto radioButton : __radioButtons)
@@ -102,6 +110,7 @@ void RadioButton::clearSelected(const std::string& groupId)
     }
 }
 
+//----------------------------------------------------------------
 bool RadioButton::keyEvent(Keyboard::KeyEvent evt, int key)
 {
     if (getState() == ACTIVE && evt == Keyboard::KEY_RELEASE && key == Keyboard::KEY_RETURN
@@ -115,6 +124,7 @@ bool RadioButton::keyEvent(Keyboard::KeyEvent evt, int key)
     return Button::keyEvent(evt, key);
 }
 
+//----------------------------------------------------------------
 void RadioButton::controlEvent(Control::Listener::EventType evt)
 {
     Button::controlEvent(evt);
@@ -132,6 +142,7 @@ void RadioButton::controlEvent(Control::Listener::EventType evt)
     }
 }
 
+//----------------------------------------------------------------
 void RadioButton::updateState(State state)
 {
     Label::updateState(state);
@@ -139,6 +150,7 @@ void RadioButton::updateState(State state)
     _image = getImage(_selected ? "selected" : "unselected", state);
 }
 
+//----------------------------------------------------------------
 void RadioButton::updateBounds()
 {
     Label::updateBounds();
@@ -172,6 +184,7 @@ void RadioButton::updateBounds()
     }
 }
 
+//----------------------------------------------------------------
 void RadioButton::updateAbsoluteBounds(const Vector2& offset)
 {
     Label::updateAbsoluteBounds(offset);
@@ -179,6 +192,7 @@ void RadioButton::updateAbsoluteBounds(const Vector2& offset)
     _textBounds.x += _bounds.height + 5;
 }
 
+//----------------------------------------------------------------
 unsigned int RadioButton::drawImages(Form* form, const Rectangle& clip)
 {
     if (!_image) return 0;

@@ -26,6 +26,7 @@ namespace tractor
 
 static std::vector<Font*> __fontCache;
 
+//----------------------------------------------------------------------------
 Font::~Font()
 {
     // Remove this Font from the font cache.
@@ -42,6 +43,7 @@ Font::~Font()
     _sizes.clear();
 }
 
+//----------------------------------------------------------------------------
 Font* Font::create(const std::string& path, const std::string& id)
 {
     // Search the font cache for a font with the given path and ID.
@@ -97,6 +99,7 @@ Font* Font::create(const std::string& path, const std::string& id)
     return font;
 }
 
+//----------------------------------------------------------------------------
 Font* Font::create(const std::string& family,
                    Style style,
                    unsigned int size,
@@ -157,6 +160,7 @@ Font* Font::create(const std::string& family,
     return font;
 }
 
+//----------------------------------------------------------------------------
 unsigned int Font::getSize(unsigned int index) const
 {
     assert(index <= _sizes.size());
@@ -165,11 +169,13 @@ unsigned int Font::getSize(unsigned int index) const
     return index == 0 ? _size : _sizes[index - 1]->_size;
 }
 
+//----------------------------------------------------------------------------
 unsigned int Font::getSizeCount() const
 {
     return _sizes.size() + 1; // +1 for "this" font
 }
 
+//----------------------------------------------------------------------------
 bool Font::isCharacterSupported(int character) const
 {
     // TODO: Update this once we support unicode fonts
@@ -177,11 +183,13 @@ bool Font::isCharacterSupported(int character) const
     return (glyphIndex >= 0 && glyphIndex < (int)_glyphCount);
 }
 
+//----------------------------------------------------------------------------
 void Font::start()
 {
     // no-op : fonts now are lazily started on the first draw call
 }
 
+//----------------------------------------------------------------------------
 void Font::lazyStart()
 {
     if (_batch->isStarted()) return; // already started
@@ -199,6 +207,7 @@ void Font::lazyStart()
     _batch->start();
 }
 
+//----------------------------------------------------------------------------
 void Font::finish()
 {
     // Finish any font batches that have been started
@@ -208,6 +217,7 @@ void Font::finish()
         if (font->_batch->isStarted()) font->_batch->finish();
 }
 
+//----------------------------------------------------------------------------
 Font* Font::findClosestSize(int size)
 {
     if (size == (int)_size) return this;
@@ -228,6 +238,7 @@ Font* Font::findClosestSize(int size)
     return closest;
 }
 
+//----------------------------------------------------------------------------
 void Font::drawText(const std::string& text,
                     int x,
                     int y,
@@ -378,6 +389,7 @@ void Font::drawText(const std::string& text,
     }
 }
 
+//----------------------------------------------------------------------------
 void Font::drawText(const std::string& text,
                     int x,
                     int y,
@@ -391,6 +403,7 @@ void Font::drawText(const std::string& text,
     drawText(text, x, y, Vector4(red, green, blue, alpha), size, rightToLeft);
 }
 
+//----------------------------------------------------------------------------
 void Font::drawText(const std::string& text,
                     const Rectangle& area,
                     const Vector4& color,
@@ -658,6 +671,7 @@ void Font::drawText(const std::string& text,
     }
 }
 
+//----------------------------------------------------------------------------
 void Font::measureText(const std::string& text,
                        unsigned int size,
                        unsigned int* width,
@@ -716,6 +730,7 @@ void Font::measureText(const std::string& text,
     }
 }
 
+//----------------------------------------------------------------------------
 void Font::measureText(const std::string& text,
                        const Rectangle& clip,
                        unsigned int size,
@@ -1064,6 +1079,7 @@ void Font::measureText(const std::string& text,
     }
 }
 
+//----------------------------------------------------------------------------
 void Font::getMeasurementInfo(const std::string& text,
                               const Rectangle& area,
                               unsigned int size,
@@ -1271,10 +1287,7 @@ void Font::getMeasurementInfo(const std::string& text,
     }
 }
 
-float Font::getCharacterSpacing() const { return _spacing; }
-
-void Font::setCharacterSpacing(float spacing) { _spacing = spacing; }
-
+//----------------------------------------------------------------------------
 int Font::getIndexAtLocation(const std::string& text,
                              const Rectangle& area,
                              unsigned int size,
@@ -1287,6 +1300,7 @@ int Font::getIndexAtLocation(const std::string& text,
     return getIndexOrLocation(text, area, size, inLocation, outLocation, -1, justify, wrap, rightToLeft);
 }
 
+//----------------------------------------------------------------------------
 void Font::getLocationAtIndex(const std::string& text,
                               const Rectangle& clip,
                               unsigned int size,
@@ -1307,6 +1321,7 @@ void Font::getLocationAtIndex(const std::string& text,
                        rightToLeft);
 }
 
+//----------------------------------------------------------------------------
 int Font::getIndexOrLocation(const std::string& text,
                              const Rectangle& area,
                              unsigned int size,
@@ -1605,6 +1620,7 @@ int Font::getIndexOrLocation(const std::string& text,
     return -1;
 }
 
+//----------------------------------------------------------------------------
 unsigned int Font::getTokenWidth(const char* token, unsigned int length, unsigned int size, float scale)
 {
     assert(_glyphs);
@@ -1640,6 +1656,7 @@ unsigned int Font::getTokenWidth(const char* token, unsigned int length, unsigne
     return tokenWidth;
 }
 
+//----------------------------------------------------------------------------
 unsigned int Font::getReversedTokenLength(const std::string& token, const std::string& bufStart)
 {
     const char* cursor = token.c_str();
@@ -1661,6 +1678,7 @@ unsigned int Font::getReversedTokenLength(const std::string& token, const std::s
     return length;
 }
 
+//----------------------------------------------------------------------------
 int Font::handleDelimiters(const char** token,
                            const unsigned int size,
                            const int iteration,
@@ -1751,6 +1769,7 @@ int Font::handleDelimiters(const char** token,
     return 1;
 }
 
+//----------------------------------------------------------------------------
 void Font::addLineInfo(const Rectangle& area,
                        int lineWidth,
                        int lineLength,
@@ -1778,6 +1797,7 @@ void Font::addLineInfo(const Rectangle& area,
     }
 }
 
+//----------------------------------------------------------------------------
 SpriteBatch* Font::getSpriteBatch(unsigned int size) const
 {
     if (size == 0) return _batch.get();
@@ -1786,6 +1806,7 @@ SpriteBatch* Font::getSpriteBatch(unsigned int size) const
     return const_cast<Font*>(this)->findClosestSize(size)->_batch.get();
 }
 
+//----------------------------------------------------------------------------
 Font::Justify Font::getJustify(const std::string& justify)
 {
     if (justify.empty())

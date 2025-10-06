@@ -21,6 +21,7 @@
 namespace tractor
 {
 
+//----------------------------------------------------------------------------
 void AnimationController::stopAllAnimations()
 {
     std::list<AnimationClip*>::iterator clipIter = _runningClips.begin();
@@ -33,6 +34,7 @@ void AnimationController::stopAllAnimations()
     }
 }
 
+//----------------------------------------------------------------------------
 void AnimationController::finalize()
 {
     std::list<AnimationClip*>::iterator itr = _runningClips.begin();
@@ -44,6 +46,7 @@ void AnimationController::finalize()
     _state = STOPPED;
 }
 
+//----------------------------------------------------------------------------
 void AnimationController::resume()
 {
     if (_runningClips.empty())
@@ -52,6 +55,7 @@ void AnimationController::resume()
         _state = RUNNING;
 }
 
+//----------------------------------------------------------------------------
 void AnimationController::schedule(AnimationClip* clip)
 {
     if (_runningClips.empty())
@@ -64,6 +68,7 @@ void AnimationController::schedule(AnimationClip* clip)
     _runningClips.push_back(clip);
 }
 
+//----------------------------------------------------------------------------
 void AnimationController::unschedule(AnimationClip* clip)
 {
     std::list<AnimationClip*>::iterator clipItr = _runningClips.begin();
@@ -82,6 +87,7 @@ void AnimationController::unschedule(AnimationClip* clip)
     if (_runningClips.empty()) _state = IDLE;
 }
 
+//----------------------------------------------------------------------------
 void AnimationController::update(float elapsedTime)
 {
     if (_state != RUNNING) return;

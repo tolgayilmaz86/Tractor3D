@@ -23,33 +23,33 @@
 namespace tractor
 {
 
-Plane::Plane() : _normal(0, 1, 0), _distance(0) {}
-
+//----------------------------------------------------------------------------
 Plane::Plane(const Vector3& normal, float distance) { set(normal, distance); }
 
+//----------------------------------------------------------------------------
 Plane::Plane(float normalX, float normalY, float normalZ, float distance)
 {
     set(Vector3(normalX, normalY, normalZ), distance);
 }
 
+//----------------------------------------------------------------------------
 Plane::Plane(const Plane& copy) { set(copy); }
 
-Plane::~Plane() {}
-
-const Vector3& Plane::getNormal() const noexcept { return _normal; }
-
+//----------------------------------------------------------------------------
 void Plane::setNormal(const Vector3& normal)
 {
     _normal = normal;
     normalize();
 }
 
+//----------------------------------------------------------------------------
 void Plane::setNormal(float x, float y, float z)
 {
     _normal.set(x, y, z);
     normalize();
 }
 
+//----------------------------------------------------------------------------
 void Plane::intersection(const Plane& p1, const Plane& p2, const Plane& p3, Vector3* point)
 {
     assert(point);
@@ -97,10 +97,7 @@ void Plane::intersection(const Plane& p1, const Plane& p2, const Plane& p3, Vect
     point->z = (s1 * c1z + s2 * c2z + s3 * c3z) * detI;
 }
 
-float Plane::intersects(const BoundingSphere& sphere) const { return sphere.intersects(*this); }
-
-float Plane::intersects(const BoundingBox& box) const { return box.intersects(*this); }
-
+//----------------------------------------------------------------------------
 float Plane::intersects(const Frustum& frustum) const
 {
     // Get the corners of the frustum.
@@ -141,6 +138,7 @@ float Plane::intersects(const Frustum& frustum) const
     }
 }
 
+//----------------------------------------------------------------------------
 float Plane::intersects(const Plane& plane) const
 {
     // Check if the planes intersect.
@@ -167,6 +165,7 @@ float Plane::intersects(const Plane& plane) const
     }
 }
 
+//----------------------------------------------------------------------------
 float Plane::intersects(const Ray& ray) const
 {
     // Calculate the distance from the ray's origin to the plane.
@@ -210,6 +209,7 @@ float Plane::intersects(const Ray& ray) const
     }
 }
 
+//----------------------------------------------------------------------------
 bool Plane::isParallel(const Plane& plane) const
 {
     return (_normal.y * plane._normal.z) - (_normal.z * plane._normal.y) == 0.0f
@@ -217,6 +217,7 @@ bool Plane::isParallel(const Plane& plane) const
            && (_normal.x * plane._normal.y) - (_normal.y * plane._normal.x) == 0.0f;
 }
 
+//----------------------------------------------------------------------------
 void Plane::set(const Vector3& normal, float distance)
 {
     _normal = normal;
@@ -224,12 +225,14 @@ void Plane::set(const Vector3& normal, float distance)
     normalize();
 }
 
+//----------------------------------------------------------------------------
 void Plane::set(const Plane& plane)
 {
     _normal = plane._normal;
     _distance = plane._distance;
 }
 
+//----------------------------------------------------------------------------
 void Plane::transform(const Matrix& matrix)
 {
     Matrix inverted;
@@ -257,6 +260,7 @@ void Plane::transform(const Matrix& matrix)
     }
 }
 
+//----------------------------------------------------------------------------
 void Plane::normalize()
 {
     if (_normal.isZero()) return;

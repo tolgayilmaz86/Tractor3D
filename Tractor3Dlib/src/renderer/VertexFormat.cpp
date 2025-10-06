@@ -18,6 +18,7 @@
 namespace tractor
 {
 
+//----------------------------------------------------------------------------
 VertexFormat::VertexFormat(const Element* elements, unsigned int elementCount)
 {
     assert(elements);
@@ -34,12 +35,14 @@ VertexFormat::VertexFormat(const Element* elements, unsigned int elementCount)
     }
 }
 
+//----------------------------------------------------------------------------
 const VertexFormat::Element& VertexFormat::getElement(unsigned int index) const
 {
     assert(index < _elements.size());
     return _elements[index];
 }
 
+//----------------------------------------------------------------------------
 bool VertexFormat::operator==(const VertexFormat& f) const
 {
     if (_elements.size() != f._elements.size()) return false;
@@ -52,22 +55,22 @@ bool VertexFormat::operator==(const VertexFormat& f) const
     return true;
 }
 
-bool VertexFormat::operator!=(const VertexFormat& f) const { return !(*this == f); }
-
-VertexFormat::Element::Element() : usage(POSITION), size(0) {}
-
+//----------------------------------------------------------------------------
 VertexFormat::Element::Element(Usage usage, unsigned int size) : usage(usage), size(size) {}
 
+//----------------------------------------------------------------------------
 bool VertexFormat::Element::operator==(const VertexFormat::Element& e) const
 {
     return (size == e.size && usage == e.usage);
 }
 
+//----------------------------------------------------------------------------
 bool VertexFormat::Element::operator!=(const VertexFormat::Element& e) const
 {
     return !(*this == e);
 }
 
+//----------------------------------------------------------------------------
 const char* VertexFormat::toString(Usage usage)
 {
     switch (usage)

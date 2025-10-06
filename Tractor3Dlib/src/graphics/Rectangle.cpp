@@ -18,29 +18,26 @@
 namespace tractor
 {
 
-Rectangle::Rectangle() : x(0), y(0), width(0), height(0) {}
+//----------------------------------------------------------------------------
+Rectangle::Rectangle(float width, float height) : width(width), height(height) {}
 
-Rectangle::Rectangle(float width, float height) : x(0), y(0), width(width), height(height) {}
-
+//----------------------------------------------------------------------------
 Rectangle::Rectangle(float x, float y, float width, float height)
     : x(x), y(y), width(width), height(height)
 {
 }
 
+//----------------------------------------------------------------------------
 Rectangle::Rectangle(const Rectangle& copy) { set(copy); }
 
-Rectangle::~Rectangle() {}
-
+//----------------------------------------------------------------------------
 const Rectangle& Rectangle::empty()
 {
     static Rectangle empty;
     return empty;
 }
 
-bool Rectangle::isEmpty() const noexcept { return (x == 0 && y == 0 && width == 0 && height == 0); }
-
-void Rectangle::set(const Rectangle& r) { set(r.x, r.y, r.width, r.height); }
-
+//----------------------------------------------------------------------------
 void Rectangle::set(float x, float y, float width, float height)
 {
     this->x = x;
@@ -49,24 +46,26 @@ void Rectangle::set(float x, float y, float width, float height)
     this->height = height;
 }
 
+//----------------------------------------------------------------------------
 void Rectangle::setPosition(float x, float y)
 {
     this->x = x;
     this->y = y;
 }
 
+//----------------------------------------------------------------------------
 bool Rectangle::contains(float x, float y) const
 {
     return (x >= this->x && x <= (this->x + width) && y >= this->y && y <= (this->y + height));
 }
 
+//----------------------------------------------------------------------------
 bool Rectangle::contains(float x, float y, float width, float height) const
 {
     return (contains(x, y) && contains(x + width, y + height));
 }
 
-bool Rectangle::contains(const Rectangle& r) const { return contains(r.x, r.y, r.width, r.height); }
-
+//----------------------------------------------------------------------------
 bool Rectangle::intersects(float x, float y, float width, float height) const
 {
     float t;
@@ -75,11 +74,13 @@ bool Rectangle::intersects(float x, float y, float width, float height) const
     return true;
 }
 
+//----------------------------------------------------------------------------
 bool Rectangle::intersects(const Rectangle& r) const
 {
     return intersects(r.x, r.y, r.width, r.height);
 }
 
+//----------------------------------------------------------------------------
 bool Rectangle::intersect(const Rectangle& r1, const Rectangle& r2, Rectangle* dst)
 {
     assert(dst);
@@ -101,6 +102,7 @@ bool Rectangle::intersect(const Rectangle& r1, const Rectangle& r2, Rectangle* d
     return false;
 }
 
+//----------------------------------------------------------------------------
 void Rectangle::combine(const Rectangle& r1, const Rectangle& r2, Rectangle* dst)
 {
     assert(dst);
@@ -111,6 +113,7 @@ void Rectangle::combine(const Rectangle& r1, const Rectangle& r2, Rectangle* dst
     dst->height = max(r1.y + r1.height, r2.y + r2.height) - dst->y;
 }
 
+//----------------------------------------------------------------------------
 void Rectangle::inflate(float horizontalAmount, float verticalAmount)
 {
     x -= horizontalAmount;
@@ -119,6 +122,7 @@ void Rectangle::inflate(float horizontalAmount, float verticalAmount)
     height += verticalAmount * 2;
 }
 
+//----------------------------------------------------------------------------
 Rectangle& Rectangle::operator=(const Rectangle& r)
 {
     x = r.x;
@@ -128,11 +132,13 @@ Rectangle& Rectangle::operator=(const Rectangle& r)
     return *this;
 }
 
+//----------------------------------------------------------------------------
 bool Rectangle::operator==(const Rectangle& r) const
 {
     return (x == r.x && width == r.width && y == r.y && height == r.height);
 }
 
+//----------------------------------------------------------------------------
 bool Rectangle::operator!=(const Rectangle& r) const
 {
     return (x != r.x || width != r.width || y != r.y || height != r.height);

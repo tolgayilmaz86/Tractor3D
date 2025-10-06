@@ -29,6 +29,7 @@ static void readStream(png_structp png, png_bytep data, png_size_t length)
     }
 }
 
+//----------------------------------------------------------------
 Image* Image::create(const std::string& path)
 {
     // Open the file.
@@ -124,6 +125,7 @@ Image* Image::create(const std::string& path)
     return image;
 }
 
+//----------------------------------------------------------------
 Image* Image::create(unsigned int width, unsigned int height, Image::Format format, unsigned char* data)
 {
     assert(width > 0 && height > 0);
@@ -153,8 +155,7 @@ Image* Image::create(unsigned int width, unsigned int height, Image::Format form
     return image;
 }
 
-Image::Image() : _data(nullptr), _format(RGB), _width(0), _height(0) {}
-
+//----------------------------------------------------------------
 Image::~Image() { SAFE_DELETE_ARRAY(_data); }
 
 } // namespace tractor

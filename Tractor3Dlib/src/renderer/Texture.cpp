@@ -68,14 +68,7 @@ static std::vector<Texture*> __textureCache;
 static TextureHandle __currentTextureId = 0;
 static Texture::Type __currentTextureType = Texture::TEXTURE_2D;
 
-Texture::Texture()
-    : _handle(0), _format(UNKNOWN), _type((Texture::Type)0), _width(0), _height(0),
-      _mipmapped(false), _cached(false), _compressed(false), _wrapS(Texture::REPEAT),
-      _wrapT(Texture::REPEAT), _wrapR(Texture::REPEAT), _minFilter(Texture::NEAREST_MIPMAP_LINEAR),
-      _magFilter(Texture::LINEAR)
-{
-}
-
+//----------------------------------------------------------------------------
 Texture::~Texture()
 {
     if (_handle)
@@ -96,6 +89,7 @@ Texture::~Texture()
     }
 }
 
+//----------------------------------------------------------------------------
 Texture* Texture::create(const std::string& path, bool generateMipmaps)
 {
     // Search texture cache first.
@@ -159,6 +153,7 @@ Texture* Texture::create(const std::string& path, bool generateMipmaps)
     return nullptr;
 }
 
+//----------------------------------------------------------------------------
 Texture* Texture::create(Image* image, bool generateMipmaps)
 {
     assert(image);
@@ -183,6 +178,7 @@ Texture* Texture::create(Image* image, bool generateMipmaps)
     }
 }
 
+//----------------------------------------------------------------------------
 GLint Texture::getFormatInternal(Format format)
 {
     switch (format)
@@ -207,6 +203,7 @@ GLint Texture::getFormatInternal(Format format)
     }
 }
 
+//----------------------------------------------------------------------------
 GLenum Texture::getFormatTexel(Format format)
 {
     switch (format)
@@ -232,6 +229,7 @@ GLenum Texture::getFormatTexel(Format format)
     }
 }
 
+//----------------------------------------------------------------------------
 size_t Texture::getFormatBPP(Format format)
 {
     switch (format)
@@ -251,6 +249,7 @@ size_t Texture::getFormatBPP(Format format)
     }
 }
 
+//----------------------------------------------------------------------------
 Texture* Texture::create(Format format,
                          unsigned int width,
                          unsigned int height,
@@ -348,6 +347,7 @@ Texture* Texture::create(Format format,
     return texture;
 }
 
+//----------------------------------------------------------------------------
 Texture* Texture::create(TextureHandle handle, int width, int height, Format format)
 {
     assert(handle);
@@ -383,6 +383,7 @@ Texture* Texture::create(TextureHandle handle, int width, int height, Format for
     return texture;
 }
 
+//----------------------------------------------------------------------------
 void Texture::setData(const unsigned char* data)
 {
     // Don't work with any compressed or cached textures
@@ -449,6 +450,7 @@ static unsigned int computePVRTCDataSize(int width, int height, int bpp)
     return widthBlocks * heightBlocks * ((blockSize * bpp) >> 3);
 }
 
+//----------------------------------------------------------------------------
 Texture* Texture::createCompressedPVRTC(const std::string& path)
 {
     std::unique_ptr<Stream> stream(FileSystem::open(path));
@@ -570,6 +572,7 @@ Texture* Texture::createCompressedPVRTC(const std::string& path)
     return texture;
 }
 
+//----------------------------------------------------------------------------
 GLubyte* Texture::readCompressedPVRTC(const std::string& path,
                                       Stream* stream,
                                       GLsizei* width,
@@ -756,6 +759,7 @@ GLubyte* Texture::readCompressedPVRTC(const std::string& path,
     return data;
 }
 
+//----------------------------------------------------------------------------
 GLubyte* Texture::readCompressedPVRTCLegacy(const std::string& path,
                                             Stream* stream,
                                             GLsizei* width,
@@ -859,6 +863,7 @@ GLubyte* Texture::readCompressedPVRTCLegacy(const std::string& path,
     return data;
 }
 
+//----------------------------------------------------------------------------
 int Texture::getMaskByteIndex(unsigned int mask)
 {
     switch (mask)
@@ -876,6 +881,7 @@ int Texture::getMaskByteIndex(unsigned int mask)
     }
 }
 
+//----------------------------------------------------------------------------
 Texture* Texture::createCompressedDDS(const std::string& path)
 {
     // DDS file structures.
@@ -1270,6 +1276,7 @@ Texture* Texture::createCompressedDDS(const std::string& path)
     return texture;
 }
 
+//----------------------------------------------------------------------------
 void Texture::generateMipmaps()
 {
     if (!_mipmapped)
@@ -1286,6 +1293,7 @@ void Texture::generateMipmaps()
     }
 }
 
+//----------------------------------------------------------------------------
 Texture::Sampler::Sampler(Texture* texture)
     : _texture(texture), _wrapS(Texture::REPEAT), _wrapT(Texture::REPEAT), _wrapR(Texture::REPEAT)
 {
@@ -1294,8 +1302,10 @@ Texture::Sampler::Sampler(Texture* texture)
     _magFilter = texture->_magFilter;
 }
 
+//----------------------------------------------------------------------------
 Texture::Sampler::~Sampler() { SAFE_RELEASE(_texture); }
 
+//----------------------------------------------------------------------------
 Texture::Sampler* Texture::Sampler::create(Texture* texture)
 {
     assert(texture);
@@ -1304,12 +1314,14 @@ Texture::Sampler* Texture::Sampler::create(Texture* texture)
     return new Sampler(texture);
 }
 
+//----------------------------------------------------------------------------
 Texture::Sampler* Texture::Sampler::create(const std::string& path, bool generateMipmaps)
 {
     Texture* texture = Texture::create(path, generateMipmaps);
     return texture ? new Sampler(texture) : nullptr;
 }
 
+//----------------------------------------------------------------------------
 void Texture::Sampler::setWrapMode(Wrap wrapS, Wrap wrapT, Wrap wrapR)
 {
     _wrapS = wrapS;
@@ -1317,12 +1329,14 @@ void Texture::Sampler::setWrapMode(Wrap wrapS, Wrap wrapT, Wrap wrapR)
     _wrapR = wrapR;
 }
 
+//----------------------------------------------------------------------------
 void Texture::Sampler::setFilterMode(Filter minificationFilter, Filter magnificationFilter)
 {
     _minFilter = minificationFilter;
     _magFilter = magnificationFilter;
 }
 
+//----------------------------------------------------------------------------
 void Texture::Sampler::bind()
 {
     assert(_texture);

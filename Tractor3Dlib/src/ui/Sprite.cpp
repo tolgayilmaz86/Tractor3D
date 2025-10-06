@@ -207,11 +207,13 @@ static bool parseFlipFlags(const std::string& str, Sprite::FlipFlags* flip)
 namespace tractor
 {
 
+//----------------------------------------------------------------
 Sprite* Sprite::create(const std::string& imagePath, float width, float height, Effect* effect)
 {
     return Sprite::create(imagePath, width, height, Rectangle(0, 0, -1, -1), 1, effect);
 }
 
+//----------------------------------------------------------------
 Sprite* Sprite::create(const std::string& imagePath,
                        float width,
                        float height,
@@ -248,6 +250,7 @@ Sprite* Sprite::create(const std::string& imagePath,
     return sprite;
 }
 
+//----------------------------------------------------------------
 Sprite* Sprite::create(Properties* properties)
 {
     // Check if the Properties is valid and has a valid namespace.
@@ -397,6 +400,7 @@ Sprite* Sprite::create(Properties* properties)
     return sprite;
 }
 
+//----------------------------------------------------------------
 void Sprite::setFrameSource(unsigned int frameIndex, const Rectangle& source)
 {
     assert(frameIndex < _frameCount);
@@ -404,6 +408,7 @@ void Sprite::setFrameSource(unsigned int frameIndex, const Rectangle& source)
     _frames[frameIndex] = source;
 }
 
+//----------------------------------------------------------------
 const Rectangle& Sprite::getFrameSource(unsigned int frameIndex) const
 {
     assert(frameIndex < _frameCount);
@@ -411,6 +416,7 @@ const Rectangle& Sprite::getFrameSource(unsigned int frameIndex) const
     return _frames[frameIndex];
 }
 
+//----------------------------------------------------------------
 void Sprite::computeFrames(unsigned int frameStride, unsigned int framePadding)
 {
     _frameStride = frameStride;
@@ -456,6 +462,7 @@ void Sprite::computeFrames(unsigned int frameStride, unsigned int framePadding)
     }
 }
 
+//----------------------------------------------------------------
 void Sprite::setBlendMode(BlendMode mode)
 {
     switch (mode)
@@ -484,6 +491,7 @@ void Sprite::setBlendMode(BlendMode mode)
     }
 }
 
+//----------------------------------------------------------------
 unsigned int Sprite::draw(bool wireframe)
 {
     // Apply scene camera projection and translation offsets
@@ -565,6 +573,7 @@ unsigned int Sprite::draw(bool wireframe)
     return 1;
 }
 
+//----------------------------------------------------------------
 Drawable* Sprite::clone(NodeCloneContext& context)
 {
     Sprite* spriteClone = new Sprite();
@@ -603,6 +612,7 @@ Drawable* Sprite::clone(NodeCloneContext& context)
     return spriteClone;
 }
 
+//----------------------------------------------------------------
 int Sprite::getPropertyId(TargetType type, const std::string& propertyIdStr)
 {
     if (type == AnimationTarget::TRANSFORM)
@@ -624,6 +634,7 @@ int Sprite::getPropertyId(TargetType type, const std::string& propertyIdStr)
     return AnimationTarget::getPropertyId(type, propertyIdStr);
 }
 
+//----------------------------------------------------------------
 unsigned int Sprite::getAnimationPropertyComponentCount(int propertyId) const
 {
     switch (propertyId)
@@ -639,6 +650,7 @@ unsigned int Sprite::getAnimationPropertyComponentCount(int propertyId) const
     }
 }
 
+//----------------------------------------------------------------
 void Sprite::getAnimationPropertyValue(int propertyId, AnimationValue* value)
 {
     assert(value);
@@ -662,6 +674,7 @@ void Sprite::getAnimationPropertyValue(int propertyId, AnimationValue* value)
     }
 }
 
+//----------------------------------------------------------------
 void Sprite::setAnimationPropertyValue(int propertyId, AnimationValue* value, float blendWeight)
 {
     assert(value);

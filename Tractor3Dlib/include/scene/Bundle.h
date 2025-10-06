@@ -66,7 +66,7 @@ class Bundle : public Ref
      * @return The loaded node, or nullptr if the node could not be loaded.
      * @script{create}
      */
-    Node* loadNode(const std::string& id);
+    Node* loadNode(const std::string& id) { return loadNode(id, nullptr); }
 
     /**
      * Loads a mesh with the specified ID from the bundle.
@@ -161,7 +161,7 @@ class Bundle : public Ref
         /**
          * Constructor.
          */
-        MeshPartData();
+        MeshPartData() = default;
 
         /**
          * Destructor.
@@ -169,8 +169,8 @@ class Bundle : public Ref
         ~MeshPartData();
 
       public:
-        Mesh::PrimitiveType primitiveType;
-        Mesh::IndexFormat indexFormat;
+        Mesh::PrimitiveType primitiveType{ Mesh::TRIANGLES };
+        Mesh::IndexFormat indexFormat{ Mesh::INDEX32 };
         unsigned int indexCount{ 0 };
         unsigned char* indexData{ nullptr };
     };

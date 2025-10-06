@@ -23,44 +23,41 @@
 namespace tractor
 {
 
-Ray::Ray() : _direction(0, 0, 1) {}
-
+//----------------------------------------------------------------------------
 Ray::Ray(const Vector3& origin, const Vector3& direction) { set(origin, direction); }
 
+//----------------------------------------------------------------------------
 Ray::Ray(float originX, float originY, float originZ, float dirX, float dirY, float dirZ)
 {
     set(Vector3(originX, originY, originZ), Vector3(dirX, dirY, dirZ));
 }
 
+//----------------------------------------------------------------------------
 Ray::Ray(const Ray& copy) { set(copy); }
 
-Ray::~Ray() {}
-
-const Vector3& Ray::getOrigin() const noexcept { return _origin; }
-
-void Ray::setOrigin(const Vector3& origin) { _origin = origin; }
-
-void Ray::setOrigin(float x, float y, float z) { _origin.set(x, y, z); }
-
-const Vector3& Ray::getDirection() const noexcept { return _direction; }
-
+//----------------------------------------------------------------------------
 void Ray::setDirection(const Vector3& direction)
 {
     _direction = direction;
     normalize();
 }
 
+//----------------------------------------------------------------------------
 void Ray::setDirection(float x, float y, float z)
 {
     _direction.set(x, y, z);
     normalize();
 }
 
+//----------------------------------------------------------------------------
 float Ray::intersects(const BoundingSphere& sphere) const { return sphere.intersects(*this); }
 
 float Ray::intersects(const BoundingBox& box) const { return box.intersects(*this); }
 
+//----------------------------------------------------------------------------
 float Ray::intersects(const Frustum& frustum) const
+
+//----------------------------------------------------------------------------
 {
     Plane n = frustum.getNear();
     float nD = intersects(n);
@@ -105,6 +102,7 @@ float Ray::intersects(const Frustum& frustum) const
     return d;
 }
 
+//----------------------------------------------------------------------------
 float Ray::intersects(const Plane& plane) const
 {
     const Vector3& normal = plane.getNormal();
@@ -134,6 +132,7 @@ float Ray::intersects(const Plane& plane) const
     return d;
 }
 
+//----------------------------------------------------------------------------
 void Ray::set(const Vector3& origin, const Vector3& direction)
 {
     _origin = origin;
@@ -141,6 +140,7 @@ void Ray::set(const Vector3& origin, const Vector3& direction)
     normalize();
 }
 
+//----------------------------------------------------------------------------
 void Ray::set(const Ray& ray)
 {
     _origin = ray._origin;
@@ -148,6 +148,7 @@ void Ray::set(const Ray& ray)
     normalize();
 }
 
+//----------------------------------------------------------------------------
 void Ray::transform(const Matrix& matrix)
 {
     matrix.transformPoint(&_origin);
@@ -155,6 +156,7 @@ void Ray::transform(const Matrix& matrix)
     _direction.normalize();
 }
 
+//----------------------------------------------------------------------------
 void Ray::normalize()
 {
     if (_direction.isZero())

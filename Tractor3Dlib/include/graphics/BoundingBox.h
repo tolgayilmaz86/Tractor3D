@@ -37,7 +37,7 @@ class BoundingBox
     /**
      * Constructs an empty bounding box at the origin.
      */
-    BoundingBox();
+    BoundingBox() = default;
 
     /**
      * Constructs a new bounding box from the specified values.
@@ -69,7 +69,7 @@ class BoundingBox
     /**
      * Destructor.
      */
-    ~BoundingBox();
+    ~BoundingBox() = default;
 
     /**
      * Returns an empty bounding box.
@@ -161,7 +161,7 @@ class BoundingBox
      *
      * @return true if this bounding box is empty; false otherwise.
      */
-    bool isEmpty() const;
+    bool isEmpty() const noexcept { return min.x == max.x && min.y == max.y && min.z == max.z; }
 
     /**
      * Sets this bounding box to the smallest bounding box

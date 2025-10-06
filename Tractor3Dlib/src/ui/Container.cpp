@@ -38,15 +38,15 @@ namespace tractor
 {
 
 // If the user stops scrolling for this amount of time (in millis) before touch/click release, don't apply inertia.
-static const long SCROLL_INERTIA_DELAY = 100L;
+static constexpr long SCROLL_INERTIA_DELAY = 100L;
 // Factor to multiply friction by before applying to velocity.
-static const float SCROLL_FRICTION_FACTOR = 5.0f;
+static constexpr float SCROLL_FRICTION_FACTOR = 5.0f;
 // Distance that must be scrolled before isScrolling() will return true, used e.g. to cancel button-click events.
-static const float SCROLL_THRESHOLD = 10.0f;
+static constexpr float SCROLL_THRESHOLD = 10.0f;
 // Number of milliseconds to fade auto-hide scrollbars out for
-static const long SCROLLBAR_FADE_TIME = 1500L;
+static constexpr long SCROLLBAR_FADE_TIME = 1500L;
 // If the DPad or joystick is held down, this is the initial delay in milliseconds between focus change events.
-static const float FOCUS_CHANGE_REPEAT_DELAY = 300.0f;
+static constexpr float FOCUS_CHANGE_REPEAT_DELAY = 300.0f;
 
 /**
  * Sort function for use with _controls.sort(), based on Z-Order.
@@ -55,32 +55,27 @@ static const float FOCUS_CHANGE_REPEAT_DELAY = 300.0f;
  * @param c2 The second control
  * return true if the first controls z index is less than the second.
  */
-static bool sortControlsByZOrder(Control* c1, Control* c2);
+static bool sortControlsByZOrder(Control* c1, Control* c2)
+{
+    if (c1->getZIndex() < c2->getZIndex()) return true;
 
+    return false;
+}
+
+//----------------------------------------------------------------------------
 void Container::clearContacts()
 {
     for (size_t i = 0; i < MAX_CONTACT_INDICES; ++i)
         _contactIndices[i] = false;
 }
 
+//----------------------------------------------------------------------------
 Container::Container()
-    : _layout(nullptr), _activeControl(nullptr), _scrollBarTopCap(nullptr),
-      _scrollBarVertical(nullptr), _scrollBarBottomCap(nullptr), _scrollBarLeftCap(nullptr),
-      _scrollBarHorizontal(nullptr), _scrollBarRightCap(nullptr), _scroll(SCROLL_NONE),
-      _scrollBarBounds(Rectangle::empty()), _scrollPosition(Vector2::zero()),
-      _scrollBarsAutoHide(false), _scrollBarOpacity(1.0f), _scrolling(false),
-      _scrollingVeryFirstX(0), _scrollingVeryFirstY(0), _scrollingFirstX(0), _scrollingFirstY(0),
-      _scrollingLastX(0), _scrollingLastY(0), _scrollingStartTimeX(0), _scrollingStartTimeY(0),
-      _scrollingLastTime(0), _scrollingVelocity(Vector2::zero()), _scrollingFriction(1.0f),
-      _scrollWheelSpeed(400.0f), _scrollingRight(false), _scrollingDown(false),
-      _scrollingMouseVertically(false), _scrollingMouseHorizontally(false),
-      _scrollBarOpacityClip(nullptr), _zIndexDefault(0), _selectButtonDown(false),
-      _lastFrameTime(0), _totalWidth(0), _totalHeight(0), _initializedWithScroll(false),
-      _scrollWheelRequiresFocus(false)
 {
     clearContacts();
 }
 
+//----------------------------------------------------------------------------
 Container::~Container()
 {
     std::vector<Control*>::iterator it;
@@ -92,6 +87,7 @@ Container::~Container()
     SAFE_RELEASE(_layout);
 }
 
+//----------------------------------------------------------------------------
 Container* Container::create(const std::string& id, Theme::Style* style, Layout::Type layout)
 {
     Container* container = new Container();
@@ -101,6 +97,7 @@ Container* Container::create(const std::string& id, Theme::Style* style, Layout:
     return container;
 }
 
+//----------------------------------------------------------------------------
 Control* Container::create(Theme::Style* style, Properties* properties)
 {
     Container* container = new Container();
@@ -108,6 +105,7 @@ Control* Container::create(Theme::Style* style, Properties* properties)
     return container;
 }
 
+//----------------------------------------------------------------------------
 void Container::initialize(const std::string& typeName, Theme::Style* style, Properties* properties)
 {
     Control::initialize(typeName, style, properties);
@@ -169,6 +167,7 @@ void Container::initialize(const std::string& typeName, Theme::Style* style, Pro
     if (_layout == nullptr) _layout = createLayout(Layout::LAYOUT_ABSOLUTE);
 }
 
+//----------------------------------------------------------------------------
 void Container::addControls(Properties* properties)
 {
     assert(properties);
@@ -199,14 +198,14 @@ void Container::addControls(Properties* properties)
     sortControls();
 }
 
+//----------------------------------------------------------------------------
 const std::string& Container::getTypeName() const noexcept
 {
     static const std::string TYPE_NAME = "Container";
     return TYPE_NAME;
 }
 
-Layout* Container::getLayout() { return _layout; }
-
+//----------------------------------------------------------------------------
 void Container::setLayout(Layout::Type type)
 {
     if (_layout == nullptr || _layout->getType() != type)
@@ -218,6 +217,7 @@ void Container::setLayout(Layout::Type type)
     }
 }
 
+//----------------------------------------------------------------------------
 unsigned int Container::addControl(Control* control)
 {
     assert(control);
@@ -273,6 +273,7 @@ unsigned int Container::addControl(Control* control)
     return (unsigned int)(_controls.size() - 1);
 }
 
+//----------------------------------------------------------------------------
 void Container::insertControl(Control* control, unsigned int index)
 {
     assert(control);
@@ -292,6 +293,7 @@ void Container::insertControl(Control* control, unsigned int index)
     }
 }
 
+//----------------------------------------------------------------------------
 void Container::removeControl(unsigned int index)
 {
     assert(index < _controls.size());
@@ -309,6 +311,7 @@ void Container::removeControl(unsigned int index)
     SAFE_RELEASE(control);
 }
 
+//----------------------------------------------------------------------------
 void Container::removeControl(const std::string& id)
 {
     for (size_t i = 0, size = _controls.size(); i < size; ++i)
@@ -322,6 +325,7 @@ void Container::removeControl(const std::string& id)
     }
 }
 
+//----------------------------------------------------------------------------
 void Container::removeControl(Control* control)
 {
     assert(control);
@@ -337,12 +341,14 @@ void Container::removeControl(Control* control)
     }
 }
 
+//----------------------------------------------------------------------------
 Control* Container::getControl(unsigned int index) const
 {
     assert(index < _controls.size());
     return _controls[index];
 }
 
+//----------------------------------------------------------------------------
 Control* Container::getControl(const std::string& id) const
 {
     std::string_view targetId(id);
@@ -370,12 +376,10 @@ Control* Container::getControl(const std::string& id) const
     return nullptr;
 }
 
-unsigned int Container::getControlCount() const { return (unsigned int)_controls.size(); }
-
+//----------------------------------------------------------------------------
 const std::vector<Control*>& Container::getControls() const { return _controls; }
 
-bool Container::isForm() const { return false; }
-
+//----------------------------------------------------------------------------
 void Container::setScroll(Scroll scroll)
 {
     if (scroll != _scroll)
@@ -396,8 +400,7 @@ void Container::setScroll(Scroll scroll)
     }
 }
 
-Container::Scroll Container::getScroll() const { return _scroll; }
-
+//----------------------------------------------------------------------------
 void Container::setScrollBarsAutoHide(bool autoHide)
 {
     if (autoHide != _scrollBarsAutoHide)
@@ -407,8 +410,7 @@ void Container::setScrollBarsAutoHide(bool autoHide)
     }
 }
 
-bool Container::isScrollBarsAutoHide() const { return _scrollBarsAutoHide; }
-
+//----------------------------------------------------------------------------
 bool Container::isScrolling() const
 {
     if (_scrolling
@@ -423,8 +425,7 @@ bool Container::isScrolling() const
     return false;
 }
 
-const Vector2& Container::getScrollPosition() const { return _scrollPosition; }
-
+//----------------------------------------------------------------------------
 void Container::setScrollPosition(const Vector2& scrollPosition)
 {
     _scrollPosition = scrollPosition;
@@ -432,6 +433,7 @@ void Container::setScrollPosition(const Vector2& scrollPosition)
     setChildrenDirty(DIRTY_BOUNDS, true);
 }
 
+//----------------------------------------------------------------------------
 Animation* Container::getAnimation(const std::string& id) const
 {
     std::vector<Control*>::const_iterator itr = _controls.begin();
@@ -453,10 +455,7 @@ Animation* Container::getAnimation(const std::string& id) const
     return nullptr;
 }
 
-bool Container::getScrollWheelRequiresFocus() const { return _scrollWheelRequiresFocus; }
-
-void Container::setScrollWheelRequiresFocus(bool required) { _scrollWheelRequiresFocus = required; }
-
+//----------------------------------------------------------------------------
 bool Container::setFocus()
 {
     // If this container (or one of its children) already has focus, do nothing
@@ -480,8 +479,7 @@ bool Container::setFocus()
     return Control::setFocus();
 }
 
-Control* Container::getActiveControl() const { return _activeControl; }
-
+//----------------------------------------------------------------------------
 void Container::setActiveControl(Control* control)
 {
     if (std::find(_controls.begin(), _controls.end(), control) != _controls.end())
@@ -495,6 +493,7 @@ void Container::setActiveControl(Control* control)
     }
 }
 
+//----------------------------------------------------------------------------
 void Container::setChildrenDirty(int bits, bool recursive)
 {
     for (size_t i = 0, count = _controls.size(); i < count; ++i)
@@ -506,6 +505,7 @@ void Container::setChildrenDirty(int bits, bool recursive)
     }
 }
 
+//----------------------------------------------------------------------------
 void Container::update(float elapsedTime)
 {
     Control::update(elapsedTime);
@@ -514,6 +514,7 @@ void Container::update(float elapsedTime)
         _controls[i]->update(elapsedTime);
 }
 
+//----------------------------------------------------------------------------
 void Container::updateState(State state)
 {
     Control::updateState(state);
@@ -534,6 +535,7 @@ void Container::updateState(State state)
     }
 }
 
+//----------------------------------------------------------------------------
 void Container::updateBounds()
 {
     // Handle automatically sizing based on our children
@@ -586,6 +588,7 @@ void Container::updateBounds()
     _layout->update(this);
 }
 
+//----------------------------------------------------------------------------
 void Container::updateAbsoluteBounds(const Vector2& offset)
 {
     Control::updateAbsoluteBounds(offset);
@@ -610,6 +613,7 @@ void Container::updateAbsoluteBounds(const Vector2& offset)
     updateScroll();
 }
 
+//----------------------------------------------------------------------------
 bool Container::updateChildBounds()
 {
     bool result = false;
@@ -645,6 +649,7 @@ bool Container::updateChildBounds()
     return result;
 }
 
+//----------------------------------------------------------------------------
 unsigned int Container::draw(Form* form, const Rectangle& clip)
 {
     if (!_visible) return 0;
@@ -807,6 +812,7 @@ unsigned int Container::draw(Form* form, const Rectangle& clip)
     return drawCalls;
 }
 
+//----------------------------------------------------------------------------
 static bool canReceiveFocus(Control* control)
 {
     if (control->getFocusIndex() < 0 || !(control->isEnabled() && control->isVisible()))
@@ -826,6 +832,7 @@ static bool canReceiveFocus(Control* control)
     return false;
 }
 
+//----------------------------------------------------------------------------
 bool Container::moveFocus(Direction direction)
 {
     switch (direction)
@@ -845,6 +852,7 @@ bool Container::moveFocus(Direction direction)
     }
 }
 
+//----------------------------------------------------------------------------
 bool Container::moveFocusNextPrevious(Direction direction)
 {
     // Get the current control that has focus (either directly or indirectly) within this container
@@ -948,6 +956,7 @@ bool Container::moveFocusNextPrevious(Direction direction)
     return false;
 }
 
+//----------------------------------------------------------------------------
 bool Container::moveFocusDirectional(Direction direction)
 {
     Control* startControl = Form::getFocusControl();
@@ -1028,6 +1037,7 @@ bool Container::moveFocusDirectional(Direction direction)
     return false;
 }
 
+//----------------------------------------------------------------------------
 void Container::startScrolling(float x, float y, bool resetTime)
 {
     _scrollingVelocity.set(-x, y);
@@ -1047,6 +1057,7 @@ void Container::startScrolling(float x, float y, bool resetTime)
     }
 }
 
+//----------------------------------------------------------------------------
 void Container::stopScrolling()
 {
     _scrollingVelocity.set(0, 0);
@@ -1056,8 +1067,7 @@ void Container::stopScrolling()
     if (_parent) _parent->stopScrolling();
 }
 
-bool Container::isContainer() const { return true; }
-
+//----------------------------------------------------------------------------
 Layout::Type Container::getLayoutType(const std::string& layoutString)
 {
     if (layoutString.empty())
@@ -1086,6 +1096,7 @@ Layout::Type Container::getLayoutType(const std::string& layoutString)
     }
 }
 
+//----------------------------------------------------------------------------
 Layout* Container::createLayout(Layout::Type type)
 {
     switch (type)
@@ -1101,6 +1112,7 @@ Layout* Container::createLayout(Layout::Type type)
     }
 }
 
+//----------------------------------------------------------------------------
 void Container::updateScroll()
 {
     if (_scroll == SCROLL_NONE) return;
@@ -1242,6 +1254,7 @@ void Container::updateScroll()
     }
 }
 
+//----------------------------------------------------------------------------
 void Container::sortControls()
 {
     if (_layout->getType() == Layout::LAYOUT_ABSOLUTE)
@@ -1250,6 +1263,7 @@ void Container::sortControls()
     }
 }
 
+//----------------------------------------------------------------------------
 bool Container::touchEventScroll(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex)
 {
     switch (evt)
@@ -1393,6 +1407,7 @@ bool Container::touchEventScroll(Touch::TouchEvent evt, int x, int y, unsigned i
     return false;
 }
 
+//----------------------------------------------------------------------------
 bool Container::mouseEventScroll(Mouse::MouseEvent evt, int x, int y, int wheelDelta)
 {
     switch (evt)
@@ -1502,15 +1517,13 @@ bool Container::mouseEventScroll(Mouse::MouseEvent evt, int x, int y, int wheelD
     return false;
 }
 
-bool Container::inContact()
+//----------------------------------------------------------------------------
+bool Container::inContact() const 
 {
-    for (size_t i = 0; i < MAX_CONTACT_INDICES; ++i)
-    {
-        if (_contactIndices[i]) return true;
-    }
-    return false;
+    return std::ranges::any_of(_contactIndices, [](bool contact) { return contact; });
 }
 
+//----------------------------------------------------------------------------
 Container::Scroll Container::getScroll(const std::string& scroll)
 {
     if (scroll.empty()) return Container::SCROLL_NONE;
@@ -1539,21 +1552,7 @@ Container::Scroll Container::getScroll(const std::string& scroll)
     return Container::SCROLL_NONE;
 }
 
-float Container::getScrollingFriction() const { return _scrollingFriction; }
-
-void Container::setScrollingFriction(float friction) { _scrollingFriction = friction; }
-
-float Container::getScrollWheelSpeed() const { return _scrollWheelSpeed; }
-
-void Container::setScrollWheelSpeed(float speed) { _scrollWheelSpeed = speed; }
-
-static bool sortControlsByZOrder(Control* c1, Control* c2)
-{
-    if (c1->getZIndex() < c2->getZIndex()) return true;
-
-    return false;
-}
-
+//----------------------------------------------------------------------------
 unsigned int Container::getAnimationPropertyComponentCount(int propertyId) const
 {
     switch (propertyId)
@@ -1565,6 +1564,7 @@ unsigned int Container::getAnimationPropertyComponentCount(int propertyId) const
     }
 }
 
+//----------------------------------------------------------------------------
 void Container::getAnimationPropertyValue(int propertyId, AnimationValue* value)
 {
     assert(value);
@@ -1580,6 +1580,7 @@ void Container::getAnimationPropertyValue(int propertyId, AnimationValue* value)
     }
 }
 
+//----------------------------------------------------------------------------
 void Container::setAnimationPropertyValue(int propertyId, AnimationValue* value, float blendWeight)
 {
     assert(value);

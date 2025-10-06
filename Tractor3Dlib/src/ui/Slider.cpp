@@ -20,10 +20,11 @@ namespace tractor
 {
 
 // Fraction of slider to scroll when mouse scrollwheel is used.
-static const float SCROLLWHEEL_FRACTION = 0.1f;
+static constexpr float SCROLLWHEEL_FRACTION = 0.1f;
 // Fraction of slider to scroll for a delta of 1.0f when a gamepad or keyboard is used.
-static const float MOVE_FRACTION = 0.005f;
+static constexpr float MOVE_FRACTION = 0.005f;
 
+//----------------------------------------------------------------
 Slider* Slider::create(const std::string& id, Theme::Style* style)
 {
     Slider* slider = new Slider();
@@ -32,6 +33,7 @@ Slider* Slider::create(const std::string& id, Theme::Style* style)
     return slider;
 }
 
+//----------------------------------------------------------------
 Control* Slider::create(Theme::Style* style, Properties* properties)
 {
     Slider* slider = new Slider();
@@ -39,6 +41,7 @@ Control* Slider::create(Theme::Style* style, Properties* properties)
     return slider;
 }
 
+//----------------------------------------------------------------
 void Slider::initialize(const std::string& typeName, Theme::Style* style, Properties* properties)
 {
     Label::initialize(typeName, style, properties);
@@ -62,12 +65,14 @@ void Slider::initialize(const std::string& typeName, Theme::Style* style, Proper
     setValue(_value);
 }
 
+//----------------------------------------------------------------
 const std::string& Slider::getTypeName() const noexcept
 {
     static const std::string TYPE_NAME = "Slider";
     return TYPE_NAME;
 }
 
+//----------------------------------------------------------------
 void Slider::setValue(float value)
 {
     value = MATH_CLAMP(value, _min, _max);
@@ -87,6 +92,7 @@ void Slider::setValue(float value)
     }
 }
 
+//----------------------------------------------------------------
 void Slider::setValueTextVisible(bool valueTextVisible)
 {
     if (valueTextVisible != _valueTextVisible)
@@ -96,6 +102,7 @@ void Slider::setValueTextVisible(bool valueTextVisible)
     }
 }
 
+//----------------------------------------------------------------
 void Slider::addListener(Control::Listener* listener, int eventFlags)
 {
     if ((eventFlags & Control::Listener::TEXT_CHANGED) == Control::Listener::TEXT_CHANGED)
@@ -106,6 +113,7 @@ void Slider::addListener(Control::Listener* listener, int eventFlags)
     Control::addListener(listener, eventFlags);
 }
 
+//----------------------------------------------------------------
 void Slider::updateValue(int x, int y)
 {
     State state = getState();
@@ -139,6 +147,7 @@ void Slider::updateValue(int x, int y)
     setValue(value);
 }
 
+//----------------------------------------------------------------
 bool Slider::touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex)
 {
     State state = getState();
@@ -161,6 +170,7 @@ bool Slider::touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contac
     return Control::touchEvent(evt, x, y, contactIndex);
 }
 
+//----------------------------------------------------------------
 static bool isScrollable(Container* container)
 {
     if (container->getScroll() != Container::SCROLL_NONE) return true;
@@ -169,6 +179,7 @@ static bool isScrollable(Container* container)
     return parent ? isScrollable(parent) : false;
 }
 
+//----------------------------------------------------------------
 bool Slider::mouseEvent(Mouse::MouseEvent evt, int x, int y, int wheelDelta)
 {
     switch (evt)
@@ -200,6 +211,7 @@ bool Slider::mouseEvent(Mouse::MouseEvent evt, int x, int y, int wheelDelta)
     return false;
 }
 
+//----------------------------------------------------------------
 bool Slider::gamepadJoystickEvent(Gamepad* gamepad, unsigned int index)
 {
     // The right analog stick can be used to change a slider's value.
@@ -214,6 +226,7 @@ bool Slider::gamepadJoystickEvent(Gamepad* gamepad, unsigned int index)
     return Label::gamepadJoystickEvent(gamepad, index);
 }
 
+//----------------------------------------------------------------
 bool Slider::keyEvent(Keyboard::KeyEvent evt, int key)
 {
     switch (evt)
@@ -249,6 +262,7 @@ bool Slider::keyEvent(Keyboard::KeyEvent evt, int key)
     return Control::keyEvent(evt, key);
 }
 
+//----------------------------------------------------------------
 void Slider::update(float elapsedTime)
 {
     Label::update(elapsedTime);
@@ -270,6 +284,7 @@ void Slider::update(float elapsedTime)
     }
 }
 
+//----------------------------------------------------------------
 void Slider::updateState(State state)
 {
     Label::updateState(state);
@@ -280,6 +295,7 @@ void Slider::updateState(State state)
     _trackImage = getImage("track", state);
 }
 
+//----------------------------------------------------------------
 void Slider::updateBounds()
 {
     Label::updateBounds();
@@ -298,6 +314,7 @@ void Slider::updateBounds()
     }
 }
 
+//----------------------------------------------------------------
 unsigned int Slider::drawImages(Form* form, const Rectangle& clip)
 {
     if (!(_minImage && _maxImage && _markerImage && _trackImage)) return 0;
@@ -448,6 +465,7 @@ unsigned int Slider::drawImages(Form* form, const Rectangle& clip)
     return 4;
 }
 
+//----------------------------------------------------------------
 unsigned int Slider::drawText(Form* form, const Rectangle& clip)
 {
     unsigned int drawCalls = Label::drawText(form, clip);

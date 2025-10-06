@@ -30,6 +30,7 @@ static std::string g_resourcePath("./");
 static std::string __assetPath("");
 static std::map<std::string, std::string> __aliases;
 
+//----------------------------------------------------------------------------
 /**
  * Gets the fully resolved path.
  * If the path is relative then it will be prefixed with the resource path.
@@ -51,13 +52,16 @@ static void getFullPath(const std::string& path, std::string& fullPath)
     }
 }
 
+//----------------------------------------------------------------------------
 void FileSystem::setResourcePath(const std::string& path)
 {
     g_resourcePath = path.empty() ? "" : path;
 }
 
+//----------------------------------------------------------------------------
 std::string FileSystem::getResourcePath() { return g_resourcePath; }
 
+//----------------------------------------------------------------------------
 void FileSystem::loadResourceAliases(const std::string& aliasFilePath)
 {
     auto properties = std::unique_ptr<Properties>(Properties::create(aliasFilePath));
@@ -71,6 +75,7 @@ void FileSystem::loadResourceAliases(const std::string& aliasFilePath)
     }
 }
 
+//----------------------------------------------------------------------------
 void FileSystem::loadResourceAliases(Properties* properties)
 {
     assert(properties);
@@ -81,6 +86,7 @@ void FileSystem::loadResourceAliases(Properties* properties)
     }
 }
 
+//----------------------------------------------------------------------------
 std::string FileSystem::displayFileDialog(size_t dialogMode,
                                           const std::string& title,
                                           const std::string& filterDescription,
@@ -94,6 +100,7 @@ std::string FileSystem::displayFileDialog(size_t dialogMode,
                                        initialDirectory);
 }
 
+//----------------------------------------------------------------------------
 std::string FileSystem::resolvePath(const std::string& path)
 {
     size_t len = path.size();
@@ -108,6 +115,7 @@ std::string FileSystem::resolvePath(const std::string& path)
     return path;
 }
 
+//----------------------------------------------------------------------------
 bool FileSystem::fileExists(const std::string& filePath)
 {
     std::string fullPath;
@@ -116,6 +124,7 @@ bool FileSystem::fileExists(const std::string& filePath)
     return std::filesystem::exists(fullPath);
 }
 
+//----------------------------------------------------------------------------
 std::unique_ptr<Stream> FileSystem::open(const std::string& path, size_t streamMode)
 {
     char modeStr[] = "rb";
@@ -127,6 +136,7 @@ std::unique_ptr<Stream> FileSystem::open(const std::string& path, size_t streamM
     return std::move(stream);
 }
 
+//----------------------------------------------------------------------------
 char* FileSystem::readAll(const std::string& filePath, int* fileSize)
 {
     // Open file for reading.
@@ -160,6 +170,7 @@ char* FileSystem::readAll(const std::string& filePath, int* fileSize)
     return buffer;
 }
 
+//----------------------------------------------------------------------------
 bool FileSystem::isAbsolutePath(const std::string& filePath)
 {
     if (filePath.empty()) return false;
@@ -169,12 +180,15 @@ bool FileSystem::isAbsolutePath(const std::string& filePath)
     return p.is_absolute();
 }
 
+//----------------------------------------------------------------------------
 void FileSystem::setAssetPath(const std::string& path) { __assetPath = path; }
 
+//----------------------------------------------------------------------------
 std::string FileSystem::getAssetPath() { return __assetPath; }
 
 void FileSystem::createFileFromAsset(const std::string& path) {}
 
+//----------------------------------------------------------------------------
 std::string FileSystem::getDirectoryName(const std::string& path)
 {
     if (path.empty()) return EMPTY_STRING;
@@ -188,6 +202,7 @@ std::string FileSystem::getDirectoryName(const std::string& path)
     return dirname;
 }
 
+//----------------------------------------------------------------------------
 std::string FileSystem::getExtension(const std::string& path)
 {
     namespace fs = std::filesystem;

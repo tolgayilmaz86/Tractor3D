@@ -32,12 +32,12 @@ class BoundingSphere
     /**
      * The sphere radius.
      */
-    float radius;
+    float radius{ 0.0f };
 
     /**
      *  Constructs a new bounding sphere initialized to all zeros.
      */
-    BoundingSphere();
+    BoundingSphere() = default;
 
     /**
      * Constructs a new bounding sphere initialized to the specified values.
@@ -57,7 +57,7 @@ class BoundingSphere
     /**
      * Destructor.
      */
-    ~BoundingSphere();
+    ~BoundingSphere() = default;
 
     /**
      * Returns an empty bounding sphere.
@@ -118,7 +118,7 @@ class BoundingSphere
      *
      * @return true if this bounding sphere is empty; false otherwise.
      */
-    bool isEmpty() const noexcept;
+    bool isEmpty() const noexcept { return radius == 0.0f; }
 
     /**
      * Sets this bounding sphere to the smallest bounding sphere

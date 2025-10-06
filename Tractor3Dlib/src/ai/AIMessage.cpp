@@ -18,14 +18,9 @@
 namespace tractor
 {
 
-AIMessage::AIMessage()
-    : _id(0), _deliveryTime(0), _parameters(nullptr), _parameterCount(0),
-      _messageType(MESSAGE_TYPE_CUSTOM), _next(nullptr)
-{
-}
-
 AIMessage::~AIMessage() { SAFE_DELETE_ARRAY(_parameters); }
 
+//----------------------------------------------------------------------------
 AIMessage* AIMessage::create(unsigned int id,
                              const std::string& sender,
                              const std::string& receiver,
@@ -40,8 +35,10 @@ AIMessage* AIMessage::create(unsigned int id,
     return message;
 }
 
+//----------------------------------------------------------------------------
 void AIMessage::destroy(AIMessage* message) { SAFE_DELETE(message); }
 
+//----------------------------------------------------------------------------
 int AIMessage::getInt(unsigned int index) const
 {
     assert(index < _parameterCount);
@@ -50,6 +47,7 @@ int AIMessage::getInt(unsigned int index) const
     return _parameters[index].intValue;
 }
 
+//----------------------------------------------------------------------------
 void AIMessage::setInt(unsigned int index, int value)
 {
     assert(index < _parameterCount);
@@ -60,6 +58,7 @@ void AIMessage::setInt(unsigned int index, int value)
     _parameters[index].type = AIMessage::INTEGER;
 }
 
+//----------------------------------------------------------------------------
 long AIMessage::getLong(unsigned int index) const
 {
     assert(index < _parameterCount);
@@ -68,6 +67,7 @@ long AIMessage::getLong(unsigned int index) const
     return _parameters[index].longValue;
 }
 
+//----------------------------------------------------------------------------
 void AIMessage::setLong(unsigned int index, long value)
 {
     assert(index < _parameterCount);
@@ -78,6 +78,7 @@ void AIMessage::setLong(unsigned int index, long value)
     _parameters[index].type = AIMessage::LONG;
 }
 
+//----------------------------------------------------------------------------
 float AIMessage::getFloat(unsigned int index) const
 {
     assert(index < _parameterCount);
@@ -86,6 +87,7 @@ float AIMessage::getFloat(unsigned int index) const
     return _parameters[index].floatValue;
 }
 
+//----------------------------------------------------------------------------
 void AIMessage::setFloat(unsigned int index, float value)
 {
     assert(index < _parameterCount);
@@ -96,6 +98,7 @@ void AIMessage::setFloat(unsigned int index, float value)
     _parameters[index].type = AIMessage::FLOAT;
 }
 
+//----------------------------------------------------------------------------
 double AIMessage::getDouble(unsigned int index) const
 {
     assert(index < _parameterCount);
@@ -104,6 +107,7 @@ double AIMessage::getDouble(unsigned int index) const
     return _parameters[index].doubleValue;
 }
 
+//----------------------------------------------------------------------------
 void AIMessage::setDouble(unsigned int index, double value)
 {
     assert(index < _parameterCount);
@@ -114,6 +118,7 @@ void AIMessage::setDouble(unsigned int index, double value)
     _parameters[index].type = AIMessage::DOUBLE;
 }
 
+//----------------------------------------------------------------------------
 bool AIMessage::getBoolean(unsigned int index) const
 {
     assert(index < _parameterCount);
@@ -122,6 +127,7 @@ bool AIMessage::getBoolean(unsigned int index) const
     return _parameters[index].boolValue;
 }
 
+//----------------------------------------------------------------------------
 void AIMessage::setBoolean(unsigned int index, bool value)
 {
     assert(index < _parameterCount);
@@ -132,6 +138,7 @@ void AIMessage::setBoolean(unsigned int index, bool value)
     _parameters[index].type = AIMessage::BOOLEAN;
 }
 
+//----------------------------------------------------------------------------
 const std::string& AIMessage::getString(unsigned int index) const
 {
     assert(index < _parameterCount);
@@ -140,6 +147,7 @@ const std::string& AIMessage::getString(unsigned int index) const
     return _parameters[index].stringValue;
 }
 
+//----------------------------------------------------------------------------
 void AIMessage::setString(unsigned int index, const std::string& value)
 {
     assert(index < _parameterCount);
@@ -149,6 +157,7 @@ void AIMessage::setString(unsigned int index, const std::string& value)
     _parameters[index].type = AIMessage::STRING;
 }
 
+//----------------------------------------------------------------------------
 AIMessage::ParameterType AIMessage::getParameterType(unsigned int index) const
 {
     assert(index < _parameterCount);
@@ -156,6 +165,7 @@ AIMessage::ParameterType AIMessage::getParameterType(unsigned int index) const
     return _parameters[index].type;
 }
 
+//----------------------------------------------------------------------------
 void AIMessage::clearParameter(unsigned int index)
 {
     assert(index < _parameterCount);
@@ -163,10 +173,12 @@ void AIMessage::clearParameter(unsigned int index)
     _parameters[index].clear();
 }
 
-AIMessage::Parameter::Parameter() : type(UNDEFINED) {}
+AIMessage::Parameter::Parameter() {}
 
+//----------------------------------------------------------------------------
 AIMessage::Parameter::~Parameter() { clear(); }
 
+//----------------------------------------------------------------------------
 void AIMessage::Parameter::clear()
 {
     if (type == AIMessage::STRING) stringValue.clear();

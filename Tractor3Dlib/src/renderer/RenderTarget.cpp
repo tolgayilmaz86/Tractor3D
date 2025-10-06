@@ -20,8 +20,10 @@ namespace tractor
 
 static std::vector<RenderTarget*> __renderTargets;
 
+//----------------------------------------------------------------------------
 RenderTarget::RenderTarget(const std::string& id) : _id(id) {}
 
+//----------------------------------------------------------------------------
 RenderTarget::~RenderTarget()
 {
     SAFE_RELEASE(_texture);
@@ -33,6 +35,7 @@ RenderTarget::~RenderTarget()
         __renderTargets.erase(it);
 }
 
+//----------------------------------------------------------------------------
 RenderTarget* RenderTarget::create(const std::string& id,
                                    unsigned int width,
                                    unsigned int height,
@@ -52,6 +55,7 @@ RenderTarget* RenderTarget::create(const std::string& id,
     return rt;
 }
 
+//----------------------------------------------------------------------------
 RenderTarget* RenderTarget::create(const std::string& id, Texture* texture)
 {
     const auto& renderTarget = __renderTargets.emplace_back(new RenderTarget(id));
@@ -62,6 +66,7 @@ RenderTarget* RenderTarget::create(const std::string& id, Texture* texture)
     return renderTarget;
 }
 
+//----------------------------------------------------------------------------
 RenderTarget* RenderTarget::getRenderTarget(const std::string& id) noexcept
 {
     if (auto it = std::ranges::find_if(__renderTargets,

@@ -24,11 +24,13 @@ namespace tractor
 
 constexpr auto TYPE_NAME = "Control";
 
+//----------------------------------------------------------------------------
 Control::Control()
 {
     GP_REGISTER_SCRIPT_EVENTS();
 }
 
+//----------------------------------------------------------------------------
 Control::~Control()
 {
     Form::verifyRemovedControlState(this);
@@ -58,6 +60,7 @@ Control::~Control()
     }
 }
 
+//----------------------------------------------------------------------------
 Control::AutoSize Control::parseAutoSize(const std::string& str)
 {
     if (str.empty()) return _autoSize;
@@ -76,6 +79,7 @@ Control::AutoSize Control::parseAutoSize(const std::string& str)
     return _autoSize;
 }
 
+//----------------------------------------------------------------------------
 void Control::initialize(const std::string& typeName, Theme::Style* style, Properties* properties)
 {
     // Load our theme style
@@ -263,8 +267,10 @@ void Control::initialize(const std::string& typeName, Theme::Style* style, Prope
     }
 }
 
+//----------------------------------------------------------------------------
 const std::string& Control::getTypeName() const noexcept { return TYPE_NAME; }
 
+//----------------------------------------------------------------------------
 void Control::setX(float x, bool percentage) noexcept
 {
     if (_relativeBounds.x != x || percentage != ((_boundsBits & BOUNDS_X_PERCENTAGE_BIT) != 0))
@@ -288,11 +294,13 @@ void Control::setXInternal(float x, bool percentage) noexcept
     }
 }
 
+//----------------------------------------------------------------------------
 bool Control::isXPercentage() const noexcept
 {
     return (_boundsBits & BOUNDS_X_PERCENTAGE_BIT) != 0;
 }
 
+//----------------------------------------------------------------------------
 void Control::setY(float y, bool percentage) noexcept
 {
     if (_relativeBounds.y != y || percentage != ((_boundsBits & BOUNDS_Y_PERCENTAGE_BIT) != 0))
@@ -302,6 +310,7 @@ void Control::setY(float y, bool percentage) noexcept
     }
 }
 
+//----------------------------------------------------------------------------
 void Control::setYInternal(float y, bool percentage) noexcept
 {
     _relativeBounds.y = y;
@@ -316,11 +325,13 @@ void Control::setYInternal(float y, bool percentage) noexcept
     }
 }
 
+//----------------------------------------------------------------------------
 bool Control::isYPercentage() const noexcept
 {
     return (_boundsBits & BOUNDS_Y_PERCENTAGE_BIT) != 0;
 }
 
+//----------------------------------------------------------------------------
 void Control::setWidth(float width, bool percentage)
 {
     _autoSize = (AutoSize)(_autoSize & ~AUTO_SIZE_WIDTH);
@@ -333,6 +344,7 @@ void Control::setWidth(float width, bool percentage)
     }
 }
 
+//----------------------------------------------------------------------------
 void Control::setWidthInternal(float width, bool percentage) noexcept
 {
     _relativeBounds.width = width;
@@ -347,11 +359,13 @@ void Control::setWidthInternal(float width, bool percentage) noexcept
     }
 }
 
+//----------------------------------------------------------------------------
 bool Control::isWidthPercentage() const noexcept
 {
     return (_boundsBits & BOUNDS_WIDTH_PERCENTAGE_BIT) != 0;
 }
 
+//----------------------------------------------------------------------------
 void Control::setHeight(float height, bool percentage) noexcept
 {
     _autoSize = (AutoSize)(_autoSize & ~AUTO_SIZE_HEIGHT);
@@ -364,6 +378,7 @@ void Control::setHeight(float height, bool percentage) noexcept
     }
 }
 
+//----------------------------------------------------------------------------
 void Control::setHeightInternal(float height, bool percentage) noexcept
 {
     _relativeBounds.height = height;
@@ -378,23 +393,27 @@ void Control::setHeightInternal(float height, bool percentage) noexcept
     }
 }
 
+//----------------------------------------------------------------------------
 bool Control::isHeightPercentage() const noexcept
 {
     return (_boundsBits & BOUNDS_HEIGHT_PERCENTAGE_BIT) != 0;
 }
 
+//----------------------------------------------------------------------------
 void Control::setPosition(float x, float y) noexcept
 {
     setX(x);
     setY(y);
 }
 
+//----------------------------------------------------------------------------
 void Control::setSize(float width, float height) noexcept
 {
     setWidth(width);
     setHeight(height);
 }
 
+//----------------------------------------------------------------------------
 void Control::setBounds(const Rectangle& bounds) noexcept
 {
     setX(bounds.x);
@@ -403,6 +422,7 @@ void Control::setBounds(const Rectangle& bounds) noexcept
     setHeight(bounds.height);
 }
 
+//----------------------------------------------------------------------------
 void Control::setAlignment(Alignment alignment) noexcept
 {
     if (_alignment != alignment)
@@ -412,6 +432,7 @@ void Control::setAlignment(Alignment alignment) noexcept
     }
 }
 
+//----------------------------------------------------------------------------
 void Control::setAutoSize(AutoSize mode) noexcept
 {
     if (_autoSize != mode)
@@ -421,6 +442,7 @@ void Control::setAutoSize(AutoSize mode) noexcept
     }
 }
 
+//----------------------------------------------------------------------------
 void Control::setVisible(bool visible)
 {
     if (_visible != visible)
@@ -444,6 +466,7 @@ void Control::setVisible(bool visible)
     }
 }
 
+//----------------------------------------------------------------------------
 bool Control::isVisibleInHierarchy() const
 {
     if (!_visible) return false;
@@ -453,11 +476,13 @@ bool Control::isVisibleInHierarchy() const
     return true;
 }
 
+//----------------------------------------------------------------------------
 bool Control::hasFocus() const noexcept
 {
     return (Form::getFocusControl() == this);
 }
 
+//----------------------------------------------------------------------------
 bool Control::setFocus()
 {
     if (Form::getFocusControl() != this && canFocus())
@@ -469,6 +494,7 @@ bool Control::setFocus()
     return false;
 }
 
+//----------------------------------------------------------------------------
 void Control::setOpacity(float opacity, unsigned char states)
 {
     overrideStyle();
@@ -481,6 +507,7 @@ void Control::setOpacity(float opacity, unsigned char states)
     }
 }
 
+//----------------------------------------------------------------------------
 float Control::getOpacity(State state) const
 {
     Theme::Style::Overlay* overlay = getOverlay(state);
@@ -488,6 +515,7 @@ float Control::getOpacity(State state) const
     return overlay->getOpacity();
 }
 
+//----------------------------------------------------------------------------
 void Control::setEnabled(bool enabled)
 {
     if (enabled != isEnabled())
@@ -501,6 +529,7 @@ void Control::setEnabled(bool enabled)
     }
 }
 
+//----------------------------------------------------------------------------
 bool Control::isEnabledInHierarchy() const
 {
     if (!isEnabled()) return false;
@@ -509,6 +538,7 @@ bool Control::isEnabledInHierarchy() const
     return true;
 }
 
+//----------------------------------------------------------------------------
 void Control::setBorder(float top, float bottom, float left, float right, unsigned char states)
 {
     overrideStyle();
@@ -522,6 +552,7 @@ void Control::setBorder(float top, float bottom, float left, float right, unsign
     setDirty(DIRTY_BOUNDS);
 }
 
+//----------------------------------------------------------------------------
 const Theme::Border& Control::getBorder(State state) const
 {
     Theme::Style::Overlay* overlay = getOverlay(state);
@@ -529,6 +560,7 @@ const Theme::Border& Control::getBorder(State state) const
     return overlay->getBorder();
 }
 
+//----------------------------------------------------------------------------
 void Control::setSkinRegion(const Rectangle& region, unsigned char states)
 {
     overrideStyle();
@@ -541,6 +573,7 @@ void Control::setSkinRegion(const Rectangle& region, unsigned char states)
     }
 }
 
+//----------------------------------------------------------------------------
 const Rectangle& Control::getSkinRegion(State state) const
 {
     Theme::Style::Overlay* overlay = getOverlay(state);
@@ -548,6 +581,7 @@ const Rectangle& Control::getSkinRegion(State state) const
     return overlay->getSkinRegion();
 }
 
+//----------------------------------------------------------------------------
 void Control::setSkinColor(const Vector4& color, unsigned char states)
 {
     overrideStyle();
@@ -560,6 +594,7 @@ void Control::setSkinColor(const Vector4& color, unsigned char states)
     }
 }
 
+//----------------------------------------------------------------------------
 const Vector4& Control::getSkinColor(State state) const
 {
     Theme::Style::Overlay* overlay = getOverlay(state);
@@ -567,6 +602,7 @@ const Vector4& Control::getSkinColor(State state) const
     return overlay->getSkinColor();
 }
 
+//----------------------------------------------------------------------------
 void Control::setMargin(float top, float bottom, float left, float right)
 {
     assert(_style);
@@ -575,12 +611,14 @@ void Control::setMargin(float top, float bottom, float left, float right)
     setDirty(DIRTY_BOUNDS);
 }
 
+//----------------------------------------------------------------------------
 const Theme::Margin& Control::getMargin() const
 {
     assert(_style);
     return _style->getMargin();
 }
 
+//----------------------------------------------------------------------------
 void Control::setPadding(float top, float bottom, float left, float right)
 {
     assert(_style);
@@ -589,12 +627,14 @@ void Control::setPadding(float top, float bottom, float left, float right)
     setDirty(DIRTY_BOUNDS);
 }
 
+//----------------------------------------------------------------------------
 const Theme::Padding& Control::getPadding() const
 {
     assert(_style);
     return _style->getPadding();
 }
 
+//----------------------------------------------------------------------------
 void Control::setImageRegion(const std::string& id, const Rectangle& region, unsigned char states)
 {
     overrideStyle();
@@ -607,6 +647,7 @@ void Control::setImageRegion(const std::string& id, const Rectangle& region, uns
     }
 }
 
+//----------------------------------------------------------------------------
 const Rectangle& Control::getImageRegion(const std::string& id, State state) const
 {
     Theme::Style::Overlay* overlay = getOverlay(state);
@@ -614,6 +655,7 @@ const Rectangle& Control::getImageRegion(const std::string& id, State state) con
     return overlay->getImageRegion(id);
 }
 
+//----------------------------------------------------------------------------
 void Control::setImageColor(const std::string& id, const Vector4& color, unsigned char states)
 {
     overrideStyle();
@@ -626,6 +668,7 @@ void Control::setImageColor(const std::string& id, const Vector4& color, unsigne
     }
 }
 
+//----------------------------------------------------------------------------
 const Vector4& Control::getImageColor(const std::string& id, State state) const
 {
     Theme::Style::Overlay* overlay = getOverlay(state);
@@ -633,6 +676,7 @@ const Vector4& Control::getImageColor(const std::string& id, State state) const
     return overlay->getImageColor(id);
 }
 
+//----------------------------------------------------------------------------
 const Theme::UVs& Control::getImageUVs(const std::string& id, State state) const
 {
     Theme::Style::Overlay* overlay = getOverlay(state);
@@ -640,6 +684,7 @@ const Theme::UVs& Control::getImageUVs(const std::string& id, State state) const
     return overlay->getImageUVs(id);
 }
 
+//----------------------------------------------------------------------------
 void Control::setCursorRegion(const Rectangle& region, unsigned char states)
 {
     overrideStyle();
@@ -652,6 +697,7 @@ void Control::setCursorRegion(const Rectangle& region, unsigned char states)
     }
 }
 
+//----------------------------------------------------------------------------
 const Rectangle& Control::getCursorRegion(State state) const
 {
     Theme::Style::Overlay* overlay = getOverlay(state);
@@ -659,6 +705,7 @@ const Rectangle& Control::getCursorRegion(State state) const
     return overlay->getCursorRegion();
 }
 
+//----------------------------------------------------------------------------
 void Control::setCursorColor(const Vector4& color, unsigned char states)
 {
     overrideStyle();
@@ -671,6 +718,7 @@ void Control::setCursorColor(const Vector4& color, unsigned char states)
     }
 }
 
+//----------------------------------------------------------------------------
 const Vector4& Control::getCursorColor(State state)
 {
     Theme::Style::Overlay* overlay = getOverlay(state);
@@ -678,6 +726,7 @@ const Vector4& Control::getCursorColor(State state)
     return overlay->getCursorColor();
 }
 
+//----------------------------------------------------------------------------
 const Theme::UVs& Control::getCursorUVs(State state)
 {
     Theme::Style::Overlay* overlay = getOverlay(state);
@@ -685,6 +734,7 @@ const Theme::UVs& Control::getCursorUVs(State state)
     return overlay->getCursorUVs();
 }
 
+//----------------------------------------------------------------------------
 void Control::setFont(Font* font, unsigned char states)
 {
     overrideStyle();
@@ -699,6 +749,7 @@ void Control::setFont(Font* font, unsigned char states)
     if (_autoSize != AUTO_SIZE_NONE) setDirty(DIRTY_BOUNDS);
 }
 
+//----------------------------------------------------------------------------
 Font* Control::getFont(State state) const
 {
     Theme::Style::Overlay* overlay = getOverlay(state);
@@ -706,6 +757,7 @@ Font* Control::getFont(State state) const
     return overlay->getFont();
 }
 
+//----------------------------------------------------------------------------
 void Control::setFontSize(unsigned int fontSize, unsigned char states)
 {
     overrideStyle();
@@ -720,6 +772,7 @@ void Control::setFontSize(unsigned int fontSize, unsigned char states)
     if (_autoSize != AUTO_SIZE_NONE) setDirty(DIRTY_BOUNDS);
 }
 
+//----------------------------------------------------------------------------
 unsigned int Control::getFontSize(State state) const
 {
     Theme::Style::Overlay* overlay = getOverlay(state);
@@ -727,6 +780,7 @@ unsigned int Control::getFontSize(State state) const
     return overlay->getFontSize();
 }
 
+//----------------------------------------------------------------------------
 void Control::setTextColor(const Vector4& color, unsigned char states)
 {
     overrideStyle();
@@ -739,6 +793,7 @@ void Control::setTextColor(const Vector4& color, unsigned char states)
     }
 }
 
+//----------------------------------------------------------------------------
 const Vector4& Control::getTextColor(State state) const
 {
     Theme::Style::Overlay* overlay = getOverlay(state);
@@ -746,6 +801,7 @@ const Vector4& Control::getTextColor(State state) const
     return overlay->getTextColor();
 }
 
+//----------------------------------------------------------------------------
 void Control::setTextAlignment(Font::Justify alignment, unsigned char states)
 {
     overrideStyle();
@@ -758,6 +814,7 @@ void Control::setTextAlignment(Font::Justify alignment, unsigned char states)
     }
 }
 
+//----------------------------------------------------------------------------
 Font::Justify Control::getTextAlignment(State state) const
 {
     Theme::Style::Overlay* overlay = getOverlay(state);
@@ -765,6 +822,7 @@ Font::Justify Control::getTextAlignment(State state) const
     return overlay->getTextAlignment();
 }
 
+//----------------------------------------------------------------------------
 void Control::setTextRightToLeft(bool rightToLeft, unsigned char states)
 {
     overrideStyle();
@@ -777,6 +835,7 @@ void Control::setTextRightToLeft(bool rightToLeft, unsigned char states)
     }
 }
 
+//----------------------------------------------------------------------------
 bool Control::getTextRightToLeft(State state) const
 {
     Theme::Style::Overlay* overlay = getOverlay(state);
@@ -784,6 +843,7 @@ bool Control::getTextRightToLeft(State state) const
     return overlay->getTextRightToLeft();
 }
 
+//----------------------------------------------------------------------------
 void Control::setStyle(Theme::Style* style)
 {
     if (style != _style)
@@ -793,6 +853,7 @@ void Control::setStyle(Theme::Style* style)
     }
 }
 
+//----------------------------------------------------------------------------
 Control::State Control::getState() const noexcept
 {
     if (Form::getFocusControl() == this)
@@ -804,6 +865,7 @@ Control::State Control::getState() const noexcept
     return _state;
 }
 
+//----------------------------------------------------------------------------
 Theme::Style::OverlayType Control::getOverlayType() const noexcept
 {
     switch (getState())
@@ -823,6 +885,7 @@ Theme::Style::OverlayType Control::getOverlayType() const noexcept
     }
 }
 
+//----------------------------------------------------------------------------
 void Control::setZIndex(int zIndex)
 {
     if (zIndex != _zIndex)
@@ -836,6 +899,7 @@ void Control::setZIndex(int zIndex)
     }
 }
 
+//----------------------------------------------------------------------------
 void Control::addListener(Control::Listener* listener, int eventFlags)
 {
     assert(listener);
@@ -871,6 +935,7 @@ void Control::addListener(Control::Listener* listener, int eventFlags)
     }
 }
 
+//----------------------------------------------------------------------------
 void Control::removeListener(Control::Listener* listener)
 {
     if (_listeners == nullptr || listener == nullptr) return;
@@ -894,6 +959,7 @@ void Control::removeListener(Control::Listener* listener)
     if (_listeners->empty()) SAFE_DELETE(_listeners);
 }
 
+//----------------------------------------------------------------------------
 void Control::addSpecificListener(Control::Listener* listener, Control::Listener::EventType eventType)
 {
     assert(listener);
@@ -915,13 +981,13 @@ void Control::addSpecificListener(Control::Listener* listener, Control::Listener
     listenerList->push_back(listener);
 }
 
+//----------------------------------------------------------------------------
 bool Control::touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex)
 {
     return false;
 }
 
-bool Control::keyEvent(Keyboard::KeyEvent evt, int key) { return false; }
-
+//----------------------------------------------------------------------------
 bool Control::mouseEvent(Mouse::MouseEvent evt, int x, int y, int wheelDelta)
 {
     // Return false instead of _consumeInputEvents to allow handling to be
@@ -929,6 +995,7 @@ bool Control::mouseEvent(Mouse::MouseEvent evt, int x, int y, int wheelDelta)
     return false;
 }
 
+//----------------------------------------------------------------------------
 void Control::notifyListeners(Control::Listener::EventType eventType)
 {
     // This method runs untrusted code by notifying listeners of events.
@@ -960,6 +1027,7 @@ void Control::notifyListeners(Control::Listener::EventType eventType)
     this->release();
 }
 
+//----------------------------------------------------------------------------
 void Control::update(float elapsedTime)
 {
     State state = getState();
@@ -973,6 +1041,7 @@ void Control::update(float elapsedTime)
     if (_parent) _opacity *= _parent->_opacity;
 }
 
+//----------------------------------------------------------------------------
 void Control::updateState(State state)
 {
     // Clear dirty state bit
@@ -982,6 +1051,7 @@ void Control::updateState(State state)
     _skin = getSkin(state);
 }
 
+//----------------------------------------------------------------------------
 bool Control::updateBoundsInternal(const Vector2& offset)
 {
     // If our state is currently dirty, update it here so that any rendering state objects needed
@@ -1023,6 +1093,7 @@ bool Control::updateBoundsInternal(const Vector2& offset)
     return changed;
 }
 
+//----------------------------------------------------------------------------
 void Control::updateBounds()
 {
     Game* game = Game::getInstance();
@@ -1104,6 +1175,7 @@ void Control::updateBounds()
     }
 }
 
+//----------------------------------------------------------------------------
 void Control::updateAbsoluteBounds(const Vector2& offset)
 {
     Game* game = Game::getInstance();
@@ -1149,10 +1221,13 @@ void Control::updateAbsoluteBounds(const Vector2& offset)
     Rectangle::intersect(_viewportBounds, parentAbsoluteClip, &_viewportClipBounds);
 }
 
+//----------------------------------------------------------------------------
 void Control::startBatch(Form* form, SpriteBatch* batch) { form->startBatch(batch); }
 
+//----------------------------------------------------------------------------
 void Control::finishBatch(Form* form, SpriteBatch* batch) { form->finishBatch(batch); }
 
+//----------------------------------------------------------------------------
 unsigned int Control::draw(Form* form, const Rectangle& clip)
 {
     if (!_visible) return 0;
@@ -1163,6 +1238,7 @@ unsigned int Control::draw(Form* form, const Rectangle& clip)
     return drawCalls;
 }
 
+//----------------------------------------------------------------------------
 unsigned int Control::drawBorder(Form* form, const Rectangle& clip)
 {
     if (!form || !_skin || _absoluteBounds.width <= 0 || _absoluteBounds.height <= 0) return 0;
@@ -1347,6 +1423,7 @@ unsigned int Control::drawBorder(Form* form, const Rectangle& clip)
     return drawCalls;
 }
 
+//----------------------------------------------------------------------------
 Control::State Control::getState(const std::string& state)
 {
     if (state.empty())
@@ -1378,6 +1455,7 @@ Control::State Control::getState(const std::string& state)
     return NORMAL;
 }
 
+//----------------------------------------------------------------------------
 Theme::ThemeImage* Control::getImage(const std::string& id, State state)
 {
     Theme::ThemeImage* image = nullptr;
@@ -1392,8 +1470,7 @@ Theme::ThemeImage* Control::getImage(const std::string& id, State state)
     return image ? image : _style->getTheme()->_emptyImage;
 }
 
-Control* Control::getParent() const noexcept { return _parent; }
-
+//----------------------------------------------------------------------------
 bool Control::isChild(Control* control) const
 {
     if (!control) return false;
@@ -1408,6 +1485,7 @@ bool Control::isChild(Control* control) const
     return false;
 }
 
+//----------------------------------------------------------------------------
 Form* Control::getTopLevelForm() const
 {
     if (_parent) return _parent->getTopLevelForm();
@@ -1421,7 +1499,9 @@ Form* Control::getTopLevelForm() const
     return nullptr;
 }
 
+//----------------------------------------------------------------------------
 // Implementation of AnimationHandler
+//----------------------------------------------------------------------------
 unsigned int Control::getAnimationPropertyComponentCount(int propertyId) const
 {
     switch (propertyId)
@@ -1442,6 +1522,7 @@ unsigned int Control::getAnimationPropertyComponentCount(int propertyId) const
     }
 }
 
+//----------------------------------------------------------------------------
 void Control::getAnimationPropertyValue(int propertyId, AnimationValue* value)
 {
     assert(value);
@@ -1476,6 +1557,7 @@ void Control::getAnimationPropertyValue(int propertyId, AnimationValue* value)
     }
 }
 
+//----------------------------------------------------------------------------
 void Control::setAnimationPropertyValue(int propertyId, AnimationValue* value, float blendWeight)
 {
     assert(value);
@@ -1512,6 +1594,7 @@ void Control::setAnimationPropertyValue(int propertyId, AnimationValue* value, f
     }
 }
 
+//----------------------------------------------------------------------------
 Theme::Style::Overlay** Control::getOverlays(unsigned char overlayTypes,
                                              Theme::Style::Overlay** overlays)
 {
@@ -1547,6 +1630,7 @@ Theme::Style::Overlay** Control::getOverlays(unsigned char overlayTypes,
     return overlays;
 }
 
+//----------------------------------------------------------------------------
 Theme::Style::Overlay* Control::getOverlay(State state) const noexcept
 {
     assert(_style);
@@ -1583,6 +1667,7 @@ Theme::Style::Overlay* Control::getOverlay(State state) const noexcept
     return overlay;
 }
 
+//----------------------------------------------------------------------------
 void Control::overrideStyle()
 {
     if (_styleOverridden)
@@ -1596,6 +1681,7 @@ void Control::overrideStyle()
     _styleOverridden = true;
 }
 
+//----------------------------------------------------------------------------
 void Control::overrideThemedProperties(Properties* properties, unsigned char states)
 {
     assert(properties);
@@ -1656,6 +1742,7 @@ void Control::overrideThemedProperties(Properties* properties, unsigned char sta
     }
 }
 
+//----------------------------------------------------------------------------
 void Control::setImageList(Theme::ImageList* imageList, unsigned char states)
 {
     overrideStyle();
@@ -1669,6 +1756,7 @@ void Control::setImageList(Theme::ImageList* imageList, unsigned char states)
     if (_autoSize != AUTO_SIZE_NONE) setDirty(DIRTY_BOUNDS);
 }
 
+//----------------------------------------------------------------------------
 void Control::setCursor(Theme::ThemeImage* cursor, unsigned char states)
 {
     overrideStyle();
@@ -1681,6 +1769,7 @@ void Control::setCursor(Theme::ThemeImage* cursor, unsigned char states)
     }
 }
 
+//----------------------------------------------------------------------------
 void Control::setSkin(Theme::Skin* skin, unsigned char states)
 {
     overrideStyle();
@@ -1694,6 +1783,7 @@ void Control::setSkin(Theme::Skin* skin, unsigned char states)
     if (_autoSize != AUTO_SIZE_NONE) setDirty(DIRTY_BOUNDS);
 }
 
+//----------------------------------------------------------------------------
 Theme::Skin* Control::getSkin(State state)
 {
     Theme::Style::Overlay* overlay = getOverlay(state);
@@ -1701,6 +1791,7 @@ Theme::Skin* Control::getSkin(State state)
     return overlay->getSkin();
 }
 
+//----------------------------------------------------------------------------
 Control::Alignment Control::getAlignment(const std::string& alignment)
 {
     if (alignment.empty())
@@ -1776,6 +1867,7 @@ Control::Alignment Control::getAlignment(const std::string& alignment)
     return Control::ALIGN_TOP_LEFT;
 }
 
+//----------------------------------------------------------------------------
 float Control::parseCoord(const std::string& s, bool* isPercentage)
 {
     if (auto pos = s.find('%'); pos != std::string::npos)

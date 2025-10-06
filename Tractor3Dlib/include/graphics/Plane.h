@@ -50,7 +50,7 @@ class Plane
     /**
      * Constructs a new plane with normal (0, 1, 0) and distance 0.
      */
-    Plane();
+    Plane() = default;
 
     /**
      * Constructs a new plane from the specified values.
@@ -80,14 +80,14 @@ class Plane
     /**
      * Destructor.
      */
-    ~Plane();
+    ~Plane() = default;
 
     /**
      * Gets the plane's normal in the given vector.
      *
      * @return normal The plane's normal.
      */
-    const Vector3& getNormal() const noexcept;
+    const Vector3& getNormal() const noexcept { return _normal; }
 
     /**
      * Sets the plane's normal to the given vector.
@@ -245,8 +245,8 @@ class Plane
      */
     void normalize();
 
-    Vector3 _normal; // The normal vector of the Plane.
-    float _distance; // The distance of the Plane along its normal from the origin.
+    Vector3 _normal{ 0.0f, 1.0f, 0.0f }; // The normal vector of the Plane.
+    float _distance{ 0.0f }; // The distance of the Plane along its normal from the origin.
 };
 
 /**

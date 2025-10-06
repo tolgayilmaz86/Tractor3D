@@ -80,7 +80,6 @@ class Script : public Ref
      */
     Script::Scope getScope() const noexcept { return _scope; }
 
-
     /**
      * Determines if a function with the given name exists in the script.
      *
@@ -108,7 +107,7 @@ class Script : public Ref
     /**
      * Constructor.
      */
-    Script();
+    Script() = default;
 
     /**
      * Copy constructor (hidden).
@@ -120,9 +119,9 @@ class Script : public Ref
      */
     ~Script();
 
-    std::string _path;
-    Scope _scope;
-    int _env;
+    std::string _path{};
+    Scope _scope{ GLOBAL };
+    int _env{ 0 };
 };
 
 } // namespace tractor

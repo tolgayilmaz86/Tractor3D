@@ -24,11 +24,7 @@ namespace tractor
 static GLuint __maxVertexAttribs = 0;
 static std::vector<VertexAttributeBinding*> __vertexAttributeBindingCache;
 
-VertexAttributeBinding::VertexAttributeBinding()
-    : _handle(0), _attributes(nullptr), _mesh(nullptr), _effect(nullptr)
-{
-}
-
+//----------------------------------------------------------------------------
 VertexAttributeBinding::~VertexAttributeBinding()
 {
     // Delete from the vertex attribute binding cache.
@@ -52,6 +48,7 @@ VertexAttributeBinding::~VertexAttributeBinding()
     }
 }
 
+//----------------------------------------------------------------------------
 VertexAttributeBinding* VertexAttributeBinding::create(std::shared_ptr<Mesh> mesh, Effect* effect)
 {
     assert(mesh);
@@ -81,6 +78,7 @@ VertexAttributeBinding* VertexAttributeBinding::create(std::shared_ptr<Mesh> mes
     return b;
 }
 
+//----------------------------------------------------------------------------
 VertexAttributeBinding* VertexAttributeBinding::create(const VertexFormat& vertexFormat,
                                                        void* vertexPointer,
                                                        Effect* effect)
@@ -88,6 +86,7 @@ VertexAttributeBinding* VertexAttributeBinding::create(const VertexFormat& verte
     return create(nullptr, vertexFormat, vertexPointer, effect);
 }
 
+//----------------------------------------------------------------------------
 VertexAttributeBinding* VertexAttributeBinding::create(std::shared_ptr<Mesh> mesh,
                                                        const VertexFormat& vertexFormat,
                                                        void* vertexPointer,
@@ -243,6 +242,7 @@ VertexAttributeBinding* VertexAttributeBinding::create(std::shared_ptr<Mesh> mes
     return b;
 }
 
+//----------------------------------------------------------------------------
 void VertexAttributeBinding::setVertexAttribPointer(GLuint indx,
                                                     GLint size,
                                                     GLenum type,
@@ -271,6 +271,7 @@ void VertexAttributeBinding::setVertexAttribPointer(GLuint indx,
     }
 }
 
+//----------------------------------------------------------------------------
 void VertexAttributeBinding::bind()
 {
     if (_handle)
@@ -303,6 +304,7 @@ void VertexAttributeBinding::bind()
     }
 }
 
+//----------------------------------------------------------------------------
 void VertexAttributeBinding::unbind()
 {
     if (_handle)

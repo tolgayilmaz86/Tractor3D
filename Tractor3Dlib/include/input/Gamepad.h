@@ -77,7 +77,7 @@ class Gamepad
      *
      * @return The number of buttons on this gamepad.
      */
-    unsigned int getButtonCount() const;
+    unsigned int getButtonCount() const { return _buttonCount; }
 
     /**
      * Gets whether the given button is currently pressed down.
@@ -108,7 +108,7 @@ class Gamepad
      *
      * @return The number of analog triggers on this gamepad.
      */
-    unsigned int getTriggerCount() const;
+    unsigned int getTriggerCount() const noexcept { return _triggerCount; }
 
     /**
      * Returns the value of an analog trigger on this gamepad.  This value will be a
@@ -125,7 +125,7 @@ class Gamepad
      *
      * @return This gamepad's device/product name.
      */
-    const std::string& getName() const;
+    const std::string& getName() const noexcept { return _name; }
 
     /**
      * Returns whether the gamepad is currently represented with a UI form or not.

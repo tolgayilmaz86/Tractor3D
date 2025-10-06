@@ -106,7 +106,7 @@ class VertexAttributeBinding : public Ref
     /**
      * Constructor.
      */
-    VertexAttributeBinding();
+    VertexAttributeBinding() = default;
 
     /**
      * Destructor.
@@ -130,10 +130,10 @@ class VertexAttributeBinding : public Ref
                                 GLsizei stride,
                                 void* pointer);
 
-    GLuint _handle;
-    VertexAttribute* _attributes;
+    GLuint _handle{ 0 };
+    VertexAttribute* _attributes{ nullptr };
     std::shared_ptr<Mesh> _mesh;
-    Effect* _effect;
+    Effect* _effect{ nullptr };
 };
 
 } // namespace tractor

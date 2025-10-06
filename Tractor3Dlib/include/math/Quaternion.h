@@ -68,24 +68,24 @@ class Quaternion
     /**
      * The x-value of the quaternion's vector component.
      */
-    float x;
+    float x{ 0.0f };
     /**
      * The y-value of the quaternion's vector component.
      */
-    float y;
+    float y{ 0.0f };
     /**
      * The z-value of the quaternion's vector component.
      */
-    float z;
+    float z{ 0.0f };
     /**
      * The scalar component of the quaternion.
      */
-    float w;
+    float w{ 1.0f };
 
     /**
      * Constructs a quaternion initialized to (0, 0, 0, 1).
      */
-    Quaternion();
+    Quaternion() = default;
 
     /**
      * Constructs a quaternion initialized to (0, 0, 0, 1).
@@ -129,7 +129,7 @@ class Quaternion
     /**
      * Destructor.
      */
-    ~Quaternion();
+    ~Quaternion() = default;
 
     /**
      * Returns the identity quaternion.
@@ -197,7 +197,7 @@ class Quaternion
      * @param pitch The returned pitch angle
      * @param roll The returned roll angle
      */
-    void computeEuler(float* yaw, float* pitch, float* roll);
+    void computeEuler(float* yaw, float* pitch, float* roll) const;
 
     /**
      * Sets this quaternion to the conjugate of itself.

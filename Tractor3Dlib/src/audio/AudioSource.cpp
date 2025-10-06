@@ -22,6 +22,7 @@
 namespace tractor
 {
 
+//----------------------------------------------------------------------------
 AudioSource::AudioSource(AudioBuffer* buffer, ALuint source)
     : _alSource(source), _buffer(buffer), _looped(false), _gain(1.0f), _pitch(1.0f), _node(nullptr)
 {
@@ -39,6 +40,7 @@ AudioSource::AudioSource(AudioBuffer* buffer, ALuint source)
     AL_CHECK(alSourcefv(_alSource, AL_VELOCITY, (const ALfloat*)&_velocity));
 }
 
+//----------------------------------------------------------------------------
 AudioSource::~AudioSource()
 {
     if (_alSource)
@@ -59,6 +61,7 @@ AudioSource::~AudioSource()
     SAFE_RELEASE(_buffer);
 }
 
+//----------------------------------------------------------------------------
 AudioSource* AudioSource::create(const std::string& url, bool streamed)
 {
     // Load from a .audio file.
@@ -95,6 +98,7 @@ AudioSource* AudioSource::create(const std::string& url, bool streamed)
     return new AudioSource(buffer, alSource);
 }
 
+//----------------------------------------------------------------------------
 AudioSource* AudioSource::create(Properties* properties)
 {
     // Check if the properties is valid and has a valid namespace.
@@ -149,6 +153,7 @@ AudioSource* AudioSource::create(Properties* properties)
     return audio;
 }
 
+//----------------------------------------------------------------------------
 AudioSource::State AudioSource::getState() const
 {
     ALint state = AL_PLAYING;
@@ -169,12 +174,14 @@ AudioSource::State AudioSource::getState() const
     return INITIAL;
 }
 
+//----------------------------------------------------------------------------
 bool AudioSource::isStreamed() const
 {
     assert(_buffer);
     return _buffer->_streamed;
 }
 
+//----------------------------------------------------------------------------
 void AudioSource::play()
 {
     AL_CHECK(alSourcePlay(_alSource));
@@ -185,6 +192,7 @@ void AudioSource::play()
     audioController->addPlayingSource(this);
 }
 
+//----------------------------------------------------------------------------
 void AudioSource::pause()
 {
     AL_CHECK(alSourcePause(_alSource));
@@ -196,6 +204,7 @@ void AudioSource::pause()
     audioController->removePlayingSource(this);
 }
 
+//----------------------------------------------------------------------------
 void AudioSource::resume()
 {
     if (getState() == PAUSED)
@@ -204,6 +213,7 @@ void AudioSource::resume()
     }
 }
 
+//----------------------------------------------------------------------------
 void AudioSource::stop()
 {
     AL_CHECK(alSourceStop(_alSource));
@@ -214,6 +224,7 @@ void AudioSource::stop()
     audioController->removePlayingSource(this);
 }
 
+//----------------------------------------------------------------------------
 void AudioSource::setLooped(bool looped)
 {
     AL_CHECK(alSourcei(_alSource, AL_LOOPING, (looped && !isStreamed()) ? AL_TRUE : AL_FALSE));
@@ -224,26 +235,31 @@ void AudioSource::setLooped(bool looped)
     _looped = looped;
 }
 
+//----------------------------------------------------------------------------
 void AudioSource::setGain(float gain)
 {
     AL_CHECK(alSourcef(_alSource, AL_GAIN, gain));
     _gain = gain;
 }
 
+//----------------------------------------------------------------------------
 void AudioSource::setPitch(float pitch)
 {
     AL_CHECK(alSourcef(_alSource, AL_PITCH, pitch));
     _pitch = pitch;
 }
 
+//----------------------------------------------------------------------------
 void AudioSource::setVelocity(const Vector3& velocity)
 {
     AL_CHECK(alSourcefv(_alSource, AL_VELOCITY, (ALfloat*)&velocity));
     _velocity = velocity;
 }
 
+//----------------------------------------------------------------------------
 void AudioSource::setVelocity(float x, float y, float z) { setVelocity(Vector3(x, y, z)); }
 
+//----------------------------------------------------------------------------
 void AudioSource::setNode(Node* node)
 {
     if (_node != node)
@@ -266,6 +282,7 @@ void AudioSource::setNode(Node* node)
     }
 }
 
+//----------------------------------------------------------------------------
 void AudioSource::transformChanged(Transform* transform, long cookie)
 {
     if (_node)
@@ -275,6 +292,7 @@ void AudioSource::transformChanged(Transform* transform, long cookie)
     }
 }
 
+//----------------------------------------------------------------------------
 AudioSource* AudioSource::clone(NodeCloneContext& context)
 {
     assert(_buffer);
@@ -304,6 +322,7 @@ AudioSource* AudioSource::clone(NodeCloneContext& context)
     return audioClone;
 }
 
+//----------------------------------------------------------------------------
 bool AudioSource::streamDataIfNeeded()
 {
     assert(isStreamed());
@@ -341,6 +360,7 @@ bool AudioSource::streamDataIfNeeded()
     return true;
 }
 
+//----------------------------------------------------------------------------
 void AudioSource::rewind() { AL_CHECK(alSourceRewind(_alSource)); }
 
 } // namespace tractor

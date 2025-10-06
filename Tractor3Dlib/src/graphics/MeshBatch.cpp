@@ -22,6 +22,7 @@
 namespace tractor
 {
 
+//----------------------------------------------------------------------------
 MeshBatch::MeshBatch(const VertexFormat& vertexFormat,
                      Mesh::PrimitiveType primitiveType,
                      Material* material,
@@ -36,6 +37,7 @@ MeshBatch::MeshBatch(const VertexFormat& vertexFormat,
     resize(initialCapacity);
 }
 
+//----------------------------------------------------------------------------
 MeshBatch::~MeshBatch()
 {
     SAFE_RELEASE(_material);
@@ -43,6 +45,7 @@ MeshBatch::~MeshBatch()
     SAFE_DELETE_ARRAY(_indices);
 }
 
+//----------------------------------------------------------------------------
 MeshBatch* MeshBatch::create(const VertexFormat& vertexFormat,
                              Mesh::PrimitiveType primitiveType,
                              const std::string& materialPath,
@@ -62,6 +65,7 @@ MeshBatch* MeshBatch::create(const VertexFormat& vertexFormat,
     return batch;
 }
 
+//----------------------------------------------------------------------------
 MeshBatch* MeshBatch::create(const VertexFormat& vertexFormat,
                              Mesh::PrimitiveType primitiveType,
                              Material* material,
@@ -79,6 +83,7 @@ MeshBatch* MeshBatch::create(const VertexFormat& vertexFormat,
     return batch;
 }
 
+//----------------------------------------------------------------------------
 void MeshBatch::add(const void* vertices,
                     size_t size,
                     unsigned int vertexCount,
@@ -142,6 +147,7 @@ void MeshBatch::add(const void* vertices,
     _vertexCount = newVertexCount;
 }
 
+//----------------------------------------------------------------------------
 void MeshBatch::updateVertexAttributeBinding()
 {
     assert(_material);
@@ -163,8 +169,7 @@ void MeshBatch::updateVertexAttributeBinding()
     }
 }
 
-void MeshBatch::setCapacity(unsigned int capacity) { resize(capacity); }
-
+//----------------------------------------------------------------------------
 bool MeshBatch::resize(unsigned int capacity)
 {
     if (capacity == 0)
@@ -250,6 +255,7 @@ bool MeshBatch::resize(unsigned int capacity)
     return true;
 }
 
+//----------------------------------------------------------------------------
 void MeshBatch::add(const float* vertices,
                     unsigned int vertexCount,
                     const unsigned short* indices,
@@ -258,6 +264,7 @@ void MeshBatch::add(const float* vertices,
     add(vertices, sizeof(float), vertexCount, indices, indexCount);
 }
 
+//----------------------------------------------------------------------------
 void MeshBatch::start() noexcept
 {
     _vertexCount = 0;
@@ -267,6 +274,7 @@ void MeshBatch::start() noexcept
     _started = true;
 }
 
+//----------------------------------------------------------------------------
 void MeshBatch::draw()
 {
     if (_vertexCount == 0 || (_indexed && _indexCount == 0)) return; // nothing to draw

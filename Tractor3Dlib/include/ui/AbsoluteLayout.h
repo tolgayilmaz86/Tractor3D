@@ -50,7 +50,7 @@ class AbsoluteLayout : public Layout
     /*
      * Constructor.
      */
-    AbsoluteLayout();
+    AbsoluteLayout() = default;
 
     /*
      * Constructor.

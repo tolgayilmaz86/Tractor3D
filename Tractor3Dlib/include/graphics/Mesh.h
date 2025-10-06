@@ -301,7 +301,7 @@ class Mesh
      *
      * @return The number of mesh parts contained within the mesh.
      */
-    unsigned int getPartCount() const noexcept;
+    unsigned int getPartCount() const noexcept { return _partCount; }
 
     /**
      * Gets a MeshPart by index.
@@ -310,7 +310,7 @@ class Mesh
      *
      * @return The MeshPart at the specified index.
      */
-    MeshPart* getPart(unsigned int index);
+    MeshPart* getPart(unsigned int index) { return _parts[index].get(); }
 
     /**
      * Returns the bounding box for the points in this mesh.
@@ -332,14 +332,14 @@ class Mesh
      *
      * @return The bounding box for the mesh.
      */
-    const BoundingBox& getBoundingBox() const noexcept;
+    const BoundingBox& getBoundingBox() const noexcept { return _boundingBox; }
 
     /**
      * Sets the bounding box for this mesh.
      *
      * @param box The new bounding box for the mesh.
      */
-    void setBoundingBox(const BoundingBox& box);
+    void setBoundingBox(const BoundingBox& box) { _boundingBox = box; }
 
     /**
      * Returns the bounding sphere for the points in the mesh.
@@ -361,14 +361,14 @@ class Mesh
      *
      * @return The bounding sphere for the mesh.
      */
-    const BoundingSphere& getBoundingSphere() const noexcept;
+    const BoundingSphere& getBoundingSphere() const noexcept { return _boundingSphere; }
 
     /**
      * Sets the bounding sphere for this mesh.
      *
      * @param sphere The new bounding sphere for the mesh.
      */
-    void setBoundingSphere(const BoundingSphere& sphere);
+    void setBoundingSphere(const BoundingSphere& sphere) { _boundingSphere = sphere; }
 
   private:
     /**
@@ -381,16 +381,16 @@ class Mesh
      */
     Mesh& operator=(const Mesh&) = delete;
 
-    std::string _url;
+    std::string _url{};
     const VertexFormat _vertexFormat;
-    unsigned int _vertexCount;
-    VertexBufferHandle _vertexBuffer;
-    PrimitiveType _primitiveType;
-    unsigned int _partCount;
-    std::vector<std::unique_ptr<MeshPart>> _parts;
-    bool _dynamic;
-    BoundingBox _boundingBox;
-    BoundingSphere _boundingSphere;
+    unsigned int _vertexCount{ 0 };
+    VertexBufferHandle _vertexBuffer{};
+    PrimitiveType _primitiveType{ TRIANGLES };
+    unsigned int _partCount{ 0 };
+    std::vector<std::unique_ptr<MeshPart>> _parts{};
+    bool _dynamic{ false };
+    BoundingBox _boundingBox{};
+    BoundingSphere _boundingSphere{};
 };
 
 } // namespace tractor

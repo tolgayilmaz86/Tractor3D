@@ -26,6 +26,7 @@ namespace tractor
 
 static std::vector<Gamepad*> __gamepads;
 
+//----------------------------------------------------------------------------
 Gamepad::Gamepad(const std::string& formPath) : _handle((GamepadHandle)INT_MAX)
 {
     _form = Form::create(formPath);
@@ -47,6 +48,7 @@ Gamepad::Gamepad(const std::string& formPath) : _handle((GamepadHandle)INT_MAX)
     bindGamepadControls(_form);
 }
 
+//----------------------------------------------------------------------------
 Gamepad::Gamepad(GamepadHandle handle,
                  unsigned int buttonCount,
                  unsigned int joystickCount,
@@ -62,8 +64,10 @@ Gamepad::Gamepad(GamepadHandle handle,
     }
 }
 
+//----------------------------------------------------------------------------
 Gamepad::~Gamepad() { SAFE_RELEASE(_form); }
 
+//----------------------------------------------------------------------------
 Gamepad* Gamepad::add(GamepadHandle handle,
                       unsigned int buttonCount,
                       unsigned int joystickCount,
@@ -77,6 +81,7 @@ Gamepad* Gamepad::add(GamepadHandle handle,
     return gamepad;
 }
 
+//----------------------------------------------------------------------------
 Gamepad* Gamepad::add(const std::string& formPath)
 {
     Gamepad* gamepad = new Gamepad(formPath);
@@ -86,6 +91,7 @@ Gamepad* Gamepad::add(const std::string& formPath)
     return gamepad;
 }
 
+//----------------------------------------------------------------------------
 void Gamepad::remove(GamepadHandle handle)
 {
     __gamepads.erase(std::remove_if(__gamepads.begin(),
@@ -104,6 +110,7 @@ void Gamepad::remove(GamepadHandle handle)
                      __gamepads.end());
 }
 
+//----------------------------------------------------------------------------
 void Gamepad::remove(Gamepad* gamepad)
 {
     __gamepads.erase(std::remove_if(__gamepads.begin(),
@@ -122,6 +129,7 @@ void Gamepad::remove(Gamepad* gamepad)
                      __gamepads.end());
 }
 
+//----------------------------------------------------------------------------
 void Gamepad::bindGamepadControls(Container* container)
 {
     std::vector<Control*> controls = container->getControls();
@@ -154,8 +162,10 @@ void Gamepad::bindGamepadControls(Container* container)
     }
 }
 
+//----------------------------------------------------------------------------
 unsigned int Gamepad::getGamepadCount() { return __gamepads.size(); }
 
+//----------------------------------------------------------------------------
 Gamepad* Gamepad::getGamepad(unsigned int index, bool preferPhysical)
 {
     unsigned int count = __gamepads.size();
@@ -186,6 +196,7 @@ Gamepad* Gamepad::getGamepad(unsigned int index, bool preferPhysical)
     return backupVirtual;
 }
 
+//----------------------------------------------------------------------------
 Gamepad* Gamepad::getGamepad(GamepadHandle handle)
 {
     size_t count = __gamepads.size();
@@ -199,6 +210,7 @@ Gamepad* Gamepad::getGamepad(GamepadHandle handle)
     return nullptr;
 }
 
+//----------------------------------------------------------------------------
 Gamepad::ButtonMapping Gamepad::getButtonMappingFromString(const std::string& string)
 {
     if (string == "A" || string == "BUTTON_A")
@@ -240,8 +252,7 @@ Gamepad::ButtonMapping Gamepad::getButtonMappingFromString(const std::string& st
     return BUTTON_A;
 }
 
-const std::string& Gamepad::getName() const { return _name; }
-
+//----------------------------------------------------------------------------
 void Gamepad::update(float elapsedTime)
 {
     if (!_form)
@@ -250,6 +261,7 @@ void Gamepad::update(float elapsedTime)
     }
 }
 
+//----------------------------------------------------------------------------
 void Gamepad::updateInternal(float elapsedTime)
 {
     size_t size = __gamepads.size();
@@ -259,6 +271,7 @@ void Gamepad::updateInternal(float elapsedTime)
     }
 }
 
+//----------------------------------------------------------------------------
 void Gamepad::draw()
 {
     if (_form && _form->isEnabled())
@@ -267,8 +280,7 @@ void Gamepad::draw()
     }
 }
 
-unsigned int Gamepad::getButtonCount() const { return _buttonCount; }
-
+//----------------------------------------------------------------------------
 bool Gamepad::isButtonDown(ButtonMapping mapping) const
 {
     if (_form)
@@ -283,6 +295,7 @@ bool Gamepad::isButtonDown(ButtonMapping mapping) const
     return false;
 }
 
+//----------------------------------------------------------------------------
 void Gamepad::getJoystickValues(unsigned int joystickId, Vector2* outValue) const
 {
     if (joystickId >= _joystickCount) return;
@@ -306,8 +319,7 @@ void Gamepad::getJoystickValues(unsigned int joystickId, Vector2* outValue) cons
     }
 }
 
-unsigned int Gamepad::getTriggerCount() const { return _triggerCount; }
-
+//----------------------------------------------------------------------------
 float Gamepad::getTriggerValue(unsigned int triggerId) const
 {
     if (triggerId >= _triggerCount) return 0.0f;
@@ -319,6 +331,7 @@ float Gamepad::getTriggerValue(unsigned int triggerId) const
         return _triggers[triggerId];
 }
 
+//----------------------------------------------------------------------------
 void Gamepad::setButtons(unsigned int buttons)
 {
     if (buttons != _buttons)
@@ -328,6 +341,7 @@ void Gamepad::setButtons(unsigned int buttons)
     }
 }
 
+//----------------------------------------------------------------------------
 void Gamepad::setJoystickValue(unsigned int index, float x, float y)
 {
     if (_joysticks[index].x != x || _joysticks[index].y != y)
@@ -337,6 +351,7 @@ void Gamepad::setJoystickValue(unsigned int index, float x, float y)
     }
 }
 
+//----------------------------------------------------------------------------
 void Gamepad::setTriggerValue(unsigned int index, float value)
 {
     if (_triggers[index] != value)

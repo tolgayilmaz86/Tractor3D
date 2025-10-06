@@ -21,37 +21,39 @@
 #include "scene/Scene.h"
 
 // Minimum version numbers supported
-#define BUNDLE_VERSION_MAJOR_REQUIRED 1
-#define BUNDLE_VERSION_MINOR_REQUIRED 2
+constexpr auto BUNDLE_VERSION_MAJOR_REQUIRED = 1;
+constexpr auto BUNDLE_VERSION_MINOR_REQUIRED = 2;
 
-#define BUNDLE_TYPE_SCENE 1
-#define BUNDLE_TYPE_NODE 2
-#define BUNDLE_TYPE_ANIMATIONS 3
-#define BUNDLE_TYPE_ANIMATION 4
-#define BUNDLE_TYPE_ANIMATION_CHANNEL 5
-#define BUNDLE_TYPE_MODEL 10
-#define BUNDLE_TYPE_MATERIAL 16
-#define BUNDLE_TYPE_EFFECT 18
-#define BUNDLE_TYPE_CAMERA 32
-#define BUNDLE_TYPE_LIGHT 33
-#define BUNDLE_TYPE_MESH 34
-#define BUNDLE_TYPE_MESHPART 35
-#define BUNDLE_TYPE_MESHSKIN 36
-#define BUNDLE_TYPE_FONT 128
+constexpr auto BUNDLE_TYPE_SCENE = 1;
+constexpr auto BUNDLE_TYPE_NODE = 2;
+constexpr auto BUNDLE_TYPE_ANIMATIONS = 3;
+constexpr auto BUNDLE_TYPE_ANIMATION = 4;
+constexpr auto BUNDLE_TYPE_ANIMATION_CHANNEL = 5;
+constexpr auto BUNDLE_TYPE_MODEL = 10;
+constexpr auto BUNDLE_TYPE_MATERIAL = 16;
+constexpr auto BUNDLE_TYPE_EFFECT = 18;
+constexpr auto BUNDLE_TYPE_CAMERA = 32;
+constexpr auto BUNDLE_TYPE_LIGHT = 33;
+constexpr auto BUNDLE_TYPE_MESH = 34;
+constexpr auto BUNDLE_TYPE_MESHPART = 35;
+constexpr auto BUNDLE_TYPE_MESHSKIN = 36;
+constexpr auto BUNDLE_TYPE_FONT = 128;
 
 // For sanity checking string reads
-#define BUNDLE_MAX_STRING_LENGTH 5000
+constexpr auto BUNDLE_MAX_STRING_LENGTH = 5000;
 
-#define BUNDLE_VERSION_MAJOR_FONT_FORMAT 1
-#define BUNDLE_VERSION_MINOR_FONT_FORMAT 5
+constexpr auto BUNDLE_VERSION_MAJOR_FONT_FORMAT = 1;
+constexpr auto BUNDLE_VERSION_MINOR_FONT_FORMAT = 5;
 
 namespace tractor
 {
 
 static std::vector<Bundle*> __bundleCache;
 
+//----------------------------------------------------------------------------
 Bundle::Bundle(const std::string& path) : _path(path) {}
 
+//----------------------------------------------------------------------------
 Bundle::~Bundle()
 {
     clearLoadSession();
@@ -64,6 +66,7 @@ Bundle::~Bundle()
     }
 }
 
+//----------------------------------------------------------------------------
 template <class T> bool Bundle::readArray(unsigned int* length, T** ptr)
 {
     assert(length);
@@ -88,6 +91,7 @@ template <class T> bool Bundle::readArray(unsigned int* length, T** ptr)
     return true;
 }
 
+//----------------------------------------------------------------------------
 template <class T> bool Bundle::readArray(unsigned int* length, std::vector<T>* values)
 {
     assert(length);
@@ -110,6 +114,7 @@ template <class T> bool Bundle::readArray(unsigned int* length, std::vector<T>* 
     return true;
 }
 
+//----------------------------------------------------------------------------
 template <class T>
 bool Bundle::readArray(unsigned int* length, std::vector<T>* values, unsigned int readSize)
 {
@@ -136,6 +141,7 @@ bool Bundle::readArray(unsigned int* length, std::vector<T>* values, unsigned in
     return true;
 }
 
+//----------------------------------------------------------------------------
 static std::string readString(Stream* stream)
 {
     assert(stream);
@@ -163,6 +169,7 @@ static std::string readString(Stream* stream)
     return str;
 }
 
+//----------------------------------------------------------------------------
 Bundle* Bundle::create(const std::string& path)
 {
     // Search the cache for this bundle.
@@ -246,6 +253,7 @@ Bundle* Bundle::create(const std::string& path)
     return bundle;
 }
 
+//----------------------------------------------------------------------------
 Bundle::Reference* Bundle::find(const std::string& id) const
 {
     assert(_references);
@@ -258,6 +266,7 @@ Bundle::Reference* Bundle::find(const std::string& id) const
     return nullptr;
 }
 
+//----------------------------------------------------------------------------
 void Bundle::clearLoadSession()
 {
     for (size_t i = 0, count = _meshSkins.size(); i < count; ++i)
@@ -267,12 +276,14 @@ void Bundle::clearLoadSession()
     _meshSkins.clear();
 }
 
+//----------------------------------------------------------------------------
 const std::string& Bundle::getIdFromOffset() const
 {
     assert(_stream);
     return getIdFromOffset((unsigned int)_stream->position());
 }
 
+//----------------------------------------------------------------------------
 const std::string& Bundle::getIdFromOffset(unsigned int offset) const
 {
     // Search the ref table for the given offset.
@@ -290,6 +301,7 @@ const std::string& Bundle::getIdFromOffset(unsigned int offset) const
     return EMPTY_STRING;
 }
 
+//----------------------------------------------------------------------------
 const std::string& Bundle::getMaterialPath()
 {
     if (_materialPath.empty())
@@ -308,6 +320,7 @@ const std::string& Bundle::getMaterialPath()
     return _materialPath;
 }
 
+//----------------------------------------------------------------------------
 Bundle::Reference* Bundle::seekTo(const std::string& id, unsigned int type)
 {
     Reference* ref = find(id);
@@ -338,6 +351,7 @@ Bundle::Reference* Bundle::seekTo(const std::string& id, unsigned int type)
     return ref;
 }
 
+//----------------------------------------------------------------------------
 Bundle::Reference* Bundle::seekToFirstType(unsigned int type)
 {
     assert(_references);
@@ -361,6 +375,7 @@ Bundle::Reference* Bundle::seekToFirstType(unsigned int type)
     return nullptr;
 }
 
+//----------------------------------------------------------------------------
 Scene* Bundle::loadScene(const std::string& id)
 {
     clearLoadSession();
@@ -468,8 +483,7 @@ Scene* Bundle::loadScene(const std::string& id)
     return scene;
 }
 
-Node* Bundle::loadNode(const std::string& id) { return loadNode(id, nullptr); }
-
+//----------------------------------------------------------------------------
 Node* Bundle::loadNode(const std::string& id, Scene* sceneContext)
 {
     assert(_references);
@@ -584,6 +598,7 @@ Node* Bundle::loadNode(const std::string& id, Scene* sceneContext)
     return node;
 }
 
+//----------------------------------------------------------------------------
 Node* Bundle::loadNode(const std::string& id, Scene* sceneContext, Node* nodeContext)
 {
     Node* node = nullptr;
@@ -616,6 +631,7 @@ Node* Bundle::loadNode(const std::string& id, Scene* sceneContext, Node* nodeCon
     return node;
 }
 
+//----------------------------------------------------------------------------
 bool Bundle::skipNode()
 {
     const auto& id = getIdFromOffset();
@@ -663,6 +679,7 @@ bool Bundle::skipNode()
     return true;
 }
 
+//----------------------------------------------------------------------------
 Node* Bundle::readNode(Scene* sceneContext, Node* nodeContext)
 {
     const auto& id = getIdFromOffset();
@@ -799,6 +816,7 @@ Node* Bundle::readNode(Scene* sceneContext, Node* nodeContext)
     return node;
 }
 
+//----------------------------------------------------------------------------
 Camera* Bundle::readCamera()
 {
     unsigned char cameraType;
@@ -873,6 +891,7 @@ Camera* Bundle::readCamera()
     return camera;
 }
 
+//----------------------------------------------------------------------------
 Light* Bundle::readLight()
 {
     unsigned char type;
@@ -940,6 +959,7 @@ Light* Bundle::readLight()
     return light;
 }
 
+//----------------------------------------------------------------------------
 Model* Bundle::readModel(const std::string& nodeId)
 {
     std::string xref = readString(_stream.get());
@@ -1005,6 +1025,7 @@ Model* Bundle::readModel(const std::string& nodeId)
     return nullptr;
 }
 
+//----------------------------------------------------------------------------
 MeshSkin* Bundle::readMeshSkin()
 {
     MeshSkin* meshSkin = new MeshSkin();
@@ -1080,6 +1101,7 @@ MeshSkin* Bundle::readMeshSkin()
     return meshSkin;
 }
 
+//----------------------------------------------------------------------------
 void Bundle::resolveJointReferences(Scene* sceneContext, Node* nodeContext)
 {
     assert(_stream);
@@ -1198,6 +1220,7 @@ void Bundle::resolveJointReferences(Scene* sceneContext, Node* nodeContext)
     _meshSkins.clear();
 }
 
+//----------------------------------------------------------------------------
 void Bundle::readAnimation(Scene* scene)
 {
     const std::string animationId = readString(_stream.get());
@@ -1217,6 +1240,7 @@ void Bundle::readAnimation(Scene* scene)
     }
 }
 
+//----------------------------------------------------------------------------
 void Bundle::readAnimations(Scene* scene)
 {
     // Read the number of animations in this object.
@@ -1233,6 +1257,7 @@ void Bundle::readAnimations(Scene* scene)
     }
 }
 
+//----------------------------------------------------------------------------
 Animation* Bundle::readAnimationChannel(Scene* scene,
                                         Animation* animation,
                                         const std::string& animationId)
@@ -1271,6 +1296,7 @@ Animation* Bundle::readAnimationChannel(Scene* scene,
     return readAnimationChannelData(animation, animationId, target, targetAttribute);
 }
 
+//----------------------------------------------------------------------------
 Animation* Bundle::readAnimationChannelData(Animation* animation,
                                             const std::string& id,
                                             AnimationTarget* target,
@@ -1354,6 +1380,7 @@ Animation* Bundle::readAnimationChannelData(Animation* animation,
 
 std::shared_ptr<Mesh> Bundle::loadMesh(const std::string& id) { return loadMesh(id, nullptr); }
 
+//----------------------------------------------------------------------------
 std::shared_ptr<Mesh> Bundle::loadMesh(const std::string& id, const std::string& nodeId)
 {
     assert(_stream);
@@ -1424,6 +1451,7 @@ std::shared_ptr<Mesh> Bundle::loadMesh(const std::string& id, const std::string&
     return mesh;
 }
 
+//----------------------------------------------------------------------------
 std::unique_ptr<Bundle::MeshData> Bundle::readMeshData()
 {
     // Read vertex format/elements.
@@ -1583,6 +1611,7 @@ std::unique_ptr<Bundle::MeshData> Bundle::readMeshData()
     return meshData;
 }
 
+//----------------------------------------------------------------------------
 std::unique_ptr<Bundle::MeshData> Bundle::readMeshData(const std::string& url)
 {
     if (url.empty())
@@ -1629,6 +1658,7 @@ std::unique_ptr<Bundle::MeshData> Bundle::readMeshData(const std::string& url)
     return meshData;
 }
 
+//----------------------------------------------------------------------------
 Font* Bundle::loadFont(const std::string& id)
 {
     assert(_stream);
@@ -1829,6 +1859,7 @@ Font* Bundle::loadFont(const std::string& id)
     return masterFont;
 }
 
+//----------------------------------------------------------------------------
 void Bundle::setTransform(const float& values, Transform* transform)
 {
     assert(transform);
@@ -1843,6 +1874,7 @@ void Bundle::setTransform(const float& values, Transform* transform)
     transform->setRotation(rotation);
 }
 
+//----------------------------------------------------------------------------
 const std::string& Bundle::getObjectId(unsigned int index) const
 {
     assert(_references);
@@ -1855,15 +1887,13 @@ const std::string& Bundle::getObjectId(unsigned int index) const
     return _references[index].id;
 }
 
-Bundle::MeshPartData::MeshPartData()
-    : primitiveType(Mesh::TRIANGLES), indexFormat(Mesh::INDEX32), indexCount(0), indexData(nullptr)
-{
-}
-
+//----------------------------------------------------------------------------
 Bundle::MeshPartData::~MeshPartData() { SAFE_DELETE_ARRAY(indexData); }
 
+//----------------------------------------------------------------------------
 Bundle::MeshData::MeshData(const VertexFormat& vertexFormat) : vertexFormat(vertexFormat) {}
 
+//----------------------------------------------------------------------------
 Bundle::MeshData::~MeshData()
 {
     SAFE_DELETE_ARRAY(vertexData);

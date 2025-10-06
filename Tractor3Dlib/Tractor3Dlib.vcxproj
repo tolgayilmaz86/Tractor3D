@@ -63,7 +63,6 @@
     <ClCompile Include="src\graphics\BoundingBox.cpp" />
     <ClCompile Include="src\graphics\BoundingSphere.cpp" />
     <ClCompile Include="src\graphics\Curve.cpp" />
-    <ClCompile Include="src\graphics\Drawable.cpp" />
     <ClCompile Include="src\graphics\Effect.cpp" />
     <ClCompile Include="src\graphics\Frustum.cpp" />
     <ClCompile Include="src\graphics\HeightField.cpp" />

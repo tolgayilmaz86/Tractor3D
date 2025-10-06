@@ -20,6 +20,7 @@
 namespace tractor
 {
 
+//----------------------------------------------------------------------------
 AudioListener::~AudioListener()
 {
     // Call setCamera() to release camera and cause transform listener
@@ -27,8 +28,10 @@ AudioListener::~AudioListener()
     setCamera(nullptr);
 }
 
+//----------------------------------------------------------------------------
 AudioListener* AudioListener::getInstance() { return Game::getInstance()->getAudioListener(); }
 
+//----------------------------------------------------------------------------
 void AudioListener::setOrientation(const Vector3& forward, const Vector3& up)
 {
     _orientation[0].x = forward.x;
@@ -40,6 +43,7 @@ void AudioListener::setOrientation(const Vector3& forward, const Vector3& up)
     _orientation[1].z = up.z;
 }
 
+//----------------------------------------------------------------------------
 void AudioListener::setOrientation(float forwardX,
                                    float forwardY,
                                    float forwardZ,
@@ -51,6 +55,7 @@ void AudioListener::setOrientation(float forwardX,
     _orientation[1].set(upX, upY, upZ);
 }
 
+//----------------------------------------------------------------------------
 void AudioListener::setCamera(Camera* camera)
 {
     if (_camera == camera) return;
@@ -71,6 +76,7 @@ void AudioListener::setCamera(Camera* camera)
     }
 }
 
+//----------------------------------------------------------------------------
 void AudioListener::cameraChanged(Camera* camera)
 {
     if (_camera != camera) setCamera(camera);

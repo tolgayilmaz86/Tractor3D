@@ -67,6 +67,7 @@ Form::~Form()
     }
 }
 
+//----------------------------------------------------------------
 Form* Form::create(const std::string& url)
 {
     Form* form = new Form();
@@ -125,6 +126,7 @@ Form* Form::create(const std::string& url)
     return form;
 }
 
+//----------------------------------------------------------------
 Form* Form::create(const std::string& id, Theme::Style* style, Layout::Type layoutType)
 {
     Form* form = new Form();
@@ -134,6 +136,7 @@ Form* Form::create(const std::string& id, Theme::Style* style, Layout::Type layo
     return form;
 }
 
+//----------------------------------------------------------------
 void Form::initialize(const std::string& typeName, Theme::Style* style, Properties* properties)
 {
     Container::initialize(typeName, style, properties);
@@ -145,6 +148,7 @@ void Form::initialize(const std::string& typeName, Theme::Style* style, Properti
     if (updateBoundsInternal(Vector2::zero())) updateBoundsInternal(Vector2::zero());
 }
 
+//----------------------------------------------------------------
 Form* Form::getForm(const std::string& id) noexcept
 {
     for (const auto& form : __forms)
@@ -154,6 +158,7 @@ Form* Form::getForm(const std::string& id) noexcept
     return nullptr;
 }
 
+//----------------------------------------------------------------
 Control* Form::getActiveControl(unsigned int touchPoint)
 {
     if (touchPoint >= Touch::MAX_TOUCH_POINTS) return nullptr;
@@ -161,16 +166,20 @@ Control* Form::getActiveControl(unsigned int touchPoint)
     return __activeControl[touchPoint];
 }
 
+//----------------------------------------------------------------
 Control* Form::getFocusControl() noexcept { return __focusControl; }
 
+//----------------------------------------------------------------
 void Form::clearFocus() { setFocusControl(nullptr); }
 
+//----------------------------------------------------------------
 const std::string& Form::getTypeName() const noexcept
 {
     static const std::string TYPE_NAME = "Form";
     return TYPE_NAME;
 }
 
+//----------------------------------------------------------------
 static unsigned int nextPowerOfTwo(unsigned int v)
 {
     if (!((v & (v - 1)) == 0))
@@ -187,6 +196,7 @@ static unsigned int nextPowerOfTwo(unsigned int v)
     return v;
 }
 
+//----------------------------------------------------------------
 void Form::update(float elapsedTime)
 {
     Container::update(elapsedTime);
@@ -197,6 +207,7 @@ void Form::update(float elapsedTime)
     if (updateBoundsInternal(Vector2::zero())) updateBoundsInternal(Vector2::zero());
 }
 
+//----------------------------------------------------------------
 void Form::startBatch(SpriteBatch* batch)
 {
     // TODO (note: might want to pass a level number/depth here so that batch draw calls can be
@@ -210,12 +221,14 @@ void Form::startBatch(SpriteBatch* batch)
     }
 }
 
+//----------------------------------------------------------------
 void Form::finishBatch(SpriteBatch* batch) const
 {
     if (!_batched)
         batch->finish();
 }
 
+//----------------------------------------------------------------
 unsigned int Form::draw(bool wireframe)
 {
     if (!_visible || _absoluteClipBounds.width == 0 || _absoluteClipBounds.height == 0) return 0;
@@ -259,12 +272,14 @@ unsigned int Form::draw(bool wireframe)
     return drawCalls;
 }
 
+//----------------------------------------------------------------
 Drawable* Form::clone(NodeCloneContext& context)
 {
     // TODO:
     return nullptr;
 }
 
+//----------------------------------------------------------------
 void Form::updateInternal(float elapsedTime)
 {
     pollGamepads();
@@ -278,6 +293,7 @@ void Form::updateInternal(float elapsedTime)
     }
 }
 
+//----------------------------------------------------------------
 bool Form::screenToForm(Control* ctrl, int* x, int* y)
 {
     Form* form = ctrl->getTopLevelForm();
@@ -296,6 +312,7 @@ bool Form::screenToForm(Control* ctrl, int* x, int* y)
     return true;
 }
 
+//----------------------------------------------------------------
 Control* Form::findInputControl(int* x, int* y, bool focus, unsigned int contactIndex)
 {
     // reverse iterate becaus of thez index and ui added on tope each other in stack manner
@@ -326,6 +343,7 @@ Control* Form::findInputControl(int* x, int* y, bool focus, unsigned int contact
     return nullptr;
 }
 
+//----------------------------------------------------------------
 Control* Form::findInputControl(Control* control, int x, int y, bool focus, unsigned int contactIndex)
 {
     if (!(control->_visible && control->isEnabled())) return nullptr;
@@ -377,6 +395,7 @@ Control* Form::findInputControl(Control* control, int x, int y, bool focus, unsi
     return result;
 }
 
+//----------------------------------------------------------------
 Control* Form::handlePointerPressRelease(int* x, int* y, bool pressed, unsigned int contactIndex)
 {
     if (contactIndex >= Touch::MAX_TOUCH_POINTS) return nullptr;
@@ -487,6 +506,7 @@ Control* Form::handlePointerPressRelease(int* x, int* y, bool pressed, unsigned 
     return ctrl;
 }
 
+//----------------------------------------------------------------
 Control* Form::handlePointerMove(int* x, int* y, unsigned int contactIndex)
 {
     if (contactIndex >= Touch::MAX_TOUCH_POINTS) return nullptr;
@@ -536,6 +556,7 @@ Control* Form::handlePointerMove(int* x, int* y, unsigned int contactIndex)
     return ctrl;
 }
 
+//----------------------------------------------------------------
 void Form::verifyRemovedControlState(Control* control)
 {
     if (__focusControl == control)
@@ -556,6 +577,7 @@ void Form::verifyRemovedControlState(Control* control)
     }
 }
 
+//----------------------------------------------------------------
 // Generic pointer event handler that both touch and mouse events map to.
 // Mappings:
 //   mouse - true for mouse events, false for touch events
@@ -694,16 +716,19 @@ bool Form::pointerEventInternal(bool mouse, int evt, int x, int y, int param)
     return false;
 }
 
+//----------------------------------------------------------------
 bool Form::touchEventInternal(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex)
 {
     return pointerEventInternal(false, evt, x, y, (int)contactIndex);
 }
 
+//----------------------------------------------------------------
 bool Form::mouseEventInternal(Mouse::MouseEvent evt, int x, int y, int wheelDelta)
 {
     return pointerEventInternal(true, evt, x, y, wheelDelta);
 }
 
+//----------------------------------------------------------------
 bool Form::keyEventInternal(Keyboard::KeyEvent evt, int key)
 {
     switch (key)
@@ -755,6 +780,7 @@ bool Form::keyEventInternal(Keyboard::KeyEvent evt, int key)
     return false;
 }
 
+//----------------------------------------------------------------
 void Form::pollGamepads()
 {
     Game* game = Game::getInstance();
@@ -771,6 +797,7 @@ void Form::pollGamepads()
     pollGamepad(gamepad);
 }
 
+//----------------------------------------------------------------
 bool Form::pollGamepad(Gamepad* gamepad)
 {
     // Get the currently focused control's container for focus management and scrolling
@@ -888,6 +915,7 @@ bool Form::pollGamepad(Gamepad* gamepad)
     return focusPressed || scrolling;
 }
 
+//----------------------------------------------------------------
 bool Form::gamepadButtonEventInternal(Gamepad* gamepad)
 {
     if (!__focusControl) return false;
@@ -937,6 +965,7 @@ bool Form::gamepadButtonEventInternal(Gamepad* gamepad)
     return false;
 }
 
+//----------------------------------------------------------------
 bool Form::gamepadTriggerEventInternal(Gamepad* gamepad, unsigned int index)
 {
     // Dispatch gamepad trigger events to focused controls (or their parents)
@@ -953,6 +982,7 @@ bool Form::gamepadTriggerEventInternal(Gamepad* gamepad, unsigned int index)
     return false;
 }
 
+//----------------------------------------------------------------
 bool Form::gamepadJoystickEventInternal(Gamepad* gamepad, unsigned int index)
 {
     // Dispatch gamepad joystick events to focused controls (or their parents)
@@ -969,6 +999,7 @@ bool Form::gamepadJoystickEventInternal(Gamepad* gamepad, unsigned int index)
     return false;
 }
 
+//----------------------------------------------------------------
 void Form::resizeEventInternal(unsigned int width, unsigned int height)
 {
     for (auto& form : __forms)
@@ -981,6 +1012,7 @@ void Form::resizeEventInternal(unsigned int width, unsigned int height)
     }
 }
 
+//----------------------------------------------------------------
 bool Form::projectPoint(int x, int y, Vector3* point)
 {
     if (!_node) return false;
@@ -1024,6 +1056,7 @@ bool Form::projectPoint(int x, int y, Vector3* point)
     return false;
 }
 
+//----------------------------------------------------------------
 void Form::controlDisabled(Control* control)
 {
     if (__focusControl && (__focusControl == control || __focusControl->isChild(control)))
@@ -1043,6 +1076,7 @@ void Form::controlDisabled(Control* control)
     }
 }
 
+//----------------------------------------------------------------
 void Form::setFocusControl(Control* control)
 {
     Control* oldFocus = __focusControl;

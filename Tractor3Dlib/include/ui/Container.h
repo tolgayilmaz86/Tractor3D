@@ -88,7 +88,7 @@ class Container : public Control
      *
      * @return This container's layout object.
      */
-    Layout* getLayout();
+    Layout* getLayout() const noexcept { return _layout; }
 
     /**
      * Sets the layout type for this container.
@@ -156,7 +156,7 @@ class Container : public Control
      *
      * @return The number of child controls.
      */
-    unsigned int getControlCount() const;
+    unsigned int getControlCount() const noexcept { return (unsigned int)_controls.size(); }
 
     /**
      * Get the vector of controls within this container.
@@ -171,7 +171,7 @@ class Container : public Control
      *
      * @return True if the container is a top level form, false otherwise.
      */
-    virtual bool isForm() const;
+    virtual bool isForm() const { return false; }
 
     /**
      * Sets the allowed scroll directions for this container.
@@ -185,7 +185,7 @@ class Container : public Control
      *
      * @return The allowed scroll directions for this container.
      */
-    Scroll getScroll() const;
+    Scroll getScroll() const noexcept { return _scroll; }
 
     /**
      * Set whether scrollbars auto hidden when they become static.
@@ -199,7 +199,7 @@ class Container : public Control
      *
      * @return Whether scrollbars are always visible.
      */
-    bool isScrollBarsAutoHide() const;
+    bool isScrollBarsAutoHide() const noexcept { return _scrollBarsAutoHide; }
 
     /**
      * Whether this container is currently being scrolled.
@@ -216,28 +216,28 @@ class Container : public Control
     /**
      * Get the friction applied to scrolling velocity for this container.
      */
-    float getScrollingFriction() const;
+    float getScrollingFriction() const noexcept { return _scrollingFriction; }
 
     /**
      * Get the friction applied to scrolling velocity for this container.
      * A higher value will bring the viewport to a stop sooner.
      */
-    void setScrollingFriction(float friction);
+    void setScrollingFriction(float friction) noexcept { _scrollingFriction = friction; }
 
     /**
      * Get the speed added to scrolling velocity on a scroll-wheel event.
      */
-    float getScrollWheelSpeed() const;
+    float getScrollWheelSpeed() const noexcept { return _scrollWheelSpeed; }
 
     /**
      * Set the speed added to scrolling velocity on a scroll-wheel event.
      */
-    void setScrollWheelSpeed(float speed);
+    void setScrollWheelSpeed(float speed) noexcept { _scrollWheelSpeed = speed; }
 
     /**
      * Get an offset of how far this layout has been scrolled in each direction.
      */
-    const Vector2& getScrollPosition() const;
+    const Vector2& getScrollPosition() const noexcept { return _scrollPosition; }
 
     /**
      * Set an offset of how far this layout has been scrolled in each direction.
@@ -252,12 +252,12 @@ class Container : public Control
     /**
      * @see Control::isContainer
      */
-    bool isContainer() const;
+    bool isContainer() const noexcept { return true; }
 
     /**
      * Get whether this container requires focus in order to handle scroll-wheel events.
      */
-    bool getScrollWheelRequiresFocus() const;
+    bool getScrollWheelRequiresFocus() const noexcept { return _scrollWheelRequiresFocus; }
 
     /**
      * Set whether this container requires focus in order to handle scroll-wheel events.
@@ -267,7 +267,10 @@ class Container : public Control
      *
      * @param required Whether focus is required in order to handle scroll-wheel events.
      */
-    void setScrollWheelRequiresFocus(bool required);
+    void setScrollWheelRequiresFocus(bool required) noexcept
+    {
+        _scrollWheelRequiresFocus = required;
+    }
 
     /**
      * @see Control::setFocus
@@ -288,7 +291,7 @@ class Container : public Control
      *
      * @return This container's active control.
      */
-    Control* getActiveControl() const;
+    Control* getActiveControl() const noexcept { return _activeControl; }
 
     /**
      * Sets the active control for this container.
@@ -457,127 +460,127 @@ class Container : public Control
     /**
      * The container's layout.
      */
-    Layout* _layout;
+    Layout* _layout{ nullptr };
     /**
      * List of controls within the container.
      */
-    std::vector<Control*> _controls;
+    std::vector<Control*> _controls{};
     /**
      * The active control for the container.
      */
-    Control* _activeControl;
+    Control* _activeControl{ nullptr };
     /**
      * Scrollbar top cap image.
      */
-    Theme::ThemeImage* _scrollBarTopCap;
+    Theme::ThemeImage* _scrollBarTopCap{ nullptr };
     /**
      * Scrollbar vertical track image.
      */
-    Theme::ThemeImage* _scrollBarVertical;
+    Theme::ThemeImage* _scrollBarVertical{ nullptr };
     /**
      * Scrollbar bottom cap image.
      */
-    Theme::ThemeImage* _scrollBarBottomCap;
+    Theme::ThemeImage* _scrollBarBottomCap{ nullptr };
     /**
      * Scrollbar left cap image.
      */
-    Theme::ThemeImage* _scrollBarLeftCap;
+    Theme::ThemeImage* _scrollBarLeftCap{ nullptr };
     /**
      * Scrollbar horizontal track image.
      */
-    Theme::ThemeImage* _scrollBarHorizontal;
+    Theme::ThemeImage* _scrollBarHorizontal{ nullptr };
     /**
      * Scrollbar horizontal image.
      */
-    Theme::ThemeImage* _scrollBarRightCap;
+    Theme::ThemeImage* _scrollBarRightCap{ nullptr };
     /**
      * Flag representing whether scrolling is enabled, and in which directions.
      */
-    Scroll _scroll;
+    Scroll _scroll{ SCROLL_NONE };
     /**
      * Scroll bar bounds.
      */
-    Rectangle _scrollBarBounds;
+    Rectangle _scrollBarBounds{ Rectangle::empty() };
     /**
      * How far this layout has been scrolled in each direction.
      */
-    Vector2 _scrollPosition;
+    Vector2 _scrollPosition{ Vector2::zero() };
     /**
      * Whether the scrollbars should auto-hide. Default is false.
      */
-    bool _scrollBarsAutoHide;
+    bool _scrollBarsAutoHide{ false };
     /**
      * Used to animate scrollbars fading out.
      */
-    float _scrollBarOpacity;
+    float _scrollBarOpacity{ 1.0f };
     /**
      * Whether the user is currently touching / holding the mouse down within this layout's container.
      */
-    bool _scrolling;
+    bool _scrolling{ false };
     /**
      * First scrolling touch x position.
      */
-    int _scrollingVeryFirstX;
+    int _scrollingVeryFirstX{ 0 };
     /**
      * First scrolling touch y position.
      */
-    int _scrollingVeryFirstY;
+    int _scrollingVeryFirstY{ 0 };
     /**
      * First scrolling touch x position since last change in direction.
      */
-    int _scrollingFirstX;
+    int _scrollingFirstX{ 0 };
     /**
      * First scrolling touch y position since last change in direction.
      */
-    int _scrollingFirstY;
+    int _scrollingFirstY{ 0 };
     /**
      * The last y position when scrolling.
      */
-    int _scrollingLastX;
+    int _scrollingLastX{ 0 };
     /**
      * The last x position when scrolling.
      */
-    int _scrollingLastY;
+    int _scrollingLastY{ 0 };
     /**
      * Time we started scrolling horizontally.
      */
-    double _scrollingStartTimeX;
+    double _scrollingStartTimeX{ 0.0 };
     /**
      * Time we started scrolling vertically.
      */
-    double _scrollingStartTimeY;
+    double _scrollingStartTimeY{ 0.0 };
     /**
      * The last time we were scrolling.
      */
-    double _scrollingLastTime;
+    double _scrollingLastTime{ 0.0 };
     /**
      * Speed to continue scrolling at after touch release or a scroll-wheel event.
      */
-    Vector2 _scrollingVelocity;
+    Vector2 _scrollingVelocity{ Vector2::zero() };
     /**
      * Friction dampens velocity.
      */
-    float _scrollingFriction;
+    float _scrollingFriction{ 1.0 };
     /**
      * Amount to add to scrolling velocity on a scroll-wheel event;
      */
-    float _scrollWheelSpeed;
+    float _scrollWheelSpeed{ 0.0f };
     /**
      * Are we scrolling to the right?
      */
-    bool _scrollingRight;
+    bool _scrollingRight{ false };
     /**
      * Are we scrolling down?
      */
-    bool _scrollingDown;
+    bool _scrollingDown{ false };
     /**
      * Locked to scrolling vertically by grabbing the scrollbar with the mouse.
      */
-    bool _scrollingMouseVertically;
+    bool _scrollingMouseVertically{ false };
     /**
      * Locked to scrolling horizontally by grabbing the scrollbar with the mouse.
      */
-    bool _scrollingMouseHorizontally;
+    bool _scrollingMouseHorizontally{ false };
 
   private:
     /**
@@ -594,10 +597,10 @@ class Container : public Control
     void startScrolling(float x, float y, bool resetTime = true);
 
     void clearContacts();
-    bool inContact();
+    bool inContact() const;
 
-    AnimationClip* _scrollBarOpacityClip;
-    int _zIndexDefault;
+    AnimationClip* _scrollBarOpacityClip{ nullptr };
+    int _zIndexDefault{ 0 };
     bool _selectButtonDown;
     double _lastFrameTime;
 

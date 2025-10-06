@@ -30,12 +30,12 @@ class Drawable
     /**
      * Constructor.
      */
-    Drawable();
+    Drawable() = default;
 
     /**
      * Destructor.
      */
-    virtual ~Drawable();
+    virtual ~Drawable() = default;
 
     /**
      * Draws the object.
@@ -67,12 +67,12 @@ class Drawable
      *
      * @param node The node this drawable is attached to.
      */
-    virtual void setNode(Node* node);
+    virtual void setNode(Node* node) { _node = node; }
 
     /**
      * Node this drawable is attached to.
      */
-    Node* _node;
+    Node* _node{nullptr};
 };
 
 } // namespace tractor

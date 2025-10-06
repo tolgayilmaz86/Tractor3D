@@ -18,7 +18,7 @@
 #include "framework/FileSystem.h"
 #include "framework/Game.h"
 
-#define OPENGL_ES_DEFINE "OPENGL_ES"
+constexpr auto OPENGL_ES_DEFINE = "OPENGL_ES";
 
 namespace tractor
 {
@@ -27,8 +27,7 @@ namespace tractor
 static std::map<std::string, Effect*> __effectCache;
 static Effect* __currentEffect = nullptr;
 
-Effect::Effect() : _program(0) {}
-
+//----------------------------------------------------------------------------
 Effect::~Effect()
 {
     // Remove this effect from the cache.
@@ -50,6 +49,7 @@ Effect::~Effect()
     }
 }
 
+//----------------------------------------------------------------------------
 Effect* Effect::createFromFile(const std::string& vshPath,
                                const std::string& fshPath,
                                const std::string& defines)
@@ -106,6 +106,7 @@ Effect* Effect::createFromFile(const std::string& vshPath,
     return effect;
 }
 
+//----------------------------------------------------------------------------
 Effect* Effect::createFromSource(const std::string& vshSource,
                                  const std::string& fshSource,
                                  const std::string& defines)
@@ -113,6 +114,7 @@ Effect* Effect::createFromSource(const std::string& vshSource,
     return createFromSource(EMPTY_STRING, vshSource, EMPTY_STRING, fshSource, defines);
 }
 
+//----------------------------------------------------------------------------
 static void replaceDefines(const std::string& defines, std::string& out)
 {
     Properties* graphicsConfig = Game::getInstance()->getConfig()->getNamespace("graphics", true);
@@ -148,6 +150,7 @@ static void replaceDefines(const std::string& defines, std::string& out)
     }
 }
 
+//----------------------------------------------------------------------------
 static void replaceIncludes(const std::string& filepath, const std::string& source, std::string& out)
 {
     // Replace the #include "xxxx.xxx" with the sourced file contents of "filepath/xxxx.xxx"
@@ -223,6 +226,7 @@ static void replaceIncludes(const std::string& filepath, const std::string& sour
     }
 }
 
+//----------------------------------------------------------------------------
 static void writeShaderToErrorFile(const std::string& filePath, const std::string& source)
 {
     std::string path = filePath;
@@ -234,6 +238,7 @@ static void writeShaderToErrorFile(const std::string& filePath, const std::strin
     }
 }
 
+//----------------------------------------------------------------------------
 Effect* Effect::createFromSource(const std::string& vshPath,
                                  const std::string& vshSource,
                                  const std::string& fshPath,
@@ -477,12 +482,14 @@ Effect* Effect::createFromSource(const std::string& vshPath,
     return effect;
 }
 
+//----------------------------------------------------------------------------
 VertexAttribute Effect::getVertexAttribute(const std::string& name) const
 {
     std::map<std::string, VertexAttribute>::const_iterator itr = _vertexAttributes.find(name);
     return (itr == _vertexAttributes.end() ? -1 : itr->second);
 }
 
+//----------------------------------------------------------------------------
 Uniform* Effect::getUniform(const std::string& name) const
 {
     std::map<std::string, Uniform*>::const_iterator itr = _uniforms.find(name);
@@ -526,18 +533,21 @@ Uniform* Effect::getUniform(const std::string& name) const
     return nullptr;
 }
 
+//----------------------------------------------------------------------------
 Uniform* Effect::getUniform(unsigned int index) const
 {
     auto itr = std::next(_uniforms.begin(), index);
     return itr->second;
 }
 
+//----------------------------------------------------------------------------
 void Effect::setValue(Uniform* uniform, float value)
 {
     assert(uniform);
     GL_ASSERT(glUniform1f(uniform->_location, value));
 }
 
+//----------------------------------------------------------------------------
 void Effect::setValue(Uniform* uniform, const float* values, unsigned int count)
 {
     assert(uniform);
@@ -545,12 +555,14 @@ void Effect::setValue(Uniform* uniform, const float* values, unsigned int count)
     GL_ASSERT(glUniform1fv(uniform->_location, count, values));
 }
 
+//----------------------------------------------------------------------------
 void Effect::setValue(Uniform* uniform, int value)
 {
     assert(uniform);
     GL_ASSERT(glUniform1i(uniform->_location, value));
 }
 
+//----------------------------------------------------------------------------
 void Effect::setValue(Uniform* uniform, const int* values, unsigned int count)
 {
     assert(uniform);
@@ -558,12 +570,14 @@ void Effect::setValue(Uniform* uniform, const int* values, unsigned int count)
     GL_ASSERT(glUniform1iv(uniform->_location, count, values));
 }
 
+//----------------------------------------------------------------------------
 void Effect::setValue(Uniform* uniform, const Matrix& value)
 {
     assert(uniform);
     GL_ASSERT(glUniformMatrix4fv(uniform->_location, 1, GL_FALSE, value.m));
 }
 
+//----------------------------------------------------------------------------
 void Effect::setValue(Uniform* uniform, const Matrix* values, unsigned int count)
 {
     assert(uniform);
@@ -571,12 +585,14 @@ void Effect::setValue(Uniform* uniform, const Matrix* values, unsigned int count
     GL_ASSERT(glUniformMatrix4fv(uniform->_location, count, GL_FALSE, (GLfloat*)values));
 }
 
+//----------------------------------------------------------------------------
 void Effect::setValue(Uniform* uniform, const Vector2& value)
 {
     assert(uniform);
     GL_ASSERT(glUniform2f(uniform->_location, value.x, value.y));
 }
 
+//----------------------------------------------------------------------------
 void Effect::setValue(Uniform* uniform, const Vector2* values, unsigned int count)
 {
     assert(uniform);
@@ -584,12 +600,14 @@ void Effect::setValue(Uniform* uniform, const Vector2* values, unsigned int coun
     GL_ASSERT(glUniform2fv(uniform->_location, count, (GLfloat*)values));
 }
 
+//----------------------------------------------------------------------------
 void Effect::setValue(Uniform* uniform, const Vector3& value)
 {
     assert(uniform);
     GL_ASSERT(glUniform3f(uniform->_location, value.x, value.y, value.z));
 }
 
+//----------------------------------------------------------------------------
 void Effect::setValue(Uniform* uniform, const Vector3* values, unsigned int count)
 {
     assert(uniform);
@@ -597,12 +615,14 @@ void Effect::setValue(Uniform* uniform, const Vector3* values, unsigned int coun
     GL_ASSERT(glUniform3fv(uniform->_location, count, (GLfloat*)values));
 }
 
+//----------------------------------------------------------------------------
 void Effect::setValue(Uniform* uniform, const Vector4& value)
 {
     assert(uniform);
     GL_ASSERT(glUniform4f(uniform->_location, value.x, value.y, value.z, value.w));
 }
 
+//----------------------------------------------------------------------------
 void Effect::setValue(Uniform* uniform, const Vector4* values, unsigned int count)
 {
     assert(uniform);
@@ -610,6 +630,7 @@ void Effect::setValue(Uniform* uniform, const Vector4* values, unsigned int coun
     GL_ASSERT(glUniform4fv(uniform->_location, count, (GLfloat*)values));
 }
 
+//----------------------------------------------------------------------------
 void Effect::setValue(Uniform* uniform, const Texture::Sampler* sampler)
 {
     assert(uniform);
@@ -627,6 +648,7 @@ void Effect::setValue(Uniform* uniform, const Texture::Sampler* sampler)
     GL_ASSERT(glUniform1i(uniform->_location, uniform->_index));
 }
 
+//----------------------------------------------------------------------------
 void Effect::setValue(Uniform* uniform, const Texture::Sampler** values, unsigned int count)
 {
     assert(uniform);
@@ -654,6 +676,7 @@ void Effect::setValue(Uniform* uniform, const Texture::Sampler** values, unsigne
     GL_ASSERT(glUniform1iv(uniform->_location, count, units));
 }
 
+//----------------------------------------------------------------------------
 void Effect::bind()
 {
     GL_ASSERT(glUseProgram(_program));
@@ -661,19 +684,25 @@ void Effect::bind()
     __currentEffect = this;
 }
 
+//----------------------------------------------------------------------------
 Effect* Effect::getCurrentEffect() { return __currentEffect; }
 
+//----------------------------------------------------------------------------
 Uniform::Uniform() : _location(-1), _type(0), _index(0), _effect(nullptr) {}
 
+//----------------------------------------------------------------------------
 Uniform::~Uniform()
 {
     // hidden
 }
 
+//----------------------------------------------------------------------------
 Effect* Uniform::getEffect() const noexcept { return _effect; }
 
+//----------------------------------------------------------------------------
 const std::string& Uniform::getName() const noexcept { return _name; }
 
+//----------------------------------------------------------------------------
 const GLenum Uniform::getType() const noexcept { return _type; }
 
 } // namespace tractor

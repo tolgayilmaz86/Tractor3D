@@ -32,10 +32,6 @@ using std::sin;
 using std::sqrt;
 using std::strcmp;
 
-#ifndef nullptr
-#define nullptr 0
-#endif
-
 #ifndef MATH_PI
 #define MATH_PI 3.14159265358979323846f
 #endif
@@ -48,26 +44,7 @@ using std::strcmp;
 #define MATH_PIX2 6.28318530717958647693f
 #endif
 
-// Object deletion macro
-#ifndef SAFE_DELETE
-#define SAFE_DELETE(x)                                                                             \
-    if (x)                                                                                         \
-    {                                                                                              \
-        delete x;                                                                                  \
-        x = nullptr;                                                                               \
-    }
-#endif
-
-// Array deletion macro
-#ifndef SAFE_DELETE_ARRAY
-#define SAFE_DELETE_ARRAY(x)                                                                       \
-    if (x)                                                                                         \
-    {                                                                                              \
-        delete[] x;                                                                                \
-        x = nullptr;                                                                               \
-    }
-#endif
-
+//----------------------------------------------------------------------------
 static inline float bezier(float eq0,
                            float eq1,
                            float eq2,
@@ -80,11 +57,13 @@ static inline float bezier(float eq0,
     return from * eq0 + out * eq1 + in * eq2 + to * eq3;
 }
 
+//----------------------------------------------------------------------------
 static inline float bspline(float eq0, float eq1, float eq2, float eq3, float c0, float c1, float c2, float c3)
 {
     return c0 * eq0 + c1 * eq1 + c2 * eq2 + c3 * eq3;
 }
 
+//----------------------------------------------------------------------------
 static inline float hermite(float h00,
                             float h01,
                             float h10,
@@ -97,11 +76,13 @@ static inline float hermite(float h00,
     return h00 * from + h01 * to + h10 * out + h11 * in;
 }
 
+//----------------------------------------------------------------------------
 static inline float hermiteFlat(float h00, float h01, float from, float to)
 {
     return h00 * from + h01 * to;
 }
 
+//----------------------------------------------------------------------------
 static inline float hermiteSmooth(float h00,
                                   float h01,
                                   float h10,
@@ -114,16 +95,19 @@ static inline float hermiteSmooth(float h00,
     return h00 * from + h01 * to + h10 * out + h11 * in;
 }
 
+//----------------------------------------------------------------------------
 static inline float lerpInl(float s, float from, float to) { return from + (to - from) * s; }
 
 namespace tractor
 {
 
+//----------------------------------------------------------------------------
 Curve* Curve::create(unsigned int pointCount, unsigned int componentCount)
 {
     return new Curve(pointCount, componentCount);
 }
 
+//----------------------------------------------------------------------------
 Curve::Curve(unsigned int pointCount, unsigned int componentCount)
     : _pointCount(pointCount), _componentCount(componentCount),
       _componentSize(sizeof(float) * componentCount), _quaternionOffset(nullptr), _points(nullptr)
@@ -140,17 +124,14 @@ Curve::Curve(unsigned int pointCount, unsigned int componentCount)
     _points[_pointCount - 1].time = 1.0f;
 }
 
+//----------------------------------------------------------------------------
 Curve::~Curve()
 {
     SAFE_DELETE_ARRAY(_points);
     SAFE_DELETE_ARRAY(_quaternionOffset);
 }
 
-Curve::Point::Point()
-    : time(0.0f), value(nullptr), inValue(nullptr), outValue(nullptr), type(LINEAR)
-{
-}
-
+//----------------------------------------------------------------------------
 Curve::Point::~Point()
 {
     SAFE_DELETE_ARRAY(value);
@@ -158,20 +139,26 @@ Curve::Point::~Point()
     SAFE_DELETE_ARRAY(outValue);
 }
 
+//----------------------------------------------------------------------------
 unsigned int Curve::getPointCount() const noexcept { return _pointCount; }
 
+//----------------------------------------------------------------------------
 unsigned int Curve::getComponentCount() const noexcept { return _componentCount; }
 
+//----------------------------------------------------------------------------
 float Curve::getStartTime() const noexcept { return _points[0].time; }
 
+//----------------------------------------------------------------------------
 float Curve::getEndTime() const noexcept { return _points[_pointCount - 1].time; }
 
+//----------------------------------------------------------------------------
 float Curve::getPointTime(unsigned int index) const
 {
     assert(index < _pointCount);
     return _points[index].time;
 }
 
+//----------------------------------------------------------------------------
 Curve::InterpolationType Curve::getPointInterpolation(unsigned int index) const
 {
     assert(index < _pointCount);
@@ -179,6 +166,7 @@ Curve::InterpolationType Curve::getPointInterpolation(unsigned int index) const
     ;
 }
 
+//----------------------------------------------------------------------------
 void Curve::getPointValues(unsigned int index, float* value, float* inValue, float* outValue) const
 {
     assert(index < _pointCount);
@@ -190,11 +178,13 @@ void Curve::getPointValues(unsigned int index, float* value, float* inValue, flo
     if (outValue) memcpy(outValue, _points[index].outValue, _componentSize);
 }
 
+//----------------------------------------------------------------------------
 void Curve::setPoint(unsigned int index, float time, float* value, InterpolationType type)
 {
     setPoint(index, time, value, type, nullptr, nullptr);
 }
 
+//----------------------------------------------------------------------------
 void Curve::setPoint(unsigned int index,
                      float time,
                      float* value,
@@ -216,6 +206,7 @@ void Curve::setPoint(unsigned int index,
     if (outValue) memcpy(_points[index].outValue, outValue, _componentSize);
 }
 
+//----------------------------------------------------------------------------
 void Curve::setTangent(unsigned int index, InterpolationType type, float* inValue, float* outValue)
 {
     assert(index < _pointCount);
@@ -227,6 +218,7 @@ void Curve::setTangent(unsigned int index, InterpolationType type, float* inValu
     if (outValue) memcpy(_points[index].outValue, outValue, _componentSize);
 }
 
+//----------------------------------------------------------------------------
 void Curve::evaluate(float time, float* dst) const
 {
     assert(dst);
@@ -234,6 +226,7 @@ void Curve::evaluate(float time, float* dst) const
     evaluate(time, 0.0f, 1.0f, 0.0f, dst);
 }
 
+//----------------------------------------------------------------------------
 void Curve::evaluate(float time, float startTime, float endTime, float loopBlendTime, float* dst) const
 {
     assert(dst && startTime >= 0.0f && startTime <= endTime && endTime <= 1.0f
@@ -854,8 +847,10 @@ void Curve::evaluate(float time, float startTime, float endTime, float loopBlend
     interpolateLinear(t, from, to, dst);
 }
 
+//----------------------------------------------------------------------------
 float Curve::lerp(float t, float from, float to) { return lerpInl(t, from, to); }
 
+//----------------------------------------------------------------------------
 void Curve::setQuaternionOffset(unsigned int offset)
 {
     assert(offset <= (_componentCount - 4));
@@ -865,6 +860,7 @@ void Curve::setQuaternionOffset(unsigned int offset)
     *_quaternionOffset = offset;
 }
 
+//----------------------------------------------------------------------------
 void Curve::interpolateBezier(float s, Point* from, Point* to, float* dst) const
 {
     float s_2 = s * s;
@@ -921,6 +917,7 @@ void Curve::interpolateBezier(float s, Point* from, Point* to, float* dst) const
     }
 }
 
+//----------------------------------------------------------------------------
 void Curve::interpolateBSpline(float s, Point* c0, Point* c1, Point* c2, Point* c3, float* dst) const
 {
     float s_2 = s * s;
@@ -979,6 +976,7 @@ void Curve::interpolateBSpline(float s, Point* c0, Point* c1, Point* c2, Point* 
     }
 }
 
+//----------------------------------------------------------------------------
 void Curve::interpolateHermite(float s, Point* from, Point* to, float* dst) const
 {
     // Calculate the hermite basis functions.
@@ -1035,6 +1033,7 @@ void Curve::interpolateHermite(float s, Point* from, Point* to, float* dst) cons
     }
 }
 
+//----------------------------------------------------------------------------
 void Curve::interpolateHermiteFlat(float s, Point* from, Point* to, float* dst) const
 {
     // Calculate the hermite basis functions.
@@ -1084,6 +1083,7 @@ void Curve::interpolateHermiteFlat(float s, Point* from, Point* to, float* dst) 
     }
 }
 
+//----------------------------------------------------------------------------
 void Curve::interpolateHermiteSmooth(float s, unsigned int index, Point* from, Point* to, float* dst) const
 {
     // Calculate the hermite basis functions.
@@ -1234,6 +1234,7 @@ void Curve::interpolateHermiteSmooth(float s, unsigned int index, Point* from, P
     }
 }
 
+//----------------------------------------------------------------------------
 void Curve::interpolateLinear(float s, Point* from, Point* to, float* dst) const
 {
     float* fromValue = from->value;
@@ -1276,6 +1277,7 @@ void Curve::interpolateLinear(float s, Point* from, Point* to, float* dst) const
     }
 }
 
+//----------------------------------------------------------------------------
 void Curve::interpolateQuaternion(float s, float* from, float* to, float* dst) const
 {
     // Evaluate.
@@ -1309,6 +1311,7 @@ void Curve::interpolateQuaternion(float s, float* from, float* to, float* dst) c
                           dst + 3);
 }
 
+//----------------------------------------------------------------------------
 int Curve::determineIndex(float time, unsigned int min, unsigned int max) const
 {
     unsigned int mid;
@@ -1329,6 +1332,7 @@ int Curve::determineIndex(float time, unsigned int min, unsigned int max) const
     return max;
 }
 
+//----------------------------------------------------------------------------
 int Curve::getInterpolationType(const std::string& curveId)
 {
     static const std::unordered_map<std::string, InterpolationType> interpolationMap = {

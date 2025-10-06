@@ -69,23 +69,23 @@ class FlowLayout : public Layout
     /**
      * Horizontal spacing between controls.
      */
-    int _horizontalSpacing;
+    int _horizontalSpacing{ 0 };
 
     /**
      * Vertical spacing between controls.
      */
-    int _verticalSpacing;
+    int _verticalSpacing{ 0 };
 
   private:
     /**
      * Constructor.
      */
-    FlowLayout();
+    FlowLayout() = default;
 
     /**
      * Constructor.
      */
-    FlowLayout(const FlowLayout& copy);
+    FlowLayout(const FlowLayout& copy) = default;
 
     /**
      * Destructor.

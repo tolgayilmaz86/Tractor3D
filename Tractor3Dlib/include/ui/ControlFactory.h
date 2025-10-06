@@ -71,12 +71,12 @@ class ControlFactory
     /**
      * Constructor.
      */
-    ControlFactory(const ControlFactory& copy);
+    ControlFactory(const ControlFactory& copy) = default;
 
     /**
      * Destructor.
      */
-    ~ControlFactory();
+    ~ControlFactory() = default;
 
     /**
      * Cleans up resources allocated by the ControlFactory.

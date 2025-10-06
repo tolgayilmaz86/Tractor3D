@@ -58,7 +58,7 @@ class CheckBox : public Button
      *
      * @return Whether this checkbox is checked.
      */
-    bool isChecked();
+    bool isChecked() const noexcept { return _checked; }
 
     /**
      * Sets whether the checkbox is checked.
@@ -83,12 +83,12 @@ class CheckBox : public Button
     /**
      * Constructor.
      */
-    CheckBox();
+    CheckBox() = default;
 
     /**
      * Destructor.
      */
-    ~CheckBox();
+    ~CheckBox() = default;
 
     /**
      * Create a checkbox with a given style and properties.
@@ -141,12 +141,12 @@ class CheckBox : public Button
     /**
      * Whether this checkbox is currently checked.
      */
-    bool _checked;
+    bool _checked{ false };
 
     /**
      * The Theme::ThemeImage to display for the checkbox.
      */
-    Theme::ThemeImage* _image;
+    Theme::ThemeImage* _image{ nullptr };
 
   private:
     /*

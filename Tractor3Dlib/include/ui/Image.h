@@ -92,7 +92,7 @@ class Image : public Ref
     /**
      * Constructor.
      */
-    Image();
+    Image() = default;
 
     /**
      * Destructor.
@@ -104,10 +104,10 @@ class Image : public Ref
      */
     Image& operator=(const Image&) = delete;
 
-    unsigned char* _data;
-    Format _format;
-    unsigned int _width;
-    unsigned int _height;
+    unsigned char* _data{ nullptr };
+    Format _format{ RGB };
+    unsigned int _width{ 0 };
+    unsigned int _height{ 0 };
 };
 
 } // namespace tractor

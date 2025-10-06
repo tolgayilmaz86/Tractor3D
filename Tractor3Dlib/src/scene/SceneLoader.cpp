@@ -28,19 +28,24 @@
 namespace tractor
 {
 
+//----------------------------------------------------------------------------
 // Utility functions (shared with Properties).
 extern void calculateNamespacePath(const std::string& urlString,
                                    std::string& fileString,
                                    std::vector<std::string>& namespacePath);
+
+//----------------------------------------------------------------------------
 extern Properties* getPropertiesFromNamespacePath(Properties* properties,
                                                   const std::vector<std::string>& namespacePath);
 
+//----------------------------------------------------------------------------
 Scene* SceneLoader::load(const std::string& url)
 {
     SceneLoader loader;
     return loader.loadInternal(url);
 }
 
+//----------------------------------------------------------------------------
 Scene* SceneLoader::loadInternal(const std::string& url)
 {
     // Get the file part of the url that we are loading the scene from.
@@ -158,6 +163,7 @@ Scene* SceneLoader::loadInternal(const std::string& url)
     return _scene;
 }
 
+//----------------------------------------------------------------------------
 void SceneLoader::applyTags(SceneNode& sceneNode)
 {
     // Apply tags for this scene node
@@ -177,6 +183,7 @@ void SceneLoader::applyTags(SceneNode& sceneNode)
     }
 }
 
+//----------------------------------------------------------------------------
 void SceneLoader::addSceneAnimation(const std::string& animationID,
                                     const std::string& targetID,
                                     const std::string& url)
@@ -189,6 +196,7 @@ void SceneLoader::addSceneAnimation(const std::string& animationID,
     _animations.emplace_back(SceneAnimation(animationID, targetID, url));
 }
 
+//----------------------------------------------------------------------------
 void SceneLoader::addSceneNodeProperty(SceneNode& sceneNode,
                                        SceneNodeProperty::Type type,
                                        const std::string& value,
@@ -225,6 +233,7 @@ void SceneLoader::addSceneNodeProperty(SceneNode& sceneNode,
     sceneNode._properties.push_back(prop);
 }
 
+//----------------------------------------------------------------------------
 void SceneLoader::applyNodeProperties(const Properties* sceneProperties, size_t typeFlags)
 {
     for (auto& node : _sceneNodes)
@@ -233,6 +242,7 @@ void SceneLoader::applyNodeProperties(const Properties* sceneProperties, size_t 
     }
 }
 
+//----------------------------------------------------------------------------
 void SceneLoader::applyNodeProperties(SceneNode& sceneNode,
                                       const Properties* sceneProperties,
                                       size_t typeFlags)
@@ -255,6 +265,7 @@ void SceneLoader::applyNodeProperties(SceneNode& sceneNode,
     }
 }
 
+//----------------------------------------------------------------------------
 void SceneLoader::applyNodeProperty(SceneNode& sceneNode,
                                     Node* node,
                                     const Properties* sceneProperties,
@@ -465,6 +476,7 @@ void SceneLoader::applyNodeProperty(SceneNode& sceneNode,
     }
 }
 
+//----------------------------------------------------------------------------
 void SceneLoader::applyNodeUrls()
 {
     // Apply all URL node properties so that when we go to apply
@@ -475,6 +487,7 @@ void SceneLoader::applyNodeUrls()
     }
 }
 
+//----------------------------------------------------------------------------
 void SceneLoader::applyNodeUrls(SceneNode& sceneNode, Node* parent)
 {
     // Iterate backwards over the properties list so we can remove properties as we go
@@ -552,6 +565,7 @@ void SceneLoader::applyNodeUrls(SceneNode& sceneNode, Node* parent)
     }
 }
 
+//----------------------------------------------------------------------------
 void SceneLoader::buildReferenceTables(Properties* sceneProperties)
 {
     // Go through the child namespaces of the scene.
@@ -619,6 +633,7 @@ void SceneLoader::buildReferenceTables(Properties* sceneProperties)
     }
 }
 
+//----------------------------------------------------------------------------
 void SceneLoader::parseNode(Properties* ns, SceneNode* parent, const std::string& path)
 {
     std::string propertyUrl;
@@ -806,6 +821,7 @@ void SceneLoader::parseNode(Properties* ns, SceneNode* parent, const std::string
     }
 }
 
+//----------------------------------------------------------------------------
 void SceneLoader::createAnimations()
 {
     // Create the scene animations.
@@ -835,6 +851,7 @@ void SceneLoader::createAnimations()
     }
 }
 
+//----------------------------------------------------------------------------
 PhysicsConstraint* SceneLoader::loadGenericConstraint(const Properties* constraint,
                                                       PhysicsRigidBody* rbA,
                                                       PhysicsRigidBody* rbB)
@@ -886,6 +903,7 @@ PhysicsConstraint* SceneLoader::loadGenericConstraint(const Properties* constrai
     return physicsConstraint;
 }
 
+//----------------------------------------------------------------------------
 PhysicsConstraint* SceneLoader::loadHingeConstraint(const Properties* constraint,
                                                     PhysicsRigidBody* rbA,
                                                     PhysicsRigidBody* rbB)
@@ -952,6 +970,7 @@ PhysicsConstraint* SceneLoader::loadHingeConstraint(const Properties* constraint
     return physicsConstraint;
 }
 
+//----------------------------------------------------------------------------
 Scene* SceneLoader::loadMainSceneData(const Properties* sceneProperties)
 {
     assert(sceneProperties);
@@ -978,6 +997,7 @@ Scene* SceneLoader::loadMainSceneData(const Properties* sceneProperties)
     return scene;
 }
 
+//----------------------------------------------------------------------------
 void SceneLoader::loadPhysics(Properties* physics)
 {
     assert(physics);
@@ -1096,6 +1116,7 @@ void SceneLoader::loadPhysics(Properties* physics)
     }
 }
 
+//----------------------------------------------------------------------------
 void SceneLoader::loadReferencedFiles()
 {
     // Load all referenced properties files.
@@ -1140,6 +1161,7 @@ void SceneLoader::loadReferencedFiles()
     }
 }
 
+//----------------------------------------------------------------------------
 PhysicsConstraint* SceneLoader::loadSocketConstraint(const Properties* constraint,
                                                      PhysicsRigidBody* rbA,
                                                      PhysicsRigidBody* rbB)
@@ -1177,6 +1199,7 @@ PhysicsConstraint* SceneLoader::loadSocketConstraint(const Properties* constrain
     return physicsConstraint;
 }
 
+//----------------------------------------------------------------------------
 PhysicsConstraint* SceneLoader::loadSpringConstraint(const Properties* constraint,
                                                      PhysicsRigidBody* rbA,
                                                      PhysicsRigidBody* rbB)
@@ -1251,7 +1274,7 @@ PhysicsConstraint* SceneLoader::loadSpringConstraint(const Properties* constrain
     return physicsConstraint;
 }
 
-// TODO use string references instead pointers
+//----------------------------------------------------------------------------
 void splitURL(const std::string& url, std::string* file, std::string* id)
 {
     if (url.empty()) return; // Early exit if the URL is empty.
@@ -1282,6 +1305,7 @@ void splitURL(const std::string& url, std::string* file, std::string* id)
     *id = url;
 }
 
+//----------------------------------------------------------------------------
 void SceneLoader::processExactMatchNode(SceneNode& sceneNode, Node* parent, const std::string& id)
 {
     Node* node = parent ? parent->findNode(id) : _scene->findNode(id);
@@ -1296,6 +1320,7 @@ void SceneLoader::processExactMatchNode(SceneNode& sceneNode, Node* parent, cons
     }
 }
 
+//----------------------------------------------------------------------------
 void SceneLoader::processPartialMatchNodes(SceneNode& sceneNode, Node* parent, const std::string& id)
 {
     // Search for nodes using a partial match
@@ -1320,6 +1345,7 @@ void SceneLoader::processPartialMatchNodes(SceneNode& sceneNode, Node* parent, c
     }
 }
 
+//----------------------------------------------------------------------------
 void SceneLoader::processExternalFile(SceneNode& sceneNode,
                                       Node* parent,
                                       const std::string& file,
@@ -1389,6 +1415,7 @@ void SceneLoader::processExternalFile(SceneNode& sceneNode,
     }
 }
 
+//----------------------------------------------------------------------------
 SceneLoader::SceneNodeProperty::SceneNodeProperty(Type type,
                                                   const std::string& value,
                                                   int index,

@@ -30,6 +30,7 @@ constexpr auto ANIMATION_SRT_OFFSET = 3;
 namespace tractor
 {
 
+//----------------------------------------------------------------------------
 Animation::Animation(const std::string& id,
                      AnimationTarget* target,
                      int propertyId,
@@ -46,6 +47,7 @@ Animation::Animation(const std::string& id,
     assert(getRefCount() == 1);
 }
 
+//----------------------------------------------------------------------------
 Animation::Animation(const std::string& id,
                      AnimationTarget* target,
                      int propertyId,
@@ -63,11 +65,13 @@ Animation::Animation(const std::string& id,
     assert(getRefCount() == 1);
 }
 
+//----------------------------------------------------------------------------
 Animation::Animation(const std::string& id)
     : _controller(Game::getInstance()->getAnimationController()), _id(id)
 {
 }
 
+//----------------------------------------------------------------------------
 Animation::~Animation()
 {
     _channels.clear();
@@ -94,6 +98,7 @@ Animation::~Animation()
         _clipsMap.clear();
 }
 
+//----------------------------------------------------------------------------
 Animation::Channel::Channel(Animation* animation,
                             AnimationTarget* target,
                             int propertyId,
@@ -114,6 +119,7 @@ Animation::Channel::Channel(Animation* animation,
     _animation->addRef();
 }
 
+//----------------------------------------------------------------------------
 Animation::Channel::Channel(const Channel& copy, Animation* animation, AnimationTarget* target)
     : _animation(animation), _target(target), _propertyId(copy._propertyId), _curve(copy._curve),
       _duration(copy._duration)
@@ -127,12 +133,14 @@ Animation::Channel::Channel(const Channel& copy, Animation* animation, Animation
     _animation->addRef();
 }
 
+//----------------------------------------------------------------------------
 Animation::Channel::~Channel()
 {
     SAFE_RELEASE(_curve);
     SAFE_RELEASE(_animation);
 }
 
+//----------------------------------------------------------------------------
 void Animation::createClips(const std::string& url)
 {
     auto properties = std::unique_ptr<Properties>(Properties::create(url));
@@ -148,6 +156,7 @@ void Animation::createClips(const std::string& url)
     createClips(pAnimation, (unsigned int)frameCount);
 }
 
+//----------------------------------------------------------------------------
 AnimationClip* Animation::createClip(const std::string& id, unsigned long begin, unsigned long end)
 {
     auto clip = new AnimationClip(id, this, begin, end);
@@ -157,6 +166,7 @@ AnimationClip* Animation::createClip(const std::string& id, unsigned long begin,
     return clip;
 }
 
+//----------------------------------------------------------------------------
 AnimationClip* Animation::getClip(const std::string& id)
 {
     // If id is nullptr return the default clip.
@@ -172,6 +182,7 @@ AnimationClip* Animation::getClip(const std::string& id)
     }
 }
 
+//----------------------------------------------------------------------------
 void Animation::play(const std::string& clipId)
 {
     // If id is nullptr, play the default clip.
@@ -189,6 +200,7 @@ void Animation::play(const std::string& clipId)
     }
 }
 
+//----------------------------------------------------------------------------
 void Animation::stop(const std::string& clipId)
 {
     // If id is nullptr, play the default clip.
@@ -204,6 +216,7 @@ void Animation::stop(const std::string& clipId)
     }
 }
 
+//----------------------------------------------------------------------------
 void Animation::pause(const std::string& clipId)
 {
     if (clipId.empty())
@@ -217,6 +230,7 @@ void Animation::pause(const std::string& clipId)
     }
 }
 
+//----------------------------------------------------------------------------
 bool Animation::targets(AnimationTarget* target) const
 {
     bool targetExists = std::any_of(_channels.begin(),
@@ -230,11 +244,13 @@ bool Animation::targets(AnimationTarget* target) const
     return targetExists;
 }
 
+//----------------------------------------------------------------------------
 void Animation::createDefaultClip()
 {
     _defaultClip = new AnimationClip("default_clip", this, 0.0f, _duration);
 }
 
+//----------------------------------------------------------------------------
 void Animation::createClips(Properties* animationProperties, unsigned int frameCount)
 {
     assert(animationProperties);
@@ -279,8 +295,10 @@ void Animation::createClips(Properties* animationProperties, unsigned int frameC
     }
 }
 
+//----------------------------------------------------------------------------
 void Animation::addClip(AnimationClip* clip) { _clipsMap.insert({ clip->getId(), clip }); }
 
+//----------------------------------------------------------------------------
 AnimationClip* Animation::findClip(const std::string& id) const
 {
     if (auto clip = _clipsMap.find(id); clip != _clipsMap.end()) return clip->second;
@@ -288,6 +306,7 @@ AnimationClip* Animation::findClip(const std::string& id) const
     return nullptr;
 }
 
+//----------------------------------------------------------------------------
 Animation::Channel* Animation::createChannel(AnimationTarget* target,
                                              int propertyId,
                                              unsigned int keyCount,
@@ -342,6 +361,7 @@ Animation::Channel* Animation::createChannel(AnimationTarget* target,
     return channel;
 }
 
+//----------------------------------------------------------------------------
 Animation::Channel* Animation::createChannel(AnimationTarget* target,
                                              int propertyId,
                                              unsigned int keyCount,
@@ -406,6 +426,7 @@ Animation::Channel* Animation::createChannel(AnimationTarget* target,
     return channel;
 }
 
+//----------------------------------------------------------------------------
 void Animation::addChannel(Channel* channel)
 {
     assert(channel);
@@ -414,6 +435,7 @@ void Animation::addChannel(Channel* channel)
     if (channel->_duration > _duration) _duration = channel->_duration;
 }
 
+//----------------------------------------------------------------------------
 void Animation::removeChannel(Channel* channel)
 {
     std::vector<Animation::Channel*>::iterator itr = _channels.begin();
@@ -432,6 +454,7 @@ void Animation::removeChannel(Channel* channel)
     }
 }
 
+//----------------------------------------------------------------------------
 void Animation::setTransformRotationOffset(Curve* curve, unsigned int propertyId)
 {
     assert(curve);
@@ -451,6 +474,7 @@ void Animation::setTransformRotationOffset(Curve* curve, unsigned int propertyId
     return;
 }
 
+//----------------------------------------------------------------------------
 Animation* Animation::clone(Channel* channel, AnimationTarget* target)
 {
     assert(channel);

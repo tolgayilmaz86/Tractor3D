@@ -19,6 +19,8 @@
 
 namespace tractor
 {
+
+//----------------------------------------------------------------------------
 Button* Button::create(const std::string& id, Theme::Style* style)
 {
     Button* button = new Button();
@@ -27,6 +29,7 @@ Button* Button::create(const std::string& id, Theme::Style* style)
     return button;
 }
 
+//----------------------------------------------------------------------------
 Control* Button::create(Theme::Style* style, Properties* properties)
 {
     Button* button = new Button();
@@ -34,6 +37,7 @@ Control* Button::create(Theme::Style* style, Properties* properties)
     return button;
 }
 
+//----------------------------------------------------------------------------
 void Button::initialize(const std::string& typeName, Theme::Style* style, Properties* properties)
 {
     Label::initialize(typeName, style, properties);
@@ -50,6 +54,7 @@ void Button::initialize(const std::string& typeName, Theme::Style* style, Proper
     }
 }
 
+//----------------------------------------------------------------------------
 const std::string& Button::getTypeName() const noexcept
 {
     static const std::string TYPE_NAME = "Button";

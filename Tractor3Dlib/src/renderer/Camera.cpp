@@ -36,12 +36,14 @@ constexpr auto CAMERA_CUSTOM_PROJECTION = 64;
 namespace tractor
 {
 
+//----------------------------------------------------------------------------
 Camera::Camera(float fieldOfView, float aspectRatio, float nearPlane, float farPlane)
     : _type(PERSPECTIVE), _fieldOfView(fieldOfView), _aspectRatio(aspectRatio),
       _nearPlane(nearPlane), _farPlane(farPlane), _bits(CAMERA_DIRTY_ALL)
 {
 }
 
+//----------------------------------------------------------------------------
 Camera::Camera(float zoomX, float zoomY, float aspectRatio, float nearPlane, float farPlane)
     : _type(ORTHOGRAPHIC), _aspectRatio(aspectRatio), _nearPlane(nearPlane), _farPlane(farPlane),
       _bits(CAMERA_DIRTY_ALL)
@@ -51,13 +53,16 @@ Camera::Camera(float zoomX, float zoomY, float aspectRatio, float nearPlane, flo
     _zoom[1] = zoomY;
 }
 
+//----------------------------------------------------------------------------
 Camera::~Camera() { _listeners.clear(); }
 
+//----------------------------------------------------------------------------
 Camera* Camera::createPerspective(float fieldOfView, float aspectRatio, float nearPlane, float farPlane)
 {
     return new Camera(fieldOfView, aspectRatio, nearPlane, farPlane);
 }
 
+//----------------------------------------------------------------------------
 Camera* Camera::createOrthographic(float zoomX,
                                    float zoomY,
                                    float aspectRatio,
@@ -67,6 +72,7 @@ Camera* Camera::createOrthographic(float zoomX,
     return new Camera(zoomX, zoomY, aspectRatio, nearPlane, farPlane);
 }
 
+//----------------------------------------------------------------------------
 Camera* Camera::create(Properties* properties)
 {
     assert(properties);
@@ -141,6 +147,7 @@ Camera* Camera::create(Properties* properties)
     return camera;
 }
 
+//----------------------------------------------------------------------------
 float Camera::getFieldOfView() const
 {
     assert(_type == Camera::PERSPECTIVE);
@@ -148,6 +155,7 @@ float Camera::getFieldOfView() const
     return _fieldOfView;
 }
 
+//----------------------------------------------------------------------------
 void Camera::setFieldOfView(float fieldOfView)
 {
     assert(_type == Camera::PERSPECTIVE);
@@ -158,6 +166,7 @@ void Camera::setFieldOfView(float fieldOfView)
     cameraChanged();
 }
 
+//----------------------------------------------------------------------------
 float Camera::getZoomX() const
 {
     assert(_type == Camera::ORTHOGRAPHIC);
@@ -165,6 +174,7 @@ float Camera::getZoomX() const
     return _zoom[0];
 }
 
+//----------------------------------------------------------------------------
 void Camera::setZoomX(float zoomX)
 {
     assert(_type == Camera::ORTHOGRAPHIC);
@@ -175,6 +185,7 @@ void Camera::setZoomX(float zoomX)
     cameraChanged();
 }
 
+//----------------------------------------------------------------------------
 float Camera::getZoomY() const
 {
     assert(_type == Camera::ORTHOGRAPHIC);
@@ -182,6 +193,7 @@ float Camera::getZoomY() const
     return _zoom[1];
 }
 
+//----------------------------------------------------------------------------
 void Camera::setZoomY(float zoomY)
 {
     assert(_type == Camera::ORTHOGRAPHIC);
@@ -192,6 +204,7 @@ void Camera::setZoomY(float zoomY)
     cameraChanged();
 }
 
+//----------------------------------------------------------------------------
 void Camera::setAspectRatio(float aspectRatio)
 {
     _aspectRatio = aspectRatio;
@@ -200,6 +213,7 @@ void Camera::setAspectRatio(float aspectRatio)
     cameraChanged();
 }
 
+//----------------------------------------------------------------------------
 void Camera::setNearPlane(float nearPlane)
 {
     _nearPlane = nearPlane;
@@ -208,6 +222,7 @@ void Camera::setNearPlane(float nearPlane)
     cameraChanged();
 }
 
+//----------------------------------------------------------------------------
 void Camera::setFarPlane(float farPlane)
 {
     _farPlane = farPlane;
@@ -216,6 +231,7 @@ void Camera::setFarPlane(float farPlane)
     cameraChanged();
 }
 
+//----------------------------------------------------------------------------
 void Camera::setNode(Node* node)
 {
     if (_node != node)
@@ -239,6 +255,7 @@ void Camera::setNode(Node* node)
     }
 }
 
+//----------------------------------------------------------------------------
 const Matrix& Camera::getViewMatrix() const
 {
     if (_bits & CAMERA_DIRTY_VIEW)
@@ -259,6 +276,7 @@ const Matrix& Camera::getViewMatrix() const
     return _view;
 }
 
+//----------------------------------------------------------------------------
 const Matrix& Camera::getInverseViewMatrix() const
 {
     if (_bits & CAMERA_DIRTY_INV_VIEW)
@@ -271,6 +289,7 @@ const Matrix& Camera::getInverseViewMatrix() const
     return _inverseView;
 }
 
+//----------------------------------------------------------------------------
 const Matrix& Camera::getProjectionMatrix() const
 {
     if (!(_bits & CAMERA_CUSTOM_PROJECTION) && (_bits & CAMERA_DIRTY_PROJ))
@@ -292,6 +311,7 @@ const Matrix& Camera::getProjectionMatrix() const
     return _projection;
 }
 
+//----------------------------------------------------------------------------
 void Camera::setProjectionMatrix(const Matrix& matrix)
 {
     _projection = matrix;
@@ -302,6 +322,7 @@ void Camera::setProjectionMatrix(const Matrix& matrix)
     cameraChanged();
 }
 
+//----------------------------------------------------------------------------
 void Camera::resetProjectionMatrix()
 {
     if (_bits & CAMERA_CUSTOM_PROJECTION)
@@ -314,6 +335,7 @@ void Camera::resetProjectionMatrix()
     }
 }
 
+//----------------------------------------------------------------------------
 const Matrix& Camera::getViewProjectionMatrix() const
 {
     if (_bits & CAMERA_DIRTY_VIEW_PROJ)
@@ -326,6 +348,7 @@ const Matrix& Camera::getViewProjectionMatrix() const
     return _viewProjection;
 }
 
+//----------------------------------------------------------------------------
 const Matrix& Camera::getInverseViewProjectionMatrix() const
 {
     if (_bits & CAMERA_DIRTY_INV_VIEW_PROJ)
@@ -338,6 +361,7 @@ const Matrix& Camera::getInverseViewProjectionMatrix() const
     return _inverseViewProjection;
 }
 
+//----------------------------------------------------------------------------
 const Frustum& Camera::getFrustum() const
 {
     if (_bits & CAMERA_DIRTY_BOUNDS)
@@ -351,6 +375,7 @@ const Frustum& Camera::getFrustum() const
     return _bounds;
 }
 
+//----------------------------------------------------------------------------
 void Camera::project(const Rectangle& viewport,
                      const Vector3& position,
                      float* x,
@@ -380,6 +405,7 @@ void Camera::project(const Rectangle& viewport,
     }
 }
 
+//----------------------------------------------------------------------------
 void Camera::project(const Rectangle& viewport, const Vector3& position, Vector2* out) const
 {
     assert(out);
@@ -388,6 +414,7 @@ void Camera::project(const Rectangle& viewport, const Vector3& position, Vector2
     out->set(x, y);
 }
 
+//----------------------------------------------------------------------------
 void Camera::project(const Rectangle& viewport, const Vector3& position, Vector3* out) const
 {
     assert(out);
@@ -396,6 +423,7 @@ void Camera::project(const Rectangle& viewport, const Vector3& position, Vector3
     out->set(x, y, depth);
 }
 
+//----------------------------------------------------------------------------
 void Camera::unproject(const Rectangle& viewport, float x, float y, float depth, Vector3* dst) const
 {
     assert(dst);
@@ -426,6 +454,7 @@ void Camera::unproject(const Rectangle& viewport, float x, float y, float depth,
     dst->set(screen.x, screen.y, screen.z);
 }
 
+//----------------------------------------------------------------------------
 void Camera::pickRay(const Rectangle& viewport, float x, float y, Ray* dst) const
 {
     assert(dst);
@@ -446,6 +475,7 @@ void Camera::pickRay(const Rectangle& viewport, float x, float y, Ray* dst) cons
     dst->set(nearPoint, direction);
 }
 
+//----------------------------------------------------------------------------
 Camera* Camera::clone(NodeCloneContext& context) const
 {
     Camera* cameraClone = nullptr;
@@ -467,6 +497,7 @@ Camera* Camera::clone(NodeCloneContext& context) const
     return cameraClone;
 }
 
+//----------------------------------------------------------------------------
 void Camera::transformChanged(Transform* transform, long cookie)
 {
     _bits |= CAMERA_DIRTY_VIEW | CAMERA_DIRTY_INV_VIEW | CAMERA_DIRTY_INV_VIEW_PROJ
@@ -475,6 +506,7 @@ void Camera::transformChanged(Transform* transform, long cookie)
     cameraChanged();
 }
 
+//----------------------------------------------------------------------------
 void Camera::cameraChanged()
 {
     for (auto listener : _listeners)
@@ -483,6 +515,7 @@ void Camera::cameraChanged()
     }
 }
 
+//----------------------------------------------------------------------------
 void Camera::addListener(Camera::Listener* listener)
 {
     assert(listener);
@@ -490,6 +523,7 @@ void Camera::addListener(Camera::Listener* listener)
     _listeners.push_back(listener);
 }
 
+//----------------------------------------------------------------------------
 void Camera::removeListener(Camera::Listener* listener)
 {
     assert(listener);

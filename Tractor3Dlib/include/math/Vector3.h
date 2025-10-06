@@ -31,22 +31,22 @@ class Vector3
     /**
      * The x-coordinate.
      */
-    float x;
+    float x{ 0.0f };
 
     /**
      * The y-coordinate.
      */
-    float y;
+    float y{ 0.0f };
 
     /**
      * The z-coordinate.
      */
-    float z;
+    float z{ 0.0f };
 
     /**
      * Constructs a new vector initialized to all zeros.
      */
-    Vector3();
+    Vector3() = default;
 
     /**
      * Constructs a new vector initialized to the specified values.
@@ -134,14 +134,14 @@ class Vector3
      *
      * @return true if this vector contains all zeros, false otherwise.
      */
-    bool isZero() const;
+    bool isZero() const { return x == 0.0f && y == 0.0f && z == 0.0f; }
 
     /**
      * Indicates whether this vector contains all ones.
      *
      * @return true if this vector contains all ones, false otherwise.
      */
-    bool isOne() const;
+    bool isOne() const { return x == 1.0f && y == 1.0f && z == 1.0f; }
 
     /**
      * Returns the angle (in radians) between the specified vectors.
@@ -192,7 +192,7 @@ class Vector3
      *
      * @param v The vector to compute the cross product with.
      */
-    void cross(const Vector3& v);
+    void cross(const Vector3& v) { cross(*this, v, this); }
 
     /**
      * Computes the cross product of the specified vectors and stores the result in dst.
@@ -237,7 +237,7 @@ class Vector3
      *
      * @return The dot product.
      */
-    float dot(const Vector3& v) const;
+    float dot(const Vector3& v) const { return (x * v.x + y * v.y + z * v.z); }
 
     /**
      * Returns the dot product between the specified vectors.
@@ -256,7 +256,7 @@ class Vector3
      *
      * @see lengthSquared
      */
-    float length() const;
+    float length() const { return sqrt(x * x + y * y + z * z); }
 
     /**
      * Returns the squared length of this vector.
@@ -270,7 +270,7 @@ class Vector3
      *
      * @see length
      */
-    float lengthSquared() const;
+    float lengthSquared() const noexcept { return (x * x + y * y + z * z); }
 
     /**
      * Negates this vector.
@@ -512,7 +512,6 @@ class Vector3
      * @return True if this vector is not equal to the given vector, false otherwise.
      */
     bool operator!=(const Vector3& v) const { return x != v.x || y != v.y || z != v.z; }
-
 };
 
 /**

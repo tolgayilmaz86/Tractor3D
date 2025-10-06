@@ -27,6 +27,7 @@ namespace tractor
 
 static std::vector<DepthStencilTarget*> __depthStencilTargets;
 
+//----------------------------------------------------------------------------
 DepthStencilTarget::DepthStencilTarget(const std::string& id,
                                        Format format,
                                        unsigned int width,
@@ -36,6 +37,7 @@ DepthStencilTarget::DepthStencilTarget(const std::string& id,
 {
 }
 
+//----------------------------------------------------------------------------
 DepthStencilTarget::~DepthStencilTarget()
 {
     // Destroy GL resources.
@@ -51,6 +53,7 @@ DepthStencilTarget::~DepthStencilTarget()
     }
 }
 
+//----------------------------------------------------------------------------
 DepthStencilTarget* DepthStencilTarget::create(const std::string& id,
                                                Format format,
                                                unsigned int width,
@@ -105,6 +108,7 @@ DepthStencilTarget* DepthStencilTarget::create(const std::string& id,
     return depthStencilTarget;
 }
 
+//----------------------------------------------------------------------------
 DepthStencilTarget* DepthStencilTarget::getDepthStencilTarget(const std::string& id)
 {
     if (auto target = std::ranges::find_if(__depthStencilTargets,

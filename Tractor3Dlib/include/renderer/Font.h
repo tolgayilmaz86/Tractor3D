@@ -228,7 +228,7 @@ class Font : public Ref
      *
      * @see setCharacterSpacing(float)
      */
-    float getCharacterSpacing() const;
+    float getCharacterSpacing() const noexcept { return _spacing; }
 
     /**
      * Sets the additional character spacing for this font.
@@ -243,7 +243,7 @@ class Font : public Ref
      *
      * @param spacing New fixed character spacing, expressed as a percentage of font size.
      */
-    void setCharacterSpacing(float spacing);
+    void setCharacterSpacing(float spacing) { _spacing = spacing; }
 
     /**
      * Get an character index into a string corresponding to the character nearest the given

@@ -22,11 +22,13 @@
 namespace tractor
 {
 
+//----------------------------------------------------------------------------
 Technique::Technique(const std::string& id, Material* material) : _id(id), _material(material)
 {
     RenderState::_parent = material;
 }
 
+//----------------------------------------------------------------------------
 Technique::~Technique()
 {
     // Destroy all the passes.
@@ -36,12 +38,14 @@ Technique::~Technique()
     }
 }
 
+//----------------------------------------------------------------------------
 Pass* Technique::getPassByIndex(unsigned int index) const
 {
     assert(index < _passes.size());
     return _passes[index];
 }
 
+//----------------------------------------------------------------------------
 Pass* Technique::getPass(const std::string& id) const
 {
     for (size_t i = 0, count = _passes.size(); i < count; ++i)
@@ -56,6 +60,7 @@ Pass* Technique::getPass(const std::string& id) const
     return nullptr;
 }
 
+//----------------------------------------------------------------------------
 void Technique::setNodeBinding(Node* node)
 {
     RenderState::setNodeBinding(node);
@@ -66,6 +71,7 @@ void Technique::setNodeBinding(Node* node)
     }
 }
 
+//----------------------------------------------------------------------------
 Technique* Technique::clone(Material* material, NodeCloneContext& context) const
 {
     Technique* technique = new Technique(getId(), material);

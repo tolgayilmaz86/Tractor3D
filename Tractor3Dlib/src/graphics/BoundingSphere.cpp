@@ -20,20 +20,20 @@
 namespace tractor
 {
 
-BoundingSphere::BoundingSphere() : radius(0) {}
-
+//----------------------------------------------------------------------------
 BoundingSphere::BoundingSphere(const Vector3& center, float radius) { set(center, radius); }
 
+//----------------------------------------------------------------------------
 BoundingSphere::BoundingSphere(const BoundingSphere& copy) { set(copy); }
 
-BoundingSphere::~BoundingSphere() {}
-
+//----------------------------------------------------------------------------
 const BoundingSphere& BoundingSphere::empty()
 {
     static BoundingSphere s;
     return s;
 }
 
+//----------------------------------------------------------------------------
 bool BoundingSphere::intersects(const BoundingSphere& sphere) const
 {
     // If the distance between the spheres' centers is less than or equal
@@ -45,6 +45,7 @@ bool BoundingSphere::intersects(const BoundingSphere& sphere) const
     return sqrt(vx * vx + vy * vy + vz * vz) <= (radius + sphere.radius);
 }
 
+//----------------------------------------------------------------------------
 bool BoundingSphere::intersects(const BoundingBox& box) const
 {
     // Determine what point is closest; if the distance to that
@@ -58,6 +59,7 @@ bool BoundingSphere::intersects(const BoundingBox& box) const
     return sqrt(distX * distX + distY * distY + distZ * distZ) <= radius;
 }
 
+//----------------------------------------------------------------------------
 bool BoundingSphere::intersects(const Frustum& frustum) const
 {
     // The sphere must either intersect or be in the positive half-space of all six planes of the frustum.
@@ -69,6 +71,7 @@ bool BoundingSphere::intersects(const Frustum& frustum) const
             && intersects(frustum.getTop()) != Plane::INTERSECTS_BACK);
 }
 
+//----------------------------------------------------------------------------
 float BoundingSphere::intersects(const Plane& plane) const
 {
     float distance = plane.distance(center);
@@ -87,6 +90,7 @@ float BoundingSphere::intersects(const Plane& plane) const
     }
 }
 
+//----------------------------------------------------------------------------
 float BoundingSphere::intersects(const Ray& ray) const
 {
     const Vector3& origin = ray.getOrigin();
@@ -120,8 +124,7 @@ float BoundingSphere::intersects(const Ray& ray) const
     }
 }
 
-bool BoundingSphere::isEmpty() const noexcept { return radius == 0.0f; }
-
+//----------------------------------------------------------------------------
 void BoundingSphere::merge(const BoundingSphere& sphere)
 {
     if (sphere.isEmpty()) return;
@@ -167,6 +170,7 @@ void BoundingSphere::merge(const BoundingSphere& sphere)
     radius = r;
 }
 
+//----------------------------------------------------------------------------
 void BoundingSphere::merge(const BoundingBox& box)
 {
     if (box.isEmpty()) return;
@@ -232,18 +236,21 @@ void BoundingSphere::merge(const BoundingBox& box)
     radius = r;
 }
 
+//----------------------------------------------------------------------------
 void BoundingSphere::set(const Vector3& center, float radius)
 {
     this->center = center;
     this->radius = radius;
 }
 
+//----------------------------------------------------------------------------
 void BoundingSphere::set(const BoundingSphere& sphere)
 {
     center = sphere.center;
     radius = sphere.radius;
 }
 
+//----------------------------------------------------------------------------
 void BoundingSphere::set(const BoundingBox& box)
 {
     center.x = (box.min.x + box.max.x) * 0.5f;
@@ -252,6 +259,7 @@ void BoundingSphere::set(const BoundingBox& box)
     radius = center.distance(box.max);
 }
 
+//----------------------------------------------------------------------------
 void BoundingSphere::transform(const Matrix& matrix)
 {
     // Translate the center point.
@@ -266,6 +274,7 @@ void BoundingSphere::transform(const Matrix& matrix)
     radius = r;
 }
 
+//----------------------------------------------------------------------------
 float BoundingSphere::distance(const BoundingSphere& sphere, const Vector3& point)
 {
     return sqrt((point.x - sphere.center.x) * (point.x - sphere.center.x)
@@ -273,6 +282,7 @@ float BoundingSphere::distance(const BoundingSphere& sphere, const Vector3& poin
                 + (point.z - sphere.center.z) * (point.z - sphere.center.x));
 }
 
+//----------------------------------------------------------------------------
 bool BoundingSphere::contains(const BoundingSphere& sphere, Vector3* points, unsigned int count)
 {
     for (size_t i = 0; i < count; i++)

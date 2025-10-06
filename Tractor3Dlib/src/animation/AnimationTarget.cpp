@@ -20,13 +20,12 @@
 #include "renderer/MaterialParameter.h"
 #include "scene/Node.h"
 
-#define ANIMATION_TARGET_INDEFINITE_STR "INDEFINITE"
+constexpr auto ANIMATION_TARGET_INDEFINITE_STR = "INDEFINITE";
 
 namespace tractor
 {
 
-AnimationTarget::AnimationTarget() : _targetType(SCALAR), _animationChannels(nullptr) {}
-
+//----------------------------------------------------------------------------
 AnimationTarget::~AnimationTarget()
 {
     if (_animationChannels)
@@ -46,6 +45,7 @@ AnimationTarget::~AnimationTarget()
     }
 }
 
+//----------------------------------------------------------------------------
 Animation* AnimationTarget::createAnimation(const std::string& id,
                                             int propertyId,
                                             unsigned int keyCount,
@@ -61,6 +61,7 @@ Animation* AnimationTarget::createAnimation(const std::string& id,
     return animation;
 }
 
+//----------------------------------------------------------------------------
 Animation* AnimationTarget::createAnimation(const std::string& id,
                                             int propertyId,
                                             unsigned int keyCount,
@@ -77,6 +78,7 @@ Animation* AnimationTarget::createAnimation(const std::string& id,
     return animation;
 }
 
+//----------------------------------------------------------------------------
 Animation* AnimationTarget::createAnimation(const std::string& id, const std::string& url)
 {
     auto p = std::unique_ptr<Properties>(Properties::create(url));
@@ -88,6 +90,7 @@ Animation* AnimationTarget::createAnimation(const std::string& id, const std::st
     return animation;
 }
 
+//----------------------------------------------------------------------------
 Animation* AnimationTarget::createAnimationFromTo(const std::string& id,
                                                   int propertyId,
                                                   float* from,
@@ -117,6 +120,7 @@ Animation* AnimationTarget::createAnimationFromTo(const std::string& id,
     return animation;
 }
 
+//----------------------------------------------------------------------------
 Animation* AnimationTarget::createAnimationFromBy(const std::string& id,
                                                   int propertyId,
                                                   float* from,
@@ -148,6 +152,7 @@ Animation* AnimationTarget::createAnimationFromBy(const std::string& id,
     return animation;
 }
 
+//----------------------------------------------------------------------------
 Animation* AnimationTarget::createAnimation(const std::string& id, Properties* animationProperties)
 {
     assert(animationProperties);
@@ -369,6 +374,7 @@ Animation* AnimationTarget::createAnimation(const std::string& id, Properties* a
     return animation;
 }
 
+//----------------------------------------------------------------------------
 void AnimationTarget::destroyAnimation(const std::string& id)
 {
     // Find the animation with the specified ID.
@@ -383,6 +389,7 @@ void AnimationTarget::destroyAnimation(const std::string& id)
     SAFE_DELETE(channel);
 }
 
+//----------------------------------------------------------------------------
 Animation* AnimationTarget::getAnimation(const std::string& id) const
 {
     if (_animationChannels)
@@ -406,6 +413,7 @@ Animation* AnimationTarget::getAnimation(const std::string& id) const
     return nullptr;
 }
 
+//----------------------------------------------------------------------------
 int AnimationTarget::getPropertyId(TargetType type, const std::string& propertyIdStr)
 {
     if (type == AnimationTarget::TRANSFORM)
@@ -466,6 +474,7 @@ int AnimationTarget::getPropertyId(TargetType type, const std::string& propertyI
     return -1;
 }
 
+//----------------------------------------------------------------------------
 void AnimationTarget::addChannel(Animation::Channel* channel)
 {
     if (_animationChannels == nullptr) _animationChannels = new std::vector<Animation::Channel*>;
@@ -474,6 +483,7 @@ void AnimationTarget::addChannel(Animation::Channel* channel)
     _animationChannels->push_back(channel);
 }
 
+//----------------------------------------------------------------------------
 void AnimationTarget::removeChannel(Animation::Channel* channel)
 {
     if (_animationChannels)
@@ -496,6 +506,7 @@ void AnimationTarget::removeChannel(Animation::Channel* channel)
     }
 }
 
+//----------------------------------------------------------------------------
 Animation::Channel* AnimationTarget::getChannel(const std::string& id) const
 {
     if (_animationChannels)
@@ -520,6 +531,7 @@ Animation::Channel* AnimationTarget::getChannel(const std::string& id) const
     return nullptr;
 }
 
+//----------------------------------------------------------------------------
 void AnimationTarget::cloneInto(AnimationTarget* target, NodeCloneContext& context) const
 {
     if (_animationChannels)
@@ -545,6 +557,7 @@ void AnimationTarget::cloneInto(AnimationTarget* target, NodeCloneContext& conte
     }
 }
 
+//----------------------------------------------------------------------------
 void AnimationTarget::convertByValues(unsigned int propertyId,
                                       unsigned int componentCount,
                                       float* from,
@@ -597,6 +610,7 @@ void AnimationTarget::convertByValues(unsigned int propertyId,
     }
 }
 
+//----------------------------------------------------------------------------
 void AnimationTarget::convertQuaternionByValues(float* from, float* by)
 {
     Quaternion qFrom(from);
@@ -605,6 +619,7 @@ void AnimationTarget::convertQuaternionByValues(float* from, float* by)
     memcpy(by, (float*)&qBy, sizeof(float) * 4);
 }
 
+//----------------------------------------------------------------------------
 void AnimationTarget::convertScaleByValues(float* from, float* by, unsigned int componentCount)
 {
     for (size_t i = 0; i < componentCount; i++)
@@ -613,6 +628,7 @@ void AnimationTarget::convertScaleByValues(float* from, float* by, unsigned int 
     }
 }
 
+//----------------------------------------------------------------------------
 void AnimationTarget::convertByValues(float* from, float* by, unsigned int componentCount)
 {
     for (size_t i = 0; i < componentCount; i++)

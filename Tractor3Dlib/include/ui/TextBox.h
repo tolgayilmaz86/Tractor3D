@@ -134,12 +134,12 @@ class TextBox : public Label
     /**
      * Constructor.
      */
-    TextBox();
+    TextBox() = default;
 
     /**
      * Destructor.
      */
-    ~TextBox();
+    virtual ~TextBox() = default;
 
     /**
      * Create a text box with a given style and properties.
@@ -246,7 +246,7 @@ class TextBox : public Label
     /**
      * The character displayed in password mode.
      */
-    char _passwordChar;
+    char _passwordChar{'*'};
 
     /**
      * The mode used to display the typed text.

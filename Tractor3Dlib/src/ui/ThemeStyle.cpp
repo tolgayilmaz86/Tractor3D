@@ -18,6 +18,7 @@
 namespace tractor
 {
 
+//----------------------------------------------------------------
 /****************
  * Theme::Style *
  ****************/
@@ -41,6 +42,7 @@ Theme::Style::Style(Theme* theme,
     _overlays[OVERLAY_HOVER] = hover;
 }
 
+//----------------------------------------------------------------
 Theme::Style::Style(const Style& copy)
 {
     _theme = copy._theme;
@@ -59,6 +61,7 @@ Theme::Style::Style(const Style& copy)
     }
 }
 
+//----------------------------------------------------------------
 Theme::Style::~Style()
 {
     for (size_t i = 0; i < OVERLAY_MAX; i++)
@@ -67,6 +70,7 @@ Theme::Style::~Style()
     }
 }
 
+//----------------------------------------------------------------
 /*************************
  * Theme::Style::Overlay *
  *************************/
@@ -76,13 +80,7 @@ Theme::Style::Overlay* Theme::Style::Overlay::create()
     return overlay;
 }
 
-Theme::Style::Overlay::Overlay()
-    : _skin(nullptr), _cursor(nullptr), _imageList(nullptr), _font(nullptr), _fontSize(0),
-      _alignment(Font::ALIGN_TOP_LEFT), _textRightToLeft(false), _textColor(Vector4::one()),
-      _opacity(1.0f)
-{
-}
-
+//----------------------------------------------------------------
 Theme::Style::Overlay::Overlay(const Overlay& copy)
     : _skin(nullptr), _cursor(nullptr), _imageList(nullptr), _font(nullptr)
 {
@@ -112,6 +110,7 @@ Theme::Style::Overlay::Overlay(const Overlay& copy)
     }
 }
 
+//----------------------------------------------------------------
 Theme::Style::Overlay::~Overlay()
 {
     SAFE_RELEASE(_skin);
@@ -120,10 +119,7 @@ Theme::Style::Overlay::~Overlay()
     SAFE_RELEASE(_font);
 }
 
-float Theme::Style::Overlay::getOpacity() const { return _opacity; }
-
-void Theme::Style::Overlay::setOpacity(float opacity) { _opacity = opacity; }
-
+//----------------------------------------------------------------
 void Theme::Style::Overlay::setBorder(float top, float bottom, float left, float right)
 {
     if (_skin)
@@ -135,6 +131,7 @@ void Theme::Style::Overlay::setBorder(float top, float bottom, float left, float
     }
 }
 
+//----------------------------------------------------------------
 const Theme::Border& Theme::Style::Overlay::getBorder() const
 {
     if (_skin)
@@ -147,6 +144,7 @@ const Theme::Border& Theme::Style::Overlay::getBorder() const
     }
 }
 
+//----------------------------------------------------------------
 void Theme::Style::Overlay::setSkinColor(const Vector4& color)
 {
     if (_skin)
@@ -155,6 +153,7 @@ void Theme::Style::Overlay::setSkinColor(const Vector4& color)
     }
 }
 
+//----------------------------------------------------------------
 const Vector4& Theme::Style::Overlay::getSkinColor() const noexcept
 {
     if (_skin)
@@ -165,12 +164,14 @@ const Vector4& Theme::Style::Overlay::getSkinColor() const noexcept
     return Vector4::one();
 }
 
+//----------------------------------------------------------------
 void Theme::Style::Overlay::setSkinRegion(const Rectangle& region, float tw, float th)
 {
     assert(_skin);
     _skin->setRegion(region, tw, th);
 }
 
+//----------------------------------------------------------------
 const Rectangle& Theme::Style::Overlay::getSkinRegion() const
 {
     if (_skin)
@@ -181,6 +182,7 @@ const Rectangle& Theme::Style::Overlay::getSkinRegion() const
     return Rectangle::empty();
 }
 
+//----------------------------------------------------------------
 const Theme::UVs& Theme::Style::Overlay::getSkinUVs(Theme::Skin::SkinArea area) const
 {
     if (_skin)
@@ -191,8 +193,7 @@ const Theme::UVs& Theme::Style::Overlay::getSkinUVs(Theme::Skin::SkinArea area) 
     return UVs::empty();
 }
 
-Font* Theme::Style::Overlay::getFont() const { return _font; }
-
+//----------------------------------------------------------------
 void Theme::Style::Overlay::setFont(Font* font)
 {
     if (_font != font)
@@ -208,22 +209,7 @@ void Theme::Style::Overlay::setFont(Font* font)
     }
 }
 
-unsigned int Theme::Style::Overlay::getFontSize() const { return _fontSize; }
-
-void Theme::Style::Overlay::setFontSize(unsigned int fontSize) { _fontSize = fontSize; }
-
-Font::Justify Theme::Style::Overlay::getTextAlignment() const { return _alignment; }
-
-void Theme::Style::Overlay::setTextAlignment(Font::Justify alignment) { _alignment = alignment; }
-
-bool Theme::Style::Overlay::getTextRightToLeft() const { return _textRightToLeft; }
-
-void Theme::Style::Overlay::setTextRightToLeft(bool rightToLeft) { _textRightToLeft = rightToLeft; }
-
-const Vector4& Theme::Style::Overlay::getTextColor() const { return _textColor; }
-
-void Theme::Style::Overlay::setTextColor(const Vector4& color) { _textColor = color; }
-
+//----------------------------------------------------------------
 const Rectangle& Theme::Style::Overlay::getImageRegion(const std::string& id) const
 {
     if (!_imageList)
@@ -242,6 +228,7 @@ const Rectangle& Theme::Style::Overlay::getImageRegion(const std::string& id) co
     }
 }
 
+//----------------------------------------------------------------
 void Theme::Style::Overlay::setImageRegion(const std::string& id,
                                            const Rectangle& region,
                                            float tw,
@@ -254,6 +241,7 @@ void Theme::Style::Overlay::setImageRegion(const std::string& id,
     generateUVs(tw, th, region.x, region.y, region.width, region.height, &(image->_uvs));
 }
 
+//----------------------------------------------------------------
 const Vector4& Theme::Style::Overlay::getImageColor(const std::string& id) const
 {
     assert(_imageList);
@@ -268,6 +256,7 @@ const Vector4& Theme::Style::Overlay::getImageColor(const std::string& id) const
     }
 }
 
+//----------------------------------------------------------------
 void Theme::Style::Overlay::setImageColor(const std::string& id, const Vector4& color)
 {
     assert(_imageList);
@@ -276,6 +265,7 @@ void Theme::Style::Overlay::setImageColor(const std::string& id, const Vector4& 
     image->_color.set(color);
 }
 
+//----------------------------------------------------------------
 const Theme::UVs& Theme::Style::Overlay::getImageUVs(const std::string& id) const
 {
     assert(_imageList);
@@ -290,6 +280,7 @@ const Theme::UVs& Theme::Style::Overlay::getImageUVs(const std::string& id) cons
     }
 }
 
+//----------------------------------------------------------------
 const Rectangle& Theme::Style::Overlay::getCursorRegion() const
 {
     if (_cursor)
@@ -302,6 +293,7 @@ const Rectangle& Theme::Style::Overlay::getCursorRegion() const
     }
 }
 
+//----------------------------------------------------------------
 void Theme::Style::Overlay::setCursorRegion(const Rectangle& region, float tw, float th)
 {
     assert(_cursor);
@@ -309,6 +301,7 @@ void Theme::Style::Overlay::setCursorRegion(const Rectangle& region, float tw, f
     generateUVs(tw, th, region.x, region.y, region.width, region.height, &(_cursor->_uvs));
 }
 
+//----------------------------------------------------------------
 const Vector4& Theme::Style::Overlay::getCursorColor() const
 {
     if (_cursor)
@@ -321,12 +314,14 @@ const Vector4& Theme::Style::Overlay::getCursorColor() const
     }
 }
 
+//----------------------------------------------------------------
 void Theme::Style::Overlay::setCursorColor(const Vector4& color)
 {
     assert(_cursor);
     _cursor->_color.set(color);
 }
 
+//----------------------------------------------------------------
 const Theme::UVs& Theme::Style::Overlay::getCursorUVs() const
 {
     if (_cursor)
@@ -339,6 +334,7 @@ const Theme::UVs& Theme::Style::Overlay::getCursorUVs() const
     }
 }
 
+//----------------------------------------------------------------
 void Theme::Style::Overlay::setSkin(Skin* skin)
 {
     if (_skin != skin)
@@ -353,8 +349,7 @@ void Theme::Style::Overlay::setSkin(Skin* skin)
     }
 }
 
-Theme::Skin* Theme::Style::Overlay::getSkin() const { return _skin; }
-
+//----------------------------------------------------------------
 void Theme::Style::Overlay::setCursor(ThemeImage* cursor)
 {
     if (_cursor != cursor)
@@ -369,8 +364,7 @@ void Theme::Style::Overlay::setCursor(ThemeImage* cursor)
     }
 }
 
-Theme::ThemeImage* Theme::Style::Overlay::getCursor() const { return _cursor; }
-
+//----------------------------------------------------------------
 void Theme::Style::Overlay::setImageList(ImageList* imageList)
 {
     if (_imageList != imageList)
@@ -385,9 +379,9 @@ void Theme::Style::Overlay::setImageList(ImageList* imageList)
     }
 }
 
-Theme::ImageList* Theme::Style::Overlay::getImageList() const { return _imageList; }
-
+//----------------------------------------------------------------
 // Implementation of AnimationHandler
+//----------------------------------------------------------------
 unsigned int Theme::Style::Overlay::getAnimationPropertyComponentCount(int propertyId) const
 {
     switch (propertyId)
@@ -399,6 +393,7 @@ unsigned int Theme::Style::Overlay::getAnimationPropertyComponentCount(int prope
     }
 }
 
+//----------------------------------------------------------------
 void Theme::Style::Overlay::getAnimationPropertyValue(int propertyId, AnimationValue* value)
 {
     assert(value);
@@ -413,6 +408,7 @@ void Theme::Style::Overlay::getAnimationPropertyValue(int propertyId, AnimationV
     }
 }
 
+//----------------------------------------------------------------
 void Theme::Style::Overlay::setAnimationPropertyValue(int propertyId,
                                                       AnimationValue* value,
                                                       float blendWeight)

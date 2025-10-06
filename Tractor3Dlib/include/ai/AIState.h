@@ -44,7 +44,7 @@ class AIState : public Ref
         /**
          * Virtual destructor.
          */
-        virtual ~Listener();
+        virtual ~Listener() = default;
 
         /**
          * Called when a state is entered.

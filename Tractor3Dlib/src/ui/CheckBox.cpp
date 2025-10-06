@@ -20,10 +20,7 @@
 namespace tractor
 {
 
-CheckBox::CheckBox() : _checked(false), _image(nullptr) {}
-
-CheckBox::~CheckBox() {}
-
+//----------------------------------------------------------------------------
 CheckBox* CheckBox::create(const std::string& id, Theme::Style* style)
 {
     CheckBox* cb = new CheckBox();
@@ -31,6 +28,7 @@ CheckBox* CheckBox::create(const std::string& id, Theme::Style* style)
     return cb;
 }
 
+//----------------------------------------------------------------------------
 Control* CheckBox::create(Theme::Style* style, Properties* properties)
 {
     CheckBox* cb = new CheckBox();
@@ -38,6 +36,7 @@ Control* CheckBox::create(Theme::Style* style, Properties* properties)
     return cb;
 }
 
+//----------------------------------------------------------------------------
 void CheckBox::initialize(const std::string& typeName, Theme::Style* style, Properties* properties)
 {
     Button::initialize(typeName, style, properties);
@@ -48,14 +47,14 @@ void CheckBox::initialize(const std::string& typeName, Theme::Style* style, Prop
     }
 }
 
+//----------------------------------------------------------------------------
 const std::string& CheckBox::getTypeName() const noexcept
 {
     static const std::string TYPE_NAME = "CheckBox";
     return TYPE_NAME;
 }
 
-bool CheckBox::isChecked() { return _checked; }
-
+//----------------------------------------------------------------------------
 void CheckBox::setChecked(bool checked)
 {
     if (_checked != checked)
@@ -66,6 +65,7 @@ void CheckBox::setChecked(bool checked)
     }
 }
 
+//----------------------------------------------------------------------------
 void CheckBox::addListener(Control::Listener* listener, int eventFlags)
 {
     if ((eventFlags & Control::Listener::TEXT_CHANGED) == Control::Listener::TEXT_CHANGED)
@@ -77,6 +77,7 @@ void CheckBox::addListener(Control::Listener* listener, int eventFlags)
     Control::addListener(listener, eventFlags);
 }
 
+//----------------------------------------------------------------------------
 bool CheckBox::keyEvent(Keyboard::KeyEvent evt, int key)
 {
     if (getState() == ACTIVE && evt == Keyboard::KEY_RELEASE && key == Keyboard::KEY_RETURN)
@@ -87,6 +88,7 @@ bool CheckBox::keyEvent(Keyboard::KeyEvent evt, int key)
     return Button::keyEvent(evt, key);
 }
 
+//----------------------------------------------------------------------------
 void CheckBox::controlEvent(Control::Listener::EventType evt)
 {
     Button::controlEvent(evt);
@@ -99,6 +101,7 @@ void CheckBox::controlEvent(Control::Listener::EventType evt)
     }
 }
 
+//----------------------------------------------------------------------------
 void CheckBox::updateState(State state)
 {
     Label::updateState(state);
@@ -106,6 +109,7 @@ void CheckBox::updateState(State state)
     _image = getImage(_checked ? "checked" : "unchecked", state);
 }
 
+//----------------------------------------------------------------------------
 void CheckBox::updateBounds()
 {
     Label::updateBounds();
@@ -139,6 +143,7 @@ void CheckBox::updateBounds()
     }
 }
 
+//----------------------------------------------------------------------------
 void CheckBox::updateAbsoluteBounds(const Vector2& offset)
 {
     Label::updateAbsoluteBounds(offset);
@@ -146,6 +151,7 @@ void CheckBox::updateAbsoluteBounds(const Vector2& offset)
     _textBounds.x += _bounds.height + 5;
 }
 
+//----------------------------------------------------------------------------
 unsigned int CheckBox::drawImages(Form* form, const Rectangle& clip)
 {
     if (!_image) return 0;

@@ -26,8 +26,10 @@ namespace tractor
 
 constexpr auto TYPE_NAME = "AnimationClip";
 
+//----------------------------------------------------------------------------
 extern void splitURL(const std::string& url, std::string* file, std::string* id);
 
+//----------------------------------------------------------------------------
 AnimationClip::AnimationClip(const std::string& id,
                              Animation* animation,
                              unsigned long startTime,
@@ -52,6 +54,7 @@ AnimationClip::AnimationClip(const std::string& id,
                           });
 }
 
+//----------------------------------------------------------------------------
 AnimationClip::~AnimationClip()
 {
     std::vector<AnimationValue*>::iterator valueIter = _values.begin();
@@ -80,17 +83,20 @@ AnimationClip::~AnimationClip()
     SAFE_DELETE(_listenerItr);
 }
 
+//----------------------------------------------------------------------------
 AnimationClip::ListenerEvent::ListenerEvent(Listener* listener, unsigned long eventTime)
 {
     _listener = listener;
     _eventTime = eventTime;
 }
 
+//----------------------------------------------------------------------------
 const std::string& AnimationClip::getTypeName() const
 {
     return TYPE_NAME;
 }
 
+//----------------------------------------------------------------------------
 void AnimationClip::setRepeatCount(float repeatCount) noexcept
 {
     assert(repeatCount == REPEAT_INDEFINITE || repeatCount > 0.0f);
@@ -110,6 +116,7 @@ void AnimationClip::setRepeatCount(float repeatCount) noexcept
     }
 }
 
+//----------------------------------------------------------------------------
 void AnimationClip::setActiveDuration(unsigned long duration)
 {
     assert(duration >= 0);
@@ -125,6 +132,7 @@ void AnimationClip::setActiveDuration(unsigned long duration)
     }
 }
 
+//----------------------------------------------------------------------------
 unsigned long AnimationClip::getActiveDuration() const noexcept
 {
     if (_repeatCount == REPEAT_INDEFINITE) return REPEAT_INDEFINITE;
@@ -132,6 +140,7 @@ unsigned long AnimationClip::getActiveDuration() const noexcept
     return _activeDuration;
 }
 
+//----------------------------------------------------------------------------
 void AnimationClip::setLoopBlendTime(float loopBlendTime) noexcept
 {
     if (loopBlendTime < 0.0f)
@@ -144,11 +153,13 @@ void AnimationClip::setLoopBlendTime(float loopBlendTime) noexcept
     }
 }
 
+//----------------------------------------------------------------------------
 bool AnimationClip::isPlaying() const noexcept
 {
     return (isClipStateBitSet(CLIP_IS_PLAYING_BIT) && !isClipStateBitSet(CLIP_IS_PAUSED_BIT));
 }
 
+//----------------------------------------------------------------------------
 void AnimationClip::play()
 {
     if (isClipStateBitSet(CLIP_IS_PLAYING_BIT))
@@ -178,6 +189,7 @@ void AnimationClip::play()
     _timeStarted = Game::getGameTime();
 }
 
+//----------------------------------------------------------------------------
 void AnimationClip::stop()
 {
     if (isClipStateBitSet(CLIP_IS_PLAYING_BIT))
@@ -191,6 +203,7 @@ void AnimationClip::stop()
     }
 }
 
+//----------------------------------------------------------------------------
 void AnimationClip::pause()
 {
     if (isClipStateBitSet(CLIP_IS_PLAYING_BIT) && !isClipStateBitSet(CLIP_IS_MARKED_FOR_REMOVAL_BIT))
@@ -199,6 +212,7 @@ void AnimationClip::pause()
     }
 }
 
+//----------------------------------------------------------------------------
 void AnimationClip::crossFade(AnimationClip* clip, unsigned long duration)
 {
     assert(clip);
@@ -239,6 +253,7 @@ void AnimationClip::crossFade(AnimationClip* clip, unsigned long duration)
     _crossFadeToClip->play();
 }
 
+//----------------------------------------------------------------------------
 void AnimationClip::addListener(AnimationClip::Listener* listener, unsigned long eventTime)
 {
     assert(listener);
@@ -285,6 +300,7 @@ void AnimationClip::addListener(AnimationClip::Listener* listener, unsigned long
     }
 }
 
+//----------------------------------------------------------------------------
 void AnimationClip::removeListener(AnimationClip::Listener* listener, unsigned long eventTime)
 {
     if (_listeners)
@@ -317,6 +333,7 @@ void AnimationClip::removeListener(AnimationClip::Listener* listener, unsigned l
     }
 }
 
+//----------------------------------------------------------------------------
 void AnimationClip::addBeginListener(AnimationClip::Listener* listener)
 {
     if (!_beginListeners) _beginListeners = new std::vector<Listener*>;
@@ -325,6 +342,7 @@ void AnimationClip::addBeginListener(AnimationClip::Listener* listener)
     _beginListeners->push_back(listener);
 }
 
+//----------------------------------------------------------------------------
 void AnimationClip::removeBeginListener(AnimationClip::Listener* listener)
 {
     if (_beginListeners)
@@ -339,6 +357,7 @@ void AnimationClip::removeBeginListener(AnimationClip::Listener* listener)
     }
 }
 
+//----------------------------------------------------------------------------
 void AnimationClip::addEndListener(AnimationClip::Listener* listener)
 {
     if (!_endListeners) _endListeners = new std::vector<Listener*>;
@@ -347,6 +366,7 @@ void AnimationClip::addEndListener(AnimationClip::Listener* listener)
     _endListeners->push_back(listener);
 }
 
+//----------------------------------------------------------------------------
 void AnimationClip::removeEndListener(AnimationClip::Listener* listener)
 {
     if (_endListeners)
@@ -361,6 +381,7 @@ void AnimationClip::removeEndListener(AnimationClip::Listener* listener)
     }
 }
 
+//----------------------------------------------------------------------------
 bool AnimationClip::update(float elapsedTime)
 {
     if (isClipStateBitSet(CLIP_IS_PAUSED_BIT))
@@ -560,6 +581,7 @@ bool AnimationClip::update(float elapsedTime)
     return false;
 }
 
+//----------------------------------------------------------------------------
 void AnimationClip::onBegin()
 {
     this->addRef();
@@ -597,6 +619,7 @@ void AnimationClip::onBegin()
     this->release();
 }
 
+//----------------------------------------------------------------------------
 void AnimationClip::onEnd()
 {
     this->addRef();
@@ -622,6 +645,7 @@ void AnimationClip::onEnd()
     this->release();
 }
 
+//----------------------------------------------------------------------------
 AnimationClip* AnimationClip::clone(Animation* animation) const
 {
     // Don't clone the elapsed time, listeners or crossfade information.

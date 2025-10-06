@@ -30,20 +30,20 @@ namespace tractor
 
 static ControlFactory* __controlFactory = nullptr;
 
+//----------------------------------------------------------------
 ControlFactory::ControlFactory() { registerStandardControls(); }
 
-ControlFactory::ControlFactory(const ControlFactory& copy) {}
-
-ControlFactory::~ControlFactory() {}
-
+//----------------------------------------------------------------
 void ControlFactory::finalize() { SAFE_DELETE(__controlFactory); }
 
+//----------------------------------------------------------------
 ControlFactory* ControlFactory::getInstance()
 {
     if (__controlFactory == nullptr) __controlFactory = new ControlFactory();
     return __controlFactory;
 }
 
+//----------------------------------------------------------------
 bool ControlFactory::registerCustomControl(const std::string& typeName, ControlActivator activator)
 {
     std::string upper(typeName);
@@ -55,6 +55,7 @@ bool ControlFactory::registerCustomControl(const std::string& typeName, ControlA
     return true;
 }
 
+//----------------------------------------------------------------
 void ControlFactory::unregisterCustomControl(const std::string& typeName)
 {
     std::string upper(typeName);
@@ -67,6 +68,7 @@ void ControlFactory::unregisterCustomControl(const std::string& typeName)
     }
 }
 
+//----------------------------------------------------------------
 Control* ControlFactory::createControl(const std::string& typeName,
                                        Theme::Style* style,
                                        Properties* properties)
@@ -80,6 +82,7 @@ Control* ControlFactory::createControl(const std::string& typeName,
     return (*it->second)(style, properties);
 }
 
+//----------------------------------------------------------------
 void ControlFactory::registerStandardControls()
 {
     registerCustomControl("LABEL", &Label::create);

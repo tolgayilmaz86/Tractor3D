@@ -20,10 +20,9 @@
 namespace tractor
 {
 
-AIController::AIController() : _paused(false), _firstMessage(nullptr), _firstAgent(nullptr) {}
-
 void AIController::initialize() {}
 
+//----------------------------------------------------------------------------
 void AIController::finalize()
 {
     // Remove all agents
@@ -47,10 +46,7 @@ void AIController::finalize()
     _firstMessage = nullptr;
 }
 
-void AIController::pause() { _paused = true; }
-
-void AIController::resume() { _paused = false; }
-
+//----------------------------------------------------------------------------
 void AIController::sendMessage(AIMessage* message, float delay)
 {
     if (delay <= 0)
@@ -92,6 +88,7 @@ void AIController::sendMessage(AIMessage* message, float delay)
     }
 }
 
+//----------------------------------------------------------------------------
 void AIController::update(float elapsedTime)
 {
     if (_paused) return;
@@ -131,6 +128,7 @@ void AIController::update(float elapsedTime)
     }
 }
 
+//----------------------------------------------------------------------------
 void AIController::addAgent(AIAgent* agent)
 {
     agent->addRef();
@@ -140,6 +138,7 @@ void AIController::addAgent(AIAgent* agent)
     _firstAgent = agent;
 }
 
+//----------------------------------------------------------------------------
 void AIController::removeAgent(AIAgent* agent)
 {
     // Search our linked list of agents and link this agent out.
@@ -164,6 +163,7 @@ void AIController::removeAgent(AIAgent* agent)
     }
 }
 
+//----------------------------------------------------------------------------
 AIAgent* AIController::findAgent(const std::string& id) const
 {
     AIAgent* agent = _firstAgent;

@@ -433,17 +433,17 @@ class RenderState : public Ref
         /**
          * Constructor.
          */
-        StateBlock();
+        StateBlock() = default;
 
         /**
          * Copy constructor.
          */
-        StateBlock(const StateBlock& copy);
+        StateBlock(const StateBlock& copy) = default;
 
         /**
          * Destructor.
          */
-        ~StateBlock();
+        ~StateBlock() = default;
 
         void bindNoRestore();
 
@@ -454,25 +454,27 @@ class RenderState : public Ref
         void cloneInto(StateBlock* state);
 
         // States
-        bool _cullFaceEnabled;
-        bool _depthTestEnabled;
-        bool _depthWriteEnabled;
-        bool _blendEnabled;
-        bool _stencilTestEnabled;
-        int _stencilFunctionRef;
-        unsigned int _stencilWrite;
-        unsigned int _stencilFunctionMask;
-        long _bits;
+        bool _cullFaceEnabled{ false };
+        bool _depthTestEnabled{ false };
+        bool _depthWriteEnabled{ true };
+        bool _blendEnabled{ false };
+        bool _stencilTestEnabled{ false };
+        int _stencilFunctionRef{ 0 };
 
-        DepthFunction _depthFunction;
-        Blend _blendSrc;
-        Blend _blendDst;
-        CullFaceSide _cullFaceSide;
-        FrontFace _frontFace;
-        StencilFunction _stencilFunction;
-        StencilOperation _stencilOpSfail;
-        StencilOperation _stencilOpDpfail;
-        StencilOperation _stencilOpDppass;
+        static constexpr unsigned int RS_ALL_ONES = 0xFFFFFFFF;
+        unsigned int _stencilWrite{ RS_ALL_ONES };
+        unsigned int _stencilFunctionMask{ RS_ALL_ONES };
+        long _bits{ 0L };
+
+        DepthFunction _depthFunction{ RenderState::DEPTH_LESS };
+        Blend _blendSrc{ RenderState::BLEND_ONE };
+        Blend _blendDst{ RenderState::BLEND_ZERO };
+        CullFaceSide _cullFaceSide{ CULL_FACE_SIDE_BACK };
+        FrontFace _frontFace{ FRONT_FACE_CCW };
+        StencilFunction _stencilFunction{ RenderState::STENCIL_ALWAYS };
+        StencilOperation _stencilOpSfail{ RenderState::STENCIL_OP_KEEP };
+        StencilOperation _stencilOpDpfail{ RenderState::STENCIL_OP_KEEP };
+        StencilOperation _stencilOpDppass{ RenderState::STENCIL_OP_KEEP };
 
         static StateBlock* _defaultState;
     };

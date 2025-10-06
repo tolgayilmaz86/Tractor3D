@@ -188,7 +188,7 @@ class Theme : public Ref
       private:
         ThemeImage(float tw, float th, const Rectangle& region, const Vector4& color);
 
-        ~ThemeImage();
+        ~ThemeImage() = default;
 
         static ThemeImage* create(float tw,
                                   float th,
@@ -343,7 +343,7 @@ class Theme : public Ref
              const Theme::Border& border,
              const Vector4& color);
 
-        ~Skin();
+        ~Skin() = default;
 
         /**
          * Hidden copy assignment operator.

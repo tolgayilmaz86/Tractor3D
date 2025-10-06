@@ -31,7 +31,7 @@ class MeshPart
     /**
      * Constructor.
      */
-    MeshPart();
+    MeshPart() = default;
 
     /**
      * Destructor.
@@ -43,35 +43,35 @@ class MeshPart
      *
      * @return The part offset index.
      */
-    unsigned int getMeshIndex() const noexcept;
+    unsigned int getMeshIndex() const noexcept { return _meshIndex; }
 
     /**
      * Gets the type of primitive to define how the indices are connected.
      *
      * @return The type of primitive.
      */
-    Mesh::PrimitiveType getPrimitiveType() const noexcept;
+    Mesh::PrimitiveType getPrimitiveType() const noexcept { return _primitiveType; }
 
     /**
      * Gets the number of indices in the part.
      *
      * @return The number of indices in the part.
      */
-    unsigned int getIndexCount() const noexcept;
+    unsigned int getIndexCount() const noexcept { return _indexCount; }
 
     /**
      * Returns the format of the part indices.
      *
      * @return The part index format.
      */
-    Mesh::IndexFormat getIndexFormat() const noexcept;
+    Mesh::IndexFormat getIndexFormat() const noexcept { return _indexFormat; }
 
     /**
      * Returns a handle to the index buffer for the mesh part.
      *
      * @return The index buffer object handle.
      */
-    IndexBufferHandle getIndexBuffer() const noexcept;
+    IndexBufferHandle getIndexBuffer() const noexcept { return _indexBuffer; }
 
     /**
      * Maps the index buffer for the specified access.
@@ -96,7 +96,7 @@ class MeshPart
      *
      * @return The mapped index buffer
      */
-    void* mapIndexBuffer();
+    void* mapIndexBuffer() const;
 
     /**
      * Unmaps the index buffer.
@@ -113,14 +113,14 @@ class MeshPart
      * @param indexCount The number of indices to be set.
      * @script{ignore}
      */
-    void setIndexData(const void* indexData, unsigned int indexStart, unsigned int indexCount);
+    void setIndexData(const void* indexData, unsigned int indexStart, unsigned int indexCount) const;
 
     /**
      * Determines if the indices are dynamic.
      *
      * @return true if the part is dynamic; false otherwise.
      */
-    bool isDynamic() const noexcept;
+    bool isDynamic() const noexcept { return _dynamic; }
 
   private:
     /**
@@ -145,12 +145,12 @@ class MeshPart
                                             unsigned int indexCount,
                                             bool dynamic = false);
 
-    unsigned int _meshIndex;
-    Mesh::PrimitiveType _primitiveType;
+    unsigned int _meshIndex{0};
+    Mesh::PrimitiveType _primitiveType{ Mesh::TRIANGLES };
     Mesh::IndexFormat _indexFormat;
-    unsigned int _indexCount;
+    unsigned int _indexCount{0};
     IndexBufferHandle _indexBuffer;
-    bool _dynamic;
+    bool _dynamic{false};
 };
 
 } // namespace tractor

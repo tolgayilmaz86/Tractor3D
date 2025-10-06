@@ -446,20 +446,20 @@ class Curve : public Ref
     {
       public:
         /** The time of the point within the curve. */
-        float time;
+        float time{0.0f};
         /** The value of the point. */
-        float* value;
+        float* value{nullptr};
         /** The value of the tangent when approaching this point (from the previous point in the curve). */
-        float* inValue;
+        float* inValue{nullptr};
         /** The value of the tangent when leaving this point (towards the next point in the curve). */
-        float* outValue;
+        float* outValue{nullptr};
         /** The type of interpolation to use between this point and the next point. */
-        InterpolationType type;
+        InterpolationType type{InterpolationType::LINEAR};
 
         /**
          * Constructor.
          */
-        Point();
+        Point() = default;
 
         /**
          * Destructor.
@@ -559,11 +559,11 @@ class Curve : public Ref
      */
     static int getInterpolationType(const std::string& interpolationId);
 
-    unsigned int _pointCount;        // Number of points on the curve.
-    unsigned int _componentCount;    // Number of components on the curve.
-    unsigned int _componentSize;     // The component size (in bytes).
-    unsigned int* _quaternionOffset; // Offset for the rotation component.
-    Point* _points;                  // The points on the curve.
+    unsigned int _pointCount{ 0 };              // Number of points on the curve.
+    unsigned int _componentCount{ 0 };          // Number of components on the curve.
+    unsigned int _componentSize{ 0 };           // The component size (in bytes).
+    unsigned int* _quaternionOffset{ nullptr }; // Offset for the rotation component.
+    Point* _points{ nullptr };                  // The points on the curve.
 };
 
 } // namespace tractor

@@ -20,13 +20,16 @@
 namespace tractor
 {
 
+//----------------------------------------------------------------------------
 AIAgent::AIAgent()
 {
     _stateMachine = std::make_unique<AIStateMachine>(this);
 }
 
+//----------------------------------------------------------------------------
 AIAgent* AIAgent::create() { return new AIAgent(); }
 
+//----------------------------------------------------------------------------
 const std::string& AIAgent::getId() const
 {
     if (_node) return _node->getId();
@@ -34,8 +37,10 @@ const std::string& AIAgent::getId() const
     return EMPTY_STRING;
 }
 
+//----------------------------------------------------------------------------
 void AIAgent::update(float elapsedTime) { _stateMachine->update(elapsedTime); }
 
+//----------------------------------------------------------------------------
 bool AIAgent::processMessage(AIMessage* message)
 {
     // Handle built-in message types.

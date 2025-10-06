@@ -27,27 +27,27 @@ class Vector4
     /**
      * The x-coordinate.
      */
-    float x;
+    float x{ 0.0f };
 
     /**
      * The y-coordinate.
      */
-    float y;
+    float y{ 0.0f };
 
     /**
      * The z-coordinate.
      */
-    float z;
+    float z{ 0.0f };
 
     /**
      * The w-coordinate.
      */
-    float w;
+    float w{ 0.0f };
 
     /**
      * Constructs a new vector initialized to all zeros.
      */
-    Vector4();
+    Vector4() = default;
 
     /**
      * Constructs a new vector initialized to the specified values.
@@ -145,14 +145,14 @@ class Vector4
      *
      * @return true if this vector contains all zeros, false otherwise.
      */
-    bool isZero() const noexcept;
+    bool isZero() const noexcept { return x == 0.0f && y == 0.0f && z == 0.0f && w == 0.0f; }
 
     /**
      * Indicates whether this vector contains all ones.
      *
      * @return true if this vector contains all ones, false otherwise.
      */
-    bool isOne() const noexcept;
+    bool isOne() const noexcept { return x == 1.0f && y == 1.0f && z == 1.0f && w == 1.0f; }
 
     /**
      * Returns the angle (in radians) between the specified vectors.
@@ -232,7 +232,7 @@ class Vector4
      *
      * @return The dot product.
      */
-    float dot(const Vector4& v) const;
+    float dot(const Vector4& v) const { return (x * v.x + y * v.y + z * v.z + w * v.w); }
 
     /**
      * Returns the dot product between the specified vectors.
@@ -242,8 +242,10 @@ class Vector4
      *
      * @return The dot product between the vectors.
      */
-    static float dot(const Vector4& v1, const Vector4& v2);
-
+    static float dot(const Vector4& v1, const Vector4& v2)
+    {
+        return (v1.x * v2.x + v1.y * v2.y + v1.z * v2.z + v1.w * v2.w);
+    }
     /**
      * Computes the length of this vector.
      *
@@ -251,7 +253,7 @@ class Vector4
      *
      * @see lengthSquared
      */
-    float length() const noexcept;
+    float length() const noexcept { return sqrt(x * x + y * y + z * z + w * w); }
 
     /**
      * Returns the squared length of this vector.
@@ -265,7 +267,7 @@ class Vector4
      *
      * @see length
      */
-    float lengthSquared() const noexcept;
+    float lengthSquared() const noexcept { return (x * x + y * y + z * z + w * w); }
 
     /**
      * Negates this vector.

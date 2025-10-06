@@ -72,6 +72,7 @@ class GameScriptTarget : public ScriptTarget
     }
 };
 
+//----------------------------------------------------------------------------
 Game::Game()
 {
     assert(__gameInstance == nullptr);
@@ -80,6 +81,7 @@ Game::Game()
     __gameInstance = this;
 }
 
+//----------------------------------------------------------------------------
 Game::~Game()
 {
     SAFE_DELETE(_scriptTarget);
@@ -96,40 +98,50 @@ Game::~Game()
     __gameInstance = nullptr;
 }
 
+//----------------------------------------------------------------------------
 Game* Game::getInstance()
 {
     assert(__gameInstance);
     return __gameInstance;
 }
 
+//----------------------------------------------------------------------------
 void Game::initialize()
 {
     // stub
 }
 
+//----------------------------------------------------------------------------
 void Game::finalize()
 {
     // stub
 }
 
+//----------------------------------------------------------------------------
 void Game::update(float elapsedTime)
 {
     // stub
 }
 
+//----------------------------------------------------------------------------
 void Game::render(float elapsedTime)
 {
     // stub
 }
 
+//----------------------------------------------------------------------------
 double Game::getAbsoluteTime() { return Platform::getAbsoluteTime(); }
 
+//----------------------------------------------------------------------------
 double Game::getGameTime() { return Platform::getAbsoluteTime() - _pausedTimeTotal; }
 
+//----------------------------------------------------------------------------
 void Game::setVsync(bool enable) { Platform::setVsync(enable); }
 
+//----------------------------------------------------------------------------
 bool Game::isVsync() { return Platform::isVsync(); }
 
+//----------------------------------------------------------------------------
 int Game::run()
 {
     if (_state != UNINITIALIZED) return -1;
@@ -149,6 +161,7 @@ int Game::run()
     return 0;
 }
 
+//----------------------------------------------------------------------------
 bool Game::startup()
 {
     if (_state != UNINITIALIZED) return false;
@@ -223,6 +236,7 @@ bool Game::startup()
     return true;
 }
 
+//----------------------------------------------------------------------------
 void Game::shutdown()
 {
     // Call user finalization.
@@ -282,6 +296,7 @@ void Game::shutdown()
     }
 }
 
+//----------------------------------------------------------------------------
 void Game::pause()
 {
     if (_state == RUNNING)
@@ -301,6 +316,7 @@ void Game::pause()
     ++_pausedCount;
 }
 
+//----------------------------------------------------------------------------
 void Game::resume()
 {
     if (_state == PAUSED)
@@ -323,6 +339,7 @@ void Game::resume()
     }
 }
 
+//----------------------------------------------------------------------------
 void Game::exit()
 {
     // Only perform a full/clean shutdown if GP_USE_MEM_LEAK_DETECTION is defined.
@@ -347,6 +364,7 @@ void Game::exit()
 #endif
 }
 
+//----------------------------------------------------------------------------
 void Game::frame()
 {
     if (!_initialized)
@@ -445,12 +463,14 @@ void Game::frame()
     }
 }
 
+//----------------------------------------------------------------------------
 void Game::renderOnce(const char* function)
 {
     _scriptController->executeFunction<void>(function, nullptr);
     Platform::swapBuffers();
 }
 
+//----------------------------------------------------------------------------
 void Game::updateOnce()
 {
     assert(_animationController);
@@ -474,12 +494,14 @@ void Game::updateOnce()
                                              elapsedTime);
 }
 
+//----------------------------------------------------------------------------
 void Game::setViewport(const Rectangle& viewport)
 {
     _viewport = viewport;
     glViewport((GLuint)viewport.x, (GLuint)viewport.y, (GLuint)viewport.width, (GLuint)viewport.height);
 }
 
+//----------------------------------------------------------------------------
 void Game::clear(ClearFlags flags, const Vector4& clearColor, float clearDepth, int clearStencil)
 {
     GLbitfield bits = 0;
@@ -521,6 +543,7 @@ void Game::clear(ClearFlags flags, const Vector4& clearColor, float clearDepth, 
     glClear(bits);
 }
 
+//----------------------------------------------------------------------------
 void Game::clear(ClearFlags flags,
                  float red,
                  float green,
@@ -532,6 +555,7 @@ void Game::clear(ClearFlags flags,
     clear(flags, Vector4(red, green, blue, alpha), clearDepth, clearStencil);
 }
 
+//----------------------------------------------------------------------------
 AudioListener* Game::getAudioListener()
 {
     if (_audioListener == nullptr)
@@ -541,76 +565,92 @@ AudioListener* Game::getAudioListener()
     return _audioListener;
 }
 
+//----------------------------------------------------------------------------
 void Game::keyEvent(Keyboard::KeyEvent evt, int key)
 {
     // stub
 }
 
+//----------------------------------------------------------------------------
 void Game::touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex)
 {
     // stub
 }
 
+//----------------------------------------------------------------------------
 bool Game::mouseEvent(Mouse::MouseEvent evt, int x, int y, int wheelDelta)
 {
     // stub
     return false;
 }
 
+//----------------------------------------------------------------------------
 void Game::resizeEvent(unsigned int width, unsigned int height)
 {
     // stub
 }
 
+//----------------------------------------------------------------------------
 bool Game::isGestureSupported(Gesture::GestureEvent evt)
 {
     return Platform::isGestureSupported(evt);
 }
 
+//----------------------------------------------------------------------------
 void Game::registerGesture(Gesture::GestureEvent evt) { Platform::registerGesture(evt); }
 
+//----------------------------------------------------------------------------
 void Game::unregisterGesture(Gesture::GestureEvent evt) { Platform::unregisterGesture(evt); }
 
+//----------------------------------------------------------------------------
 bool Game::isGestureRegistered(Gesture::GestureEvent evt)
 {
     return Platform::isGestureRegistered(evt);
 }
 
+//----------------------------------------------------------------------------
 void Game::gestureSwipeEvent(int x, int y, int direction)
 {
     // stub
 }
 
+//----------------------------------------------------------------------------
 void Game::gesturePinchEvent(int x, int y, float scale)
 {
     // stub
 }
 
+//----------------------------------------------------------------------------
 void Game::gestureTapEvent(int x, int y)
 {
     // stub
 }
 
+//----------------------------------------------------------------------------
 void Game::gestureLongTapEvent(int x, int y, float duration)
 {
     // stub
 }
 
+//----------------------------------------------------------------------------
 void Game::gestureDragEvent(int x, int y)
 {
     // stub
 }
 
+//----------------------------------------------------------------------------
 void Game::gestureDropEvent(int x, int y)
 {
     // stub
 }
 
+//----------------------------------------------------------------------------
 void Game::gamepadEvent(Gamepad::GamepadEvent evt, Gamepad* gamepad)
 {
     // stub
 }
 
+//----------------------------------------------------------------------------
 void Game::keyEventInternal(Keyboard::KeyEvent evt, int key)
 {
     keyEvent(evt, key);
@@ -618,6 +658,7 @@ void Game::keyEventInternal(Keyboard::KeyEvent evt, int key)
         _scriptTarget->fireScriptEvent<void>(GP_GET_SCRIPT_EVENT(GameScriptTarget, keyEvent), evt, key);
 }
 
+//----------------------------------------------------------------------------
 void Game::touchEventInternal(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex)
 {
     touchEvent(evt, x, y, contactIndex);
@@ -629,6 +670,7 @@ void Game::touchEventInternal(Touch::TouchEvent evt, int x, int y, unsigned int 
                                              contactIndex);
 }
 
+//----------------------------------------------------------------------------
 bool Game::mouseEventInternal(Mouse::MouseEvent evt, int x, int y, int wheelDelta)
 {
     if (mouseEvent(evt, x, y, wheelDelta)) return true;
@@ -643,6 +685,7 @@ bool Game::mouseEventInternal(Mouse::MouseEvent evt, int x, int y, int wheelDelt
     return false;
 }
 
+//----------------------------------------------------------------------------
 void Game::resizeEventInternal(unsigned int width, unsigned int height)
 {
     // Update the width and height of the game
@@ -658,6 +701,7 @@ void Game::resizeEventInternal(unsigned int width, unsigned int height)
     }
 }
 
+//----------------------------------------------------------------------------
 void Game::gestureSwipeEventInternal(int x, int y, int direction)
 {
     gestureSwipeEvent(x, y, direction);
@@ -668,6 +712,7 @@ void Game::gestureSwipeEventInternal(int x, int y, int direction)
                                              direction);
 }
 
+//----------------------------------------------------------------------------
 void Game::gesturePinchEventInternal(int x, int y, float scale)
 {
     gesturePinchEvent(x, y, scale);
@@ -678,6 +723,7 @@ void Game::gesturePinchEventInternal(int x, int y, float scale)
                                              scale);
 }
 
+//----------------------------------------------------------------------------
 void Game::gestureTapEventInternal(int x, int y)
 {
     gestureTapEvent(x, y);
@@ -687,6 +733,7 @@ void Game::gestureTapEventInternal(int x, int y)
                                              y);
 }
 
+//----------------------------------------------------------------------------
 void Game::gestureLongTapEventInternal(int x, int y, float duration)
 {
     gestureLongTapEvent(x, y, duration);
@@ -698,6 +745,7 @@ void Game::gestureLongTapEventInternal(int x, int y, float duration)
                                              duration);
 }
 
+//----------------------------------------------------------------------------
 void Game::gestureDragEventInternal(int x, int y)
 {
     gestureDragEvent(x, y);
@@ -707,6 +755,7 @@ void Game::gestureDragEventInternal(int x, int y)
                                              y);
 }
 
+//----------------------------------------------------------------------------
 void Game::gestureDropEventInternal(int x, int y)
 {
     gestureDropEvent(x, y);
@@ -716,6 +765,7 @@ void Game::gestureDropEventInternal(int x, int y)
                                              y);
 }
 
+//----------------------------------------------------------------------------
 void Game::gamepadEventInternal(Gamepad::GamepadEvent evt, Gamepad* gamepad)
 {
     gamepadEvent(evt, gamepad);
@@ -725,8 +775,10 @@ void Game::gamepadEventInternal(Gamepad::GamepadEvent evt, Gamepad* gamepad)
                                              gamepad);
 }
 
+//----------------------------------------------------------------------------
 void Game::getArguments(int* argc, char*** argv) const { Platform::getArguments(argc, argv); }
 
+//----------------------------------------------------------------------------
 void Game::schedule(float timeOffset, TimeListener* timeListener, void* cookie)
 {
     assert(_timeEvents);
@@ -734,17 +786,20 @@ void Game::schedule(float timeOffset, TimeListener* timeListener, void* cookie)
     _timeEvents->push(timeEvent);
 }
 
+//----------------------------------------------------------------------------
 void Game::schedule(float timeOffset, const char* function)
 {
     getScriptController()->schedule(timeOffset, function);
 }
 
+//----------------------------------------------------------------------------
 void Game::clearSchedule()
 {
     SAFE_DELETE(_timeEvents);
     _timeEvents = new std::priority_queue<TimeEvent, std::vector<TimeEvent>, std::less<TimeEvent>>();
 }
 
+//----------------------------------------------------------------------------
 void Game::fireTimeEvents(double frameTime)
 {
     while (_timeEvents->size() > 0)
@@ -762,17 +817,20 @@ void Game::fireTimeEvents(double frameTime)
     }
 }
 
+//----------------------------------------------------------------------------
 Game::TimeEvent::TimeEvent(double time, TimeListener* timeListener, void* cookie)
     : time(time), listener(timeListener), cookie(cookie)
 {
 }
 
+//----------------------------------------------------------------------------
 bool Game::TimeEvent::operator<(const TimeEvent& v) const
 {
     // The first element of std::priority_queue is the greatest.
     return time > v.time;
 }
 
+//----------------------------------------------------------------------------
 Properties* Game::getConfig() const
 {
     if (!_properties) const_cast<Game*>(this)->loadConfig();
@@ -780,6 +838,7 @@ Properties* Game::getConfig() const
     return _properties.get();
 }
 
+//----------------------------------------------------------------------------
 void Game::loadConfig()
 {
     if (!_properties)
@@ -804,6 +863,7 @@ void Game::loadConfig()
     }
 }
 
+//----------------------------------------------------------------------------
 void Game::loadGamepads()
 {
     // Load virtual gamepads.
@@ -833,6 +893,7 @@ void Game::loadGamepads()
     }
 }
 
+//----------------------------------------------------------------------------
 void Game::ShutdownListener::timeEvent(long timeDiff, void* cookie)
 {
     Game::getInstance()->shutdown();

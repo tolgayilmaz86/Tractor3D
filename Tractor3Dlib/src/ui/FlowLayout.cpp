@@ -23,30 +23,27 @@ namespace tractor
 
 static FlowLayout* __instance;
 
-FlowLayout::FlowLayout() : _horizontalSpacing(0), _verticalSpacing(0) {}
-
 FlowLayout::~FlowLayout() { __instance = nullptr; }
 
+//----------------------------------------------------------------
 FlowLayout* FlowLayout::create()
 {
     if (!__instance)
-    {
         __instance = new FlowLayout();
-    }
     else
-    {
         __instance->addRef();
-    }
 
     return __instance;
 }
 
+//----------------------------------------------------------------
 void FlowLayout::setSpacing(int horizontalSpacing, int verticalSpacing)
 {
     _horizontalSpacing = horizontalSpacing;
     _verticalSpacing = verticalSpacing;
 }
 
+//----------------------------------------------------------------
 void FlowLayout::update(const Container* container)
 {
     assert(container);

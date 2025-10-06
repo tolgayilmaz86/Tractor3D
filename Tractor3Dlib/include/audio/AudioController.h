@@ -31,12 +31,12 @@ class AudioController
     /**
      * Constructor.
      */
-    AudioController();
+    AudioController() = default;
 
     /**
      * Destructor.
      */
-    virtual ~AudioController();
+    virtual ~AudioController() = default;
 
   private:
     /**
@@ -70,13 +70,13 @@ class AudioController
 
     static void streamingThreadProc(void* arg);
 
-    ALCdevice* _alcDevice;
-    ALCcontext* _alcContext;
+    ALCdevice* _alcDevice{ nullptr };
+    ALCcontext* _alcContext{ nullptr };
     std::set<AudioSource*> _playingSources;
     std::set<AudioSource*> _streamingSources;
     AudioSource* _pausingSource;
 
-    bool _streamingThreadActive;
+    bool _streamingThreadActive{ true };
     std::unique_ptr<std::thread> _streamingThread;
     std::unique_ptr<std::mutex> _streamingMutex;
 };

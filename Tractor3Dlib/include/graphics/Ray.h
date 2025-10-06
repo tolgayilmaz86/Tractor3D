@@ -13,8 +13,8 @@
  */
 #pragma once
 
-#include "math/Vector3.h"
 #include "math/Matrix.h"
+#include "math/Vector3.h"
 
 namespace tractor
 {
@@ -40,7 +40,7 @@ class Ray
     /**
      * Constructs a new ray initialized to origin(0,0,0) and direction(0,0,1).
      */
-    Ray();
+    Ray() = default;
 
     /**
      * Constructs a new ray initialized to the specified values.
@@ -72,21 +72,21 @@ class Ray
     /**
      * Destructor.
      */
-    ~Ray();
+    ~Ray() = default;
 
     /**
      * Gets the ray's origin.
      *
      * @return The ray's origin.
      */
-    const Vector3& getOrigin() const noexcept;
+    const Vector3& getOrigin() const noexcept { return _origin; }
 
     /**
      * Sets the ray's origin to the given point.
      *
      * @param origin The new origin.
      */
-    void setOrigin(const Vector3& origin);
+    void setOrigin(const Vector3& origin) noexcept { _origin = origin; }
 
     /**
      * Sets the ray's origin.
@@ -95,14 +95,14 @@ class Ray
      * @param y The y coordinate of the origin.
      * @param z The z coordinate of the origin.
      */
-    void setOrigin(float x, float y, float z);
+    void setOrigin(float x, float y, float z) noexcept { _origin.set(x, y, z); }
 
     /**
      * Gets the ray's direction.
      *
      * @return The ray's direction.
      */
-    const Vector3& getDirection() const noexcept;
+    const Vector3& getDirection() const noexcept { return _direction; }
 
     /**
      * Sets the ray's direction to the given vector.
@@ -201,8 +201,8 @@ class Ray
      */
     void normalize();
 
-    Vector3 _origin;    // The ray origin position.
-    Vector3 _direction; // The ray direction vector.
+    Vector3 _origin{ Vector3::zero() };     // The ray origin position.
+    Vector3 _direction{ 0.0f, 0.0f, 1.0f }; // The ray direction vector.
 };
 
 /**
@@ -219,4 +219,3 @@ inline const Ray operator*(const Matrix& matrix, const Ray& ray)
     return r;
 }
 } // namespace tractor
-

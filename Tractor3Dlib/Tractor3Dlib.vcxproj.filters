@@ -232,9 +232,6 @@
     <ClCompile Include="src\graphics\Curve.cpp">
       <Filter>src\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="src\graphics\Drawable.cpp">
-      <Filter>src\graphics</Filter>
-    </ClCompile>
     <ClCompile Include="src\graphics\Effect.cpp">
       <Filter>src\graphics</Filter>
     </ClCompile>

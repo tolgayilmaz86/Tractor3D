@@ -18,6 +18,7 @@
 namespace tractor
 {
 
+//----------------------------------------------------------------------------
 AnimationValue::AnimationValue(unsigned int componentCount)
     : _componentCount(componentCount), _componentSize(componentCount * sizeof(float))
 {
@@ -25,6 +26,7 @@ AnimationValue::AnimationValue(unsigned int componentCount)
     _value = new float[_componentCount];
 }
 
+//----------------------------------------------------------------------------
 AnimationValue::AnimationValue(const AnimationValue& copy)
 {
     _value = new float[copy._componentCount];
@@ -33,8 +35,10 @@ AnimationValue::AnimationValue(const AnimationValue& copy)
     memcpy(_value, copy._value, _componentSize);
 }
 
+//----------------------------------------------------------------------------
 AnimationValue::~AnimationValue() { SAFE_DELETE_ARRAY(_value); }
 
+//----------------------------------------------------------------------------
 AnimationValue& AnimationValue::operator=(const AnimationValue& v)
 {
     if (this != &v)
@@ -52,6 +56,7 @@ AnimationValue& AnimationValue::operator=(const AnimationValue& v)
     return *this;
 }
 
+//----------------------------------------------------------------------------
 float AnimationValue::getFloat(unsigned int index) const
 {
     assert(index < _componentCount);
@@ -60,6 +65,7 @@ float AnimationValue::getFloat(unsigned int index) const
     return _value[index];
 }
 
+//----------------------------------------------------------------------------
 void AnimationValue::setFloat(unsigned int index, float value)
 {
     assert(index < _componentCount);
@@ -68,6 +74,7 @@ void AnimationValue::setFloat(unsigned int index, float value)
     _value[index] = value;
 }
 
+//----------------------------------------------------------------------------
 void AnimationValue::getFloats(unsigned int index, float* values, unsigned int count) const
 {
     assert(_value && values && index < _componentCount && (index + count) <= _componentCount);
@@ -75,6 +82,7 @@ void AnimationValue::getFloats(unsigned int index, float* values, unsigned int c
     memcpy(values, &_value[index], count * sizeof(float));
 }
 
+//----------------------------------------------------------------------------
 void AnimationValue::setFloats(unsigned int index, float* values, unsigned int count)
 {
     assert(_value && values && index < _componentCount && (index + count) <= _componentCount);

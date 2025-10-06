@@ -25,27 +25,27 @@ class Rectangle
     /**
      * Specifies the x-coordinate of the rectangle.
      */
-    float x;
+    float x{ 0.0f };
 
     /**
      * Specifies the y-coordinate of the rectangle.
      */
-    float y;
+    float y{ 0.0f };
 
     /**
      * Specifies the width of the rectangle.
      */
-    float width;
+    float width{ 0.0f };
 
     /**
      * Specifies the height of the rectangle.
      */
-    float height;
+    float height{ 0.0f };
 
     /**
      * Constructs a new rectangle initialized to all zeros.
      */
-    Rectangle();
+    Rectangle() = default;
 
     /**
      * Constructs a new rectangle with the x = 0, y = 0 and the specified width and height.
@@ -75,7 +75,7 @@ class Rectangle
     /**
      * Destructor.
      */
-    ~Rectangle();
+    ~Rectangle() = default;
 
     /**
      * Returns a rectangle with all of its values set to zero.
@@ -89,7 +89,7 @@ class Rectangle
      *
      * @return true if the rectangle is empty, false otherwise.
      */
-    bool isEmpty() const noexcept;
+    bool isEmpty() const noexcept { return (x == 0 && y == 0 && width == 0 && height == 0); }
 
     /**
      * Sets the values of this rectangle to the specified values.
@@ -106,7 +106,7 @@ class Rectangle
      *
      * @param r The rectangle to copy.
      */
-    void set(const Rectangle& r);
+    void set(const Rectangle& r) { set(r.x, r.y, r.width, r.height); }
 
     /**
      * Sets the x-coordinate and y-coordinate values of this rectangle to the specified values.
@@ -175,7 +175,7 @@ class Rectangle
      * @return true if the rectangle contains the specified rectangle, false
      * otherwise.
      */
-    bool contains(const Rectangle& r) const;
+    bool contains(const Rectangle& r) const { return contains(r.x, r.y, r.width, r.height); }
 
     /**
      * Determines whether a specified rectangle intersects with this rectangle.

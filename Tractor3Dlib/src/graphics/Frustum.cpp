@@ -21,38 +21,27 @@
 namespace tractor
 {
 
-Frustum::Frustum() { set(Matrix::identity()); }
-
+//----------------------------------------------------------------------------
 Frustum::Frustum(const Matrix& matrix) { set(matrix); }
 
+//----------------------------------------------------------------------------
 Frustum::Frustum(const Frustum& frustum) { set(frustum); }
 
-Frustum::~Frustum() {}
-
-const Plane& Frustum::getNear() const noexcept { return _near; }
-
-const Plane& Frustum::getFar() const noexcept { return _far; }
-
-const Plane& Frustum::getLeft() const noexcept { return _left; }
-
-const Plane& Frustum::getRight() const noexcept { return _right; }
-
-const Plane& Frustum::getBottom() const noexcept { return _bottom; }
-
-const Plane& Frustum::getTop() const noexcept { return _top; }
-
+//----------------------------------------------------------------------------
 void Frustum::getMatrix(Matrix* dst) const
 {
     assert(dst);
     dst->set(_matrix);
 }
 
+//----------------------------------------------------------------------------
 void Frustum::getCorners(Vector3* corners) const
 {
     getNearCorners(corners);
     getFarCorners(corners + 4);
 }
 
+//----------------------------------------------------------------------------
 void Frustum::getNearCorners(Vector3* corners) const
 {
     assert(corners);
@@ -63,6 +52,7 @@ void Frustum::getNearCorners(Vector3* corners) const
     Plane::intersection(_near, _right, _top, &corners[3]);
 }
 
+//----------------------------------------------------------------------------
 void Frustum::getFarCorners(Vector3* corners) const
 {
     assert(corners);
@@ -73,7 +63,8 @@ void Frustum::getFarCorners(Vector3* corners) const
     Plane::intersection(_far, _left, _top, &corners[3]);
 }
 
-bool Frustum::intersects(const Vector3& point) const
+//----------------------------------------------------------------------------
+bool Frustum::intersects(const Vector3& point) const noexcept
 {
     if (_near.distance(point) <= 0) return false;
     if (_far.distance(point) <= 0) return false;
@@ -85,16 +76,22 @@ bool Frustum::intersects(const Vector3& point) const
     return true;
 }
 
-bool Frustum::intersects(float x, float y, float z) const { return intersects(Vector3(x, y, z)); }
+//----------------------------------------------------------------------------
+bool Frustum::intersects(float x, float y, float z) const noexcept { return intersects(Vector3(x, y, z)); }
 
-bool Frustum::intersects(const BoundingSphere& sphere) const { return sphere.intersects(*this); }
+//----------------------------------------------------------------------------
+bool Frustum::intersects(const BoundingSphere& sphere) const noexcept { return sphere.intersects(*this); }
 
-bool Frustum::intersects(const BoundingBox& box) const { return box.intersects(*this); }
+//----------------------------------------------------------------------------
+bool Frustum::intersects(const BoundingBox& box) const noexcept { return box.intersects(*this); }
 
-float Frustum::intersects(const Plane& plane) const { return plane.intersects(*this); }
+//----------------------------------------------------------------------------
+float Frustum::intersects(const Plane& plane) const noexcept { return plane.intersects(*this); }
 
-float Frustum::intersects(const Ray& ray) const { return ray.intersects(*this); }
+//----------------------------------------------------------------------------
+float Frustum::intersects(const Ray& ray) const noexcept { return ray.intersects(*this); }
 
+//----------------------------------------------------------------------------
 void Frustum::set(const Frustum& frustum)
 {
     _near = frustum._near;
@@ -106,6 +103,7 @@ void Frustum::set(const Frustum& frustum)
     _matrix.set(frustum._matrix);
 }
 
+//----------------------------------------------------------------------------
 void Frustum::updatePlanes()
 {
     _near.set(Vector3(_matrix.m[3] + _matrix.m[2],
@@ -134,6 +132,7 @@ void Frustum::updatePlanes()
                _matrix.m[15] - _matrix.m[12]);
 }
 
+//----------------------------------------------------------------------------
 void Frustum::set(const Matrix& matrix)
 {
     _matrix.set(matrix);

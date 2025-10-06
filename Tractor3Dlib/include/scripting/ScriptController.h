@@ -583,12 +583,12 @@ class ScriptController
     /**
      * Constructor.
      */
-    ScriptController();
+    ScriptController() = default;
 
     /**
      * Destructor.
      */
-    ~ScriptController();
+    ~ScriptController() = default;
 
   private:
     /**
@@ -741,7 +741,7 @@ class ScriptController
 
     void popScript();
 
-    lua_State* _lua;
+    lua_State* _lua{ nullptr };
     unsigned int _returnCount;
     std::map<std::string, std::vector<Script*>> _scripts;
     std::vector<Script*> _envStack;

@@ -24,6 +24,8 @@
 
 namespace tractor
 {
+
+//----------------------------------------------------------------------------
 Material::~Material()
 {
     // Destroy all the techniques.
@@ -31,11 +33,13 @@ Material::~Material()
     _techniques.clear();
 }
 
+//----------------------------------------------------------------------------
 Material* Material::create(const std::string& url)
 {
     return create(url, (PassCallback) nullptr, nullptr);
 }
 
+//----------------------------------------------------------------------------
 Material* Material::create(const std::string& url, PassCallback callback, void* cookie)
 {
     // Load the material properties from file.
@@ -54,11 +58,13 @@ Material* Material::create(const std::string& url, PassCallback callback, void* 
     return material;
 }
 
+//----------------------------------------------------------------------------
 Material* Material::create(Properties* materialProperties)
 {
     return create(materialProperties, (PassCallback) nullptr, nullptr);
 }
 
+//----------------------------------------------------------------------------
 Material* Material::create(Properties* materialProperties, PassCallback callback, void* cookie)
 {
     // Check if the Properties is valid and has a valid namespace.
@@ -99,6 +105,7 @@ Material* Material::create(Properties* materialProperties, PassCallback callback
     return material;
 }
 
+//----------------------------------------------------------------------------
 Material* Material::create(Effect* effect)
 {
     assert(effect);
@@ -117,6 +124,7 @@ Material* Material::create(Effect* effect)
     return material;
 }
 
+//----------------------------------------------------------------------------
 Material* Material::create(const std::string& vshPath,
                            const std::string& fshPath,
                            const std::string& defines)
@@ -145,12 +153,14 @@ Material* Material::create(const std::string& vshPath,
     return material;
 }
 
+//----------------------------------------------------------------------------
 Technique* Material::getTechniqueByIndex(unsigned int index) const
 {
     assert(index < _techniques.size());
     return _techniques.at(index);
 }
 
+//----------------------------------------------------------------------------
 Technique* Material::getTechnique(const std::string& id) const noexcept
 {
     auto it = std::ranges::find_if(_techniques,
@@ -162,12 +172,14 @@ Technique* Material::getTechnique(const std::string& id) const noexcept
     return it != _techniques.end() ? *it : nullptr;
 }
 
+//----------------------------------------------------------------------------
 void Material::setTechnique(const std::string& id) noexcept
 {
     Technique* t = getTechnique(id);
     if (t) _currentTechnique = t;
 }
 
+//----------------------------------------------------------------------------
 void Material::setNodeBinding(Node* node)
 {
     RenderState::setNodeBinding(node);
@@ -176,6 +188,7 @@ void Material::setNodeBinding(Node* node)
         _techniques[i]->setNodeBinding(node);
 }
 
+//----------------------------------------------------------------------------
 Material* Material::clone(NodeCloneContext& context) const
 {
     Material* material = new Material();
@@ -194,6 +207,7 @@ Material* Material::clone(NodeCloneContext& context) const
     return material;
 }
 
+//----------------------------------------------------------------------------
 bool Material::loadTechnique(Material* material,
                              Properties* techniqueProperties,
                              PassCallback callback,
@@ -230,6 +244,7 @@ bool Material::loadTechnique(Material* material,
     return true;
 }
 
+//----------------------------------------------------------------------------
 bool Material::loadPass(Technique* technique,
                         Properties* passProperties,
                         PassCallback callback,
@@ -275,6 +290,7 @@ bool Material::loadPass(Technique* technique,
     return true;
 }
 
+//----------------------------------------------------------------------------
 static bool isMaterialKeyword(const std::string& str)
 {
 #define MATERIAL_KEYWORD_COUNT 3
@@ -291,6 +307,7 @@ static bool isMaterialKeyword(const std::string& str)
     return false;
 }
 
+//----------------------------------------------------------------------------
 static Texture::Filter parseTextureFilterMode(const std::string& str, Texture::Filter defaultValue)
 {
     if (str.empty())
@@ -329,6 +346,7 @@ static Texture::Filter parseTextureFilterMode(const std::string& str, Texture::F
     }
 }
 
+//----------------------------------------------------------------------------
 static Texture::Wrap parseTextureWrapMode(const std::string& str, Texture::Wrap defaultValue)
 {
     if (str.empty())
@@ -351,6 +369,7 @@ static Texture::Wrap parseTextureWrapMode(const std::string& str, Texture::Wrap 
     }
 }
 
+//----------------------------------------------------------------------------
 void Material::loadRenderState(RenderState* renderState, Properties* properties)
 {
     assert(renderState);

@@ -21,12 +21,14 @@
 namespace tractor
 {
 
+//----------------------------------------------------------------------------
 TileSet::~TileSet()
 {
     SAFE_DELETE_ARRAY(_tiles);
     SAFE_DELETE(_batch);
 }
 
+//----------------------------------------------------------------------------
 TileSet* TileSet::create(const std::string& imagePath,
                          float tileWidth,
                          float tileHeight,
@@ -55,6 +57,7 @@ TileSet* TileSet::create(const std::string& imagePath,
     return tileset;
 }
 
+//----------------------------------------------------------------------------
 TileSet* TileSet::create(Properties* properties)
 {
     // Check if the Properties is valid and has a valid namespace.
@@ -152,6 +155,7 @@ TileSet* TileSet::create(Properties* properties)
     return set;
 }
 
+//----------------------------------------------------------------------------
 void TileSet::setTileSource(unsigned int column, unsigned int row, const Vector2& source)
 {
     assert(column < _columnCount);
@@ -160,6 +164,7 @@ void TileSet::setTileSource(unsigned int column, unsigned int row, const Vector2
     _tiles[row * _columnCount + column] = source;
 }
 
+//----------------------------------------------------------------------------
 void TileSet::getTileSource(unsigned int column, unsigned int row, Vector2* source)
 {
     assert(column < _columnCount);
@@ -170,6 +175,7 @@ void TileSet::getTileSource(unsigned int column, unsigned int row, Vector2* sour
     source->y = _tiles[row * _columnCount + column].y;
 }
 
+//----------------------------------------------------------------------------
 unsigned int TileSet::draw(bool wireframe)
 {
     // Apply scene camera projection and translation offsets
@@ -233,6 +239,7 @@ unsigned int TileSet::draw(bool wireframe)
     return 1;
 }
 
+//----------------------------------------------------------------------------
 Drawable* TileSet::clone(NodeCloneContext& context)
 {
     TileSet* tilesetClone = new TileSet();

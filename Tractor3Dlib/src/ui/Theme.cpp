@@ -29,6 +29,7 @@ namespace tractor
 static std::vector<Theme*> __themeCache;
 static Theme* __defaultTheme = nullptr;
 
+//----------------------------------------------------------------
 Theme::~Theme()
 {
     // Destroy all the cursors, styles and , fonts.
@@ -71,6 +72,7 @@ Theme::~Theme()
     if (__defaultTheme == this) __defaultTheme = nullptr;
 }
 
+//----------------------------------------------------------------
 Theme* Theme::getDefault()
 {
     if (!__defaultTheme)
@@ -107,8 +109,10 @@ Theme* Theme::getDefault()
     return __defaultTheme;
 }
 
+//----------------------------------------------------------------
 void Theme::finalize() { SAFE_RELEASE(__defaultTheme); }
 
+//----------------------------------------------------------------
 Theme* Theme::create(const std::string& url)
 {
     // Search theme cache first.
@@ -514,6 +518,7 @@ Theme* Theme::create(const std::string& url)
     return theme;
 }
 
+//----------------------------------------------------------------
 Theme::Style* Theme::getStyle(const std::string& name) const
 {
     const auto found_style =
@@ -524,6 +529,7 @@ Theme::Style* Theme::getStyle(const std::string& name) const
     return found_style != _styles.end() ? *found_style : nullptr;
 }
 
+//----------------------------------------------------------------
 Theme::Style* Theme::getEmptyStyle()
 {
     Theme::Style* emptyStyle = getStyle("EMPTY_STYLE");
@@ -551,31 +557,37 @@ Theme::Style* Theme::getEmptyStyle()
     return emptyStyle;
 }
 
+//----------------------------------------------------------------
 void Theme::setProjectionMatrix(const Matrix& matrix)
 {
     assert(_spriteBatch);
     _spriteBatch->setProjectionMatrix(matrix);
 }
 
+//----------------------------------------------------------------
 /**************
  * Theme::UVs *
  **************/
 Theme::UVs::UVs() : u1(0), v1(0), u2(0), v2(0) {}
 
+//----------------------------------------------------------------
 Theme::UVs::UVs(float u1, float v1, float u2, float v2) : u1(u1), v1(v1), u2(u2), v2(v2) {}
 
+//----------------------------------------------------------------
 const Theme::UVs& Theme::UVs::empty()
 {
     static UVs empty(0, 0, 0, 0);
     return empty;
 }
 
+//----------------------------------------------------------------
 const Theme::UVs& Theme::UVs::full()
 {
     static UVs full(0, 1, 1, 0);
     return full;
 }
 
+//----------------------------------------------------------------
 /**********************
  * Theme::SideRegions *
  **********************/
@@ -585,6 +597,7 @@ const Theme::SideRegions& Theme::SideRegions::empty()
     return empty;
 }
 
+//----------------------------------------------------------------
 /*********************
  * Theme::ThemeImage *
  *********************/
@@ -594,8 +607,7 @@ Theme::ThemeImage::ThemeImage(float tw, float th, const Rectangle& region, const
     generateUVs(tw, th, region.x, region.y, region.width, region.height, &_uvs);
 }
 
-Theme::ThemeImage::~ThemeImage() {}
-
+//----------------------------------------------------------------
 Theme::ThemeImage* Theme::ThemeImage::create(float tw,
                                              float th,
                                              Properties* properties,
@@ -627,11 +639,13 @@ Theme::ThemeImage* Theme::ThemeImage::create(float tw,
     return image;
 }
 
+//----------------------------------------------------------------
 /********************
  * Theme::ImageList *
  ********************/
 Theme::ImageList::ImageList(const Vector4& color) : _color(color) {}
 
+//----------------------------------------------------------------
 Theme::ImageList::ImageList(const ImageList& copy) : _id(copy._id), _color(copy._color)
 {
     for (const auto& image : copy._images)
@@ -641,6 +655,7 @@ Theme::ImageList::ImageList(const ImageList& copy) : _id(copy._id), _color(copy.
     }
 }
 
+//----------------------------------------------------------------
 Theme::ImageList::~ImageList()
 {
     std::vector<ThemeImage*>::const_iterator it;
@@ -651,6 +666,7 @@ Theme::ImageList::~ImageList()
     }
 }
 
+//----------------------------------------------------------------
 Theme::ImageList* Theme::ImageList::create(float tw, float th, Properties* properties)
 {
     assert(properties);
@@ -682,6 +698,7 @@ Theme::ImageList* Theme::ImageList::create(float tw, float th, Properties* prope
     return imageList;
 }
 
+//----------------------------------------------------------------
 Theme::ThemeImage* Theme::ImageList::getImage(const std::string& imageId) const
 {
     auto it =
@@ -697,6 +714,7 @@ Theme::ThemeImage* Theme::ImageList::getImage(const std::string& imageId) const
     return nullptr;
 }
 
+//----------------------------------------------------------------
 /***************
  * Theme::Skin *
  ***************/
@@ -717,6 +735,7 @@ Theme::Skin* Theme::Skin::create(const std::string& id,
     return skin;
 }
 
+//----------------------------------------------------------------
 Theme::Skin::Skin(float tw,
                   float th,
                   const Rectangle& region,
@@ -727,8 +746,7 @@ Theme::Skin::Skin(float tw,
     setRegion(region, tw, th);
 }
 
-Theme::Skin::~Skin() {}
-
+//----------------------------------------------------------------
 void Theme::Skin::setRegion(const Rectangle& region, float tw, float th)
 {
     // Can calculate all measurements in advance.
@@ -789,6 +807,7 @@ void Theme::Skin::setRegion(const Rectangle& region, float tw, float th)
     _uvs[BOTTOM_RIGHT].v2 = bottomEdge;
 }
 
+//----------------------------------------------------------------
 /**
  * Theme utility methods.
  */
@@ -801,6 +820,7 @@ void Theme::generateUVs(float tw, float th, float x, float y, float width, float
     uvs->v2 = 1.0f - ((y + height) * th);
 }
 
+//----------------------------------------------------------------
 void Theme::lookUpSprites(const Properties* overlaySpace,
                           ImageList** imageList,
                           ThemeImage** cursor,

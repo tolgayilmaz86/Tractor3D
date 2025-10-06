@@ -57,7 +57,7 @@ class AIController
     /**
      * Constructor.
      */
-    AIController();
+    AIController() = default;
 
     /**
      * Destructor.
@@ -88,12 +88,13 @@ class AIController
     /**
      * Pauses the AIController.
      */
-    void pause();
+    void pause() { _paused = true; }
+
 
     /**
      * Resumes the AIController.
      */
-    void resume();
+    void resume() { _paused = false; }
 
     /**
      * Called each frame to update the AIController.
@@ -106,9 +107,9 @@ class AIController
 
     void removeAgent(AIAgent* agent);
 
-    bool _paused;
-    AIMessage* _firstMessage;
-    AIAgent* _firstAgent;
+    bool _paused{ false };
+    AIMessage* _firstMessage{ nullptr };
+    AIAgent* _firstAgent{ nullptr };
 };
 
 } // namespace tractor

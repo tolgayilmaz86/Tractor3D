@@ -24,6 +24,7 @@
 namespace tractor
 {
 
+//----------------------------------------------------------------------------
 MeshSkin::~MeshSkin()
 {
     clearJoints();
@@ -31,12 +32,14 @@ MeshSkin::~MeshSkin()
     SAFE_DELETE_ARRAY(_matrixPalette);
 }
 
+//----------------------------------------------------------------------------
 Joint* MeshSkin::getJoint(unsigned int index) const
 {
     assert(index < _joints.size());
     return _joints[index];
 }
 
+//----------------------------------------------------------------------------
 Joint* MeshSkin::getJoint(const std::string& id) const
 {
     for (size_t i = 0, count = _joints.size(); i < count; ++i)
@@ -51,6 +54,7 @@ Joint* MeshSkin::getJoint(const std::string& id) const
     return nullptr;
 }
 
+//----------------------------------------------------------------------------
 MeshSkin* MeshSkin::clone(NodeCloneContext& context) const
 {
     MeshSkin* skin = new MeshSkin();
@@ -102,6 +106,7 @@ MeshSkin* MeshSkin::clone(NodeCloneContext& context) const
     return skin;
 }
 
+//----------------------------------------------------------------------------
 void MeshSkin::setJointCount(unsigned int jointCount)
 {
     // Erase the joints vector and release all joints.
@@ -129,6 +134,7 @@ void MeshSkin::setJointCount(unsigned int jointCount)
     }
 }
 
+//----------------------------------------------------------------------------
 void MeshSkin::setJoint(Joint* joint, unsigned int index)
 {
     assert(index < _joints.size());
@@ -148,6 +154,7 @@ void MeshSkin::setJoint(Joint* joint, unsigned int index)
     }
 }
 
+//----------------------------------------------------------------------------
 Vector4* MeshSkin::getMatrixPalette() const
 {
     assert(_matrixPalette);
@@ -160,11 +167,13 @@ Vector4* MeshSkin::getMatrixPalette() const
     return _matrixPalette;
 }
 
+//----------------------------------------------------------------------------
 unsigned int MeshSkin::getMatrixPaletteSize() const
 {
     return (unsigned int)_joints.size() * PALETTE_ROWS;
 }
 
+//----------------------------------------------------------------------------
 void MeshSkin::setRootJoint(Joint* joint)
 {
     if (_rootJoint)
@@ -199,6 +208,7 @@ void MeshSkin::setRootJoint(Joint* joint)
     setRootNode(newRootNode);
 }
 
+//----------------------------------------------------------------------------
 void MeshSkin::transformChanged(Transform* transform, long cookie)
 {
     switch (cookie)
@@ -218,6 +228,7 @@ void MeshSkin::transformChanged(Transform* transform, long cookie)
     }
 }
 
+//----------------------------------------------------------------------------
 int MeshSkin::getJointIndex(Joint* joint) const
 {
     for (size_t i = 0, count = _joints.size(); i < count; ++i)
@@ -231,6 +242,7 @@ int MeshSkin::getJointIndex(Joint* joint) const
     return -1;
 }
 
+//----------------------------------------------------------------------------
 void MeshSkin::setRootNode(Node* node)
 {
     if (_rootNode != node)
@@ -244,6 +256,7 @@ void MeshSkin::setRootNode(Node* node)
     }
 }
 
+//----------------------------------------------------------------------------
 void MeshSkin::clearJoints()
 {
     setRootJoint(nullptr);

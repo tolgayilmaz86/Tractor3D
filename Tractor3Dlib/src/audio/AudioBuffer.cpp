@@ -23,6 +23,7 @@ namespace tractor
 // Audio buffer cache
 static std::vector<AudioBuffer*> __buffers;
 
+//----------------------------------------------------------------------------
 // Callbacks for loading an ogg file using Stream
 static size_t readStream(void* ptr, size_t size, size_t nmemb, void* datasource)
 {
@@ -31,6 +32,7 @@ static size_t readStream(void* ptr, size_t size, size_t nmemb, void* datasource)
     return stream->read(ptr, size, nmemb);
 }
 
+//----------------------------------------------------------------------------
 static int seekStream(void* datasource, ogg_int64_t offset, int whence)
 {
     assert(datasource);
@@ -38,6 +40,7 @@ static int seekStream(void* datasource, ogg_int64_t offset, int whence)
     return !stream->seek(offset, whence);
 }
 
+//----------------------------------------------------------------------------
 static int closeStream(void* datasource)
 {
     assert(datasource);
@@ -46,6 +49,7 @@ static int closeStream(void* datasource)
     return 0;
 }
 
+//----------------------------------------------------------------------------
 static long tellStream(void* datasource)
 {
     assert(datasource);
@@ -53,12 +57,14 @@ static long tellStream(void* datasource)
     return stream->position();
 }
 
+//----------------------------------------------------------------------------
 AudioBuffer::AudioBuffer(const std::string& path, ALuint* buffer, bool streamed)
     : _filePath(path), _streamed(streamed), _buffersNeededCount(0)
 {
     memcpy(_alBufferQueue, buffer, sizeof(_alBufferQueue));
 }
 
+//----------------------------------------------------------------------------
 AudioBuffer::~AudioBuffer()
 {
     // Remove the buffer from the cache.
@@ -94,6 +100,7 @@ AudioBuffer::~AudioBuffer()
     }
 }
 
+//----------------------------------------------------------------------------
 AudioBuffer* AudioBuffer::create(const std::string& path, bool streamed)
 {
     AudioBuffer* buffer = nullptr;
@@ -195,6 +202,7 @@ cleanup:
     return nullptr;
 }
 
+//----------------------------------------------------------------------------
 bool AudioBuffer::loadWav(Stream* stream, ALuint buffer, bool streamed, AudioStreamStateWav* streamState)
 {
     assert(stream);
@@ -393,6 +401,7 @@ bool AudioBuffer::loadWav(Stream* stream, ALuint buffer, bool streamed, AudioStr
     return false;
 }
 
+//----------------------------------------------------------------------------
 /**
  * @brief Loads Ogg Vorbis audio data from a stream into an OpenAL buffer.
  * @param stream Pointer to the input stream containing Ogg Vorbis audio data.
@@ -484,6 +493,7 @@ bool AudioBuffer::loadOgg(Stream* stream, ALuint buffer, bool streamed, AudioStr
     return true;
 }
 
+//----------------------------------------------------------------------------
 bool AudioBuffer::streamData(ALuint buffer, bool looped)
 {
     static char buffers[STREAMING_BUFFER_SIZE];

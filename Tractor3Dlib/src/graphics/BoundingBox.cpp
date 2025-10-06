@@ -21,25 +21,26 @@
 namespace tractor
 {
 
-BoundingBox::BoundingBox() {}
-
+//----------------------------------------------------------------------------
 BoundingBox::BoundingBox(const Vector3& min, const Vector3& max) { set(min, max); }
 
+//----------------------------------------------------------------------------
 BoundingBox::BoundingBox(float minX, float minY, float minZ, float maxX, float maxY, float maxZ)
 {
     set(minX, minY, minZ, maxX, maxY, maxZ);
 }
 
+//----------------------------------------------------------------------------
 BoundingBox::BoundingBox(const BoundingBox& copy) { set(copy); }
 
-BoundingBox::~BoundingBox() {}
-
+//----------------------------------------------------------------------------
 const BoundingBox& BoundingBox::empty()
 {
     static BoundingBox b;
     return b;
 }
 
+//----------------------------------------------------------------------------
 void BoundingBox::getCorners(Vector3* dst) const
 {
     assert(dst);
@@ -65,6 +66,7 @@ void BoundingBox::getCorners(Vector3* dst) const
     dst[7].set(min.x, max.y, min.z);
 }
 
+//----------------------------------------------------------------------------
 Vector3 BoundingBox::getCenter() const
 {
     Vector3 center;
@@ -72,6 +74,7 @@ Vector3 BoundingBox::getCenter() const
     return center;
 }
 
+//----------------------------------------------------------------------------
 void BoundingBox::getCenter(Vector3* dst) const
 {
     assert(dst);
@@ -81,11 +84,13 @@ void BoundingBox::getCenter(Vector3* dst) const
     dst->add(min);
 }
 
+//----------------------------------------------------------------------------
 bool BoundingBox::intersects(const BoundingSphere& sphere) const
 {
     return sphere.intersects(*this);
 }
 
+//----------------------------------------------------------------------------
 bool BoundingBox::intersects(const BoundingBox& box) const
 {
     return ((min.x >= box.min.x && min.x <= box.max.x) || (box.min.x >= min.x && box.min.x <= max.x))
@@ -95,6 +100,7 @@ bool BoundingBox::intersects(const BoundingBox& box) const
                || (box.min.z >= min.z && box.min.z <= max.z));
 }
 
+//----------------------------------------------------------------------------
 bool BoundingBox::intersects(const Frustum& frustum) const
 {
     // The box must either intersect or be in the positive half-space of all six planes of the frustum.
@@ -106,6 +112,7 @@ bool BoundingBox::intersects(const Frustum& frustum) const
             && intersects(frustum.getTop()) != Plane::INTERSECTS_BACK);
 }
 
+//----------------------------------------------------------------------------
 float BoundingBox::intersects(const Plane& plane) const
 {
     // Calculate the distance from the center of the box to the plane.
@@ -127,6 +134,7 @@ float BoundingBox::intersects(const Plane& plane) const
     return (distance > 0.0f) ? (float)Plane::INTERSECTS_FRONT : (float)Plane::INTERSECTS_BACK;
 }
 
+//----------------------------------------------------------------------------
 float BoundingBox::intersects(const Ray& ray) const
 {
     // Intermediate calculation variables.
@@ -219,8 +227,7 @@ float BoundingBox::intersects(const Ray& ray) const
     return dnear;
 }
 
-bool BoundingBox::isEmpty() const { return min.x == max.x && min.y == max.y && min.z == max.z; }
-
+//----------------------------------------------------------------------------
 void BoundingBox::merge(const BoundingBox& box)
 {
     // Calculate the new minimum point.
@@ -234,6 +241,7 @@ void BoundingBox::merge(const BoundingBox& box)
     max.z = std::max(max.z, box.max.z);
 }
 
+//----------------------------------------------------------------------------
 void BoundingBox::merge(const BoundingSphere& sphere)
 {
     const Vector3& center = sphere.center;
@@ -250,18 +258,21 @@ void BoundingBox::merge(const BoundingSphere& sphere)
     max.z = std::max(max.z, center.z + radius);
 }
 
+//----------------------------------------------------------------------------
 void BoundingBox::set(const Vector3& min, const Vector3& max)
 {
     this->min = min;
     this->max = max;
 }
 
+//----------------------------------------------------------------------------
 void BoundingBox::set(float minX, float minY, float minZ, float maxX, float maxY, float maxZ)
 {
     min.set(minX, minY, minZ);
     max.set(maxX, maxY, maxZ);
 }
 
+//----------------------------------------------------------------------------
 static void updateMinMax(Vector3* point, Vector3* min, Vector3* max)
 {
     assert(point);
@@ -305,12 +316,14 @@ static void updateMinMax(Vector3* point, Vector3* min, Vector3* max)
     }
 }
 
+//----------------------------------------------------------------------------
 void BoundingBox::set(const BoundingBox& box)
 {
     min = box.min;
     max = box.max;
 }
 
+//----------------------------------------------------------------------------
 void BoundingBox::set(const BoundingSphere& sphere)
 {
     const Vector3& center = sphere.center;
@@ -327,6 +340,7 @@ void BoundingBox::set(const BoundingSphere& sphere)
     max.z = center.z + radius;
 }
 
+//----------------------------------------------------------------------------
 void BoundingBox::transform(const Matrix& matrix)
 {
     // Calculate the corners.

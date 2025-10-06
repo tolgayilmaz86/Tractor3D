@@ -21,13 +21,7 @@
 namespace tractor
 {
 
-AudioController::AudioController()
-    : _alcDevice(nullptr), _alcContext(nullptr), _pausingSource(nullptr), _streamingThreadActive(true)
-{
-}
-
-AudioController::~AudioController() {}
-
+//----------------------------------------------------------------------------
 void AudioController::initialize()
 {
     _alcDevice = alcOpenDevice(nullptr);
@@ -55,6 +49,7 @@ void AudioController::initialize()
     _streamingMutex.reset(new std::mutex());
 }
 
+//----------------------------------------------------------------------------
 void AudioController::finalize()
 {
     assert(_streamingSources.empty());
@@ -81,6 +76,7 @@ void AudioController::finalize()
     }
 }
 
+//----------------------------------------------------------------------------
 void AudioController::pause()
 {
     // For each source that is playing, pause it.
@@ -97,6 +93,7 @@ void AudioController::pause()
 #endif
 }
 
+//----------------------------------------------------------------------------
 void AudioController::resume()
 {
     alcMakeContextCurrent(_alcContext);
@@ -114,6 +111,7 @@ void AudioController::resume()
     }
 }
 
+//----------------------------------------------------------------------------
 void AudioController::update(float elapsedTime)
 {
     AudioListener* listener = AudioListener::getInstance();
@@ -126,6 +124,7 @@ void AudioController::update(float elapsedTime)
     }
 }
 
+//----------------------------------------------------------------------------
 void AudioController::addPlayingSource(AudioSource* source)
 {
     if (_playingSources.find(source) == _playingSources.end())
@@ -145,6 +144,7 @@ void AudioController::addPlayingSource(AudioSource* source)
     }
 }
 
+//----------------------------------------------------------------------------
 void AudioController::removePlayingSource(AudioSource* source)
 {
     if (_pausingSource != source)
@@ -172,6 +172,7 @@ void AudioController::removePlayingSource(AudioSource* source)
     }
 }
 
+//----------------------------------------------------------------------------
 void AudioController::streamingThreadProc(void* arg)
 {
     AudioController* controller = (AudioController*)arg;

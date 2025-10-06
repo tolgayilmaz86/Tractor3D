@@ -944,7 +944,7 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
      *
      * @return This control's parent.
      */
-    Control* getParent() const noexcept;
+    Control* getParent() const noexcept { return reinterpret_cast<Control*>(_parent); }
 
     /**
      * Determines if this control is a child (at any level of hierarchy) of the
@@ -1133,7 +1133,7 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
      * @see Keyboard::KeyEvent
      * @see Keyboard::Key
      */
-    virtual bool keyEvent(Keyboard::KeyEvent evt, int key);
+    virtual bool keyEvent(Keyboard::KeyEvent evt, int key) { return false; }
 
     /**
      * Mouse callback on mouse events.

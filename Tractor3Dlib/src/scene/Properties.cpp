@@ -29,13 +29,13 @@ signed char readChar(Stream* stream)
     return c;
 };
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool isCommentLine(const std::string& line)
 {
     return line.size() >= 2 && line.substr(0, 2) == "//";
 };
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 static bool isVariable(const std::string& str, std::string& outName)
 {
     // Check if the string matches the variable pattern "${...}"
@@ -61,10 +61,10 @@ static std::string getVariableName(const std::string& str)
     return str;
 };
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool containsEquals(const std::string& line) { return line.find('=') != std::string::npos; };
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 std::string& trimWhiteSpace(std::string& str)
 {
     auto start = str.find_first_not_of(" \t\n\r");
@@ -72,7 +72,7 @@ std::string& trimWhiteSpace(std::string& str)
     return str = (start == std::string::npos) ? "" : str.substr(start, end - start + 1);
 };
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 std::optional<NamespaceInfo> parseNamespaceTokens(std::string& line, const std::string& trimmedLine)
 {
     NamespaceInfo info;
@@ -138,7 +138,7 @@ std::optional<NamespaceInfo> parseNamespaceTokens(std::string& line, const std::
     return info;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 std::optional<std::pair<std::string, std::string>> parsePropertyTokens(std::string& line)
 {
     // Find the first '=' character
@@ -206,7 +206,7 @@ class PropertiesParser
     }
 
   private:
-    //-----------------------------------------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------
     void processLine(const std::string& line)
     {
         std::string lineStr(line);
@@ -222,7 +222,7 @@ class PropertiesParser
             processNamespaceLine(lineStr, trimmedLine);
     }
 
-    //-----------------------------------------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------
     bool handleComments(const std::string& line, const std::string& trimmedLine)
     {
         if (m_inComment)
@@ -246,7 +246,7 @@ class PropertiesParser
         return false;
     }
 
-    //-----------------------------------------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------
     void processPropertyLine(std::string& line)
     {
         const auto tokens = parsePropertyTokens(line);
@@ -287,7 +287,7 @@ class PropertiesParser
         }
     }
 
-    //-----------------------------------------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------
     void skipWhiteSpace(Stream* stream)
     {
         signed char c;
@@ -303,7 +303,7 @@ class PropertiesParser
                 GP_ERROR("Failed to seek backwards one character after skipping whitespace.");
     }
 
-    //-----------------------------------------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------
     void processNamespaceLine(std::string& line, const std::string& trimmedLine)
     {
         const auto namespaceInfo = parseNamespaceTokens(line, trimmedLine);
@@ -326,7 +326,7 @@ class PropertiesParser
             handleDeferredNamespace(line, name, id, parentID);
     }
 
-    //-----------------------------------------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------
     void handleInlineNamespace(const std::string& name,
                                const std::string& id,
                                const std::string& parentID)
@@ -336,13 +336,13 @@ class PropertiesParser
         seekAfterClosingBrace();
     }
 
-    //-----------------------------------------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------
     void handleOpenNamespace(const std::string& name, const std::string& id, const std::string& parentID)
     {
         createNamespace(name, id, parentID);
     }
 
-    //-----------------------------------------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------
     void handleDeferredNamespace(std::string& line,
                                  const std::string& name,
                                  const std::string& id,
@@ -376,13 +376,13 @@ class PropertiesParser
         return trimmedLine == "}";
     }
 
-    //-----------------------------------------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------
     void createNamespace(const std::string& name, const std::string& id, const std::string& parentID)
     {
         m_properties->addNamespace(m_stream, name, id, parentID, m_properties, m_nestingDepth + 1);
     }
 
-    //-----------------------------------------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------
     void seekBeforeClosingBrace()
     {
         if (m_stream->seek(-1, SEEK_CUR) == false)
@@ -434,7 +434,7 @@ void calculateNamespacePath(const std::string& urlString,
 Properties* getPropertiesFromNamespacePath(Properties* properties,
                                            const std::vector<std::string>& namespacePath);
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 Properties::Properties(const Properties& copy)
     : _namespace(copy._namespace), _id(copy._id), _parentID(copy._parentID),
       _properties(copy._properties), _parent(copy._parent)
@@ -450,7 +450,7 @@ Properties::Properties(const Properties& copy)
     rewind();
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 Properties::Properties(Stream* stream)
 {
     // Start with nesting depth 0 for root level
@@ -460,7 +460,7 @@ Properties::Properties(Stream* stream)
     rewind();
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 Properties::Properties(Stream* stream,
                        const std::string& name,
                        const std::string& id,
@@ -484,7 +484,7 @@ Properties::Properties(Stream* stream,
     rewind();
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 Properties* Properties::create(const std::string& url)
 {
     if (url.empty())
@@ -533,7 +533,7 @@ Properties* Properties::create(const std::string& url)
     return p;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void Properties::readProperties(Stream* stream)
 {
     assert(stream);
@@ -543,7 +543,7 @@ void Properties::readProperties(Stream* stream)
     parser.parse();
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 Properties::~Properties()
 {
     SAFE_DELETE(_dirPath);
@@ -555,7 +555,7 @@ Properties::~Properties()
     SAFE_DELETE(_variables);
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void Properties::resolveInheritance(const std::string& id)
 {
     // Namespaces can be defined like so:
@@ -628,7 +628,7 @@ void Properties::resolveInheritance(const std::string& id)
     }
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void Properties::mergeWith(Properties* overrides)
 {
     assert(overrides);
@@ -674,7 +674,7 @@ void Properties::mergeWith(Properties* overrides)
     }
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 Property* Properties::getNextProperty()
 {
     if (_propertiesItr == _properties.end())
@@ -691,7 +691,7 @@ Property* Properties::getNextProperty()
     return _propertiesItr == _properties.end() ? nullptr : &(*_propertiesItr);
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 Properties* Properties::getNextNamespace()
 {
     if (_namespacesItr == _namespaces.end())
@@ -712,14 +712,14 @@ Properties* Properties::getNextNamespace()
     return ns;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void Properties::rewind()
 {
     _propertiesItr = _properties.end();
     _namespacesItr = _namespaces.begin();
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 Properties* Properties::getNamespace(const std::string& id, bool searchNames, bool recurse) const
 {
     if (id == "base")
@@ -749,7 +749,7 @@ Properties* Properties::getNamespace(const std::string& id, bool searchNames, bo
     return nullptr;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool Properties::exists(const std::string& name) const
 {
     if (name.empty()) return false;
@@ -763,7 +763,7 @@ bool Properties::exists(const std::string& name) const
     return false;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 static const bool isStringNumeric(const std::string& str)
 {
     if (str.empty()) return false;
@@ -795,7 +795,7 @@ static const bool isStringNumeric(const std::string& str)
     return true;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 Properties::Type Properties::getType(const std::string& name) const
 {
     const std::string value = getString(name);
@@ -824,7 +824,7 @@ Properties::Type Properties::getType(const std::string& name) const
     }
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 const std::string& Properties::getString(const std::string& name, const std::string& defaultValue) const
 {
     if (name.empty())
@@ -856,7 +856,7 @@ const std::string& Properties::getString(const std::string& name, const std::str
     return defaultValue;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool Properties::setString(const std::string& name, const std::string& value)
 {
     // If the name is empty, return false immediately
@@ -888,7 +888,7 @@ bool Properties::setString(const std::string& name, const std::string& value)
     return true;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool Properties::getBool(const std::string& name, bool defaultValue) const
 {
     const std::string& valueString = getString(name);
@@ -900,7 +900,7 @@ bool Properties::getBool(const std::string& name, bool defaultValue) const
     return defaultValue;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 int Properties::getInt(const std::string& name) const
 {
     const std::string& valueString = getString(name);
@@ -921,7 +921,7 @@ int Properties::getInt(const std::string& name) const
     return 0;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 float Properties::getFloat(const std::string& name) const
 {
     const std::string& valueString = getString(name);
@@ -937,7 +937,7 @@ float Properties::getFloat(const std::string& name) const
     return 0.0f;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 long Properties::getLong(const std::string& name) const
 {
     const std::string& valueString = getString(name);
@@ -953,7 +953,7 @@ long Properties::getLong(const std::string& name) const
     return 0L;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool Properties::getMatrix(const std::string& name, Matrix* out) const
 {
     assert(out);
@@ -997,43 +997,43 @@ bool Properties::getMatrix(const std::string& name, Matrix* out) const
     return false;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool Properties::getVector2(const std::string& name, Vector2* out) const
 {
     return parseVector2(getString(name), out);
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool Properties::getVector3(const std::string& name, Vector3* out) const
 {
     return parseVector3(getString(name), out);
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool Properties::getVector4(const std::string& name, Vector4* out) const
 {
     return parseVector4(getString(name), out);
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool Properties::getQuaternionFromAxisAngle(const std::string& name, Quaternion* out) const
 {
     return parseAxisAngle(getString(name), out);
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool Properties::getColor(const std::string& name, Vector3* out) const
 {
     return parseColor(getString(name), out);
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool Properties::getColor(const std::string& name, Vector4* out) const
 {
     return parseColor(getString(name), out);
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool Properties::getPath(const std::string& name, std::string* path) const
 {
     const auto& valueString = getString(name);
@@ -1068,7 +1068,7 @@ bool Properties::getPath(const std::string& name, std::string* path) const
     return false;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 const std::string& Properties::getVariable(const std::string& name,
                                            const std::string& defaultValue) const
 {
@@ -1091,7 +1091,7 @@ const std::string& Properties::getVariable(const std::string& name,
     return _parent ? _parent->getVariable(name, defaultValue) : defaultValue;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void Properties::setVariable(const std::string& name, const std::string& value)
 {
     Property* prop = nullptr;
@@ -1128,7 +1128,7 @@ void Properties::setVariable(const std::string& name, const std::string& value)
     }
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 Properties* Properties::clone()
 {
     Properties* p = new Properties();
@@ -1152,7 +1152,7 @@ Properties* Properties::clone()
     return p;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void Properties::setDirectoryPath(const std::string* path)
 {
     if (path)
@@ -1165,7 +1165,7 @@ void Properties::setDirectoryPath(const std::string* path)
     }
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void Properties::setDirectoryPath(const std::string& path)
 {
     if (_dirPath == nullptr)
@@ -1178,7 +1178,7 @@ void Properties::setDirectoryPath(const std::string& path)
     }
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void calculateNamespacePath(const std::string& urlString,
                             std::string& fileString,
                             std::vector<std::string>& namespacePath)
@@ -1203,7 +1203,7 @@ void calculateNamespacePath(const std::string& urlString,
     }
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 Properties* getPropertiesFromNamespacePath(Properties* properties,
                                            const std::vector<std::string>& namespacePath)
 {
@@ -1248,7 +1248,7 @@ Properties* getPropertiesFromNamespacePath(Properties* properties,
         return properties;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool Properties::parseVector2(const std::string& str, Vector2* out)
 {
     if (str.empty()) return false;
@@ -1269,7 +1269,7 @@ bool Properties::parseVector2(const std::string& str, Vector2* out)
     return false;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool Properties::parseVector3(const std::string& str, Vector3* out)
 {
     if (str.empty()) return false;
@@ -1290,7 +1290,7 @@ bool Properties::parseVector3(const std::string& str, Vector3* out)
     return false;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool Properties::parseVector4(const std::string& str, Vector4* out)
 {
     if (str.empty()) return false;
@@ -1311,7 +1311,7 @@ bool Properties::parseVector4(const std::string& str, Vector4* out)
     return false;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool Properties::parseAxisAngle(const std::string& str, Quaternion* out)
 {
     if (str.empty()) return false;
@@ -1332,7 +1332,7 @@ bool Properties::parseAxisAngle(const std::string& str, Quaternion* out)
     return false;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool Properties::parseColor(const std::string& str, Vector3* out)
 {
     if (str.empty()) return false;
@@ -1365,7 +1365,7 @@ bool Properties::parseColor(const std::string& str, Vector3* out)
     return false;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool Properties::parseColor(const std::string& str, Vector4* out)
 {
     if (str.empty()) return false;
@@ -1398,11 +1398,13 @@ bool Properties::parseColor(const std::string& str, Vector4* out)
     return false;
 }
 
+//-----------------------------------------------------------------------------
 void Properties::addProperty(const std::string& name, const std::string& value)
 {
     _properties.emplace_back(Property(name, value));
 }
 
+//-----------------------------------------------------------------------------
 void Properties::addNamespace(Stream* stream,
                               const std::string& name,
                               const std::string& id,

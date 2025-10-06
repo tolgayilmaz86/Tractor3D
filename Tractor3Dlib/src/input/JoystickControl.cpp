@@ -15,6 +15,7 @@ JoystickControl::~JoystickControl()
     if (_outerRegionCoord) SAFE_DELETE_ARRAY(_outerRegionCoord);
 }
 
+//-----------------------------------------------------------------------------
 JoystickControl* JoystickControl::create(const std::string& id, Theme::Style* style)
 {
     JoystickControl* joystickControl = new JoystickControl();
@@ -23,6 +24,7 @@ JoystickControl* JoystickControl::create(const std::string& id, Theme::Style* st
     return joystickControl;
 }
 
+//-----------------------------------------------------------------------------
 Control* JoystickControl::create(Theme::Style* style, Properties* properties)
 {
     JoystickControl* joystickControl = new JoystickControl();
@@ -30,11 +32,13 @@ Control* JoystickControl::create(Theme::Style* style, Properties* properties)
     return joystickControl;
 }
 
+//-----------------------------------------------------------------------------
 const std::string& JoystickControl::getTypeName() const noexcept
 {
     return TYPE_NAME;
 }
 
+//-----------------------------------------------------------------------------
 void JoystickControl::setInnerRegionSize(const Vector2& size,
                                          bool isWidthPercentage,
                                          bool isHeightPercentage)
@@ -55,6 +59,7 @@ void JoystickControl::setInnerRegionSize(const Vector2& size,
     }
 }
 
+//-----------------------------------------------------------------------------
 const Vector2& JoystickControl::getInnerRegionSize(bool* isWidthPercentage,
                                                    bool* isHeightPercentage) const noexcept
 {
@@ -80,6 +85,7 @@ const Vector2& JoystickControl::getInnerRegionSize(bool* isWidthPercentage,
         return Vector2::zero();
 }
 
+//-----------------------------------------------------------------------------
 void JoystickControl::setOuterRegionSize(const Vector2& size,
                                          bool isWidthPercentage,
                                          bool isHeightPercentage)
@@ -100,6 +106,7 @@ void JoystickControl::setOuterRegionSize(const Vector2& size,
     }
 }
 
+//-----------------------------------------------------------------------------
 const Vector2& JoystickControl::getOuterRegionSize(bool* isWidthPercentage,
                                                    bool* isHeightPercentage) const noexcept
 {
@@ -125,38 +132,15 @@ const Vector2& JoystickControl::getOuterRegionSize(bool* isWidthPercentage,
         return Vector2::zero();
 }
 
-void JoystickControl::setRelative(bool relative) noexcept{ _relative = relative; }
-
-bool JoystickControl::isRelative() const noexcept { return _relative; }
-
-unsigned int JoystickControl::getIndex() const noexcept { return _index; }
-
-void JoystickControl::setBoundsBit(bool set, int& bitSetOut, int bit) noexcept
-{
-    if (set)
-    {
-        bitSetOut |= bit;
-    }
-    else
-    {
-        bitSetOut &= ~bit;
-    }
-}
-
-void JoystickControl::setRadius(float radius, bool isPercentage)
+//-----------------------------------------------------------------------------
+void JoystickControl::setRadius(float radius, bool isPercentage) noexcept
 {
     _radiusCoord = radius;
     setBoundsBit(isPercentage, _boundsBits, BOUNDS_RADIUS_PERCENTAGE_BIT);
     updateAbsoluteSizes();
 }
 
-float JoystickControl::getRadius() const noexcept { return _radiusCoord; }
-
-bool JoystickControl::isRadiusPercentage() const noexcept
-{
-    return _boundsBits & BOUNDS_RADIUS_PERCENTAGE_BIT;
-}
-
+//-----------------------------------------------------------------------------
 void JoystickControl::initialize(const std::string& typeName,
                                  Theme::Style* style,
                                  Properties* properties)
@@ -213,12 +197,14 @@ void JoystickControl::initialize(const std::string& typeName,
     _index = properties->getInt("index");
 }
 
+//-----------------------------------------------------------------------------
 void JoystickControl::updateAbsoluteBounds(const Vector2& offset)
 {
     Control::updateAbsoluteBounds(offset);
     updateAbsoluteSizes();
 }
 
+//-----------------------------------------------------------------------------
 void JoystickControl::setRegion(const Vector2& regionSizeIn,
                                 Vector2& regionSizeOut,
                                 int& regionBoundsBitsOut,
@@ -230,6 +216,7 @@ void JoystickControl::setRegion(const Vector2& regionSizeIn,
     setBoundsBit(isHeightPercentage, regionBoundsBitsOut, BOUNDS_HEIGHT_PERCENTAGE_BIT);
 }
 
+//-----------------------------------------------------------------------------
 void JoystickControl::getRegion(Vector2& regionOut,
                                 int& regionBoundsBitsOut,
                                 const std::string& regionPropertyId)
@@ -241,6 +228,7 @@ void JoystickControl::getRegion(Vector2& regionOut,
     setBoundsBit(isHeightPercent, regionBoundsBitsOut, BOUNDS_HEIGHT_PERCENTAGE_BIT);
 }
 
+//-----------------------------------------------------------------------------
 Vector2 JoystickControl::getPixelSize(const Vector2& region, const int regionBoundsBits) const
 {
     Vector2 size;
@@ -251,6 +239,7 @@ Vector2 JoystickControl::getPixelSize(const Vector2& region, const int regionBou
     return size;
 }
 
+//-----------------------------------------------------------------------------
 Vector2 JoystickControl::getPixelSize(const Theme::ThemeImage* image) const
 {
     Rectangle rect = image->getRegion();
@@ -260,12 +249,14 @@ Vector2 JoystickControl::getPixelSize(const Theme::ThemeImage* image) const
     return Vector2(rect.width, rect.height);
 }
 
+//-----------------------------------------------------------------------------
 Theme::ThemeImage* JoystickControl::getNonEmptyImage(const std::string& id, Control::State state)
 {
     Theme::ThemeImage* image = getImage(id, state);
     return image->getId() == id ? image : nullptr;
 }
 
+//-----------------------------------------------------------------------------
 void JoystickControl::updateAbsoluteSizes() noexcept
 {
     const Control::State state = getState();
@@ -321,6 +312,7 @@ void JoystickControl::updateAbsoluteSizes() noexcept
     }
 }
 
+//-----------------------------------------------------------------------------
 void JoystickControl::addListener(Control::Listener* listener, int eventFlags)
 {
     if ((eventFlags & Control::Listener::TEXT_CHANGED) == Control::Listener::TEXT_CHANGED)
@@ -331,6 +323,7 @@ void JoystickControl::addListener(Control::Listener* listener, int eventFlags)
     Control::addListener(listener, eventFlags);
 }
 
+//-----------------------------------------------------------------------------
 bool JoystickControl::touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex)
 {
     switch (evt)
@@ -449,6 +442,7 @@ bool JoystickControl::touchEvent(Touch::TouchEvent evt, int x, int y, unsigned i
     return Control::touchEvent(evt, x, y, contactIndex);
 }
 
+//-----------------------------------------------------------------------------
 unsigned int JoystickControl::drawImages(Form* form, const Rectangle& clip)
 {
     const Control::State state = getState();

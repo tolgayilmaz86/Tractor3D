@@ -1,8 +1,11 @@
-# Tractor3D Modernization Guide
+# Revive and Modernize an Old Game Engine
 
-This document outlines the roadmap and best practices for modernizing the game engine codebase from its original C++98/11 style to modern C++20. 
+This document outlines the roadmap and best practices for modernizing the old game engine known as Gameplay3d codebase from its original C++98/11 style to modern C++20. 
 
-The goal is to improve code safety, readability, maintainability, and performance.
+With regard to Apache 2.0 license this codebase has substantially changed the old engine with some additions and ease of use. 
+Also to keep things simple onl Windows x64 platforms will be supported. 
+
+The goal is to improve code readability, maintainability, and performance by using most modern c++ language features and relying on the STD as much as possible.
 
 ---
 
@@ -74,11 +77,11 @@ These are simple, high-impact changes that make the code safer and more explicit
         NonCopyable& operator=(const NonCopyable&) = delete;
     };
     ```
-
+  - **Note:** This also reuires to remove constructor initialization parameters by initializing them using in class member initialization. such as assigning the value where the member variable is defined using {} operators.
 #### Use `override` and `final`
 
 -   **What:** Add `override` to virtual functions in derived classes. Use `final` on virtual functions that should not be overridden further, or on classes that should not be inherited from.
--   **Why:** `override` causes the compiler to verify that the function is actually overriding a base class method, preventing subtle bugs from signature mismatches. `final` can improve performance by allowing the compiler to perform devirtualization.
+-   **Why:** `override` causes the compiler to verify that the function is actually overriding a base class method, preventing subtle bugs from signature mismatches. `final` can improve performance by allowing the compiler to perform de-virtualization.
 
 -   **Before:**
     ```cpp
@@ -98,20 +101,31 @@ These are simple, high-impact changes that make the code safer and more explicit
 - **Why:** `enum class` provides better type safety and avoids name clashes by requiring the enum name to be scoped.
 
 - **Example:**
-```cpp
-enum class Color {
-    Red,
-    Green,
-    Blue
-};
+    ```cpp
+    enum class Color {
+        Red,
+        Green,
+        Blue
+    };
 
-Color color = Color::Red;
-```
+    Color color = Color::Red;
+    ```
 
 #### Use std::string instead of C-style strings
 
 - **What:** Replace C-style strings (char arrays) with `std::string` especially `const std::string&` for parameters.
-- **Why:** `std::string` provides better memory management, safety, and ease of use compared to C-style strings.
+- **Why:** `std::string` provides better memory management, safety, and ease of use compared to C-style strings. Also you don't need to do a `nullptr` check. Will use const string references to avoid copying.
+
+
+-   **Before:**
+    ```cpp
+        Node* Scene::addNode(const char* id);
+    ```
+-   **After:**
+
+    ```cpp
+        Node* Scene::addNode(const std::string& id);
+    ```
 
 ### 2. Modern C++ Idioms
 
@@ -148,6 +162,45 @@ These changes make the code more concise and less error-prone.
     ```cpp
     auto it = myMap.find("key");
     ```
+
+#### Use std available algorithms instead deriving on our own.
+-   **What:** Rely on std ready functions as muc as possible
+-   **Why:** Reduces verbosity and makes code easier to read and refactor. Gives compiler chance to optimize.
+ 
+-   **Before:**
+    ```cpp
+    float cpX = center.x;
+
+    const Vector3& boxMin = box.min;
+    const Vector3& boxMax = box.max;
+    // Closest x value.
+    if (center.x < boxMin.x)
+    {
+        cpX = boxMin.x;
+    }
+    else if (center.x > boxMax.x)
+    {
+        cpX = boxMax.x;
+    }
+    ```
+-   **After:**    
+    ```cpp
+    float distX = std::clamp(center.x, box.min.x, box.max.x) - center.x;
+    ```
+ 
+### Use returns instead parameter out
+-   **What:** Old C style functions used to update or return via reference/pointer parameters.
+-   **Why:** Apply best practices and make intensions clear by simply return the requested value.
+ 
+-   **Before:**
+    ```cpp
+    void Matrix::createOrthographic(float width, float height, float zNearPlane, float zFarPlane, Matrix* dst)
+    ```
+-   **After:**   
+    ```cpp
+    Matrix Matrix::createOrthographic(float width, float height, float zNearPlane, float zFarPlane)
+    ```
+
 
 ### 3. Memory and Resource Management
 
@@ -318,53 +371,90 @@ These changes leverage advanced C++20 features to improve code expressiveness an
     ```
 - **After:**
     ```cpp
-    #include <variant>
     using Data = std::variant<int, float, std::string>;
     ```
 
 #### Use `std::ranges` for Range-Based Algorithms
 -   **What:** Use `std::ranges` to simplify and enhance range-based algorithms.
 -   **Why:** `std::ranges` provides a more expressive and safer way to work with ranges, reducing the risk of errors and improving code clarity.
--   **Example:**
-```cpp
-#include <algorithm>
-#include <ranges>
-#include <vector>
+-   **Before:**
+    ```cpp
+    for (size_t i = 0, count = _variables->size(); i < count; ++i)
+    {
+        Property& prop = (*_variables)[i];
+        if (prop.name == name)
+        return prop.value.c_str();
+    }
+    ```
+-   **After:**
+    ```cpp
+    auto it = std::ranges::find_if(*_variables, [name](const Property& property) {
+        return property.name == name;
+    });
 
-std::vector<int> numbers = {1, 2, 3, 4, 5};
+    if (it != _variables->end())
+        return it->value.c_str();
+    ```
 
-// Before
-std::vector<int> evens;
-std::copy_if(numbers.begin(), numbers.end(), std::back_inserter(evens), [](int n) {
-    return n % 2 == 0;
-});
-
-// After
-auto evens = numbers | std::views::filter([](int n) {
-    return n % 2 == 0;
-});
-```
+-   **Before:**
+    ```cpp
+    for (; iter != _propertiesFromFile.end(); ++iter)
+    {
+      SAFE_DELETE(iter->second);
+    }
+    ```
+-   **After:**
+  - Note that erasing items from the containers, while iterating requires different approach
+    ```cpp
+    std::erase_if(_propertiesFromFile, [](auto& pair) {
+      pair.second->reset();
+      return true; // erase each of them
+      });
+    ```
 
 
 ### 7. Code Cleanup and Refactoring
 -   **What:** Regularly review and refactor code to improve readability, maintainability, and performance.
 -   **Why:** Clean code is easier to understand, modify, and extend. Refactoring can also help eliminate technical debt and improve performance.
--   **Example:**
-```cpp
-// Before
-for (int i = 0; i < 10; i++) {
-    processEntity(entities[i]);
-}
-
-// After
-for (const auto& entity : entities) {
-    processEntity(entity);
-}
-```
-- **Tip:** Use automated tools and linters to help identify areas for improvement and ensure code quality.
-- **Tooling:** Consider using tools like `clang-tidy`, `cpplint`, or IDE features to automate code reviews and enforce coding standards.
-- **Best Practices:** Follow established coding standards and best practices to maintain a consistent codebase.
+-   **Before:**
+    ```cpp
+    // Before
+    for (int i = 0; i < 10; i++) {
+        processEntity(entities[i]);
+    }
+    ```
+-   **After:**
+    ```cpp
+    for (const auto& entity : entities)
+        processEntity(entity);
+    ```
 
 ### 8. Testing and Validation
 -   **What:** Implement comprehensive testing strategies to ensure code correctness and reliability.
 -   **Why:** Testing helps identify bugs and issues early in the development process, reducing the cost of fixing them later.
+
+### Add a good error handling strategy
+-   **What:** Implement a consistent error handling strategy using exceptions or error codes.
+-   **Why:** Consistent error handling improves code reliability and makes it easier to diagnose and fix issues.
+
+-   **Note:** Don't use throw catch for control flow, only for exceptional situations.
+
+
+## Other things to consider
+- [ ] Use `std::function and std::bind` instead old function pointers
+- [ ] Use `std::span` for arrays where available
+- [ ] Utilize `std::ranges` and `views` where makes sense
+- [ ] Prefer `std::optional` for error recovery rather than `nullptr` checks
+- [ ] Use c++ `modules` if it makes sense
+- [ ] Use `lambdas` for repeating steps within a function
+- [ ] Use `std::variant` for unions or to handle multiple types
+- [ ] Prefer `using =` statements instead `typedef`'s
+- [X] Use `std::filesystem` for IO operations
+- [-] Make properties logic clearer and maintainable
+- [ ] Investigate `Entity Component Systems (ECS)` instead deep inheritances.
+- [ ] Adding unit tests initially for mathematical computations.
+- [ ] Add a reliable logging system instead error or warning macros.
+- [-] Enabling a consistent clang-tidy rules.
+- [-] Instead regular loops utilize std ready data iterations.
+- [-] using size_t for indexes?
+- [ ] To be continued...

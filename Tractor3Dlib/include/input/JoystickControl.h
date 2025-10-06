@@ -1,4 +1,17 @@
 #pragma once
+/**
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #include "ui/Control.h"
 
@@ -120,7 +133,7 @@ class JoystickControl : public Control
      *
      * @param relative Whether relative positioning should be enabled or not.
      */
-    void setRelative(bool relative) noexcept;
+    void setRelative(bool relative) noexcept { _relative = relative; }
 
     /**
      * Gets whether absolute positioning is enabled or not.
@@ -129,14 +142,14 @@ class JoystickControl : public Control
      *
      * @return <code>true</code> if relative positioning is enabled; <code>false</code> otherwise.
      */
-    bool isRelative() const noexcept;
+    bool isRelative() const noexcept { return _relative; }
 
     /**
      * Gets the index of this joystick across all joysticks on a form.
      *
      * @return The index of this joystick on a form.
      */
-    unsigned int getIndex() const noexcept;
+    unsigned int getIndex() const noexcept { return _index; }
 
     /**
      * Sets the radius of joystick motion
@@ -144,21 +157,22 @@ class JoystickControl : public Control
      * @param radius The radius to be set.
      * @param isPercentage If the radius value is a percentage value of the relative size of this control
      */
-    void setRadius(float radius, bool isPercentage = false);
+    void setRadius(float radius, bool isPercentage = false) noexcept;
 
     /**
      * Gets the radius of joystick motion
      *
      * @return The radius of joystick motion
      */
-    float getRadius() const noexcept;
+    float getRadius() const noexcept { return _radiusCoord; }
 
     /**
      * Determines if the radius of joystick motion is a percentage value of the relative size of this control
      *
      * @return True if the radius of joystick motion is a percentage value of the relative size of this control
      */
-    bool isRadiusPercentage() const noexcept;
+    bool isRadiusPercentage() const noexcept { return _boundsBits & BOUNDS_RADIUS_PERCENTAGE_BIT; }
+
 
   protected:
     /**
@@ -229,7 +243,10 @@ class JoystickControl : public Control
 
     void updateAbsoluteSizes() noexcept;
 
-    void setBoundsBit(bool set, int& bitSetOut, int bit) noexcept;
+    void setBoundsBit(bool set, int& bitSetOut, int bit) const noexcept
+    {
+        set ? bitSetOut |= bit : bitSetOut &= ~bit;
+    }
 
     float _radiusCoord{ 1.0f };
     Vector2* _innerRegionCoord{ nullptr };

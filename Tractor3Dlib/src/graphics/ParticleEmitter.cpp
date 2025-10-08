@@ -108,7 +108,7 @@ ParticleEmitter* ParticleEmitter::create(Properties* properties)
     // Load sprite properties.
     // Path to image file is required.
     std::string texturePath;
-    if (!sprite->getPath("path", &texturePath))
+    if (!sprite->getPath("path", texturePath))
     {
         GP_ERROR("Failed to load particle emitter: required image file path ('path') is missing.");
         return nullptr;

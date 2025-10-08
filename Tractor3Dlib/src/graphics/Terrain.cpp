@@ -100,7 +100,7 @@ Terrain* Terrain::create(const std::string& path, Properties* properties)
     {
         // Read heightmap path
         std::string heightmap;
-        if (!pHeightmap->getPath("path", &heightmap))
+        if (!pHeightmap->getPath("path", heightmap))
         {
             GP_WARN("No 'path' property supplied in heightmap section of terrain definition: %s",
                     path);
@@ -148,7 +148,7 @@ Terrain* Terrain::create(const std::string& path, Properties* properties)
     {
         // Try to read 'heightmap' as a simple string property
         std::string heightmap;
-        if (!pTerrain->getPath("heightmap", &heightmap))
+        if (!pTerrain->getPath("heightmap", heightmap))
         {
             GP_WARN("No 'heightmap' property supplied in terrain definition: %s", path);
             if (!externalProperties) SAFE_DELETE(p);
@@ -371,7 +371,6 @@ Terrain* Terrain::create(HeightField* heightfield,
                     ++index;
 
                 std::string textureMap;
-                std::string blendMap;
                 Vector2 textureRepeat;
                 int blendChannel = 0;
                 int row = -1;
@@ -381,14 +380,15 @@ Terrain* Terrain::create(HeightField* heightfield,
                 Properties* t = lp->getNamespace("texture", true);
                 if (t)
                 {
-                    t->getPath("path", &textureMap);
+                    t->getPath("path", textureMap);
                     if (!t->getVector2("repeat", &textureRepeat)) textureRepeat.set(1, 1);
                 }
 
+                std::string blendMap;
                 Properties* b = lp->getNamespace("blend", true);
                 if (b)
                 {
-                    b->getPath("path", &blendMap);
+                    b->getPath("path", blendMap);
 
                     const std::string& channel = b->getString("channel");
                     if (!channel.empty())

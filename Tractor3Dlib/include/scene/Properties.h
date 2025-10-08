@@ -432,7 +432,7 @@ class Properties
      *
      * @script{ignore}
      */
-    bool getPath(const std::string& name, std::string* path) const;
+    bool getPath(const std::string& name, std::string& path) const;
 
     /**
      * Returns the value of a variable that is set in this Properties object.
@@ -583,7 +583,7 @@ class Properties
     std::vector<Properties*> _namespaces;
     std::vector<Properties*>::const_iterator _namespacesItr;
     std::vector<Property>* _variables{ nullptr };
-    std::string* _dirPath{ nullptr };
+    std::string _dirPath{};
     bool _visited{ false };
     Properties* _parent{ nullptr };
 

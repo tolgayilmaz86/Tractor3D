@@ -111,7 +111,7 @@ AudioSource* AudioSource::create(Properties* properties)
     }
 
     std::string path;
-    if (!properties->getPath("path", &path))
+    if (!properties->getPath("path", path))
     {
         GP_ERROR("Audio file failed to load; the file path was not specified.");
         return nullptr;

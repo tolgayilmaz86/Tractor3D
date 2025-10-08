@@ -94,15 +94,14 @@ Form* Form::create(const std::string& url)
     if (formProperties->exists("theme"))
     {
         std::string themeFile;
-        if (formProperties->getPath("theme", &themeFile))
+        if (formProperties->getPath("theme", themeFile))
         {
             theme = Theme::create(themeFile);
         }
     }
+
     if (!theme)
-    {
         theme = Theme::getDefault();
-    }
 
     if (theme)
     {

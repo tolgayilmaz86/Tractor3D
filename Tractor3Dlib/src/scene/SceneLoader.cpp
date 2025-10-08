@@ -72,7 +72,7 @@ Scene* SceneLoader::loadInternal(const std::string& url)
 
     // Get the path to the main GPB.
     std::string path;
-    if (sceneProperties->getPath("path", &path))
+    if (sceneProperties->getPath("path", path))
     {
         _gpbPath = path;
     }

@@ -622,7 +622,6 @@ void Properties::readProperties(Stream* stream)
 //-----------------------------------------------------------------------------
 Properties::~Properties()
 {
-    SAFE_DELETE(_dirPath);
     for (size_t i = 0, count = _namespaces.size(); i < count; ++i)
     {
         SAFE_DELETE(_namespaces[i]);
@@ -875,10 +874,7 @@ static const bool isStringNumeric(const std::string& str)
 Properties::Type Properties::getType(const std::string& name) const
 {
     const std::string value = getString(name);
-    if (value.empty())
-    {
-        return Properties::NONE;
-    }
+    if (value.empty()) return Properties::NONE;
 
     // Parse the value to determine the format
     size_t commaCount = std::count(value.begin(), value.end(), ',');
@@ -904,30 +900,18 @@ Properties::Type Properties::getType(const std::string& name) const
 const std::string& Properties::getString(const std::string& name, const std::string& defaultValue) const
 {
     if (name.empty())
-    {
         return _propertiesItr != _properties.end() ? _propertiesItr->value : defaultValue;
-    }
 
     std::string variable;
     // If 'name' is a variable, return the variable value
-    if (isVariable(name, variable))
-    {
-        return getVariable(variable, defaultValue);
-    }
+    if (isVariable(name, variable)) return getVariable(variable, defaultValue);
 
     auto it = std::find_if(_properties.begin(),
                            _properties.end(),
                            [&name](const Property& prop) { return prop.name == name; });
 
     if (it != _properties.end())
-    {
-        // If 'name' is a variable, return the variable value
-        if (isVariable(it->value, variable))
-        {
-            return getVariable(variable, defaultValue);
-        }
-        return it->value;
-    }
+        return isVariable(it->value, variable) ? getVariable(variable, defaultValue) : it->value;
 
     return defaultValue;
 }
@@ -968,12 +952,7 @@ bool Properties::setString(const std::string& name, const std::string& value)
 bool Properties::getBool(const std::string& name, bool defaultValue) const
 {
     const std::string& valueString = getString(name);
-    if (!valueString.empty())
-    {
-        return valueString == "true";
-    }
-
-    return defaultValue;
+    return !valueString.empty() ? valueString == "true" : defaultValue;
 }
 
 //-----------------------------------------------------------------------------
@@ -983,10 +962,7 @@ int Properties::getInt(const std::string& name) const
 
     try
     {
-        if (!valueString.empty())
-        {
-            return std::stoi(valueString);
-        }
+        if (!valueString.empty()) return std::stoi(valueString);
     }
     catch (const std::exception&)
     {
@@ -1110,7 +1086,7 @@ bool Properties::getColor(const std::string& name, Vector4* out) const
 }
 
 //-----------------------------------------------------------------------------
-bool Properties::getPath(const std::string& name, std::string* path) const
+bool Properties::getPath(const std::string& name, std::string& path) const
 {
     const auto& valueString = getString(name);
 
@@ -1118,7 +1094,7 @@ bool Properties::getPath(const std::string& name, std::string* path) const
 
     if (FileSystem::fileExists(valueString))
     {
-        path->assign(valueString);
+        path = valueString;
         return true;
     }
 
@@ -1126,14 +1102,13 @@ bool Properties::getPath(const std::string& name, std::string* path) const
     while (prop != nullptr)
     {
         // Search for the file path relative to the bundle file
-        const std::string* dirPath = prop->_dirPath;
-        if (dirPath != nullptr && !dirPath->empty())
+        if (!prop->_dirPath.empty())
         {
-            std::string relativePath = *dirPath;
+            std::string relativePath = prop->_dirPath;
             relativePath.append(valueString);
             if (FileSystem::fileExists(relativePath))
             {
-                path->assign(relativePath);
+                path = relativePath;
                 return true;
             }
         }
@@ -1158,9 +1133,7 @@ const std::string& Properties::getVariable(const std::string& name,
                                        { return property.name == name; });
 
         if (it != _variables->end())
-        {
             return it->value;
-        }
     }
 
     // Search for variable in parent Properties
@@ -1216,10 +1189,10 @@ Properties* Properties::clone()
     p->_propertiesItr = p->_properties.end();
     p->setDirectoryPath(_dirPath);
 
-    for (size_t i = 0, count = _namespaces.size(); i < count; i++)
+    for (const auto& ns : _namespaces)
     {
-        assert(_namespaces[i]);
-        Properties* child = _namespaces[i]->clone();
+        assert(ns);
+        Properties* child = ns->clone();
         p->_namespaces.push_back(child);
         child->_parent = p;
     }
@@ -1232,26 +1205,15 @@ Properties* Properties::clone()
 void Properties::setDirectoryPath(const std::string* path)
 {
     if (path)
-    {
         setDirectoryPath(*path);
-    }
     else
-    {
-        SAFE_DELETE(_dirPath);
-    }
+        _dirPath.clear();
 }
 
 //-----------------------------------------------------------------------------
 void Properties::setDirectoryPath(const std::string& path)
 {
-    if (_dirPath == nullptr)
-    {
-        _dirPath = new std::string(path);
-    }
-    else
-    {
-        _dirPath->assign(path);
-    }
+    _dirPath = path;
 }
 
 //-----------------------------------------------------------------------------

@@ -149,7 +149,7 @@ Theme* Theme::create(const std::string& url)
 
     // Parse the Properties object and set up the theme.
     std::string textureFile;
-    themeProperties->getPath("texture", &textureFile);
+    themeProperties->getPath("texture", textureFile);
     theme->_texture = Texture::create(textureFile, true);
     assert(theme->_texture);
     theme->_spriteBatch = SpriteBatch::create(theme->_texture);
@@ -244,7 +244,7 @@ Theme* Theme::create(const std::string& url)
 
                     Font* font = nullptr;
                     std::string fontPath;
-                    if (innerSpace->getPath("font", &fontPath))
+                    if (innerSpace->getPath("font", fontPath))
                     {
                         font = Font::create(fontPath);
                     }
@@ -330,7 +330,7 @@ Theme* Theme::create(const std::string& url)
 
                     Font* font = nullptr;
                     std::string fontPath;
-                    if (innerSpace->getPath("font", &fontPath))
+                    if (innerSpace->getPath("font", fontPath))
                     {
                         font = Font::create(fontPath);
                     }

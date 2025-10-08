@@ -47,7 +47,7 @@ void ImageControl::initialize(const std::string& typeName, Theme::Style* style, 
     if (properties)
     {
         std::string path;
-        if (properties->getPath("path", &path))
+        if (properties->getPath("path", path))
         {
             setImage(path);
         }

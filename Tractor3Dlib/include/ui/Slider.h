@@ -286,12 +286,12 @@ class Slider : public Label
     /**
      * Whether to display this slider's value.
      */
-    bool _valueTextVisible{ true };
+    bool _valueTextVisible{ false };
 
     /**
      * Alignment of value text.
      */
-    Font::Justify _valueTextAlignment{ Font::Justify::ALIGN_LEFT };
+    Font::Justify _valueTextAlignment{ Font::ALIGN_BOTTOM_HCENTER };
 
     /**
      * Number of digits after the decimal to draw for value text.

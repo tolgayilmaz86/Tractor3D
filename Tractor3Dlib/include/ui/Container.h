@@ -164,7 +164,7 @@ class Container : public Control
      * @return The vector of the controls within this container.
      * @script{ignore}
      */
-    const std::vector<Control*>& getControls() const;
+    const std::vector<Control*>& getControls() const noexcept { return _controls; }
 
     /**
      * Determines if this container is a top level form.
@@ -464,7 +464,7 @@ class Container : public Control
     /**
      * List of controls within the container.
      */
-    std::vector<Control*> _controls{};
+    std::vector<Control*> _controls;
     /**
      * The active control for the container.
      */
@@ -564,7 +564,7 @@ class Container : public Control
     /**
      * Amount to add to scrolling velocity on a scroll-wheel event;
      */
-    float _scrollWheelSpeed{ 0.0f };
+    float _scrollWheelSpeed{ 400.0f };
     /**
      * Are we scrolling to the right?
      */
@@ -601,14 +601,14 @@ class Container : public Control
 
     AnimationClip* _scrollBarOpacityClip{ nullptr };
     int _zIndexDefault{ 0 };
-    bool _selectButtonDown;
-    double _lastFrameTime;
+    bool _selectButtonDown{ false };
+    double _lastFrameTime{ 0.0 };
 
-    float _totalWidth;
-    float _totalHeight;
-    bool _contactIndices[MAX_CONTACT_INDICES];
-    bool _initializedWithScroll;
-    bool _scrollWheelRequiresFocus;
+    float _totalWidth{ 0.0f };
+    float _totalHeight{ 0.0f };
+    bool _contactIndices[MAX_CONTACT_INDICES]{ false };
+    bool _initializedWithScroll{ false };
+    bool _scrollWheelRequiresFocus{ false };
 };
 
 } // namespace tractor

@@ -99,7 +99,7 @@ class Button : public Label
      */
     Button(const Button& copy);
 
-    unsigned int _dataBinding;
+    unsigned int _dataBinding{ 0 };
 };
 
 } // namespace tractor

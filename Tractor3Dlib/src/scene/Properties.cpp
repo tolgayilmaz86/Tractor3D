@@ -471,43 +471,39 @@ Properties* getPropertiesFromNamespacePath(Properties* properties,
 {
     // If the url references a specific namespace within the file,
     // return the specified namespace or notify the user if it cannot be found.
-    if (namespacePath.size() > 0)
+    if (namespacePath.size() == 0) return properties;
+
+    size_t size = namespacePath.size();
+    properties->rewind();
+    Properties* iter = properties->getNextNamespace();
+    for (size_t i = 0; i < size;)
     {
-        size_t size = namespacePath.size();
-        properties->rewind();
-        Properties* iter = properties->getNextNamespace();
-        for (size_t i = 0; i < size;)
+        while (true)
         {
-            while (true)
+            if (iter == nullptr)
             {
-                if (iter == nullptr)
-                {
-                    GP_WARN("Failed to load properties object from url.");
-                    return nullptr;
-                }
-
-                if (iter->getId() == namespacePath[i])
-                {
-                    if (i != size - 1)
-                    {
-                        properties = iter->getNextNamespace();
-                        iter = properties;
-                    }
-                    else
-                        properties = iter;
-
-                    i++;
-                    break;
-                }
-
-                iter = properties->getNextNamespace();
+                GP_WARN("Failed to load properties object from url.");
+                return nullptr;
             }
-        }
 
-        return properties;
+            if (iter->getId() == namespacePath[i])
+            {
+                if (i != size - 1)
+                {
+                    properties = iter->getNextNamespace();
+                    iter = properties;
+                }
+                else
+                    properties = iter;
+
+                i++;
+                break;
+            }
+            iter = properties->getNextNamespace();
+        }
     }
-    else
-        return properties;
+
+    return properties;
 }
 
 //-----------------------------------------------------------------------------
@@ -545,15 +541,9 @@ Properties::Properties(Stream* stream,
                        int nestingDepth)
     : _namespace(name), _parent(parent)
 {
-    if (!id.empty())
-    {
-        _id = id;
-    }
+    if (!id.empty()) _id = id;
 
-    if (!parentID.empty())
-    {
-        _parentID = parentID;
-    }
+    if (!parentID.empty()) _parentID = parentID;
 
     PropertiesParser parser(stream, this, nestingDepth);
     parser.parse();
@@ -626,8 +616,6 @@ Properties::~Properties()
     {
         SAFE_DELETE(_namespaces[i]);
     }
-
-    SAFE_DELETE(_variables);
 }
 
 //-----------------------------------------------------------------------------
@@ -1126,15 +1114,11 @@ const std::string& Properties::getVariable(const std::string& name,
     if (name.empty()) return defaultValue;
 
     // Search for variable in this Properties object
-    if (_variables)
-    {
-        auto it = std::ranges::find_if(*_variables,
-                                       [name](const Property& property)
-                                       { return property.name == name; });
+    auto it =
+        std::ranges::find_if(_variables,
+                             [name](const Property& property) { return property.name == name; });
 
-        if (it != _variables->end())
-            return it->value;
-    }
+    if (it != _variables.end()) return it->value;
 
     // Search for variable in parent Properties
     return _parent ? _parent->getVariable(name, defaultValue) : defaultValue;
@@ -1143,38 +1127,32 @@ const std::string& Properties::getVariable(const std::string& name,
 //-----------------------------------------------------------------------------
 void Properties::setVariable(const std::string& name, const std::string& value)
 {
-    Property* prop = nullptr;
+    if (name.empty()) return;
 
-    // Search for variable in this Properties object and parents
-    Properties* current = const_cast<Properties*>(this);
+    // Search for existing variable in this Properties object and parents
+    if (auto* prop = findVariableInHierarchy(name))
+    {
+        prop->value = value;
+        return;
+    }
+
+    // Add new variable to this Properties object
+    _variables.emplace_back(name, value);
+}
+
+//-----------------------------------------------------------------------------
+Property* Properties::findVariableInHierarchy(const std::string& name)
+{
+    Properties* current = this;
     while (current)
     {
-        if (current->_variables)
-        {
-            for (size_t i = 0, count = current->_variables->size(); i < count; ++i)
-            {
-                Property* p = &(*current->_variables)[i];
-                if (p->name == name)
-                {
-                    prop = p;
-                    break;
-                }
-            }
-        }
+        auto it = std::ranges::find_if(current->_variables,
+                                       [&name](const Property& p) { return p.name == name; });
+
+        if (it != current->_variables.end()) return &(*it);
         current = current->_parent;
     }
-
-    if (prop)
-    {
-        // Found an existing property, set it
-        prop->value = value;
-    }
-    else
-    {
-        // Add a new variable with this name
-        if (!_variables) _variables = new std::vector<Property>();
-        _variables->emplace_back(Property(name, value));
-    }
+    return nullptr;
 }
 
 //-----------------------------------------------------------------------------
@@ -1188,6 +1166,7 @@ Properties* Properties::clone()
     p->_properties = _properties;
     p->_propertiesItr = p->_properties.end();
     p->setDirectoryPath(_dirPath);
+    p->_variables = _variables;
 
     for (const auto& ns : _namespaces)
     {
@@ -1208,12 +1187,6 @@ void Properties::setDirectoryPath(const std::string* path)
         setDirectoryPath(*path);
     else
         _dirPath.clear();
-}
-
-//-----------------------------------------------------------------------------
-void Properties::setDirectoryPath(const std::string& path)
-{
-    _dirPath = path;
 }
 
 //-----------------------------------------------------------------------------
@@ -1364,12 +1337,6 @@ bool Properties::parseColor(const std::string& str, Vector4* out)
     if (out) out->set(0.0f, 0.0f, 0.0f, 0.0f);
 
     return false;
-}
-
-//-----------------------------------------------------------------------------
-void Properties::addProperty(const std::string& name, const std::string& value)
-{
-    _properties.emplace_back(Property(name, value));
 }
 
 //-----------------------------------------------------------------------------

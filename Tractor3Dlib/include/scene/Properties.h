@@ -527,7 +527,10 @@ class Properties
      */
     static bool parseColor(const std::string& str, Vector4* out);
 
-    void addProperty(const std::string& name, const std::string& value);
+    void addProperty(const std::string& name, const std::string& value)
+    {
+        _properties.emplace_back(Property(name, value));
+    }
 
     void addNamespace(Stream* stream,
                       const std::string& name,
@@ -566,7 +569,7 @@ class Properties
 
     void setDirectoryPath(const std::string* path);
 
-    void setDirectoryPath(const std::string& path);
+    void setDirectoryPath(const std::string& path) noexcept { _dirPath = path; }
 
     Properties* clone();
 
@@ -575,14 +578,16 @@ class Properties
     // Called after create(); copies info from parents into derived namespaces.
     void resolveInheritance(const std::string& id = EMPTY_STRING);
 
-    std::string _namespace;
-    std::string _id;
-    std::string _parentID;
+    Property* findVariableInHierarchy(const std::string& name);
+
+    std::string _namespace{};
+    std::string _id{};
+    std::string _parentID{};
     std::list<Property> _properties;
     std::list<Property>::iterator _propertiesItr;
     std::vector<Properties*> _namespaces;
     std::vector<Properties*>::const_iterator _namespacesItr;
-    std::vector<Property>* _variables{ nullptr };
+    std::vector<Property> _variables;
     std::string _dirPath{};
     bool _visited{ false };
     Properties* _parent{ nullptr };

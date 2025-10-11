@@ -1480,12 +1480,12 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
     /**
      * The focus order of the control.
      */
-    int _focusIndex{ 0 };
+    int _focusIndex{ -1 };
 
     /**
      * Whether or not the control accepts input focus.
      */
-    bool _canFocus{ true };
+    bool _canFocus{ false };
 
     /**
      * This control's current state.

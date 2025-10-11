@@ -18,8 +18,6 @@
 namespace tractor
 {
 
-constexpr auto TYPE_NAME{ "JoystickControl" };
-
 //-----------------------------------------------------------------------------
 JoystickControl::~JoystickControl()
 {
@@ -49,6 +47,7 @@ Control* JoystickControl::create(Theme::Style* style, Properties* properties)
 //-----------------------------------------------------------------------------
 const std::string& JoystickControl::getTypeName() const noexcept
 {
+    static const std::string TYPE_NAME = "JoystickControl";
     return TYPE_NAME;
 }
 

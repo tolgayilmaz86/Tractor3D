@@ -58,12 +58,9 @@ void GamepadSample::updateGamepad(float elapsedTime, Gamepad* gamepad, unsigned 
     statusStream << "Player: " << player << " - " << gamepad->getName() << "\nButtons: ";
 
     for (const auto& [button, strValue] : buttonMap)
-    {
         if (gamepad->isButtonDown(button))
-        {
             statusStream << strValue << " ";
-        }
-    }
+
     statusStream << "\n";
 
     // Joystick information

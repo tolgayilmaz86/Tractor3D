@@ -377,9 +377,6 @@ Control* Container::getControl(const std::string& id) const
 }
 
 //----------------------------------------------------------------------------
-const std::vector<Control*>& Container::getControls() const { return _controls; }
-
-//----------------------------------------------------------------------------
 void Container::setScroll(Scroll scroll)
 {
     if (scroll != _scroll)

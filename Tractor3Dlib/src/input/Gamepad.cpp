@@ -133,25 +133,21 @@ void Gamepad::remove(Gamepad* gamepad)
 void Gamepad::bindGamepadControls(Container* container)
 {
     std::vector<Control*> controls = container->getControls();
-    std::vector<Control*>::iterator itr = controls.begin();
-
-    for (; itr != controls.end(); itr++)
+    for (auto& control : controls)
     {
-        Control* control = *itr;
-        assert(control);
-
+        const auto& controlName = control->getTypeName();
         if (control->isContainer())
         {
             bindGamepadControls((Container*)control);
         }
-        else if (control->getTypeName() == "JoystickControl")
+        else if (controlName == "JoystickControl")
         {
             JoystickControl* joystick = (JoystickControl*)control;
             joystick->setConsumeInputEvents(true);
             _uiJoysticks[joystick->getIndex()] = joystick;
             _joystickCount++;
         }
-        else if (control->getTypeName() == "Button")
+        else if (controlName == "Button")
         {
             Button* button = (Button*)control;
             button->setConsumeInputEvents(true);

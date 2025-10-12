@@ -1,53 +1,53 @@
 #pragma once
 
 #include "tractor.h"
-using namespace tractor;
 
 /**
  * This is a mesh demo game for rendering Mesh.
  */
-class CharacterGame : public Game,
-                      public AnimationClip::Listener,
-                      public PhysicsCollisionObject::CollisionListener
+class CharacterGame : public tractor::Game,
+                      public tractor::AnimationClip::Listener,
+                      public tractor::PhysicsCollisionObject::CollisionListener
 {
   public:
     /**
      * Constructor.
      */
-    CharacterGame();
+    CharacterGame() = default;
 
     /**
      * @see Game::keyEvent
      */
-    void keyEvent(Keyboard::KeyEvent evt, int key);
+    void keyEvent(tractor::Keyboard::KeyEvent evt, int key);
 
     /**
      * @see Game::touchEvent
      */
-    void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
+    void touchEvent(tractor::Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
 
     /**
      * @see Game::mouseEvent
      */
-    bool mouseEvent(Mouse::MouseEvent evt, int x, int y, int wheelDelta);
+    bool mouseEvent(tractor::Mouse::MouseEvent evt, int x, int y, int wheelDelta);
 
     /**
      * @see Game::gamepadEvent
      */
-    void gamepadEvent(Gamepad::GamepadEvent evt, Gamepad* gamepad);
+    void gamepadEvent(tractor::Gamepad::GamepadEvent evt, tractor::Gamepad* gamepad);
 
     /**
      * @see AnimationClip::Listener::animationEvent
      */
-    void animationEvent(AnimationClip* clip, AnimationClip::Listener::EventType type);
+    void animationEvent(tractor::AnimationClip* clip,
+                        tractor::AnimationClip::Listener::EventType type);
 
     /**
      * @see PhysicsCollisionObject::CollisionListener::collisionEvent
      */
-    void collisionEvent(PhysicsCollisionObject::CollisionListener::EventType type,
-                        const PhysicsCollisionObject::CollisionPair& collisionPair,
-                        const Vector3& contactPointA = Vector3::zero(),
-                        const Vector3& contactPointB = Vector3::zero());
+    void collisionEvent(tractor::PhysicsCollisionObject::CollisionListener::EventType type,
+                        const tractor::PhysicsCollisionObject::CollisionPair& collisionPair,
+                        const tractor::Vector3& contactPointA = tractor::Vector3::zero(),
+                        const tractor::Vector3& contactPointB = tractor::Vector3::zero());
 
   protected:
     /**
@@ -71,11 +71,11 @@ class CharacterGame : public Game,
     void render(float elapsedTime);
 
   private:
-    bool initializeScene(Node* node);
-    void initializeMaterial(Scene* scene, Node* node, Material* material);
+    bool initializeScene(tractor::Node* node);
+    void initializeMaterial(tractor::Scene* scene, tractor::Node* node, tractor::Material* material);
     void initializeCharacter();
     void drawSplash(void* param);
-    bool drawScene(Node* node, bool transparent);
+    bool drawScene(tractor::Node* node, bool transparent);
     void play(const char* id, bool repeat, float speed = 1.0f);
     void jump();
     void kick();
@@ -85,29 +85,32 @@ class CharacterGame : public Game,
     void grabBall();
     void releaseBall();
 
-    Font* _font;
-    Scene* _scene;
-    PhysicsCharacter* _character;
-    Node* _characterNode;
-    Node* _characterMeshNode;
-    Node* _characterShadowNode;
-    Node* _basketballNode;
-    float _floorLevel;
-    Animation* _animation;
-    AnimationClip* _currentClip;
-    AnimationClip* _jumpClip;
-    AnimationClip* _kickClip;
-    int _rotateX;
-    MaterialParameter* _materialParameterAlpha;
-    unsigned int _keyFlags;
-    bool _physicsDebug;
-    bool _wireframe;
-    Vector3 _oldBallPosition;
-    bool _hasBall;
-    bool _applyKick;
-    bool _kicking;
-    float _kickDelay;
-    bool* _buttonPressed;
-    Vector2 _currentDirection;
-    Gamepad* _gamepad;
+  private:
+    int _rotateX{ 0 };
+    unsigned int _keyFlags{ 0 };
+    bool _physicsDebug{ false };
+    bool _wireframe{ false };
+    bool _hasBall{ false };
+    bool _applyKick{ false };
+    bool _kicking{ false };
+    bool _button1Pressed{ true };
+    bool _button2Pressed{ true };
+    float _floorLevel{ 0.0f };
+    float _kickDelay{ 0.0f };
+
+    tractor::Font* _font{ nullptr };
+    tractor::Scene* _scene{ nullptr };
+    tractor::PhysicsCharacter* _character{ nullptr };
+    tractor::Node* _characterNode{ nullptr };
+    tractor::Node* _characterMeshNode{ nullptr };
+    tractor::Node* _characterShadowNode{ nullptr };
+    tractor::Node* _basketballNode{ nullptr };
+    tractor::Animation* _animation{ nullptr };
+    tractor::AnimationClip* _currentClip{ nullptr };
+    tractor::AnimationClip* _jumpClip{ nullptr };
+    tractor::AnimationClip* _kickClip{ nullptr };
+    tractor::Gamepad* _gamepad{ nullptr };
+    tractor::MaterialParameter* _materialParameterAlpha{ nullptr };
+    tractor::Vector2 _currentDirection{ tractor::Vector2::zero() };
+    tractor::Vector3 _oldBallPosition{ tractor::Vector3::zero() };
 };

@@ -13,35 +13,27 @@
  */
 #include "CharacterGame.h"
 
+using namespace tractor;
+
 // Declare our game instance
 CharacterGame game;
 
 // Input flags
-#define NORTH 2
-#define SOUTH 4
-#define EAST 6
-#define WEST 8
-#define RUNNING 12
+constexpr auto NORTH = 2;
+constexpr auto SOUTH = 4;
+constexpr auto EAST = 6;
+constexpr auto WEST = 8;
+int RUNNING{ 12 };
 
 // Character defines
-#define WALK_SPEED 6.0f
-#define STRAFE_SPEED 2.0f
-#define RUN_SPEED 20.0f
-#define CAMERA_FOCUS_DISTANCE 19.0f
+constexpr auto WALK_SPEED = 6.0f;
+constexpr auto RUN_SPEED = 20.0f;
+constexpr auto CAMERA_FOCUS_DISTANCE = 19.0f;
 
-#define BUTTON_1 0
-#define BUTTON_2 1
+constexpr auto BUTTON_1 = 0;
+constexpr auto BUTTON_2 = 1;
 
-CharacterGame::CharacterGame()
-    : _font(nullptr), _scene(nullptr), _character(nullptr), _characterNode(nullptr),
-      _characterMeshNode(nullptr), _characterShadowNode(nullptr), _basketballNode(nullptr),
-      _animation(nullptr), _currentClip(nullptr), _jumpClip(nullptr), _kickClip(nullptr),
-      _rotateX(0), _materialParameterAlpha(nullptr), _keyFlags(0), _physicsDebug(false),
-      _wireframe(false), _hasBall(false), _applyKick(false), _gamepad(nullptr)
-{
-    _buttonPressed = new bool[2];
-}
-
+//----------------------------------------------------------------
 void CharacterGame::initialize()
 {
     // Enable multi-touch (only affects devices that support multi-touch).
@@ -82,6 +74,7 @@ void CharacterGame::initialize()
     _gamepad = getGamepad(0);
 }
 
+//----------------------------------------------------------------
 bool CharacterGame::initializeScene(Node* node)
 {
     Model* model = dynamic_cast<Model*>(node->getDrawable());
@@ -93,6 +86,7 @@ bool CharacterGame::initializeScene(Node* node)
     return true;
 }
 
+//----------------------------------------------------------------
 void CharacterGame::initializeMaterial(Scene* scene, Node* node, Material* material)
 {
     // Bind light shader parameters to dynamic objects only
@@ -110,6 +104,7 @@ void CharacterGame::initializeMaterial(Scene* scene, Node* node, Material* mater
     }
 }
 
+//----------------------------------------------------------------
 void CharacterGame::initializeCharacter()
 {
     Node* node = _scene->findNode("boycharacter");
@@ -150,13 +145,14 @@ void CharacterGame::initializeCharacter()
     play("idle", true);
 }
 
+//----------------------------------------------------------------
 void CharacterGame::finalize()
 {
     SAFE_RELEASE(_scene);
     SAFE_RELEASE(_font);
-    SAFE_DELETE_ARRAY(_buttonPressed);
 }
 
+//----------------------------------------------------------------
 void CharacterGame::drawSplash(void* param)
 {
     clear(CLEAR_COLOR_DEPTH, Vector4(0, 0, 0, 1), 1.0f, 0);
@@ -177,6 +173,7 @@ void CharacterGame::drawSplash(void* param)
     SAFE_DELETE(batch);
 }
 
+//----------------------------------------------------------------
 bool CharacterGame::drawScene(Node* node, bool transparent)
 {
     if (node->getDrawable() && (transparent == node->hasTag("transparent")))
@@ -185,6 +182,7 @@ bool CharacterGame::drawScene(Node* node, bool transparent)
     return true;
 }
 
+//----------------------------------------------------------------
 void CharacterGame::play(const char* id, bool repeat, float speed)
 {
     AnimationClip* clip = _animation->getClip(id);
@@ -214,6 +212,7 @@ void CharacterGame::play(const char* id, bool repeat, float speed)
     _currentClip = clip;
 }
 
+//----------------------------------------------------------------
 void CharacterGame::jump()
 {
     if (isOnFloor() && !_kickClip->isPlaying())
@@ -223,17 +222,20 @@ void CharacterGame::jump()
     }
 }
 
+//----------------------------------------------------------------
 void CharacterGame::kick()
 {
     if (!_jumpClip->isPlaying()) play("kick", false, 1.75f);
     _kicking = true;
 }
 
+//----------------------------------------------------------------
 bool CharacterGame::isOnFloor() const
 {
     return (std::fabs(_character->getCurrentVelocity().y) < MATH_EPSILON);
 }
 
+//----------------------------------------------------------------
 void CharacterGame::update(float elapsedTime)
 {
     if (_applyKick)
@@ -249,33 +251,34 @@ void CharacterGame::update(float elapsedTime)
         _hasBall = false;
         _applyKick = false;
     }
+
     if (!_kickClip->isPlaying()) _kicking = false;
 
     if (_gamepad->isButtonDown(Gamepad::BUTTON_A))
     {
-        if (_buttonPressed[BUTTON_1])
+        if (_button1Pressed)
         {
-            _buttonPressed[BUTTON_1] = false;
+            _button1Pressed = false;
             // Jump while the gamepad button is being pressed
             jump();
         }
     }
     else
     {
-        _buttonPressed[BUTTON_1] = true;
+        _button1Pressed = true;
     }
 
     if (_gamepad->isButtonDown(Gamepad::BUTTON_B))
     {
-        if (_buttonPressed[BUTTON_2])
+        if (_button2Pressed)
         {
-            _buttonPressed[BUTTON_2] = false;
+            _button2Pressed = false;
             kick();
         }
     }
     else
     {
-        _buttonPressed[BUTTON_2] = true;
+        _button2Pressed = true;
     }
 
     _currentDirection.set(Vector2::zero());
@@ -377,7 +380,7 @@ void CharacterGame::update(float elapsedTime)
         // include the ball. This will ensure the boy cannot walk through walls/objects with the
         // basketball.
         PhysicsRigidBody* basketball = (PhysicsRigidBody*)_basketballNode->getCollisionObject();
-        
+
         if (basketball->isEnabled()) grabBall();
 
         // Capture the basketball's old position, and then calculate the basketball's new position in front of the character
@@ -404,6 +407,7 @@ void CharacterGame::update(float elapsedTime)
     }
 }
 
+//----------------------------------------------------------------
 void CharacterGame::render(float elapsedTime)
 {
     // Clear the color and depth buffers.
@@ -427,6 +431,7 @@ void CharacterGame::render(float elapsedTime)
     _font->finish();
 }
 
+//----------------------------------------------------------------
 void CharacterGame::keyEvent(Keyboard::KeyEvent evt, int key)
 {
     if (evt == Keyboard::KEY_PRESS)
@@ -502,6 +507,7 @@ void CharacterGame::keyEvent(Keyboard::KeyEvent evt, int key)
     }
 }
 
+//----------------------------------------------------------------
 void CharacterGame::touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex)
 {
     // This should only be called if the gamepad did not handle the touch event.
@@ -529,6 +535,7 @@ void CharacterGame::touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int
     }
 }
 
+//----------------------------------------------------------------
 bool CharacterGame::mouseEvent(Mouse::MouseEvent evt, int x, int y, int wheelDelta)
 {
     if (evt == Mouse::MOUSE_PRESS_RIGHT_BUTTON)
@@ -539,6 +546,7 @@ bool CharacterGame::mouseEvent(Mouse::MouseEvent evt, int x, int y, int wheelDel
     return false;
 }
 
+//----------------------------------------------------------------
 void CharacterGame::gamepadEvent(Gamepad::GamepadEvent evt, Gamepad* gamepad)
 {
     switch (evt)
@@ -550,6 +558,7 @@ void CharacterGame::gamepadEvent(Gamepad::GamepadEvent evt, Gamepad* gamepad)
     }
 }
 
+//----------------------------------------------------------------
 void CharacterGame::adjustCamera(float elapsedTime)
 {
     static float cameraOffset = 0.0f;
@@ -648,8 +657,8 @@ void CharacterGame::clone()
     Animation* cloneAnimation = clone->getAnimation();
 
     // Find the current clip and have the clone play that clip repeatedly.
-    auto clipId = _currentClip->getId();
-    if (_jumpClip->isPlaying()) clipId = _jumpClip->getId();
+    auto& clipId = _jumpClip->isPlaying() ? _jumpClip->getId() : _currentClip->getId();
+
     AnimationClip* clip = cloneAnimation->getClip(clipId);
     clip->setRepeatCount(AnimationClip::REPEAT_INDEFINITE);
     clip->play();

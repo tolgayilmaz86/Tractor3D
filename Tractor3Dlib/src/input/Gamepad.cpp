@@ -177,17 +177,12 @@ Gamepad* Gamepad::getGamepad(unsigned int index, bool preferPhysical)
     }
 
     for (size_t i = 0; i < count; ++i)
-    {
         if (!__gamepads[i]->isVirtual())
         {
             // __gamepads[i] is the first physical gamepad
             // and should be returned from getGamepad(0, true).
-            if (index + i < count)
-            {
-                return __gamepads[index + i];
-            }
+            if (index + i < count) return __gamepads[index + i];
         }
-    }
 
     return backupVirtual;
 }
@@ -197,12 +192,8 @@ Gamepad* Gamepad::getGamepad(GamepadHandle handle)
 {
     size_t count = __gamepads.size();
     for (size_t i = 0; i < count; ++i)
-    {
-        if (__gamepads[i]->_handle == handle)
-        {
-            return __gamepads[i];
-        }
-    }
+        if (__gamepads[i]->_handle == handle) return __gamepads[i];
+
     return nullptr;
 }
 
@@ -251,10 +242,7 @@ Gamepad::ButtonMapping Gamepad::getButtonMappingFromString(const std::string& st
 //----------------------------------------------------------------------------
 void Gamepad::update(float elapsedTime)
 {
-    if (!_form)
-    {
-        Platform::pollGamepadState(this);
-    }
+    if (!_form) Platform::pollGamepadState(this);
 }
 
 //----------------------------------------------------------------------------
@@ -262,18 +250,13 @@ void Gamepad::updateInternal(float elapsedTime)
 {
     size_t size = __gamepads.size();
     for (size_t i = 0; i < size; ++i)
-    {
         __gamepads[i]->update(elapsedTime);
-    }
 }
 
 //----------------------------------------------------------------------------
 void Gamepad::draw()
 {
-    if (_form && _form->isEnabled())
-    {
-        _form->draw();
-    }
+    if (_form && _form->isEnabled()) _form->draw();
 }
 
 //----------------------------------------------------------------------------

@@ -95,6 +95,13 @@ class Gamepad
     unsigned int getJoystickCount() const noexcept { return _joystickCount; }
 
     /**
+     * Returns whether this gamepad has at least one joystick.
+     *
+     * @return true if this gamepad has at least one joystick; false otherwise.
+     */
+    bool hasJoystick() const noexcept { return 0 < _joystickCount; }
+
+    /**
      * Returns the specified joystick's value as a Vector2.
      *
      * @param joystickId The index of the joystick to get the value for.
@@ -157,6 +164,21 @@ class Gamepad
      */
     void draw();
 
+    /**
+     * @brief Sets the X and Y values for a joystick at the specified index.
+     * @param index The index of the joystick to set.
+     * @param x The X-axis value to assign to the joystick.
+     * @param y The Y-axis value to assign to the joystick.
+     */
+    void setJoystickValue(unsigned int index, float x, float y);
+
+    /**
+     * @brief Sets the value of a trigger at the specified index.
+     * @param index The index of the trigger to set.
+     * @param value The value to assign to the trigger, typically between 0 and 1.
+     */
+    void setTriggerValue(unsigned int index, float value);
+
   private:
     /**
      * Constructs a gamepad from the specified .form file.
@@ -175,10 +197,10 @@ class Gamepad
      * @param name The product/device name.
      */
     explicit Gamepad(GamepadHandle handle,
-            unsigned int buttonCount,
-            unsigned int joystickCount,
-            unsigned int triggerCount,
-            const std::string& name);
+                     unsigned int buttonCount,
+                     unsigned int joystickCount,
+                     unsigned int triggerCount,
+                     const std::string& name);
 
     /**
      * Copy constructor.
@@ -249,21 +271,6 @@ class Gamepad
      * @param buttons An unsigned integer representing the button states to set.
      */
     void setButtons(unsigned int buttons);
-
-    /**
-     * @brief Sets the X and Y values for a joystick at the specified index.
-     * @param index The index of the joystick to set.
-     * @param x The X-axis value to assign to the joystick.
-     * @param y The Y-axis value to assign to the joystick.
-     */
-    void setJoystickValue(unsigned int index, float x, float y);
-
-    /**
-     * @brief Sets the value of a trigger at the specified index.
-     * @param index The index of the trigger to set.
-     * @param value The value to assign to the trigger, typically between 0 and 1.
-     */
-    void setTriggerValue(unsigned int index, float value);
 
     /**
      * @brief Associates gamepad controls with the specified container.

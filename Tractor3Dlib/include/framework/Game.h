@@ -53,9 +53,9 @@ class Game
      */
     enum State
     {
-        UNINITIALIZED,
-        RUNNING,
-        PAUSED
+        UNINITIALIZED = 0,
+        RUNNING = 1,
+        PAUSED = 2,
     };
 
     /**

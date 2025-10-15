@@ -13,9 +13,10 @@
  */
 #include "pch.h"
 
+#include <audio/AudioSource.h>
+
 #include <audio/AudioBuffer.h>
 #include <audio/AudioController.h>
-#include <audio/AudioSource.h>
 #include <framework/Game.h>
 #include <scene/Node.h>
 

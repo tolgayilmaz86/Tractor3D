@@ -64,12 +64,22 @@ class AudioController
      */
     void update(float elapsedTime);
 
+    /**
+     * Adds a playing audio source to the controller.
+     */
     void addPlayingSource(AudioSource* source);
 
+    /**
+     * Removes a playing audio source from the controller.
+     */
     void removePlayingSource(AudioSource* source);
 
-    static void streamingThreadProc(void* arg);
+    /**
+     * Thread procedure for streaming audio sources.
+     */
+    void streamingThreadProc(std::stop_token stopToken);
 
+  private:
     ALCdevice* _alcDevice{ nullptr };
     ALCcontext* _alcContext{ nullptr };
     std::set<AudioSource*> _playingSources;
@@ -77,8 +87,10 @@ class AudioController
     AudioSource* _pausingSource;
 
     bool _streamingThreadActive{ true };
-    std::unique_ptr<std::thread> _streamingThread;
+    std::unique_ptr<std::jthread> _streamingThread;
     std::unique_ptr<std::mutex> _streamingMutex;
+    std::unique_ptr<std::condition_variable> _streamingCV;
+
 };
 
 } // namespace tractor

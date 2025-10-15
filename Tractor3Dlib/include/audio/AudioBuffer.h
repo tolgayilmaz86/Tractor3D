@@ -24,6 +24,25 @@ namespace tractor
 
 class AudioSource;
 
+// State information for streaming a wav file
+struct AudioStreamStateWav
+{
+    long dataStart;
+    unsigned int dataSize;
+    ALuint format;
+    ALuint frequency;
+};
+
+// State information for streaming an ogg file
+struct AudioStreamStateOgg
+{
+    long dataStart;
+    unsigned int dataSize;
+    ALuint format;
+    ALuint frequency;
+    OggVorbis_File oggFile;
+};
+
 /**
  * Defines the actual audio buffer data.
  *
@@ -51,6 +70,16 @@ class AudioBuffer : public Ref
     AudioBuffer& operator=(const AudioBuffer&) = delete;
 
     /**
+     * Streams data from the audio buffer into the specified OpenAL buffer.
+     *
+     * @param buffer The OpenAL buffer to stream data into.
+     * @param looped Set to true if the audio should loop when it reaches the end.
+     *
+     * @return True if there is more data to stream, false if the end of the audio has been reached.
+     */
+    bool streamData(ALuint buffer, bool looped);
+
+    /**
      * Creates an audio buffer from a file.
      *
      * @param path The path to the audio buffer on the filesystem.
@@ -59,45 +88,17 @@ class AudioBuffer : public Ref
      */
     static AudioBuffer* create(const std::string& path, bool streamed);
 
-    struct AudioStreamStateWav
-    {
-        long dataStart;
-        unsigned int dataSize;
-        ALuint format;
-        ALuint frequency;
-    };
+  private:
+    static constexpr int STREAMING_BUFFER_QUEUE_SIZE = 3;
 
-    struct AudioStreamStateOgg
-    {
-        long dataStart;
-        unsigned int dataSize;
-        ALuint format;
-        ALuint frequency;
-        OggVorbis_File oggFile;
-    };
-
-    enum
-    {
-        STREAMING_BUFFER_QUEUE_SIZE = 3
-    };
-    enum
-    {
-        STREAMING_BUFFER_SIZE = 48000
-    };
-
-    static bool loadWav(Stream* stream, ALuint buffer, bool streamed, AudioStreamStateWav* streamState);
-
-    static bool loadOgg(Stream* stream, ALuint buffer, bool streamed, AudioStreamStateOgg* streamState);
-
-    bool streamData(ALuint buffer, bool looped);
-
+    int _buffersNeededCount;
+    bool _streamed;
     ALuint _alBufferQueue[STREAMING_BUFFER_QUEUE_SIZE];
     std::string _filePath;
-    bool _streamed;
     std::unique_ptr<Stream> _fileStream;
+
     std::unique_ptr<AudioStreamStateWav> _streamStateWav;
     std::unique_ptr<AudioStreamStateOgg> _streamStateOgg;
-    int _buffersNeededCount;
 };
 
 } // namespace tractor

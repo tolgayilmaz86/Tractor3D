@@ -13,13 +13,16 @@
  */
 #include "pch.h"
 
-#include <audio/AudioBuffer.h>
 #include <audio/AudioController.h>
+
+#include <audio/AudioBuffer.h>
 #include <audio/AudioListener.h>
 #include <audio/AudioSource.h>
 
 namespace tractor
 {
+using namespace std::chrono_literals;
+constexpr auto STREAM_CHECKING_INTERVAL{ 2s };
 
 //----------------------------------------------------------------------------
 void AudioController::initialize()
@@ -46,22 +49,16 @@ void AudioController::initialize()
     {
         GP_ERROR("Unable to make OpenAL context current. Error: %d\n", alcErr);
     }
-    _streamingMutex.reset(new std::mutex());
+    _streamingMutex = std::make_unique<std::mutex>();
+    _streamingCV = std::make_unique<std::condition_variable>();
 }
 
 //----------------------------------------------------------------------------
 void AudioController::finalize()
 {
     assert(_streamingSources.empty());
-    if (_streamingThread)
-    {
-        _streamingThreadActive = false;
-        if (_streamingThread->joinable())
-        {
-            _streamingThread->join(); // Join the thread before destruction
-        }
-        _streamingThread.reset(nullptr);
-    }
+    // std::jthread automatically requests stop and joins on destruction
+    _streamingThread.reset(nullptr);
 
     alcMakeContextCurrent(nullptr);
     if (_alcContext)
@@ -127,21 +124,26 @@ void AudioController::update(float elapsedTime)
 //----------------------------------------------------------------------------
 void AudioController::addPlayingSource(AudioSource* source)
 {
-    if (_playingSources.find(source) == _playingSources.end())
+    if (_playingSources.find(source) != _playingSources.end()) return;
+
+    _playingSources.insert(source);
+
+    if (!source->isStreamed()) return;
+
+    assert(_streamingSources.find(source) == _streamingSources.end());
+
     {
-        _playingSources.insert(source);
-
-        if (source->isStreamed())
-        {
-            assert(_streamingSources.find(source) == _streamingSources.end());
-            bool startThread = _streamingSources.empty() && _streamingThread.get() == nullptr;
-            _streamingMutex->lock();
-            _streamingSources.insert(source);
-            _streamingMutex->unlock();
-
-            if (startThread) _streamingThread.reset(new std::thread(&streamingThreadProc, this));
-        }
+        std::lock_guard<std::mutex> lock(*_streamingMutex);
+        _streamingSources.insert(source);
     }
+
+    _streamingCV->notify_one();
+
+    bool startThread = _streamingSources.empty() && _streamingThread.get() == nullptr;
+    if (!startThread) return;
+
+    _streamingThread = std::make_unique<std::jthread>([this](std::stop_token stopToken)
+                                                      { streamingThreadProc(stopToken); });
 }
 
 //----------------------------------------------------------------------------
@@ -164,30 +166,37 @@ void AudioController::removePlayingSource(AudioSource* source)
                                                  [source](const auto& ptr) { return ptr == source; });
 
                 assert(streaming_it != _streamingSources.end());
-                _streamingMutex->lock();
-                _streamingSources.erase(streaming_it);
-                _streamingMutex->unlock();
+                {
+                    std::lock_guard<std::mutex> lock(*_streamingMutex);
+                    _streamingSources.erase(streaming_it);
+                }
+                // notify if last source removed
+                _streamingCV->notify_one();
             }
         }
     }
 }
 
 //----------------------------------------------------------------------------
-void AudioController::streamingThreadProc(void* arg)
+void AudioController::streamingThreadProc(std::stop_token stopToken)
 {
-    AudioController* controller = (AudioController*)arg;
-
-    while (controller->_streamingThreadActive)
+    while (!stopToken.stop_requested())
     {
-        controller->_streamingMutex->lock();
+        // unique_lock is required for wait_for, lock_guard wont work with wait_for
+        std::unique_lock<std::mutex> lock(*_streamingMutex);
 
-        std::for_each(controller->_streamingSources.begin(),
-                      controller->_streamingSources.end(),
-                      std::mem_fn(&AudioSource::streamDataIfNeeded));
+        // Wait for STREAM_CHECKING_INTERVAL or until notified
+        _streamingCV->wait_for(lock,
+                               STREAM_CHECKING_INTERVAL,
+                               [this, &stopToken]()
+                               {
+                                   return stopToken.stop_requested() || !_streamingSources.empty();
+                               }); // There are streaming sources to process
 
-        controller->_streamingMutex->unlock();
+        if (stopToken.stop_requested()) break;
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        // Process streaming sources
+        std::ranges::for_each(_streamingSources, &AudioSource::streamDataIfNeeded);
     }
 }
 

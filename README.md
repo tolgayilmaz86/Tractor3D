@@ -1,545 +1,755 @@
-# Revive and Modernize an Old Game Engine
+# Tractor3D: Modern C++ Game Engine
 
-This document outlines the roadmap and best practices for modernizing the old game engine known as Gameplay3d codebase from its original C++98/11 style to modern C++20. 
+A comprehensive modernization of the Gameplay3D engine, transforming legacy C++98/11 code into modern C++20. This project represents a complete overhaul focused on safety, performance, and maintainability while leveraging the latest C++ features.
 
-The project itself has been dramatically changed so I decided to publish it with a different name, also this aligns with my future improvement plans.
-With regard to Apache 2.0 license this codebase has substantially changed the old engine with some additions and ease of use. 
-Also to keep things simple onl Windows x64 platforms will be supported. 
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/Platform-Windows%20x64-lightgrey.svg)]()
+[![C++](https://img.shields.io/badge/C%2B%2B-20-blue.svg)]()
 
-The goal is to improve code readability, maintainability, and performance by using most modern c++ language features and relying on the STD as much as possible.
+## 🎯 Project Goals
+
+- **Safety First**: Eliminate undefined behavior and memory leaks through modern C++ idioms
+- **Performance**: Leverage compiler optimizations and efficient standard library algorithms
+- **Maintainability**: Clean, readable code that's easy to understand and extend
+- **Modern Standards**: Utilize C++20 features for better expressiveness and type safety
 
 ---
 
-## Categorized Modernization Tasks
+## 🚀 Modernization Categories
 
 ### 1. Foundational Safety and Readability
 
-These are simple, high-impact changes that make the code safer and more explicit.
+#### Null Pointer Safety
+<table>
+<tr>
+<th>Before (Legacy)</th>
+<th>After (Modern C++)</th>
+</tr>
+<tr>
+<td>
 
-#### Use `nullptr` for Null Pointers
+```cpp
+Game* __gameInstance = NULL;
+if (ptr == 0) {
+    // handle null case
+}
+```
 
--   **What:** Replace all uses of `NULL` or `0` for pointers with the `nullptr` keyword.
--   **Why:** `nullptr` is a type-safe keyword for pointers, whereas `NULL` is just a macro for `0`. This prevents ambiguity and potential bugs where a null pointer could be confused with an integer.
+</td>
+<td>
 
--   **Before:**
-    ```cpp
-    Game* __gameInstance = NULL;
-    ```
--   **After:**
-    ```cpp
-    Game* __gameInstance = nullptr;
-    ```
+```cpp
+Game* __gameInstance = nullptr;
+if (ptr == nullptr) {
+    // handle null case
+}
+```
+
+</td>
+</tr>
+</table>
+
+**Benefits**: Type-safe null pointers prevent ambiguity between null pointers and integer zeros.
 
 #### In-Class Member Initialization
+<table>
+<tr>
+<th>Before (Legacy)</th>
+<th>After (Modern C++)</th>
+</tr>
+<tr>
+<td>
 
--   **What:** Initialize member variables at their declaration point if the value is a fixed default.
--   **Why:** This makes the class definition clearer by co-locating the declaration and default value. It reduces boilerplate in constructors.
+```cpp
+class GameEntity {
+private:
+    int _health;
+    float* _position;
+    bool _active;
+public:
+    GameEntity();
+};
 
--   **Before:**
-    ```cpp
-    class Class {
-    private:
-        int _member;
-        Pointer* _ptr;
-    public:
-        Class();
-    };
+GameEntity::GameEntity() 
+    : _health(100)
+    , _position(nullptr)
+    , _active(false) {
+}
+```
 
-    Class::Class() : _member(0), _ptr(nullptr) {}
-    ```
--   **After:**
-    ```cpp
-    class Class {
-    private:
-        int _member { 0 };
-        Pointer* _ptr { nullptr };
-    public:
-        Class() = default; // See below
-    };
-    ```
+</td>
+<td>
 
-#### Use `=default` and `=delete`
+```cpp
+class GameEntity {
+private:
+    int _health{100};
+    float* _position{nullptr};
+    bool _active{false};
+public:
+    GameEntity() = default;
+};
+```
 
--   **What:** Use `= default` to explicitly tell the compiler to generate a default special member function (like a constructor or destructor). Use `= delete` to prevent the compiler from generating one.
--   **Why:** It clearly communicates intent. `= default` is often more efficient than an empty user-written implementation. `= delete` prevents objects from being copied or moved when they shouldn't be.
+</td>
+</tr>
+</table>
 
--   **Before:**
-    ```cpp
-    class NonCopyable {
-    private:
-        NonCopyable(const NonCopyable&);
-        NonCopyable& operator=(const NonCopyable&);
-    };
-    ```
--   **After:**
-    ```cpp
-    class NonCopyable {
-        NonCopyable(const NonCopyable&) = delete;
-        NonCopyable& operator=(const NonCopyable&) = delete;
-    };
-    ```
-  - **Note:** This also reuires to remove constructor initialization parameters by initializing them using in class member initialization. such as assigning the value where the member variable is defined using {} operators.
-#### Use `override` and `final`
+**Benefits**: Clearer intent, reduced constructor boilerplate, impossible to forget initialization.
 
--   **What:** Add `override` to virtual functions in derived classes. Use `final` on virtual functions that should not be overridden further, or on classes that should not be inherited from.
--   **Why:** `override` causes the compiler to verify that the function is actually overriding a base class method, preventing subtle bugs from signature mismatches. `final` can improve performance by allowing the compiler to perform de-virtualization.
+#### Explicit Special Member Functions
+<table>
+<tr>
+<th>Before (Legacy)</th>
+<th>After (Modern C++)</th>
+</tr>
+<tr>
+<td>
 
--   **Before:**
-    ```cpp
-    class MyWidget : public Widget {
-        virtual void draw();
-    };
-    ```
--   **After:**
-    ```cpp
-    class MyWidget final : public Widget { // Class cannot be inherited from
-        void draw() override; // Compiler checks this overrides a base method
-    };
-    ```
-  - 
-#### Use `enum class` for Strongly Typed Enums
-- **What:** Replace traditional enums with `enum class` to create strongly typed enumerations.
-- **Why:** `enum class` provides better type safety and avoids name clashes by requiring the enum name to be scoped.
+```cpp
+class NonCopyable {
+private:
+    NonCopyable(const NonCopyable&);
+    NonCopyable& operator=(const NonCopyable&);
+};
+```
 
-- **Example:**
-    ```cpp
-    enum class Color {
-        Red,
-        Green,
-        Blue
-    };
+</td>
+<td>
 
-    Color color = Color::Red;
-    ```
+```cpp
+class NonCopyable {
+public:
+    NonCopyable(const NonCopyable&) = delete;
+    NonCopyable& operator=(const NonCopyable&) = delete;
+    NonCopyable() = default;
+    ~NonCopyable() = default;
+};
+```
 
-#### Use std::string instead of C-style strings
+</td>
+</tr>
+</table>
 
-- **What:** Replace C-style strings (char arrays) with `std::string` especially `const std::string&` for parameters.
-- **Why:** `std::string` provides better memory management, safety, and ease of use compared to C-style strings. Also you don't need to do a `nullptr` check. Will use const string references to avoid copying.
+**Benefits**: Explicit intent, better error messages, compiler optimizations.
 
+#### Virtual Function Safety
+<table>
+<tr>
+<th>Before (Legacy)</th>
+<th>After (Modern C++)</th>
+</tr>
+<tr>
+<td>
 
--   **Before:**
-    ```cpp
-        Node* Scene::addNode(const char* id);
-    ```
--   **After:**
+```cpp
+class Renderer : public BaseRenderer {
+    virtual void render();
+    virtual void cleanup();
+};
+```
 
-    ```cpp
-        Node* Scene::addNode(const std::string& id);
-    ```
+</td>
+<td>
+
+```cpp
+class Renderer final : public BaseRenderer {
+    void render() override;
+    void cleanup() override;
+};
+```
+
+</td>
+</tr>
+</table>
+
+**Benefits**: Compile-time verification of overrides, performance optimizations with `final`.
+
+#### Strong Type Safety
+<table>
+<tr>
+<th>Before (Legacy)</th>
+<th>After (Modern C++)</th>
+</tr>
+<tr>
+<td>
+
+```cpp
+enum EntityType {
+    PLAYER,
+    ENEMY,
+    ITEM
+};
+
+void processEntity(int type) {
+    if (type == PLAYER) { /* ... */ }
+}
+```
+
+</td>
+<td>
+
+```cpp
+enum class EntityType {
+    Player,
+    Enemy,
+    Item
+};
+
+void processEntity(EntityType type) {
+    if (type == EntityType::Player) { /* ... */ }
+}
+```
+
+</td>
+</tr>
+</table>
+
+**Benefits**: Prevents implicit conversions, eliminates naming conflicts, clearer scope.
+
+#### Modern String Handling
+<table>
+<tr>
+<th>Before (Legacy)</th>
+<th>After (Modern C++)</th>
+</tr>
+<tr>
+<td>
+
+```cpp
+Node* Scene::addNode(const char* id) {
+    if (id == nullptr) return nullptr;
+    // ... string operations
+}
+```
+
+</td>
+<td>
+
+```cpp
+Node* Scene::addNode(const std::string& id) {
+    if (id.empty()) return nullptr;
+    // ... string operations
+}
+```
+
+</td>
+</tr>
+</table>
+
+**Benefits**: Automatic memory management, no null checks needed, rich string interface.
 
 ### 2. Modern C++ Idioms
 
-These changes make the code more concise and less error-prone.
+#### Range-Based Loops
+<table>
+<tr>
+<th>Before (Legacy)</th>
+<th>After (Modern C++)</th>
+</tr>
+<tr>
+<td>
 
-#### Use Range-Based `for` Loops
+```cpp
+for (auto it = entities.begin(); 
+     it != entities.end(); ++it) {
+    it->update();
+}
 
--   **What:** Replace iterator-based loops with range-based `for` loops when iterating over an entire container.
--   **Why:** The syntax is simpler, less verbose, and eliminates common errors like incorrect begin/end conditions.
+for (size_t i = 0; i < entities.size(); ++i) {
+    entities[i].render();
+}
+```
 
--   **Before:**
-    ```cpp
-    for (std::vector<int>::iterator it = my_vector.begin(); it != my_vector.end(); ++it) {
-        // ...
-    }
-    ```
--   **After:**
-    ```cpp
-    for (int& value : my_vector) {
-        // ...
-    }
-    ```
+</td>
+<td>
 
-#### Use `auto` for Type Deduction
+```cpp
+for (auto& entity : entities) {
+    entity.update();
+}
 
--   **What:** Use `auto` to declare variables where the type is clear from the initializer, especially for complex types like iterators or template instantiations.
--   **Why:** Reduces verbosity and makes code easier to read and refactor.
+for (const auto& entity : entities) {
+    entity.render();
+}
+```
 
--   **Before:**
-    ```cpp
-    std::map<std::string, int>::const_iterator it = myMap.find("key");
-    ```
--   **After:**
-    ```cpp
-    auto it = myMap.find("key");
-    ```
+</td>
+</tr>
+</table>
 
-#### Use std available algorithms instead deriving on our own.
--   **What:** Rely on std ready functions as muc as possible
--   **Why:** Reduces verbosity and makes code easier to read and refactor. Gives compiler chance to optimize.
- 
--   **Before:**
-    ```cpp
-    float cpX = center.x;
+**Benefits**: Cleaner syntax, no iterator errors, clear iteration intent.
 
-    const Vector3& boxMin = box.min;
-    const Vector3& boxMax = box.max;
-    // Closest x value.
-    if (center.x < boxMin.x)
-    {
-        cpX = boxMin.x;
-    }
-    else if (center.x > boxMax.x)
-    {
-        cpX = boxMax.x;
-    }
-    ```
--   **After:**    
-    ```cpp
-    float distX = std::clamp(center.x, box.min.x, box.max.x) - center.x;
-    ```
- 
-### Use returns instead parameter out
--   **What:** Old C style functions used to update or return via reference/pointer parameters.
--   **Why:** Apply best practices and make intensions clear by simply return the requested value.
- 
--   **Before:**
-    ```cpp
-    void Matrix::createOrthographic(float width, float height, float zNearPlane, float zFarPlane, Matrix* dst)
-    ```
--   **After:**   
-    ```cpp
-    Matrix Matrix::createOrthographic(float width, float height, float zNearPlane, float zFarPlane)
-    ```
+#### Type Deduction
+<table>
+<tr>
+<th>Before (Legacy)</th>
+<th>After (Modern C++)</th>
+</tr>
+<tr>
+<td>
 
-    ### more examples
-- **Before:**
-    ```cpp
-    int maxFocusIndex = 0;
-    for( size_t i = 0, count = _controls.size(); i < count; ++i ) {
-        if( _controls[ i ]->_focusIndex > maxFocusIndex )
-            maxFocusIndex = _controls[ i ]->_focusIndex;
-    }
-    ```
-- **After:**
-    ```cpp
-    int maxFocusIndex = 0;
-    if (!_controls.empty())
-    maxFocusIndex = std::ranges::max(_controls | std::views::transform([](const Control* c) {
-    return c->getFocusIndex();
-      }));
-    ```
+```cpp
+std::map<std::string, Entity*>::const_iterator it = 
+    entityMap.find("player");
 
-- **Before:**
-    ```cpp 
-    for (size_t i = 0, count = terrain->_patches.size(); i < count; ++i)
-          terrain->_patches[i]->updateMaterial();
-    ```
-- **After:**
-    ```cpp
-    std::ranges::for_each(terrain->_patches, 
-          [](const auto& patch) {patch->updateMaterial(); });
-    ```
+std::vector<std::shared_ptr<Component>> components = 
+    entity.getComponents();
+```
+</td>
+<td>
 
-- **Before:**
-    ```cpp
-    std::map<const Event*, std::vector<CallbackFunction>>::iterator itr = _scriptCallbacks->begin();
-    for ( ; itr != _scriptCallbacks->end(); ++itr)
-    {
-        std::vector<CallbackFunction>& callbacks = itr->second;
-        std::vector<CallbackFunction>::iterator itr2 = callbacks.begin();
-        while (itr2 != callbacks.end())
-        {
-            if (itr2->script == script)
-                itr2 = callbacks.erase(itr2);
-            else
-                ++itr2;
-        }
-    }
-    ```
+```cpp
+auto it = entityMap.find("player");
 
-- **After:**
-    ```cpp
-    std::ranges::for_each(*_scriptCallbacks, [script](auto& pair) {
-        auto& callbacks = pair.second;
-        std::erase_if(callbacks, [script](const CallbackFunction& callback) {
-          return callback.script == script;
-          });
-        });
-    ```
+auto components = entity.getComponents();
+```
+</td>
+</tr>
+</table>
 
-    #### Use std to the limits
-- **Before:**
-    ```cpp
-    for (unsigned int i = 0; i < data->vertexCount; i++)
-    {
-        indexData[i] = i;
-    }
-    ```
+**Benefits**: Reduced verbosity, easier refactoring, maintains type safety.
 
-- **After:**
-    ```cpp
-    std::ranges::copy(std::views::iota(0u, data->vertexCount), indexData);
-    ```
+#### Standard Library Algorithms
+<table>
+<tr>
+<th>Before (Legacy)</th>
+<th>After (Modern C++)</th>
+</tr>
+<tr>
+<td>
 
-- **Before:**
-    ```cpp
-    for (size_t i = 0; i < MAX_CONTACT_INDICES; ++i)
-    {
-        if (_contactIndices[i]) return true;
-    }
-    return false;
-    ```
+```cpp
+float cpX = center.x;
+const Vector3& boxMin = box.min;
+const Vector3& boxMax = box.max;
 
-- **After:**
-    ```cpp
-    return std::ranges::any_of(_contactIndices, [](bool contact) { return contact; });
-    ```
+if (center.x < boxMin.x) {
+    cpX = boxMin.x;
+} else if (center.x > boxMax.x) {
+    cpX = boxMax.x;
+}
+```
+
+</td>
+<td>
+
+```cpp
+float cpX = std::clamp(center.x, box.min.x, box.max.x);
+```
+</td>
+</tr>
+</table>
+
+**Benefits**: Compiler optimizations, less error-prone, clearer intent.
+
+#### Modern Function Signatures
+<table>
+<tr>
+<th>Before (Legacy)</th>
+<th>After (Modern C++)</th>
+</tr>
+<tr>
+<td>
+
+```cpp
+void Matrix::createOrthographic(
+    float width, float height, 
+    float zNear, float zFar, 
+    Matrix* dst) {
+    // modify dst
+}
+```
+
+</td>
+<td>
+
+```cpp
+Matrix Matrix::createOrthographic(
+    float width, float height, 
+    float zNear, float zFar) {
+    // return result
+}
+```
+
+</td>
+</tr>
+</table>
+
+**Benefits**: Clear ownership, return value optimization, functional style.
 
 ### 3. Memory and Resource Management
 
-This is a critical step to eliminate memory leaks and make resource ownership clear.
+#### Smart Pointers
+<table>
+<tr>
+<th>Before (Legacy)</th>
+<th>After (Modern C++)</th>
+</tr>
+<tr>
+<td>
 
-#### Replace Raw Pointers with Smart Pointers
+```cpp
+class Game {
+    AnimationController* _animController;
+public:
+    Game() : _animController(nullptr) {}
+    ~Game() { 
+        SAFE_DELETE(_animController); 
+    }
+    
+    void initialize() {
+        _animController = new AnimationController();
+    }
+};
+```
 
--   **What:** Replace raw pointers from manual `new`/`delete` (and `SAFE_DELETE`) with standard smart pointers.
-    -   `std::unique_ptr`: For exclusive ownership of a resource. This should be the default choice.
-    -   `std::shared_ptr`: For shared ownership (replaces the custom `Ref` reference counting system).
--   **Why:** Automates memory management, prevents memory leaks, and clarifies resource ownership. This is the cornerstone of modern C++ resource safety (RAII).
+</td>
+<td>
 
--   **Before:**
-    ```cpp
-    // In Game.h
-    AnimationController* _animationController;
+```cpp
+class Game {
+    std::unique_ptr<AnimationController> _animController;
+public:
+    Game() = default;
+    ~Game() = default; // Automatic cleanup
+    
+    void initialize() {
+        _animController = 
+            std::make_unique<AnimationController>();
+    }
+};
+```
 
-    // In Game.cpp
-    _animationController = new AnimationController();
-    ...
-    SAFE_DELETE(_animationController);
-    ```
--   **After:**
-    ```cpp
-    // In Game.h
-    #include <memory>
-    std::unique_ptr<AnimationController> _animationController;
+</td>
+</tr>
+</table>
 
-    // In Game.cpp
-    _animationController = std::make_unique<AnimationController>();
-    ...
-    // No manual deletion needed!
-    ```
+**Benefits**: Automatic memory management, exception safety, clear ownership semantics.
 
-### 4. Function and Constant Correctness
+### 4. Function Correctness
 
-These changes leverage the type system to create more robust and potentially faster code.
+#### Compile-Time Constants
+<table>
+<tr>
+<th>Before (Legacy)</th>
+<th>After (Modern C++)</th>
+</tr>
+<tr>
+<td>
 
-#### Use `constexpr` for Compile-Time Constants
+```cpp
+#define MAX_ENTITIES 1024
+#define PI 3.14159f
 
--   **What:** Replace `#define` macros for constants with `constexpr` variables.
--   **Why:** `constexpr` variables are type-safe, respect scope, and can be debugged, unlike preprocessor macros.
+// In global scope
+static const int BUFFER_SIZE = 512;
+```
 
--   **Before:**
-    ```cpp
-    #define MAX_ENTITIES 1024
-    ```
--   **After:**
-    ```cpp
-    constexpr int MAX_ENTITIES = 1024;
-    ```
+</td>
+<td>
 
-#### Use `const` and `noexcept` on Functions
+```cpp
+constexpr int MAX_ENTITIES = 1024;
+constexpr float PI = 3.14159f;
 
--   **What:** Mark member functions that do not modify member data as `const`. Mark functions that are guaranteed not to throw exceptions as `noexcept`.
--   **Why:** `const` enforces correctness at compile time. `noexcept` allows the compiler to generate more optimized code by not needing to handle exception-based stack unwinding. Simple getter functions are prime candidates.
+constexpr int BUFFER_SIZE = 512;
+```
 
--   **Before:**
-    ```cpp
-    // In Game.h
+</td>
+</tr>
+</table>
+
+**Benefits**: Type safety, proper scoping, debugger support, compile-time evaluation.
+
+#### Function Qualifiers
+<table>
+<tr>
+<th>Before (Legacy)</th>
+<th>After (Modern C++)</th>
+</tr>
+<tr>
+<td>
+
+```cpp
+class Game {
+public:
     static Game* getInstance();
     bool isVsync();
-    ```
--   **After:**
-    ```cpp
-    // In Game.h
+    Vector3 getPosition();
+};
+```
+
+</td>
+<td>
+
+```cpp
+class Game {
+public:
     static Game* getInstance() noexcept;
     bool isVsync() const noexcept;
-    ```
-#### Use `constexpr` instead defines
--   **What:** Replace `#define` macros for constants with `constexpr` variables.
--   **Why:** `constexpr` variables are type-safe, respect scope, and can be debugged, unlike preprocessor macros.
+    const Vector3& getPosition() const noexcept;
+};
+```
 
-  - -   **Before:**
-    ```cpp
-    #define MAX_ENTITIES 1024
-    ```
-  - -   **After:**
-    ```cpp
-    constexpr int MAX_ENTITIES = 1024;
-    ```
+</td>
+</tr>
+</table>
 
-### 5. Performance Improvements
-  -   **What:** Identify and eliminate unnecessary copies of objects, especially in performance-critical code.
-  -   **Why:** Copying large objects can be expensive in terms of performance. Using references or pointers can help avoid unnecessary copies.
+**Benefits**: Compiler optimizations, const correctness, clear API contracts.
 
-  -  **Before:**
-    ```cpp
-    void processEntity(const Entity& entity); // Pass by const reference
-    ```
-  -  **After:**
-    ```cpp
-    void processEntity(const Entity& entity); // Pass by const reference
-    ```
-   #### Get rid of Ref class and use smart pointers instead
-   - **What:** Replace the custom `Ref` class with standard smart pointers (`std::unique_ptr` or `std::shared_ptr`).
-   - **Why:** Smart pointers provide automatic memory management, preventing memory leaks and dangling pointers.
-   - Remove SAFE_RELEASE and SAFE_DELETE macros and use smart pointers instead.
+### 5. Advanced Modern C++ Features
 
-### 6. Advanced Modern C++ Features
-These changes leverage advanced C++20 features to improve code expressiveness and safety.
+#### Ranges and Views
+<table>
+<tr>
+<th>Before (Legacy)</th>
+<th>After (Modern C++)</th>
+</tr>
+<tr>
+<td>
 
-#### Use Concepts for Template Constraints
--   **What:** Use C++20 concepts to constrain template parameters, ensuring that they meet specific requirements.
--   **Why:** Concepts provide clearer and more meaningful error messages when template requirements are not met, improving code readability and maintainability.
-  
-  - **Before:**
-    ```cpp
-    template <class ClassType, class ParameterType> class MethodArrayBinding : public MethodBinding
-    {
-        typedef ParameterType (ClassType::*ValueMethod)() const;
-        typedef unsigned int (ClassType::*CountMethod)() const;
-    };
-
-  - **After:**
-    ```cpp
-    template <typename ClassType, typename ParameterType>
-    concept HasValueMethod = requires(ClassType obj) {
-        { obj.valueMethod() } -> std::same_as<ParameterType>;
-    };
-    template <typename ClassType, typename ParameterType>
-    concept HasCountMethod = requires(ClassType obj) {
-        { obj.countMethod() } -> std::same_as<unsigned int>;
-    };
-    template <HasValueMethod<ClassType, ParameterType> ClassType, HasCountMethod<ClassType> ClassType>
-    class MethodArrayBinding : public MethodBinding
-    {
-        typedef ParameterType (ClassType::*ValueMethod)() const;
-        typedef unsigned int (ClassType::*CountMethod)() const;
-    };
-    ```
-#### Use `std::span` for Array Views
--   **What:** Use `std::span` to represent non-owning views over contiguous sequences of elements (like arrays or vectors).
--   **Why:** `std::span` provides a safer and more expressive way to handle array-like data without losing size information, reducing the risk of buffer overflows and improving code clarity.
-    
-    - **Before:**
-    ```cpp
-    void processArray(int* arr, size_t size);
-    ```
-    - **After:**
-    ```cpp
-    #include <span>
-    void processArray(std::span<int> arr);
-    ```
-#### Use `std::optional` for Optional Values
--   **What:** Use `std::optional` to represent values that may or may not be present, instead of using raw pointers or sentinel values.
--   **Why:** `std::optional` provides a clear and type-safe way to handle optional values, improving code readability and reducing the risk of null pointer dereferencing.
-
-- **Before:**
-    ```cpp
-    int* findValue(int key); // Returns nullptr if not found
-    ```
-- **After:**
-    ```cpp
-    std::optional<int> findValue(int key); // Returns std::nullopt if not found
-    ```
-#### Use `std::variant` for Type-Safe Unions
--   **What:** Use `std::variant` to represent a value that can be one of several types, instead of using unions or `void*`.
--   **Why:** `std::variant` provides type safety and eliminates the need for manual type checking and casting.
-
-- **Before:**
-    ```cpp
-    union Data {
-        int intValue;
-        float floatValue;
-        char* stringValue;
-    };
-    ```
-- **After:**
-    ```cpp
-    using Data = std::variant<int, float, std::string>;
-    ```
-
-#### Use `std::ranges` for Range-Based Algorithms
--   **What:** Use `std::ranges` to simplify and enhance range-based algorithms.
--   **Why:** `std::ranges` provides a more expressive and safer way to work with ranges, reducing the risk of errors and improving code clarity.
--   **Before:**
-    ```cpp
-    for (size_t i = 0, count = _variables->size(); i < count; ++i)
-    {
-        Property& prop = (*_variables)[i];
-        if (prop.name == name)
-        return prop.value.c_str();
+```cpp
+int maxFocusIndex = 0;
+for (size_t i = 0; i < _controls.size(); ++i) {
+    if (_controls[i]->_focusIndex > maxFocusIndex) {
+        maxFocusIndex = _controls[i]->_focusIndex;
     }
-    ```
--   **After:**
-    ```cpp
-    auto it = std::ranges::find_if(*_variables, [name](const Property& property) {
-        return property.name == name;
-    });
+}
+```
 
-    if (it != _variables->end())
-        return it->value.c_str();
-    ```
+</td>
+<td>
 
--   **Before:**
-    ```cpp
-    for (; iter != _propertiesFromFile.end(); ++iter)
-    {
-      SAFE_DELETE(iter->second);
-    }
-    ```
--   **After:**
-  - Note that erasing items from the containers, while iterating requires different approach
-    ```cpp
-    std::erase_if(_propertiesFromFile, [](auto& pair) {
-      pair.second->reset();
-      return true; // erase each of them
-      });
-    ```
+```cpp
+int maxFocusIndex = 0;
+if (!_controls.empty()) {
+    maxFocusIndex = std::ranges::max(
+        _controls | std::views::transform(
+            [](const Control* c) {
+                return c->getFocusIndex();
+            }));
+}
+```
+
+</td>
+</tr>
+</table>
+
+#### Standard Library Power
+<table>
+<tr>
+<th>Before (Legacy)</th>
+<th>After (Modern C++)</th>
+</tr>
+<tr>
+<td>
+
+```cpp
+for (unsigned int i = 0; i < data->vertexCount; i++) {
+    indexData[i] = i;
+}
+
+// Check if any contact exists
+for (size_t i = 0; i < MAX_CONTACTS; ++i) {
+    if (_contactIndices[i]) return true;
+}
+return false;
+```
+</td>
+<td>
+
+```cpp
+std::ranges::copy(
+    std::views::iota(0u, data->vertexCount), 
+    indexData);
+
+// Check if any contact exists
+return std::ranges::any_of(_contactIndices, 
+    [](bool contact) { return contact; });
+```
+</td>
+</tr>
+</table>
+
+#### Optional Values
+<table>
+<tr>
+<th>Before (Legacy)</th>
+<th>After (Modern C++)</th>
+</tr>
+<tr>
+<td>
+
+```cpp
+Entity* findEntity(const std::string& name) {
+    // ... search logic
+    return nullptr; // if not found
+}
+
+// Usage
+Entity* entity = findEntity("player");
+if (entity != nullptr) {
+    entity->update();
+}
+```
+
+</td>
+<td>
+
+```cpp
+std::optional<Entity> findEntity(const std::string& name) {
+    // ... search logic
+    return std::nullopt; // if not found
+}
+
+// Usage
+if (auto entity = findEntity("player")) {
+    entity->update();
+}
+```
+
+</td>
+</tr>
+</table>
+
+#### Type-Safe Variants
+<table>
+<tr>
+<th>Before (Legacy)</th>
+<th>After (Modern C++)</th>
+</tr>
+<tr>
+<td>
+
+```cpp
+union PropertyValue {
+    int intValue;
+    float floatValue;
+    char* stringValue;
+};
+
+struct Property {
+    PropertyType type;
+    PropertyValue value;
+};
+```
+
+</td>
+<td>
+
+```cpp
+using PropertyValue = std::variant<
+    int, 
+    float, 
+    std::string
+>;
+
+struct Property {
+    PropertyValue value;
+};
+
+// Usage with visitor pattern
+std::visit([](const auto& val) {
+    std::cout << val << '\n';
+}, property.value);
+```
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🏗️ Project Structure
+
+```
+Tractor3Dlib/
+├── res/              # Shaders, logo, materials, ui design
+├── include/          # Same structure with source files
+├── src/
+│   ├── ai/           # Artificial Intelligence agents
+│   ├── animation/    # Animation systems
+│   ├── audio/        # Audio systems
+│   ├── framework/    # File system, platform and main game components
+│   ├── graphics/     # Ray tracing, shapes, light, texcture, material etc.
+│   ├── input/        # Gamepad, keyboard 
+│   ├── math/         # Math operations
+│   ├── physics/      # Physics simulation
+│   ├── renderer/     # Rendering and visual systems
+│   ├── scene/        # Scene construction 
+│   ├── scripting/    # Lua scripting
+│   ├── ui/           # Graphical user interface 
+│   └── utils/        # Utility classes and functions
+├── samples/          # Executable samples
+```
+
+## 🔧 Building
+
+### Prerequisites
+- Visual Studio 2022 (17.0 or later)
+- Windows 10/11 x64
+- C++20 compatible compiler
+
+### Build Instructions
+- Install vcpkg in your prefered directory.
+- Clone the repository.
+- Call the following commands within the project directory
+```bash
+git clone https://github.com/your-repo/Tractor3D.git
+cd Tractor3D
+
+${VCPKG_DIR}\vcpkg integrate install
+${VCPKG_DIR}\vcpkg install bullet3
+${VCPKG_DIR}\vcpkg install lua:x64-windows
+${VCPKG_DIR}\vcpkg install libpng:x64-windows
+${VCPKG_DIR}\vcpkg install glew:x64-windows
+${VCPKG_DIR}\vcpkg install libvorbis:x64-windows
+${VCPKG_DIR}\vcpkg install openal-soft:x64-windows
+```
+
+## 📋 Modernization Checklist
+
+- [x] Replace NULL with nullptr
+- [x] Implement in-class member initialization
+- [x] Use = default and = delete for special members
+- [x] Add override and final specifiers
+- [x] Convert to enum class
+- [x] Replace C-strings with std::string
+- [x] Implement smart pointers (unique_ptr/shared_ptr)
+- [x] Use range-based for loops
+- [x] Apply auto type deduction
+- [x] Leverage std algorithms
+- [x] Use constexpr for compile-time constants
+- [x] Add const and noexcept qualifiers
+- [ ] Implement concepts for template constraints
+- [ ] Utilize std::span for array views
+- [ ] Apply std::optional for nullable returns
+- [ ] Use std::variant for type-safe unions
+- [ ] Add comprehensive testing
+- [ ] Add logging system
+- [ ] Consider ECS architecture
+- [ ] C# as scripting language
 
 
-### 7. Code Cleanup and Refactoring
--   **What:** Regularly review and refactor code to improve readability, maintainability, and performance.
--   **Why:** Clean code is easier to understand, modify, and extend. Refactoring can also help eliminate technical debt and improve performance.
--   **Before:**
-    ```cpp
-    // Before
-    for (int i = 0; i < 10; i++) {
-        processEntity(entities[i]);
-    }
-    ```
--   **After:**
-    ```cpp
-    for (const auto& entity : entities)
-        processEntity(entity);
-    ```
+## 🤝 Contributing
 
-### 8. Testing and Validation
--   **What:** Implement comprehensive testing strategies to ensure code correctness and reliability.
--   **Why:** Testing helps identify bugs and issues early in the development process, reducing the cost of fixing them later.
+We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details on:
+- Code style and formatting
+- Testing requirements
+- Pull request process
+- Issue reporting
 
-### Add a good error handling strategy
--   **What:** Implement a consistent error handling strategy using exceptions or error codes.
--   **Why:** Consistent error handling improves code reliability and makes it easier to diagnose and fix issues.
+## 📄 License
 
--   **Note:** Don't use throw catch for control flow, only for exceptional situations.
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
 
+## 🙏 Acknowledgments
 
-## Other things to consider
-- [ ] Use `std::function and std::bind` instead old function pointers
-- [ ] Use `std::span` for arrays where available
-- [ ] Utilize `std::ranges` and `views` where makes sense
-- [ ] Prefer `std::optional` for error recovery rather than `nullptr` checks
-- [ ] Use c++ `modules` if it makes sense
-- [ ] Use `lambdas` for repeating steps within a function
-- [ ] Use `std::variant` for unions or to handle multiple types
-- [ ] Prefer `using =` statements instead `typedef`'s
-- [X] Create a folder structure to organize relative objects
-- [X] Use `std::filesystem` for IO operations
-- [-] Make properties logic clearer and maintainable
-- [ ] Investigate `Entity Component Systems (ECS)` instead deep inheritances.
-- [ ] Adding unit tests initially for mathematical computations.
-- [ ] Add a reliable logging system instead error or warning macros.
-- [-] Enabling a consistent clang-tidy rules.
-- [-] Instead regular loops utilize std ready data iterations.
-- [-] using size_t for indexes?
-- [ ] To be continued...
+- Original Gameplay3D team for the foundation
+- Modern C++ community for best practices
+- Contributors and testers
+
+---
+
+*Tractor3D represents the evolution of game engine development, embracing modern C++ for safer, faster, and more maintainable code.*

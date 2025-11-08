@@ -13,7 +13,7 @@ class RacerGame : public Game, Control::Listener
     /**
      * Constructor.
      */
-    RacerGame();
+    RacerGame() = default;
 
     /**
      * @see Game::keyEvent
@@ -110,23 +110,23 @@ class RacerGame : public Game, Control::Listener
      */
     bool isUpset() const;
 
-    Scene* _scene;
-    Font* _font;
-    Form* _menu;
-    Form* _overlay;
+    Scene* _scene{ nullptr };
+    Font* _font{ nullptr };
+    Form* _menu{ nullptr };
+    Form* _overlay{ nullptr };
     std::vector<Node*> _renderQueues[2];
-    unsigned int _keyFlags;
-    unsigned int _mouseFlags;
-    float _steering;
-    Gamepad* _gamepad;
-    Gamepad* _physicalGamepad;
-    Gamepad* _virtualGamepad;
-    AnimationClip* _virtualGamepadClip;
-    PhysicsVehicle* _carVehicle;
-    float _upsetTimer;
+    unsigned int _keyFlags{ 0 };
+    unsigned int _mouseFlags{ 0 };
+    float _steering{ 0.0f };
+    Gamepad* _gamepad{ nullptr };
+    Gamepad* _physicalGamepad{ nullptr };
+    Gamepad* _virtualGamepad{ nullptr };
+    AnimationClip* _virtualGamepadClip{ nullptr };
+    PhysicsVehicle* _carVehicle{ nullptr };
+    float _upsetTimer{ 0.0f };
 
     // Music and Sounds
-    AudioSource* _backgroundMusic;
-    AudioSource* _engineSound;
-    AudioSource* _brakingSound;
+    AudioSource* _backgroundMusic{ nullptr };
+    AudioSource* _engineSound{ nullptr };
+    AudioSource* _brakingSound{ nullptr };
 };

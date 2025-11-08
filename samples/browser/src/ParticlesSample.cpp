@@ -21,30 +21,11 @@ ADD_SAMPLE("Graphics", "Particles", ParticlesSample, 9);
 
 constexpr auto DEFAULT_PARTICLE_EMITTER = "res/common/particles/fire.particle";
 
-const float INPUT_SENSITIVITY = 0.05f;
-const float PANNING_SENSITIVITY = 0.01f;
-const float ROTATE_SENSITIVITY = 0.25f;
+constexpr float INPUT_SENSITIVITY = 0.05f;
+constexpr float PANNING_SENSITIVITY = 0.01f;
+constexpr float ROTATE_SENSITIVITY = 0.25f;
 const Vector4 BACKGROUND_COLOR = Vector4::zero();
-const float ZOOM_DEFAULT = 4.0f;
-
-ParticlesSample::ParticlesSample()
-    : _scene(nullptr), _cameraParent(nullptr), _particleEmitterNode(nullptr),
-      _particleEmitter(nullptr), _wDown(false), _aDown(false), _sDown(false), _dDown(false),
-      _touched(false), _prevX(0), _prevY(0), _panning(false), _rotating(false), _zooming(false),
-      _font(nullptr), _form(nullptr), _startRed(nullptr), _startGreen(nullptr), _startBlue(nullptr),
-      _startAlpha(nullptr), _endRed(nullptr), _endGreen(nullptr), _endBlue(nullptr),
-      _endAlpha(nullptr), _startMin(nullptr), _startMax(nullptr), _endMin(nullptr),
-      _endMax(nullptr), _energyMin(nullptr), _energyMax(nullptr), _emissionRate(nullptr),
-      _posVarX(nullptr), _posVarY(nullptr), _posVarZ(nullptr), _velX(nullptr), _velY(nullptr),
-      _velZ(nullptr), _velVarX(nullptr), _velVarY(nullptr), _velVarZ(nullptr), _accelX(nullptr),
-      _accelY(nullptr), _accelZ(nullptr), _accelVarX(nullptr), _accelVarY(nullptr),
-      _accelVarZ(nullptr), _spinSpeedMin(nullptr), _spinSpeedMax(nullptr), _axisX(nullptr),
-      _axisY(nullptr), _axisZ(nullptr), _axisVarX(nullptr), _axisVarY(nullptr), _axisVarZ(nullptr),
-      _rotationSpeedMin(nullptr), _rotationSpeedMax(nullptr), _burstSize(nullptr),
-      _started(nullptr), _reset(nullptr), _emit(nullptr), _zoomIn(nullptr), _zoomOut(nullptr),
-      _save(nullptr), _load(nullptr), _position(nullptr), _particleProperties(nullptr)
-{
-}
+constexpr float ZOOM_DEFAULT = 4.0f;
 
 void ParticlesSample::addGrid(unsigned int lineCount)
 {

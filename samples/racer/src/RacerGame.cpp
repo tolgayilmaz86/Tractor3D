@@ -14,7 +14,7 @@
 #include "RacerGame.h"
 
 // Render queue indexes (in order of drawing).
-enum RenderQueue
+enum class RenderQueue
 {
     QUEUE_OPAQUE = 0,
     QUEUE_TRANSPARENT,
@@ -32,24 +32,16 @@ bool __menuFlag = false;
 RacerGame game;
 
 // Input bit-flags (powers of 2)
-#define ACCELERATOR (1 << 0)
-#define BRAKE (1 << 1)
-#define REVERSE (1 << 2)
-#define UPRIGHT (1 << 3)
-#define STEER_LEFT (1 << 4)
-#define STEER_RIGHT (1 << 5)
-#define ACCELERATOR_MOUSE (1 << 6)
-#define BRAKE_MOUSE (1 << 7)
+constexpr auto ACCELERATOR = (1 << 0);
+constexpr auto BRAKE = (1 << 1);
+constexpr auto REVERSE = (1 << 2);
+constexpr auto UPRIGHT = (1 << 3);
+constexpr auto STEER_LEFT = (1 << 4);
+constexpr auto STEER_RIGHT = (1 << 5);
+constexpr auto ACCELERATOR_MOUSE = (1 << 6);
+constexpr auto BRAKE_MOUSE = (1 << 7);
 
-#define STEERING_RESPONSE (7.0f)
-
-RacerGame::RacerGame()
-    : _scene(nullptr), _font(nullptr), _menu(nullptr), _overlay(nullptr), _keyFlags(0),
-      _mouseFlags(0), _steering(0), _gamepad(nullptr), _physicalGamepad(nullptr),
-      _virtualGamepad(nullptr), _virtualGamepadClip(nullptr), _carVehicle(nullptr), _upsetTimer(0),
-      _backgroundMusic(nullptr), _engineSound(nullptr), _brakingSound(nullptr)
-{
-}
+constexpr auto STEERING_RESPONSE = (7.0f);
 
 void RacerGame::initialize()
 {
@@ -323,8 +315,8 @@ void RacerGame::render(float elapsedTime)
     clear(CLEAR_COLOR_DEPTH, Vector4::zero(), 1.0f, 0);
 
     // Visit all the nodes in the scene to build our render queues
-    for (size_t i = 0; i < QUEUE_COUNT; ++i)
-        _renderQueues[i].clear();
+    std::ranges::for_each(_renderQueues, [](auto& queue) { queue.clear(); });
+
     _scene->visit(this, &RacerGame::buildRenderQueues);
 
     // Draw the scene from our render queues
@@ -372,9 +364,9 @@ bool RacerGame::buildRenderQueues(Node* node)
         // Determine which render queue to insert the node into
         std::vector<Node*>* queue;
         if (node->hasTag("transparent"))
-            queue = &_renderQueues[QUEUE_TRANSPARENT];
+            queue = &_renderQueues[static_cast<size_t>(RenderQueue::QUEUE_TRANSPARENT)];
         else
-            queue = &_renderQueues[QUEUE_OPAQUE];
+            queue = &_renderQueues[static_cast<size_t>(RenderQueue::QUEUE_OPAQUE)];
 
         queue->push_back(node);
     }
@@ -384,7 +376,7 @@ bool RacerGame::buildRenderQueues(Node* node)
 void RacerGame::drawScene()
 {
     // Iterate through each render queue and draw the nodes in them
-    for (size_t i = 0; i < QUEUE_COUNT; ++i)
+    for (size_t i = 0; i < static_cast<size_t>(RenderQueue::QUEUE_COUNT); ++i)
     {
         std::vector<Node*>& queue = _renderQueues[i];
 
@@ -399,7 +391,7 @@ void RacerGame::drawSplash(void* param)
 {
     clear(CLEAR_COLOR_DEPTH, Vector4(0, 0, 0, 1), 1.0f, 0);
 
-    SpriteBatch* batch = SpriteBatch::create("res/logo_powered_white.png");
+    auto batch = std::unique_ptr<SpriteBatch>(SpriteBatch::create("res/logo_powered_white.png"));
     batch->start();
     batch->draw(this->getWidth() * 0.5f,
                 this->getHeight() * 0.5f,
@@ -413,7 +405,6 @@ void RacerGame::drawSplash(void* param)
                 Vector4::one(),
                 true);
     batch->finish();
-    SAFE_DELETE(batch);
 }
 
 void RacerGame::keyEvent(Keyboard::KeyEvent evt, int key)

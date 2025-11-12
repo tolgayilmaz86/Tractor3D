@@ -13,9 +13,9 @@
  */
 #pragma once
 
-#include "math/Vector3.h"
-#include "physics/PhysicsConstraint.h"
-#include "physics/PhysicsRigidBody.h"
+#include <math/Vector3.h>
+#include <physics/PhysicsConstraint.h>
+#include <physics/PhysicsRigidBody.h>
 
 namespace tractor
 {

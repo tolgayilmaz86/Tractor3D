@@ -51,8 +51,7 @@ PhysicsGenericConstraint::PhysicsGenericConstraint(PhysicsRigidBody* a,
                                                    PhysicsRigidBody* b,
                                                    const Quaternion& rotationOffsetB,
                                                    const Vector3& translationOffsetB)
-    : PhysicsConstraint(a, b), _rotationOffsetA(nullptr), _rotationOffsetB(nullptr),
-      _translationOffsetA(nullptr), _translationOffsetB(nullptr)
+    : PhysicsConstraint(a, b)
 {
     assert(a && a->_body && a->getNode());
 

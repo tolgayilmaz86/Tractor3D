@@ -22,8 +22,6 @@
 namespace tractor
 {
 
-constexpr auto TYPE_NAME = "Control";
-
 //----------------------------------------------------------------------------
 Control::Control()
 {
@@ -266,9 +264,6 @@ void Control::initialize(const std::string& typeName, Theme::Style* style, Prope
         }
     }
 }
-
-//----------------------------------------------------------------------------
-const std::string& Control::getTypeName() const noexcept { return TYPE_NAME; }
 
 //----------------------------------------------------------------------------
 void Control::setX(float x, bool percentage) noexcept

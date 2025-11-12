@@ -70,10 +70,7 @@ void Container::clearContacts()
 }
 
 //----------------------------------------------------------------------------
-Container::Container()
-{
-    clearContacts();
-}
+Container::Container() { clearContacts(); }
 
 //----------------------------------------------------------------------------
 Container::~Container()
@@ -196,13 +193,6 @@ void Container::addControls(Properties* properties)
 
     // Sort controls by Z-Order.
     sortControls();
-}
-
-//----------------------------------------------------------------------------
-const std::string& Container::getTypeName() const noexcept
-{
-    static const std::string TYPE_NAME = "Container";
-    return TYPE_NAME;
 }
 
 //----------------------------------------------------------------------------
@@ -1515,7 +1505,7 @@ bool Container::mouseEventScroll(Mouse::MouseEvent evt, int x, int y, int wheelD
 }
 
 //----------------------------------------------------------------------------
-bool Container::inContact() const 
+bool Container::inContact() const
 {
     return std::ranges::any_of(_contactIndices, [](bool contact) { return contact; });
 }

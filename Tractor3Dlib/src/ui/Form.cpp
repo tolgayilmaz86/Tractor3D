@@ -172,13 +172,6 @@ Control* Form::getFocusControl() noexcept { return __focusControl; }
 void Form::clearFocus() { setFocusControl(nullptr); }
 
 //----------------------------------------------------------------
-const std::string& Form::getTypeName() const noexcept
-{
-    static const std::string TYPE_NAME = "Form";
-    return TYPE_NAME;
-}
-
-//----------------------------------------------------------------
 static unsigned int nextPowerOfTwo(unsigned int v)
 {
     if (!((v & (v - 1)) == 0))

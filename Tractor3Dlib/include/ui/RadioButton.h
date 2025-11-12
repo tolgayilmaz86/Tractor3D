@@ -52,7 +52,7 @@ class RadioButton : public Button
      * @return The type name of this class: "RadioButton"
      * @see ScriptTarget::getTypeName()
      */
-    const std::string& getTypeName() const noexcept;
+    std::string_view getTypeName() const noexcept { return "RadioButton"; };
 
     /**
      * Get whether this radio button is currently selected.

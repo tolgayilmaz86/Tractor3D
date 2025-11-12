@@ -114,7 +114,7 @@ class AnimationClip : public Ref, public ScriptTarget
      * @return The type name of this class: "AnimationClip"
      * @see ScriptTarget::getTypeName()
      */
-    const std::string& getTypeName() const;
+    std::string_view getTypeName() const noexcept { return "AnimationClip"; }
 
     /**
      * Gets the AnimationClip's ID.

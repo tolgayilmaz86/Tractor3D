@@ -66,13 +66,6 @@ void Slider::initialize(const std::string& typeName, Theme::Style* style, Proper
 }
 
 //----------------------------------------------------------------
-const std::string& Slider::getTypeName() const noexcept
-{
-    static const std::string TYPE_NAME = "Slider";
-    return TYPE_NAME;
-}
-
-//----------------------------------------------------------------
 void Slider::setValue(float value)
 {
     value = MATH_CLAMP(value, _min, _max);

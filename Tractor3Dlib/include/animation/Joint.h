@@ -51,7 +51,7 @@ class Joint : public Node
      * @return The type name of this class: "Joint"
      * @see ScriptTarget::getTypeName()
      */
-    const std::string& getTypeName() const;
+    std::string_view getTypeName() const noexcept { return "Joint"; }
 
     /**
      * Returns the inverse bind pose matrix for this joint.

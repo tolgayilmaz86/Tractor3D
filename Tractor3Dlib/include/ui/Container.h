@@ -81,7 +81,7 @@ class Container : public Control
      * @return The type name of this class: "Container"
      * @see ScriptTarget::getTypeName()
      */
-    const std::string& getTypeName() const noexcept;
+    std::string_view getTypeName() const noexcept { return "Container"; };
 
     /**
      * Get this container's layout.

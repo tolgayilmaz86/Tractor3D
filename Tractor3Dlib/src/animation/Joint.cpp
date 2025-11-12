@@ -39,13 +39,6 @@ Node* Joint::cloneSingleNode(NodeCloneContext& context) const
 }
 
 //----------------------------------------------------------------------------
-const std::string& Joint::getTypeName() const
-{
-    static const std::string TYPE_NAME = "Joint";
-    return TYPE_NAME;
-}
-
-//----------------------------------------------------------------------------
 Scene* Joint::getScene() const
 {
     // Overrides Node::getScene() to search the node our skins.

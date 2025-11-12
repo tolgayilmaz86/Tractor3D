@@ -257,7 +257,7 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
      * @return The type name of this class: "Control"
      * @see ScriptTarget::getTypeName()
      */
-    const std::string& getTypeName() const noexcept;
+    std::string_view getTypeName() const noexcept { return "Control"; };
 
     /**
      * Get this control's ID string.

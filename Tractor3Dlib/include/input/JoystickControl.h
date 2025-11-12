@@ -49,7 +49,7 @@ class JoystickControl : public Control
      * @return The type name of this class: "JoystickControl"
      * @see ScriptTarget::getTypeName()
      */
-    const std::string& getTypeName() const noexcept;
+    std::string_view getTypeName() const noexcept { return "JoystickControl"; };
 
     /**
      * Add a listener to be notified of specific events affecting

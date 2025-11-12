@@ -84,11 +84,7 @@ class Node : public Transform, public Ref
      * @return The type name of this class: "Node"
      * @see ScriptTarget::getTypeName()
      */
-    const std::string& getTypeName() const
-    {
-        static const std::string TYPE_NAME = "Node";
-        return TYPE_NAME;
-    }
+    std::string_view getTypeName() const noexcept { return "Node"; }
 
     /**
      * Gets the identifier for the node.

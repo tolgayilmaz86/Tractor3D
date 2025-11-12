@@ -45,21 +45,13 @@ Control* JoystickControl::create(Theme::Style* style, Properties* properties)
 }
 
 //-----------------------------------------------------------------------------
-const std::string& JoystickControl::getTypeName() const noexcept
-{
-    static const std::string TYPE_NAME = "JoystickControl";
-    return TYPE_NAME;
-}
-
-//-----------------------------------------------------------------------------
 void JoystickControl::setInnerRegionSize(const Vector2& size,
                                          bool isWidthPercentage,
                                          bool isHeightPercentage)
 {
     if (_innerSizePixels)
     {
-        if (!_innerRegionCoord)
-            _innerRegionCoord = new Vector2();
+        if (!_innerRegionCoord) _innerRegionCoord = new Vector2();
 
         setRegion(size,
                   *_innerRegionCoord,

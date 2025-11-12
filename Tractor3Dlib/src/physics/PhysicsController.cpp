@@ -35,7 +35,7 @@
 #endif
 
 // The initial capacity of the Bullet debug drawer's vertex batch.
-#define INITIAL_CAPACITY 280
+constexpr auto INITIAL_CAPACITY = 280;
 
 namespace tractor
 {
@@ -46,10 +46,6 @@ const int PhysicsController::REGISTERED = 0x04;
 const int PhysicsController::REMOVE = 0x08;
 
 PhysicsController::PhysicsController()
-    : _isUpdating(false), _collisionConfiguration(nullptr), _dispatcher(nullptr),
-      _overlappingPairCache(nullptr), _solver(nullptr), _world(nullptr), _ghostPairCallback(nullptr),
-      _debugDrawer(nullptr), _status(PhysicsController::Listener::DEACTIVATED), _listeners(nullptr),
-      _gravity(btScalar(0.0), btScalar(-9.8), btScalar(0.0)), _collisionCallback(nullptr)
 {
     GP_REGISTER_SCRIPT_EVENTS();
 
@@ -57,6 +53,7 @@ PhysicsController::PhysicsController()
     _collisionCallback = new CollisionCallback(this);
 }
 
+//----------------------------------------------------------------------------
 PhysicsController::~PhysicsController()
 {
     SAFE_DELETE(_collisionCallback);
@@ -65,12 +62,7 @@ PhysicsController::~PhysicsController()
     SAFE_DELETE(_listeners);
 }
 
-const std::string& PhysicsController::getTypeName() const
-{
-    static const std::string TYPE_NAME = "PhysicsController";
-    return TYPE_NAME;
-}
-
+//----------------------------------------------------------------------------
 void PhysicsController::addStatusListener(Listener* listener)
 {
     assert(listener);
@@ -79,6 +71,7 @@ void PhysicsController::addStatusListener(Listener* listener)
     _listeners->push_back(listener);
 }
 
+//----------------------------------------------------------------------------
 void PhysicsController::removeStatusListener(Listener* listener)
 {
     assert(listener);
@@ -91,6 +84,7 @@ void PhysicsController::removeStatusListener(Listener* listener)
     }
 }
 
+//----------------------------------------------------------------------------
 PhysicsFixedConstraint* PhysicsController::createFixedConstraint(PhysicsRigidBody* a,
                                                                  PhysicsRigidBody* b)
 {
@@ -100,6 +94,7 @@ PhysicsFixedConstraint* PhysicsController::createFixedConstraint(PhysicsRigidBod
     return constraint;
 }
 
+//----------------------------------------------------------------------------
 PhysicsGenericConstraint* PhysicsController::createGenericConstraint(PhysicsRigidBody* a,
                                                                      PhysicsRigidBody* b)
 {
@@ -109,6 +104,7 @@ PhysicsGenericConstraint* PhysicsController::createGenericConstraint(PhysicsRigi
     return constraint;
 }
 
+//----------------------------------------------------------------------------
 PhysicsGenericConstraint* PhysicsController::createGenericConstraint(
     PhysicsRigidBody* a,
     const Quaternion& rotationOffsetA,
@@ -128,6 +124,7 @@ PhysicsGenericConstraint* PhysicsController::createGenericConstraint(
     return constraint;
 }
 
+//----------------------------------------------------------------------------
 PhysicsHingeConstraint* PhysicsController::createHingeConstraint(PhysicsRigidBody* a,
                                                                  const Quaternion& rotationOffsetA,
                                                                  const Vector3& translationOffsetA,
@@ -146,6 +143,7 @@ PhysicsHingeConstraint* PhysicsController::createHingeConstraint(PhysicsRigidBod
     return constraint;
 }
 
+//----------------------------------------------------------------------------
 PhysicsSocketConstraint* PhysicsController::createSocketConstraint(PhysicsRigidBody* a,
                                                                    PhysicsRigidBody* b)
 {
@@ -155,6 +153,7 @@ PhysicsSocketConstraint* PhysicsController::createSocketConstraint(PhysicsRigidB
     return constraint;
 }
 
+//----------------------------------------------------------------------------
 PhysicsSocketConstraint* PhysicsController::createSocketConstraint(PhysicsRigidBody* a,
                                                                    const Vector3& translationOffsetA,
                                                                    PhysicsRigidBody* b,
@@ -167,6 +166,7 @@ PhysicsSocketConstraint* PhysicsController::createSocketConstraint(PhysicsRigidB
     return constraint;
 }
 
+//----------------------------------------------------------------------------
 PhysicsSpringConstraint* PhysicsController::createSpringConstraint(PhysicsRigidBody* a,
                                                                    PhysicsRigidBody* b)
 {
@@ -176,6 +176,7 @@ PhysicsSpringConstraint* PhysicsController::createSpringConstraint(PhysicsRigidB
     return constraint;
 }
 
+//----------------------------------------------------------------------------
 PhysicsSpringConstraint* PhysicsController::createSpringConstraint(PhysicsRigidBody* a,
                                                                    const Quaternion& rotationOffsetA,
                                                                    const Vector3& translationOffsetA,
@@ -194,8 +195,7 @@ PhysicsSpringConstraint* PhysicsController::createSpringConstraint(PhysicsRigidB
     return constraint;
 }
 
-const Vector3& PhysicsController::getGravity() const { return _gravity; }
-
+//----------------------------------------------------------------------------
 void PhysicsController::setGravity(const Vector3& gravity)
 {
     _gravity = gravity;
@@ -203,6 +203,7 @@ void PhysicsController::setGravity(const Vector3& gravity)
     if (_world) _world->setGravity(BV(_gravity));
 }
 
+//----------------------------------------------------------------------------
 void PhysicsController::drawDebug(const Matrix& viewProjection)
 {
     assert(_debugDrawer);
@@ -213,6 +214,7 @@ void PhysicsController::drawDebug(const Matrix& viewProjection)
     _debugDrawer->end();
 }
 
+//----------------------------------------------------------------------------
 bool PhysicsController::rayTest(const Ray& ray,
                                 float distance,
                                 PhysicsController::HitResult* result,
@@ -294,6 +296,7 @@ bool PhysicsController::rayTest(const Ray& ray,
     return false;
 }
 
+//----------------------------------------------------------------------------
 bool PhysicsController::sweepTest(PhysicsCollisionObject* object,
                                   const Vector3& endPosition,
                                   PhysicsController::HitResult* result,
@@ -423,6 +426,7 @@ bool PhysicsController::sweepTest(PhysicsCollisionObject* object,
     return false;
 }
 
+//----------------------------------------------------------------------------
 btScalar PhysicsController::CollisionCallback::addSingleResult(btManifoldPoint& cp,
                                                                const btCollisionObjectWrapper* a,
                                                                int partIdA,
@@ -504,6 +508,7 @@ btScalar PhysicsController::CollisionCallback::addSingleResult(btManifoldPoint& 
     return 0.0f;
 }
 
+//----------------------------------------------------------------------------
 void PhysicsController::initialize()
 {
     _collisionConfiguration = bullet_new<btDefaultCollisionConfiguration>();
@@ -529,6 +534,7 @@ void PhysicsController::initialize()
     _world->setDebugDrawer(_debugDrawer);
 }
 
+//----------------------------------------------------------------------------
 void PhysicsController::finalize()
 {
     // Clean up the world and its various components.
@@ -540,16 +546,19 @@ void PhysicsController::finalize()
     SAFE_DELETE(_collisionConfiguration);
 }
 
+//----------------------------------------------------------------------------
 void PhysicsController::pause()
 {
     // Unused
 }
 
+//----------------------------------------------------------------------------
 void PhysicsController::resume()
 {
     // Unused
 }
 
+//----------------------------------------------------------------------------
 void PhysicsController::update(float elapsedTime)
 {
     assert(_world);
@@ -692,6 +701,7 @@ void PhysicsController::update(float elapsedTime)
     _isUpdating = false;
 }
 
+//----------------------------------------------------------------------------
 void PhysicsController::addCollisionListener(PhysicsCollisionObject::CollisionListener* listener,
                                              PhysicsCollisionObject* objectA,
                                              PhysicsCollisionObject* objectB)
@@ -708,6 +718,7 @@ void PhysicsController::addCollisionListener(PhysicsCollisionObject::CollisionLi
     info._status |= PhysicsController::REGISTERED;
 }
 
+//----------------------------------------------------------------------------
 void PhysicsController::removeCollisionListener(PhysicsCollisionObject::CollisionListener* listener,
                                                 PhysicsCollisionObject* objectA,
                                                 PhysicsCollisionObject* objectB)
@@ -723,6 +734,7 @@ void PhysicsController::removeCollisionListener(PhysicsCollisionObject::Collisio
     }
 }
 
+//----------------------------------------------------------------------------
 void PhysicsController::addCollisionObject(PhysicsCollisionObject* object)
 {
     assert(object && object->getCollisionObject());
@@ -755,6 +767,7 @@ void PhysicsController::addCollisionObject(PhysicsCollisionObject* object)
     }
 }
 
+//----------------------------------------------------------------------------
 void PhysicsController::removeCollisionObject(PhysicsCollisionObject* object, bool removeListeners)
 {
     assert(object);
@@ -794,6 +807,7 @@ void PhysicsController::removeCollisionObject(PhysicsCollisionObject* object, bo
     }
 }
 
+//----------------------------------------------------------------------------
 PhysicsCollisionObject* PhysicsController::getCollisionObject(const btCollisionObject* collisionObject) const
 {
     // Gameplay collision objects are stored in the userPointer data of Bullet collision objects.
@@ -801,6 +815,7 @@ PhysicsCollisionObject* PhysicsController::getCollisionObject(const btCollisionO
     return reinterpret_cast<PhysicsCollisionObject*>(collisionObject->getUserPointer());
 }
 
+//----------------------------------------------------------------------------
 static void getBoundingBox(Node* node, BoundingBox* out, bool merge = false)
 {
     assert(node);
@@ -828,6 +843,7 @@ static void getBoundingBox(Node* node, BoundingBox* out, bool merge = false)
     }
 }
 
+//----------------------------------------------------------------------------
 static void getBoundingSphere(Node* node, BoundingSphere* out, bool merge = false)
 {
     assert(node);
@@ -855,6 +871,7 @@ static void getBoundingSphere(Node* node, BoundingSphere* out, bool merge = fals
     }
 }
 
+//----------------------------------------------------------------------------
 static void computeCenterOfMass(const Vector3& center, const Vector3& scale, Vector3* centerOfMassOffset)
 {
     assert(centerOfMassOffset);
@@ -867,6 +884,7 @@ static void computeCenterOfMass(const Vector3& center, const Vector3& scale, Vec
     centerOfMassOffset->negate();
 }
 
+//----------------------------------------------------------------------------
 PhysicsCollisionShape* PhysicsController::createShape(Node* node,
                                                       const PhysicsCollisionShape::Definition& shape,
                                                       Vector3* centerOfMassOffset,
@@ -1029,6 +1047,7 @@ PhysicsCollisionShape* PhysicsController::createShape(Node* node,
     return collisionShape;
 }
 
+//----------------------------------------------------------------------------
 PhysicsCollisionShape* PhysicsController::createBox(const Vector3& extents, const Vector3& scale)
 {
     btVector3 halfExtents(scale.x * 0.5 * extents.x,
@@ -1061,6 +1080,7 @@ PhysicsCollisionShape* PhysicsController::createBox(const Vector3& extents, cons
     return shape;
 }
 
+//----------------------------------------------------------------------------
 PhysicsCollisionShape* PhysicsController::createSphere(float radius, const Vector3& scale)
 {
     // Since sphere shapes depend only on the radius, the best we can do is take
@@ -1094,6 +1114,7 @@ PhysicsCollisionShape* PhysicsController::createSphere(float radius, const Vecto
                                                           bullet_new<btSphereShape>(scaledRadius)));
 }
 
+//----------------------------------------------------------------------------
 PhysicsCollisionShape* PhysicsController::createCapsule(float radius, float height, const Vector3& scale)
 {
     float girthScale = scale.x;
@@ -1126,6 +1147,7 @@ PhysicsCollisionShape* PhysicsController::createCapsule(float radius, float heig
                                   bullet_new<btCapsuleShape>(scaledRadius, scaledHeight)));
 }
 
+//----------------------------------------------------------------------------
 PhysicsCollisionShape* PhysicsController::createHeightfield(Node* node,
                                                             HeightField* heightfield,
                                                             Vector3* centerOfMassOffset)
@@ -1137,8 +1159,7 @@ PhysicsCollisionShape* PhysicsController::createHeightfield(Node* node,
     // Inspect the height array for the min and max values
     float* heights = heightfield->getArray();
     float minHeight = FLT_MAX, maxHeight = -FLT_MAX;
-    for (size_t i = 0, count = heightfield->getColumnCount() * heightfield->getRowCount();
-         i < count;
+    for (size_t i = 0, count = heightfield->getColumnCount() * heightfield->getRowCount(); i < count;
          ++i)
     {
         float h = heights[i];
@@ -1194,6 +1215,7 @@ PhysicsCollisionShape* PhysicsController::createHeightfield(Node* node,
     return _shapes.back();
 }
 
+//----------------------------------------------------------------------------
 PhysicsCollisionShape* PhysicsController::createMesh(Mesh* mesh, const Vector3& scale, bool dynamic)
 {
     assert(mesh);
@@ -1388,6 +1410,7 @@ PhysicsCollisionShape* PhysicsController::createMesh(Mesh* mesh, const Vector3& 
     return shape;
 }
 
+//----------------------------------------------------------------------------
 void PhysicsController::destroyShape(PhysicsCollisionShape* shape)
 {
     if (shape)
@@ -1405,6 +1428,7 @@ void PhysicsController::destroyShape(PhysicsCollisionShape* shape)
     }
 }
 
+//----------------------------------------------------------------------------
 void PhysicsController::addConstraint(PhysicsRigidBody* a,
                                       PhysicsRigidBody* b,
                                       PhysicsConstraint* constraint)
@@ -1422,6 +1446,7 @@ void PhysicsController::addConstraint(PhysicsRigidBody* a,
     _world->addConstraint(constraint->_constraint);
 }
 
+//----------------------------------------------------------------------------
 bool PhysicsController::checkConstraintRigidBodies(PhysicsRigidBody* a, PhysicsRigidBody* b)
 {
     assert(a);
@@ -1445,6 +1470,7 @@ bool PhysicsController::checkConstraintRigidBodies(PhysicsRigidBody* a, PhysicsR
     return true;
 }
 
+//----------------------------------------------------------------------------
 void PhysicsController::removeConstraint(PhysicsConstraint* constraint)
 {
     assert(constraint);
@@ -1462,6 +1488,7 @@ void PhysicsController::removeConstraint(PhysicsConstraint* constraint)
     }
 }
 
+//----------------------------------------------------------------------------
 PhysicsController::DebugDrawer::DebugDrawer()
     : _mode(btIDebugDraw::DBG_DrawAabb | btIDebugDraw::DBG_DrawConstraintLimits
             | btIDebugDraw::DBG_DrawConstraints | btIDebugDraw::DBG_DrawContactPoints
@@ -1505,8 +1532,10 @@ PhysicsController::DebugDrawer::DebugDrawer()
     SAFE_RELEASE(effect);
 }
 
+//----------------------------------------------------------------------------
 PhysicsController::DebugDrawer::~DebugDrawer() { SAFE_DELETE(_meshBatch); }
 
+//----------------------------------------------------------------------------
 void PhysicsController::DebugDrawer::begin(const Matrix& viewProjection)
 {
     assert(_meshBatch);
@@ -1514,6 +1543,7 @@ void PhysicsController::DebugDrawer::begin(const Matrix& viewProjection)
     _meshBatch->getMaterial()->getParameter("u_viewProjectionMatrix")->setValue(viewProjection);
 }
 
+//----------------------------------------------------------------------------
 void PhysicsController::DebugDrawer::end()
 {
     assert(_meshBatch && _meshBatch->getMaterial());
@@ -1522,6 +1552,7 @@ void PhysicsController::DebugDrawer::end()
     _lineCount = 0;
 }
 
+//----------------------------------------------------------------------------
 void PhysicsController::DebugDrawer::drawLine(const btVector3& from,
                                               const btVector3& to,
                                               const btVector3& fromColor,
@@ -1558,6 +1589,7 @@ void PhysicsController::DebugDrawer::drawLine(const btVector3& from,
     }
 }
 
+//----------------------------------------------------------------------------
 void PhysicsController::DebugDrawer::drawLine(const btVector3& from,
                                               const btVector3& to,
                                               const btVector3& color)
@@ -1565,6 +1597,7 @@ void PhysicsController::DebugDrawer::drawLine(const btVector3& from,
     drawLine(from, to, color, color);
 }
 
+//----------------------------------------------------------------------------
 void PhysicsController::DebugDrawer::drawContactPoint(const btVector3& pointOnB,
                                                       const btVector3& normalOnB,
                                                       btScalar distance,
@@ -1574,32 +1607,23 @@ void PhysicsController::DebugDrawer::drawContactPoint(const btVector3& pointOnB,
     drawLine(pointOnB, pointOnB + normalOnB, color);
 }
 
+//----------------------------------------------------------------------------
 void PhysicsController::DebugDrawer::reportErrorWarning(const char* warningString)
 {
     GP_WARN(warningString);
 }
 
+//----------------------------------------------------------------------------
 void PhysicsController::DebugDrawer::draw3dText(const btVector3& location, const char* textString)
 {
     GP_WARN("Physics debug drawing: 3D text is not supported.");
 }
 
-void PhysicsController::DebugDrawer::setDebugMode(int mode) { _mode = mode; }
-
-int PhysicsController::DebugDrawer::getDebugMode() const { return _mode; }
-
+//----------------------------------------------------------------------------
 PhysicsController::Listener::~Listener()
 {
     assert(Game::getInstance()->getPhysicsController());
     Game::getInstance()->getPhysicsController()->removeStatusListener(this);
 }
-
-PhysicsController::HitFilter::HitFilter() {}
-
-PhysicsController::HitFilter::~HitFilter() {}
-
-bool PhysicsController::HitFilter::filter(PhysicsCollisionObject* object) { return false; }
-
-bool PhysicsController::HitFilter::hit(const PhysicsController::HitResult& result) { return true; }
 
 } // namespace tractor

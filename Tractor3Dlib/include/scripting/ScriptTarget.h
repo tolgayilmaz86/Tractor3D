@@ -232,7 +232,7 @@ class ScriptTarget
      * @return A string describing the type name of the ScriptTarget child
      *      class, as it is defined in the lua bindings (i.e. "Node").
      */
-    virtual const std::string& getTypeName() const = 0;
+    virtual std::string_view getTypeName() const = 0;
 
     /**
      * Attaches a script to this object.

@@ -49,7 +49,7 @@ class Label : public Control
      * @return The type name of this class: "Label"
      * @see ScriptTarget::getTypeName()
      */
-    const std::string& getTypeName() const noexcept;
+    std::string_view getTypeName() const noexcept { return "Label"; }
 
     /**
      * Set the text for this label to display.

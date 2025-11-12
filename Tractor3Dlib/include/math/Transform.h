@@ -193,7 +193,7 @@ class Transform : public AnimationTarget, public ScriptTarget
      * @return The type name of this class: "Transform"
      * @see ScriptTarget::getTypeName()
      */
-    const std::string& getTypeName() const;
+    std::string_view getTypeName() const noexcept { return "Transform"; };
 
     /**
      * Gets the matrix corresponding to this transform.

@@ -69,7 +69,7 @@ class TextBox : public Label
      * @return The type name of this class: "TextBox"
      * @see ScriptTarget::getTypeName()
      */
-    const std::string& getTypeName() const noexcept;
+    std::string_view getTypeName() const noexcept { return "TextBox"; };
 
     /**
      * Returns the current location of the caret with the text of this TextBox.

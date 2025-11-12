@@ -65,7 +65,7 @@ class GameScriptTarget : public ScriptTarget
   public:
     GameScriptTarget() { GP_REGISTER_SCRIPT_EVENTS(); }
 
-    const std::string& getTypeName() const
+    std::string_view getTypeName() const
     {
         static const std::string TYPE_NAME = "GameScriptTarget";
         return TYPE_NAME;

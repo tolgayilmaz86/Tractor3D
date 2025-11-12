@@ -24,8 +24,6 @@
 namespace tractor
 {
 
-constexpr auto TYPE_NAME = "AnimationClip";
-
 //----------------------------------------------------------------------------
 extern void splitURL(const std::string& url, std::string* file, std::string* id);
 
@@ -88,12 +86,6 @@ AnimationClip::ListenerEvent::ListenerEvent(Listener* listener, unsigned long ev
 {
     _listener = listener;
     _eventTime = eventTime;
-}
-
-//----------------------------------------------------------------------------
-const std::string& AnimationClip::getTypeName() const
-{
-    return TYPE_NAME;
 }
 
 //----------------------------------------------------------------------------

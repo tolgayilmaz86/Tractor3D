@@ -19,8 +19,6 @@
 namespace tractor
 {
 
-constexpr auto TYPE_NAME = "TextBox";
-
 //----------------------------------------------------------------
 TextBox* TextBox::create(const std::string& id, Theme::Style* style)
 {
@@ -48,9 +46,6 @@ void TextBox::initialize(const std::string& typeName, Theme::Style* style, Prope
         _inputMode = getInputMode(properties->getString("inputMode"));
     }
 }
-
-//----------------------------------------------------------------
-const std::string& TextBox::getTypeName() const noexcept { return TYPE_NAME; }
 
 //----------------------------------------------------------------
 void TextBox::addListener(Control::Listener* listener, int eventFlags)

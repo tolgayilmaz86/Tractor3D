@@ -99,13 +99,6 @@ void Transform::resumeTransformChanged()
 }
 
 //----------------------------------------------------------------------------
-const std::string& Transform::getTypeName() const
-{
-    static const std::string TYPE_NAME = "Transform";
-    return TYPE_NAME;
-}
-
-//----------------------------------------------------------------------------
 const Matrix& Transform::getMatrix() const
 {
     if (_matrixDirtyBits & (DIRTY_TRANSLATION | DIRTY_ROTATION | DIRTY_SCALE))

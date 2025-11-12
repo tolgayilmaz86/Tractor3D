@@ -52,7 +52,7 @@ class ImageControl : public Control
      * @return The type name of this class: "ImageControl"
      * @see ScriptTarget::getTypeName()
      */
-    const std::string& getTypeName() const noexcept;
+    std::string_view getTypeName() const noexcept { return "ImageControl"; };
 
     /**
      * Set the path of the image for this ImageControl to display.

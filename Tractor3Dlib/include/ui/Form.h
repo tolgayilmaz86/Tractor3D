@@ -113,7 +113,7 @@ class Form : public Drawable, public Container
      * @return The type name of this class: "Form"
      * @see ScriptTarget::getTypeName
      */
-    const std::string& getTypeName() const noexcept;
+    std::string_view getTypeName() const noexcept { return "Form"; };
 
     /**
      * @see Container#isForm()

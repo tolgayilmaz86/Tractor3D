@@ -53,7 +53,7 @@ class Slider : public Label
      * @return The type name of this class: "Slider"
      * @see ScriptTarget::getTypeName()
      */
-    const std::string& getTypeName() const noexcept;
+    std::string_view getTypeName() const noexcept { return "Slider"; };
 
     /**
      * Set the minimum value that can be set on this slider.

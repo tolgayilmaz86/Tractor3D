@@ -117,12 +117,12 @@ class PhysicsController : public ScriptTarget
         /**
          * Constructor.
          */
-        HitFilter();
+        HitFilter() = default;
 
         /**
          * Virtual destructor.
          */
-        virtual ~HitFilter();
+        virtual ~HitFilter() = default;
 
         /**
          * Called before performing a hit test with an object to determine
@@ -133,7 +133,7 @@ class PhysicsController : public ScriptTarget
          * @return True if the object should be filtered out, or false to include the object in the
          * test (default).
          */
-        virtual bool filter(PhysicsCollisionObject* object);
+        virtual bool filter(PhysicsCollisionObject* object) { return false; };
 
         /**
          * Called when a ray or sweep test collides with a collision object.
@@ -149,7 +149,7 @@ class PhysicsController : public ScriptTarget
          * @return True (default) to continue with default behavior where closer
          *      objects are processed, false to process all intersecting objects.
          */
-        virtual bool hit(const HitResult& result);
+        virtual bool hit(const HitResult& result) { return true; };
     };
 
     /**
@@ -158,7 +158,7 @@ class PhysicsController : public ScriptTarget
      * @return The type name of this class: "PhysicsController"
      * @see ScriptTarget::getTypeName()
      */
-    const std::string& getTypeName() const;
+    std::string_view getTypeName() const noexcept { return "PhysicsController"; }
 
     /**
      * Adds a listener to the physics controller.
@@ -312,7 +312,7 @@ class PhysicsController : public ScriptTarget
      *
      * @return The gravity vector.
      */
-    const Vector3& getGravity() const;
+    const Vector3& getGravity() const { return _gravity; };
 
     /**
      * Sets the gravity vector for the simulated physics world.
@@ -541,8 +541,8 @@ class PhysicsController : public ScriptTarget
                               const btVector3& color);
         void reportErrorWarning(const char* warningString);
         void draw3dText(const btVector3& location, const char* textString);
-        void setDebugMode(int mode);
-        int getDebugMode() const;
+        void setDebugMode(int mode) { _mode = mode; };
+        int getDebugMode() const { return _mode; };
 
       private:
         struct DebugVertex
@@ -588,20 +588,20 @@ class PhysicsController : public ScriptTarget
         int _lineCount;
     };
 
-    bool _isUpdating;
-    btDefaultCollisionConfiguration* _collisionConfiguration;
-    btCollisionDispatcher* _dispatcher;
-    btBroadphaseInterface* _overlappingPairCache;
-    btSequentialImpulseConstraintSolver* _solver;
-    btDynamicsWorld* _world;
-    btGhostPairCallback* _ghostPairCallback;
+    bool _isUpdating{ false };
+    btDefaultCollisionConfiguration* _collisionConfiguration{ nullptr };
+    btCollisionDispatcher* _dispatcher{ nullptr };
+    btBroadphaseInterface* _overlappingPairCache{ nullptr };
+    btSequentialImpulseConstraintSolver* _solver{ nullptr };
+    btDynamicsWorld* _world{ nullptr };
+    btGhostPairCallback* _ghostPairCallback{ nullptr };
     std::vector<PhysicsCollisionShape*> _shapes;
-    DebugDrawer* _debugDrawer;
-    Listener::EventType _status;
-    std::vector<Listener*>* _listeners;
-    Vector3 _gravity;
+    DebugDrawer* _debugDrawer{ nullptr };
+    Listener::EventType _status{ PhysicsController::Listener::DEACTIVATED };
+    std::vector<Listener*>* _listeners{ nullptr };
+    Vector3 _gravity{ 0.0f, -9.81f, 0.0f };
     std::map<PhysicsCollisionObject::CollisionPair, CollisionInfo> _collisionStatus;
-    CollisionCallback* _collisionCallback;
+    CollisionCallback* _collisionCallback{ nullptr };
 };
 
 } // namespace tractor

@@ -53,7 +53,7 @@ class PhysicsGenericConstraint : public PhysicsConstraint
      * @return The rotation offset.
      */
 
-  inline const Quaternion& getRotationOffsetB() const
+    inline const Quaternion& getRotationOffsetB() const
     {
         if (!_rotationOffsetB) _rotationOffsetB = new Quaternion();
 
@@ -303,7 +303,7 @@ class PhysicsGenericConstraint : public PhysicsConstraint
      * Note: This should only used by subclasses that do not want
      * the _constraint member variable to be initialized.
      */
-    PhysicsGenericConstraint();
+    PhysicsGenericConstraint() : PhysicsConstraint(nullptr, nullptr) {};
 
     /**
      * Creates a generic constraint so that the rigid body (or bodies) is
@@ -343,10 +343,10 @@ class PhysicsGenericConstraint : public PhysicsConstraint
     virtual ~PhysicsGenericConstraint();
 
   private:
-    mutable Quaternion* _rotationOffsetA;
-    mutable Quaternion* _rotationOffsetB;
-    mutable Vector3* _translationOffsetA;
-    mutable Vector3* _translationOffsetB;
+    mutable Quaternion* _rotationOffsetA{ nullptr };
+    mutable Quaternion* _rotationOffsetB{ nullptr };
+    mutable Vector3* _translationOffsetA{ nullptr };
+    mutable Vector3* _translationOffsetB{ nullptr };
 };
 
 } // namespace tractor

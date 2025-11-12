@@ -70,7 +70,7 @@ class PhysicsHingeConstraint : public PhysicsConstraint
     /**
      * Destructor.
      */
-    ~PhysicsHingeConstraint();
+    ~PhysicsHingeConstraint() = default;
 };
 
 } // namespace tractor

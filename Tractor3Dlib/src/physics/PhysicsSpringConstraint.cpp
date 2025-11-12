@@ -21,6 +21,7 @@
 namespace tractor
 {
 
+//----------------------------------------------------------------------------
 PhysicsSpringConstraint::PhysicsSpringConstraint(PhysicsRigidBody* a, PhysicsRigidBody* b)
 {
     assert(a && a->_body);
@@ -39,6 +40,7 @@ PhysicsSpringConstraint::PhysicsSpringConstraint(PhysicsRigidBody* a, PhysicsRig
                                                             true);
 }
 
+//----------------------------------------------------------------------------
 PhysicsSpringConstraint::PhysicsSpringConstraint(PhysicsRigidBody* a,
                                                  const Quaternion& rotationOffsetA,
                                                  const Vector3& translationOffsetA,
@@ -69,11 +71,7 @@ PhysicsSpringConstraint::PhysicsSpringConstraint(PhysicsRigidBody* a,
         bullet_new<btGeneric6DofSpringConstraint>(*a->_body, *b->_body, frameInA, frameInB, true);
 }
 
-PhysicsSpringConstraint::~PhysicsSpringConstraint()
-{
-    // Used
-}
-
+//----------------------------------------------------------------------------
 void PhysicsSpringConstraint::setStrength(SpringProperty property, float strength)
 {
     assert(_constraint);
@@ -87,6 +85,7 @@ void PhysicsSpringConstraint::setStrength(SpringProperty property, float strengt
     }
 }
 
+//----------------------------------------------------------------------------
 void PhysicsSpringConstraint::setDamping(SpringProperty property, float damping)
 {
     assert(_constraint);

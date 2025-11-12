@@ -22,11 +22,13 @@
 namespace tractor
 {
 
+//----------------------------------------------------------------------------
 PhysicsConstraint::PhysicsConstraint(PhysicsRigidBody* a, PhysicsRigidBody* b)
-    : _a(a), _b(b), _constraint(nullptr)
+    : _a(a), _b(b)
 {
 }
 
+//----------------------------------------------------------------------------
 PhysicsConstraint::~PhysicsConstraint()
 {
     // Remove the physics rigid bodies' references to this constraint.
@@ -39,6 +41,7 @@ PhysicsConstraint::~PhysicsConstraint()
     SAFE_DELETE(_constraint);
 }
 
+//----------------------------------------------------------------------------
 Vector3 PhysicsConstraint::centerOfMassMidpoint(const Node* a, const Node* b)
 {
     assert(a);
@@ -59,6 +62,7 @@ Vector3 PhysicsConstraint::centerOfMassMidpoint(const Node* a, const Node* b)
     return c;
 }
 
+//----------------------------------------------------------------------------
 Quaternion PhysicsConstraint::getRotationOffset(const Node* node, const Vector3& point)
 {
     assert(node);
@@ -79,6 +83,7 @@ Quaternion PhysicsConstraint::getRotationOffset(const Node* node, const Vector3&
     return r;
 }
 
+//----------------------------------------------------------------------------
 Vector3 PhysicsConstraint::getTranslationOffset(const Node* node, const Vector3& point)
 {
     assert(node);
@@ -108,6 +113,7 @@ Vector3 PhysicsConstraint::getTranslationOffset(const Node* node, const Vector3&
     return t;
 }
 
+//----------------------------------------------------------------------------
 btTransform PhysicsConstraint::getTransformOffset(const Node* node, const Vector3& origin)
 {
     assert(node);
@@ -140,6 +146,7 @@ btTransform PhysicsConstraint::getTransformOffset(const Node* node, const Vector
     return btTransform(BQ(r), BV(t));
 }
 
+//----------------------------------------------------------------------------
 Vector3 PhysicsConstraint::getWorldCenterOfMass(const Node* node)
 {
     assert(node);
@@ -161,6 +168,7 @@ Vector3 PhysicsConstraint::getWorldCenterOfMass(const Node* node)
     return center;
 }
 
+//----------------------------------------------------------------------------
 Vector3 PhysicsConstraint::offsetByCenterOfMass(const Node* node, const Vector3& v)
 {
     assert(node && node->getCollisionObject() && node->getCollisionObject()->_motionState);

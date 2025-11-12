@@ -122,7 +122,7 @@ class PhysicsCharacter : public PhysicsGhostObject
      * @param y The y coordinate of the velocity vector.
      * @param z The z coordinate of the velocity vector.
      */
-    void setVelocity(float x, float y, float z);
+    void setVelocity(float x, float y, float z) { _moveVelocity.setValue(x, y, z); };
 
     /**
      * Resets the internal velocity state which brings the character to an immediate stop
@@ -170,7 +170,7 @@ class PhysicsCharacter : public PhysicsGhostObject
      *
      * @param velocity Optional velocity modifier.
      */
-    void setForwardVelocity(float velocity = 1.0f);
+    void setForwardVelocity(float velocity = 1.0f) { _forwardVelocity = velocity; }
 
     /**
      * Moves the character right with the given velocity vector.
@@ -182,7 +182,7 @@ class PhysicsCharacter : public PhysicsGhostObject
      *
      * @param velocity Optional velocity modifier.
      */
-    void setRightVelocity(float velocity = 1.0f);
+    void setRightVelocity(float velocity = 1.0f) { _rightVelocity = velocity; }
 
     /**
      * Returns the current velocity of the character.
@@ -273,22 +273,22 @@ class PhysicsCharacter : public PhysicsGhostObject
 
     void updateAction(btCollisionWorld* collisionWorld, btScalar deltaTimeStep);
 
-    btVector3 _moveVelocity;
-    float _forwardVelocity;
-    float _rightVelocity;
-    btVector3 _verticalVelocity;
-    btVector3 _currentVelocity;
-    btVector3 _normalizedVelocity;
-    bool _colliding;
-    btVector3 _collisionNormal;
-    btVector3 _currentPosition;
+    btVector3 _moveVelocity{ 0, 0, 0 };
+    float _forwardVelocity{ 0.0f };
+    float _rightVelocity{ 0.0f };
+    btVector3 _verticalVelocity{ 0, 0, 0 };
+    btVector3 _currentVelocity{ 0, 0, 0 };
+    btVector3 _normalizedVelocity{ 0, 0, 0 };
+    bool _colliding{ false };
+    btVector3 _collisionNormal{ 0, 0, 0 };
+    btVector3 _currentPosition{ 0, 0, 0 };
     btManifoldArray _manifoldArray;
-    float _stepHeight;
-    float _slopeAngle;
-    float _cosSlopeAngle;
-    bool _physicsEnabled;
-    float _mass;
-    ActionInterface* _actionInterface;
+    float _stepHeight{ 0.1f };
+    float _slopeAngle{ 0.0f };
+    float _cosSlopeAngle{ 1.0f };
+    bool _physicsEnabled{ true };
+    float _mass{ 1.0f };
+    ActionInterface* _actionInterface{ nullptr };
 };
 
 } // namespace tractor

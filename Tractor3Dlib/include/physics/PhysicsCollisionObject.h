@@ -333,22 +333,22 @@ class PhysicsCollisionObject
     /**
      * Pointer to Node contained by this collision object.
      */
-    Node* _node;
+    Node* _node{ nullptr };
 
     /**
      * The PhysicsCollisionObject's collision shape.
      */
-    PhysicsCollisionShape* _collisionShape;
+    PhysicsCollisionShape* _collisionShape{ nullptr };
 
     /**
      * If the collision object is enabled or not.
      */
-    bool _enabled;
+    bool _enabled{ true };
 
     /**
      * The list of script listeners.
      */
-    std::vector<ScriptListener*>* _scriptListeners;
+    std::vector<ScriptListener*>* _scriptListeners{ nullptr };
 
   private:
     /**
@@ -407,13 +407,13 @@ class PhysicsCollisionObject
     /**
      * The PhysicsCollisionObject's motion state.
      */
-    PhysicsMotionState* _motionState;
+    PhysicsMotionState* _motionState{ nullptr };
 
     /**
      * Group identifier and the bitmask for collision filtering.
      */
-    int _group;
-    int _mask;
+    int _group{ PHYSICS_COLLISION_GROUP_DEFAULT };
+    int _mask{ PHYSICS_COLLISION_MASK_DEFAULT };
 };
 
 } // namespace tractor

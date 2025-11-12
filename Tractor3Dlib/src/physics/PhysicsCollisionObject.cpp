@@ -56,13 +56,14 @@ struct CollidesWithCallback : public btCollisionWorld::ContactResultCallback
      */
     bool result;
 };
-
+//----------------------------------------------------------------------------
 PhysicsCollisionObject::PhysicsCollisionObject(Node* node, int group, int mask)
-    : _node(node), _collisionShape(nullptr), _enabled(true), _scriptListeners(nullptr),
-      _motionState(nullptr), _group(group), _mask(mask)
+    : _node(node), _group(group), _mask(mask)
 {
+//----------------------------------------------------------------------------
 }
 
+//----------------------------------------------------------------------------
 PhysicsCollisionObject::~PhysicsCollisionObject()
 {
     SAFE_DELETE(_motionState);
@@ -80,12 +81,14 @@ PhysicsCollisionObject::~PhysicsCollisionObject()
     Game::getInstance()->getPhysicsController()->destroyShape(_collisionShape);
 }
 
+//----------------------------------------------------------------------------
 PhysicsCollisionShape::Type PhysicsCollisionObject::getShapeType() const
 {
     assert(getCollisionShape());
     return getCollisionShape()->getType();
 }
 
+//----------------------------------------------------------------------------
 bool PhysicsCollisionObject::isKinematic() const
 {
     switch (getType())
@@ -99,6 +102,7 @@ bool PhysicsCollisionObject::isKinematic() const
     }
 }
 
+//----------------------------------------------------------------------------
 bool PhysicsCollisionObject::isStatic() const
 {
     switch (getType())
@@ -112,12 +116,14 @@ bool PhysicsCollisionObject::isStatic() const
     }
 }
 
+//----------------------------------------------------------------------------
 bool PhysicsCollisionObject::isDynamic() const
 {
     assert(getCollisionObject());
     return !getCollisionObject()->isStaticOrKinematicObject();
 }
 
+//----------------------------------------------------------------------------
 void PhysicsCollisionObject::setEnabled(bool enable)
 {
     if (enable)
@@ -139,6 +145,7 @@ void PhysicsCollisionObject::setEnabled(bool enable)
     }
 }
 
+//----------------------------------------------------------------------------
 void PhysicsCollisionObject::addCollisionListener(CollisionListener* listener,
                                                   PhysicsCollisionObject* object)
 {
@@ -146,6 +153,7 @@ void PhysicsCollisionObject::addCollisionListener(CollisionListener* listener,
     Game::getInstance()->getPhysicsController()->addCollisionListener(listener, this, object);
 }
 
+//----------------------------------------------------------------------------
 void PhysicsCollisionObject::removeCollisionListener(CollisionListener* listener,
                                                      PhysicsCollisionObject* object)
 {
@@ -153,6 +161,7 @@ void PhysicsCollisionObject::removeCollisionListener(CollisionListener* listener
     Game::getInstance()->getPhysicsController()->removeCollisionListener(listener, this, object);
 }
 
+//----------------------------------------------------------------------------
 void PhysicsCollisionObject::addCollisionListener(const char* function, PhysicsCollisionObject* object)
 {
     ScriptListener* listener = ScriptListener::create(function);
@@ -164,6 +173,7 @@ void PhysicsCollisionObject::addCollisionListener(const char* function, PhysicsC
     addCollisionListener(listener, object);
 }
 
+//----------------------------------------------------------------------------
 void PhysicsCollisionObject::removeCollisionListener(const char* function,
                                                      PhysicsCollisionObject* object)
 {
@@ -182,6 +192,7 @@ void PhysicsCollisionObject::removeCollisionListener(const char* function,
     }
 }
 
+//----------------------------------------------------------------------------
 bool PhysicsCollisionObject::collidesWith(PhysicsCollisionObject* object) const
 {
     assert(Game::getInstance()->getPhysicsController()
@@ -198,6 +209,7 @@ bool PhysicsCollisionObject::collidesWith(PhysicsCollisionObject* object) const
     return callback.result;
 }
 
+//----------------------------------------------------------------------------
 PhysicsCollisionObject::CollisionPair::CollisionPair(PhysicsCollisionObject* objectA,
                                                      PhysicsCollisionObject* objectB)
     : objectA(objectA), objectB(objectB)
@@ -205,6 +217,7 @@ PhysicsCollisionObject::CollisionPair::CollisionPair(PhysicsCollisionObject* obj
     // unused
 }
 
+//----------------------------------------------------------------------------
 bool PhysicsCollisionObject::CollisionPair::operator<(const CollisionPair& collisionPair) const
 {
     // If the pairs are equal, then return false.
@@ -220,6 +233,7 @@ bool PhysicsCollisionObject::CollisionPair::operator<(const CollisionPair& colli
     return false;
 }
 
+//----------------------------------------------------------------------------
 PhysicsCollisionObject::PhysicsMotionState::PhysicsMotionState(Node* node,
                                                                PhysicsCollisionObject* collisionObject,
                                                                const Vector3* centerOfMassOffset)
@@ -234,7 +248,7 @@ PhysicsCollisionObject::PhysicsMotionState::PhysicsMotionState(Node* node,
     updateTransformFromNode();
 }
 
-
+//----------------------------------------------------------------------------
 void PhysicsCollisionObject::PhysicsMotionState::getWorldTransform(btTransform& transform) const
 {
     assert(_node);
@@ -245,6 +259,7 @@ void PhysicsCollisionObject::PhysicsMotionState::getWorldTransform(btTransform& 
     transform = _centerOfMassOffset.inverse() * _worldTransform;
 }
 
+//----------------------------------------------------------------------------
 void PhysicsCollisionObject::PhysicsMotionState::setWorldTransform(const btTransform& transform)
 {
     assert(_node);
@@ -258,6 +273,7 @@ void PhysicsCollisionObject::PhysicsMotionState::setWorldTransform(const btTrans
     _node->setTranslation(pos.x(), pos.y(), pos.z());
 }
 
+//----------------------------------------------------------------------------
 void PhysicsCollisionObject::PhysicsMotionState::updateTransformFromNode() const
 {
     assert(_node);
@@ -285,13 +301,16 @@ void PhysicsCollisionObject::PhysicsMotionState::updateTransformFromNode() const
     }
 }
 
+//----------------------------------------------------------------------------
 void PhysicsCollisionObject::PhysicsMotionState::setCenterOfMassOffset(const Vector3& centerOfMassOffset)
 {
     _centerOfMassOffset.setOrigin(BV(centerOfMassOffset));
 }
 
+//----------------------------------------------------------------------------
 PhysicsCollisionObject::ScriptListener::~ScriptListener() { SAFE_RELEASE(script); }
 
+//----------------------------------------------------------------------------
 PhysicsCollisionObject::ScriptListener* PhysicsCollisionObject::ScriptListener::create(
     const std::string& url)
 {
@@ -322,6 +341,7 @@ PhysicsCollisionObject::ScriptListener* PhysicsCollisionObject::ScriptListener::
     return listener;
 }
 
+//----------------------------------------------------------------------------
 void PhysicsCollisionObject::ScriptListener::collisionEvent(
     PhysicsCollisionObject::CollisionListener::EventType type,
     const PhysicsCollisionObject::CollisionPair& collisionPair,

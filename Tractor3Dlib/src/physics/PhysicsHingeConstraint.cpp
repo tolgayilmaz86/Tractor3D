@@ -20,6 +20,7 @@
 namespace tractor
 {
 
+//----------------------------------------------------------------------------
 void PhysicsHingeConstraint::setLimits(float minAngle, float maxAngle, float bounciness)
 {
     // Use the defaults for softness (0.9) and biasFactor (0.3).
@@ -27,6 +28,7 @@ void PhysicsHingeConstraint::setLimits(float minAngle, float maxAngle, float bou
     ((btHingeConstraint*)_constraint)->setLimit(minAngle, maxAngle, 0.9f, 0.3f, bounciness);
 }
 
+//----------------------------------------------------------------------------
 PhysicsHingeConstraint::PhysicsHingeConstraint(PhysicsRigidBody* a,
                                                const Quaternion& rotationOffsetA,
                                                const Vector3& translationOffsetA,
@@ -62,11 +64,6 @@ PhysicsHingeConstraint::PhysicsHingeConstraint(PhysicsRigidBody* a,
         btTransform frameInA(BQ(rotationOffsetA), BV(tA));
         _constraint = bullet_new<btHingeConstraint>(*a->_body, frameInA);
     }
-}
-
-PhysicsHingeConstraint::~PhysicsHingeConstraint()
-{
-    // Unused
 }
 
 } // namespace tractor

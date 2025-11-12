@@ -20,11 +20,12 @@
 namespace tractor
 {
 
+//----------------------------------------------------------------------------
 PhysicsGhostObject::PhysicsGhostObject(Node* node,
                                        const PhysicsCollisionShape::Definition& shape,
                                        int group,
                                        int mask)
-    : PhysicsCollisionObject(node, group, mask), _ghostObject(nullptr)
+    : PhysicsCollisionObject(node, group, mask)
 {
     Vector3 centerOfMassOffset;
     PhysicsController* physicsController = Game::getInstance()->getPhysicsController();
@@ -51,6 +52,7 @@ PhysicsGhostObject::PhysicsGhostObject(Node* node,
     _node->addListener(this);
 }
 
+//----------------------------------------------------------------------------
 PhysicsGhostObject::~PhysicsGhostObject()
 {
     assert(_node);
@@ -62,6 +64,7 @@ PhysicsGhostObject::~PhysicsGhostObject()
     SAFE_DELETE(_ghostObject);
 }
 
+//----------------------------------------------------------------------------
 PhysicsGhostObject* PhysicsGhostObject::create(Node* node, Properties* properties)
 {
     // Check if the properties is valid and has a valid namespace.
@@ -103,6 +106,7 @@ PhysicsGhostObject* PhysicsGhostObject::create(Node* node, Properties* propertie
     return ghost;
 }
 
+//----------------------------------------------------------------------------
 void PhysicsGhostObject::transformChanged(Transform* transform, long cookie)
 {
     assert(_motionState);

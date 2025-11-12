@@ -134,7 +134,7 @@ class PhysicsRigidBody : public PhysicsCollisionObject, public Transform::Listen
     /**
      * @see PhysicsCollisionObject::getType
      */
-    PhysicsCollisionObject::Type getType() const;
+    PhysicsCollisionObject::Type getType() const { return PhysicsCollisionObject::RIGID_BODY; }
 
     /**
      * Gets the rigid body's mass.
@@ -570,10 +570,10 @@ class PhysicsRigidBody : public PhysicsCollisionObject, public Transform::Listen
     // Used for implementing getHeight() when the heightfield has a transform that can change.
     void transformChanged(Transform* transform, long cookie);
 
-    btRigidBody* _body;
-    float _mass;
-    std::vector<PhysicsConstraint*>* _constraints;
-    bool _inDestructor;
+    btRigidBody* _body{ nullptr };
+    float _mass{ 0.0f };
+    std::vector<PhysicsConstraint*>* _constraints{ nullptr };
+    bool _inDestructor{ false };
 };
 
 } // namespace tractor

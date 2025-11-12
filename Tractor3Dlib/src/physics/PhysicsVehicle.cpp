@@ -20,12 +20,13 @@
 #include "physics/PhysicsVehicleWheel.h"
 #include "scene/Node.h"
 
-#define AIR_DENSITY (1.2f)
-#define KPH_TO_MPS (1.0f / 3.6f)
+constexpr auto AIR_DENSITY = (1.2f);
+constexpr auto KPH_TO_MPS = (1.0f / 3.6f);
 
 namespace tractor
 {
 
+//----------------------------------------------------------------------------
 /**
  * The default vehicle raycaster in Bullet currently does not filter out the vehicle's own
  * rigid body from the ray test which can result in unexpected behavior. These implementations
@@ -52,6 +53,7 @@ class ClosestNotMeRayResultCallback : public btCollisionWorld::ClosestRayResultC
     btCollisionObject* _me;
 };
 
+//----------------------------------------------------------------------------
 /**
  * @script{ignore}
  */
@@ -88,6 +90,7 @@ class VehicleNotMeRaycaster : public btVehicleRaycaster
     btCollisionObject* _me;
 };
 
+//----------------------------------------------------------------------------
 PhysicsVehicle::PhysicsVehicle(Node* node,
                                const PhysicsCollisionShape::Definition& shape,
                                const PhysicsRigidBody::Parameters& parameters)
@@ -100,6 +103,7 @@ PhysicsVehicle::PhysicsVehicle(Node* node,
     initialize();
 }
 
+//----------------------------------------------------------------------------
 PhysicsVehicle::PhysicsVehicle(Node* node, PhysicsRigidBody* rigidBody)
     : PhysicsCollisionObject(node), _speedSmoothed(0)
 {
@@ -108,6 +112,7 @@ PhysicsVehicle::PhysicsVehicle(Node* node, PhysicsRigidBody* rigidBody)
     initialize();
 }
 
+//----------------------------------------------------------------------------
 PhysicsVehicle* PhysicsVehicle::create(Node* node, Properties* properties)
 {
     // Note that the constructor for PhysicsRigidBody calls addCollisionObject and so
@@ -179,6 +184,7 @@ PhysicsVehicle* PhysicsVehicle::create(Node* node, Properties* properties)
     return vehicle;
 }
 
+//----------------------------------------------------------------------------
 void PhysicsVehicle::initialize()
 {
     assert(getNode());
@@ -203,6 +209,7 @@ void PhysicsVehicle::initialize()
     _vehicle->setCoordinateSystem(0, 1, 2);
 }
 
+//----------------------------------------------------------------------------
 PhysicsVehicle::~PhysicsVehicle()
 {
     // Note that the destructor for PhysicsRigidBody calls removeCollisionObject and so
@@ -213,31 +220,7 @@ PhysicsVehicle::~PhysicsVehicle()
     SAFE_DELETE(_rigidBody);
 }
 
-btCollisionObject* PhysicsVehicle::getCollisionObject() const noexcept
-{
-    assert(_rigidBody);
-
-    return _rigidBody->getCollisionObject();
-}
-
-PhysicsCollisionObject::Type PhysicsVehicle::getType() const
-{
-    return PhysicsCollisionObject::VEHICLE;
-}
-
-PhysicsRigidBody* PhysicsVehicle::getRigidBody() const
-{
-    assert(_rigidBody);
-
-    return _rigidBody;
-}
-
-void PhysicsVehicle::setEnabled(bool enable) { getRigidBody()->setEnabled(enable); }
-
-unsigned int PhysicsVehicle::getWheelCount() const { return (unsigned int)_wheels.size(); }
-
-PhysicsVehicleWheel* PhysicsVehicle::getWheel(unsigned int index) { return _wheels.at(index); }
-
+//----------------------------------------------------------------------------
 void PhysicsVehicle::addWheel(PhysicsVehicleWheel* wheel)
 {
     unsigned i = (unsigned int)_wheels.size();
@@ -246,10 +229,7 @@ void PhysicsVehicle::addWheel(PhysicsVehicleWheel* wheel)
     wheel->addToVehicle(_vehicle);
 }
 
-float PhysicsVehicle::getSpeedKph() const { return _vehicle->getCurrentSpeedKmHour(); }
-
-float PhysicsVehicle::getSpeedSmoothKph() const { return _speedSmoothed; }
-
+//----------------------------------------------------------------------------
 void PhysicsVehicle::update(float elapsedTime, float steering, float braking, float driving)
 {
     float v = getSpeedKph();
@@ -291,6 +271,7 @@ void PhysicsVehicle::update(float elapsedTime, float steering, float braking, fl
     }
 }
 
+//----------------------------------------------------------------------------
 void PhysicsVehicle::reset()
 {
     _rigidBody->setLinearVelocity(Vector3::zero());
@@ -298,6 +279,7 @@ void PhysicsVehicle::reset()
     _speedSmoothed = 0;
 }
 
+//----------------------------------------------------------------------------
 float PhysicsVehicle::getSteering(float v, float rawSteering) const
 {
     float gain = 1;
@@ -309,6 +291,7 @@ float PhysicsVehicle::getSteering(float v, float rawSteering) const
     return rawSteering * gain;
 }
 
+//----------------------------------------------------------------------------
 float PhysicsVehicle::getBraking(float v, float rawBraking) const
 {
     float reduc = 0;
@@ -322,6 +305,7 @@ float PhysicsVehicle::getBraking(float v, float rawBraking) const
     return max(0.0f, rawBraking - reduc);
 }
 
+//----------------------------------------------------------------------------
 float PhysicsVehicle::getDriving(float v, float rawDriving, float rawBraking) const
 {
     float reduc = 0;
@@ -341,6 +325,7 @@ float PhysicsVehicle::getDriving(float v, float rawDriving, float rawBraking) co
     return gain * rawDriving - reduc;
 }
 
+//----------------------------------------------------------------------------
 void PhysicsVehicle::applyDownforce()
 {
     float v = _speedSmoothed * KPH_TO_MPS;
@@ -351,61 +336,5 @@ void PhysicsVehicle::applyDownforce()
     // _downforce is the product of reference area and the aerodynamic coefficient
     _rigidBody->applyForce(Vector3(0, -_downforce * q, 0));
 }
-
-float PhysicsVehicle::getSteeringGain() const { return _steeringGain; }
-
-void PhysicsVehicle::setSteeringGain(float steeringGain) { _steeringGain = steeringGain; }
-
-float PhysicsVehicle::getBrakingForce() const { return _brakingForce; }
-
-void PhysicsVehicle::setBrakingForce(float brakingForce) { _brakingForce = brakingForce; }
-
-float PhysicsVehicle::getDrivingForce() const { return _drivingForce; }
-
-void PhysicsVehicle::setDrivingForce(float drivingForce) { _drivingForce = drivingForce; }
-
-float PhysicsVehicle::getSteerdownSpeed() const { return _steerdownSpeed; }
-
-float PhysicsVehicle::getSteerdownGain() const { return _steerdownGain; }
-
-void PhysicsVehicle::setSteerdown(float steerdownSpeed, float steerdownGain)
-{
-    _steerdownSpeed = steerdownSpeed;
-    _steerdownGain = steerdownGain;
-}
-
-float PhysicsVehicle::getBrakedownStart() const { return _brakedownStart; }
-
-float PhysicsVehicle::getBrakedownFull() const { return _brakedownFull; }
-
-void PhysicsVehicle::setBrakedown(float brakedownStart, float brakedownFull)
-{
-    _brakedownStart = brakedownStart;
-    _brakedownFull = brakedownFull;
-}
-
-float PhysicsVehicle::getDrivedownStart() const { return _drivedownStart; }
-
-float PhysicsVehicle::getDrivedownFull() const { return _drivedownFull; }
-
-void PhysicsVehicle::setDrivedown(float drivedownStart, float drivedownFull)
-{
-    _drivedownStart = drivedownStart;
-    _drivedownFull = drivedownFull;
-}
-
-float PhysicsVehicle::getBoostSpeed() const { return _boostSpeed; }
-
-float PhysicsVehicle::getBoostGain() const { return _boostGain; }
-
-void PhysicsVehicle::setBoost(float boostSpeed, float boostGain)
-{
-    _boostSpeed = boostSpeed;
-    _boostGain = boostGain;
-}
-
-float PhysicsVehicle::getDownforce() const { return _downforce; }
-
-void PhysicsVehicle::setDownforce(float downforce) { _downforce = downforce; }
 
 } // namespace tractor

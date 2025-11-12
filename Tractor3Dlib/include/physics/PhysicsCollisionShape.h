@@ -100,7 +100,7 @@ class PhysicsCollisionShape : public Ref
         static Definition create(Node* node, Properties* properties);
 
         // Shape type.
-        PhysicsCollisionShape::Type type;
+        PhysicsCollisionShape::Type type{ SHAPE_NONE };
 
         // Shape data.
         struct BoxData
@@ -133,10 +133,10 @@ class PhysicsCollisionShape : public Ref
         } data;
 
         // Whether the shape definition is explicit, or if it is inherited from node bounds.
-        bool isExplicit;
+        bool isExplicit{ false };
 
         // Whether the center position is absolute or relative to the node position.
-        bool centerAbsolute;
+        bool centerAbsolute{ false };
     };
 
     /**

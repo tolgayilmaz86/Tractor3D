@@ -25,13 +25,13 @@
 namespace tractor
 {
 
+//----------------------------------------------------------------------------
 PhysicsRigidBody::PhysicsRigidBody(Node* node,
                                    const PhysicsCollisionShape::Definition& shape,
                                    const Parameters& parameters,
                                    int group,
                                    int mask)
-    : PhysicsCollisionObject(node, group, mask), _body(nullptr), _mass(parameters.mass),
-      _constraints(nullptr), _inDestructor(false)
+    : PhysicsCollisionObject(node, group, mask), _mass(parameters.mass)
 {
     assert(Game::getInstance()->getPhysicsController());
     assert(_node);
@@ -93,6 +93,7 @@ PhysicsRigidBody::PhysicsRigidBody(Node* node,
     }
 }
 
+//----------------------------------------------------------------------------
 PhysicsRigidBody::~PhysicsRigidBody()
 {
     assert(Game::getInstance()->getPhysicsController());
@@ -123,11 +124,7 @@ PhysicsRigidBody::~PhysicsRigidBody()
     }
 }
 
-PhysicsCollisionObject::Type PhysicsRigidBody::getType() const
-{
-    return PhysicsCollisionObject::RIGID_BODY;
-}
-
+//----------------------------------------------------------------------------
 void PhysicsRigidBody::applyForce(const Vector3& force, const Vector3* relativePosition)
 {
     // If the force is significant enough, activate the rigid body
@@ -143,6 +140,7 @@ void PhysicsRigidBody::applyForce(const Vector3& force, const Vector3* relativeP
     }
 }
 
+//----------------------------------------------------------------------------
 void PhysicsRigidBody::applyImpulse(const Vector3& impulse, const Vector3* relativePosition)
 {
     // If the impulse is significant enough, activate the rigid body
@@ -160,6 +158,7 @@ void PhysicsRigidBody::applyImpulse(const Vector3& impulse, const Vector3* relat
     }
 }
 
+//----------------------------------------------------------------------------
 void PhysicsRigidBody::applyTorque(const Vector3& torque)
 {
     // If the torque is significant enough, activate the rigid body
@@ -172,6 +171,7 @@ void PhysicsRigidBody::applyTorque(const Vector3& torque)
     }
 }
 
+//----------------------------------------------------------------------------
 void PhysicsRigidBody::applyTorqueImpulse(const Vector3& torque)
 {
     // If the torque impulse is significant enough, activate the rigid body
@@ -184,6 +184,7 @@ void PhysicsRigidBody::applyTorqueImpulse(const Vector3& torque)
     }
 }
 
+//----------------------------------------------------------------------------
 PhysicsRigidBody* PhysicsRigidBody::create(Node* node, Properties* properties, const std::string& nspace)
 {
     // Check if the properties is valid and has a valid namespace.
@@ -289,6 +290,7 @@ PhysicsRigidBody* PhysicsRigidBody::create(Node* node, Properties* properties, c
     return body;
 }
 
+//----------------------------------------------------------------------------
 void PhysicsRigidBody::setKinematic(bool kinematic)
 {
     assert(_body);
@@ -305,12 +307,14 @@ void PhysicsRigidBody::setKinematic(bool kinematic)
     }
 }
 
+//----------------------------------------------------------------------------
 void PhysicsRigidBody::setEnabled(bool enable)
 {
     PhysicsCollisionObject::setEnabled(enable);
     if (enable) _body->setMotionState(_motionState);
 }
 
+//----------------------------------------------------------------------------
 float PhysicsRigidBody::getHeight(float x, float z) const
 {
     assert(_collisionShape);
@@ -360,6 +364,7 @@ float PhysicsRigidBody::getHeight(float x, float z) const
     return height;
 }
 
+//----------------------------------------------------------------------------
 void PhysicsRigidBody::addConstraint(PhysicsConstraint* constraint)
 {
     assert(constraint);
@@ -368,6 +373,7 @@ void PhysicsRigidBody::addConstraint(PhysicsConstraint* constraint)
     _constraints->push_back(constraint);
 }
 
+//----------------------------------------------------------------------------
 void PhysicsRigidBody::removeConstraint(PhysicsConstraint* constraint)
 {
     // Ensure that the rigid body has constraints and that we are
@@ -386,12 +392,14 @@ void PhysicsRigidBody::removeConstraint(PhysicsConstraint* constraint)
     }
 }
 
+//----------------------------------------------------------------------------
 bool PhysicsRigidBody::supportsConstraints()
 {
     return (getShapeType() != PhysicsCollisionShape::SHAPE_HEIGHTFIELD
             && getShapeType() != PhysicsCollisionShape::SHAPE_MESH);
 }
 
+//----------------------------------------------------------------------------
 void PhysicsRigidBody::transformChanged(Transform* transform, long cookie)
 {
     if (getShapeType() == PhysicsCollisionShape::SHAPE_HEIGHTFIELD)

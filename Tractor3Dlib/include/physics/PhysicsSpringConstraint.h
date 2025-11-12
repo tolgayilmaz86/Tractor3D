@@ -184,7 +184,7 @@ class PhysicsSpringConstraint : public PhysicsGenericConstraint
     /**
      * Destructor.
      */
-    ~PhysicsSpringConstraint();
+    ~PhysicsSpringConstraint() = default;
 
     // Sets the strength for the given angular/linear
     // X/Y/Z axis combination determined by the given index.

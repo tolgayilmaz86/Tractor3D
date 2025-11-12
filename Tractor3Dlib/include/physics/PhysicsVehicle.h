@@ -37,12 +37,12 @@ class PhysicsVehicle : public PhysicsCollisionObject
     /**
      * @see PhysicsCollisionObject#getType
      */
-    PhysicsCollisionObject::Type getType() const;
+    PhysicsCollisionObject::Type getType() const { return PhysicsCollisionObject::VEHICLE; };
 
     /**
      * Returns the rigid body associated with this vehicle.
      */
-    PhysicsRigidBody* getRigidBody() const;
+    PhysicsRigidBody* getRigidBody() const { return _rigidBody; }
 
     /**
      * Sets whether the associated rigid body is enabled or disabled
@@ -50,14 +50,14 @@ class PhysicsVehicle : public PhysicsCollisionObject
      *
      * @param enable true enables the collision object, false disables it.
      */
-    void setEnabled(bool enable);
+    void setEnabled(bool enable) const { getRigidBody()->setEnabled(enable); }
 
     /**
      * Gets the number of wheels on this vehicle.
      *
      * @return the number of wheels on this vehicle.
      */
-    unsigned int getWheelCount() const;
+    unsigned int getWheelCount() const { return (unsigned int)_wheels.size(); };
 
     /**
      * Gets the wheel at the specified index.
@@ -65,7 +65,7 @@ class PhysicsVehicle : public PhysicsCollisionObject
      * @param i index of wheel.
      * @return the wheel at the specified index.
      */
-    PhysicsVehicleWheel* getWheel(unsigned int i);
+    PhysicsVehicleWheel* getWheel(unsigned int i) { return _wheels.at(i); }
 
     /**
      * Permanently adds a wheel to this vehicle.
@@ -77,13 +77,13 @@ class PhysicsVehicle : public PhysicsCollisionObject
     /**
      * Gets an indication of vehicle speed in kilometers per hour.
      */
-    float getSpeedKph() const;
+    float getSpeedKph() const { return _vehicle->getCurrentSpeedKmHour(); };
 
     /**
      * Gets a lagged version of vehicle speed in kilometers per hour,
      * for example that might be used to control engine sounds.
      */
-    float getSpeedSmoothKph() const;
+    float getSpeedSmoothKph() const { return _speedSmoothed; };
 
     /**
      * Updates the vehicle state using the specified normalized command
@@ -106,42 +106,42 @@ class PhysicsVehicle : public PhysicsCollisionObject
      *
      * @return steering gain at full deflection.
      */
-    float getSteeringGain() const;
+    float getSteeringGain() const noexcept { return _steeringGain; }
 
     /**
      * Sets steering gain at full deflection.
      *
      * @param steeringGain steering gain at full deflection.
      */
-    void setSteeringGain(float steeringGain);
+    void setSteeringGain(float steeringGain) noexcept { _steeringGain = steeringGain; }
 
     /**
      * Gets braking force at full braking.
      *
      * @return braking force at full braking.
      */
-    float getBrakingForce() const;
+    float getBrakingForce() const noexcept { return _brakingForce; }
 
     /**
      * Sets braking force at full braking.
      *
      * @param brakingForce braking force at full braking.
      */
-    void setBrakingForce(float brakingForce);
+    void setBrakingForce(float brakingForce) noexcept { _brakingForce = brakingForce; }
 
     /**
      * Gets driving force at full throttle.
      *
      * @return driving force at full throttle.
      */
-    float getDrivingForce() const;
+    float getDrivingForce() const noexcept { return _drivingForce; }
 
     /**
      * Sets driving force at full throttle.
      *
      * @param drivingForce driving force at full throttle.
      */
-    void setDrivingForce(float drivingForce);
+    void setDrivingForce(float drivingForce) noexcept { _drivingForce = drivingForce; }
 
     /**
      * Returns speed at the point of reduced steering, in km/h.
@@ -151,7 +151,7 @@ class PhysicsVehicle : public PhysicsCollisionObject
      *
      * @return speed at the point of reduced steering, in km/h.
      */
-    float getSteerdownSpeed() const;
+    float getSteerdownSpeed() const noexcept { return _steerdownSpeed; }
 
     /**
      * Returns gain at the point of reduced steering, typically
@@ -162,7 +162,7 @@ class PhysicsVehicle : public PhysicsCollisionObject
      *
      * @return gain at the point of reduced steering.
      */
-    float getSteerdownGain() const;
+    float getSteerdownGain() const noexcept { return _steerdownGain; }
 
     /**
      * Sets the point of reduced steering, defined by speed and
@@ -175,14 +175,18 @@ class PhysicsVehicle : public PhysicsCollisionObject
      * @param steerdownGain gain at the point of reduced steering.
      *     A gain of 1 will effectively disable the feature.
      */
-    void setSteerdown(float steerdownSpeed, float steerdownGain);
+    void setSteerdown(float steerdownSpeed, float steerdownGain) noexcept
+    {
+        _steerdownSpeed = steerdownSpeed;
+        _steerdownGain = steerdownGain;
+    }
 
     /**
      * Returns speed where braking starts to fade, in km/h.
      *
      * @return speed where braking starts to fade, in km/h.
      */
-    float getBrakedownStart() const;
+    float getBrakedownStart() const noexcept { return _brakedownStart; }
 
     /**
      * Returns speed where braking is fully faded, in km/h.
@@ -191,7 +195,7 @@ class PhysicsVehicle : public PhysicsCollisionObject
      *
      * @return speed where braking is fully faded, in km/h.
      */
-    float getBrakedownFull() const;
+    float getBrakedownFull() const noexcept { return _brakedownFull; }
 
     /**
      * Sets points that control fade of brake force with speed,
@@ -203,14 +207,18 @@ class PhysicsVehicle : public PhysicsCollisionObject
      *     This speed is typically greater than the brakedownStart
      *     speed.
      */
-    void setBrakedown(float brakedownStart, float brakedownFull);
+    void setBrakedown(float brakedownStart, float brakedownFull) noexcept
+    {
+        _brakedownStart = brakedownStart;
+        _brakedownFull = brakedownFull;
+    }
 
     /**
      * Returns speed where driving force starts to fade, in km/h.
      *
      * @return speed where driving force starts to fade, in km/h.
      */
-    float getDrivedownStart() const;
+    float getDrivedownStart() const noexcept { return _drivedownStart; }
 
     /**
      * Returns speed where driving force is fully faded, in km/h.
@@ -219,7 +227,7 @@ class PhysicsVehicle : public PhysicsCollisionObject
      *
      * @return speed where driving force is fully faded, in km/h.
      */
-    float getDrivedownFull() const;
+    float getDrivedownFull() const noexcept { return _drivedownFull; }
 
     /**
      * Sets points that control fade of driving force with speed,
@@ -231,7 +239,11 @@ class PhysicsVehicle : public PhysicsCollisionObject
      *     This speed is typically greater than the drivedownStart
      *     speed.
      */
-    void setDrivedown(float drivedownStart, float drivedownFull);
+    void setDrivedown(float drivedownStart, float drivedownFull) noexcept
+    {
+        _drivedownStart = drivedownStart;
+        _drivedownFull = drivedownFull;
+    }
 
     /**
      * Returns upper limit of low-speed boost effect, in km/h.
@@ -241,7 +253,7 @@ class PhysicsVehicle : public PhysicsCollisionObject
      *
      * @return upper limit of low-speed boost effect, in km/h.
      */
-    float getBoostSpeed() const;
+    float getBoostSpeed() const noexcept { return _boostSpeed; }
 
     /**
      * Returns boost gain at zero speed, typically greater than 1.
@@ -251,7 +263,7 @@ class PhysicsVehicle : public PhysicsCollisionObject
      *
      * @return boost gain at zero speed.
      */
-    float getBoostGain() const;
+    float getBoostGain() const noexcept { return _boostGain; }
 
     /**
      * Sets parameters that define low-speed boost of the driving force.
@@ -263,7 +275,11 @@ class PhysicsVehicle : public PhysicsCollisionObject
      * @param boostGain boost gain at zero speed, typically greater than 1.
      *     A gain of 1 will effectively disable the feature.
      */
-    void setBoost(float boostSpeed, float boostGain);
+    void setBoost(float boostSpeed, float boostGain) noexcept
+    {
+        _boostSpeed = boostSpeed;
+        _boostGain = boostGain;
+    }
 
     /**
      * Returns the lumped constant that controls aerodynamic downforce.
@@ -274,7 +290,7 @@ class PhysicsVehicle : public PhysicsCollisionObject
      *
      * @return the lumped constant that controls aerodynamic downforce.
      */
-    float getDownforce() const;
+    float getDownforce() const noexcept { return _downforce; }
 
     /**
      * Sets the lumped constant that controls aerodynamic downforce.
@@ -286,13 +302,16 @@ class PhysicsVehicle : public PhysicsCollisionObject
      * @param downforce the lumped constant that controls aerodynamic downforce.
      *     A value of 0 will effectively disable this feature.
      */
-    void setDownforce(float downforce);
+    void setDownforce(float downforce) noexcept { _downforce = downforce; }
 
   protected:
     /**
      * @see PhysicsCollisionObject::getCollisionObject
      */
-    btCollisionObject* getCollisionObject() const noexcept;
+    btCollisionObject* getCollisionObject() const noexcept
+    {
+        return _rigidBody->getCollisionObject();
+    };
 
   private:
     /**

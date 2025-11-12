@@ -27,9 +27,4 @@ PhysicsFixedConstraint::PhysicsFixedConstraint(PhysicsRigidBody* a, PhysicsRigid
     PhysicsGenericConstraint::setLinearUpperLimit(Vector3(0.0f, 0.0f, 0.0f));
 }
 
-PhysicsFixedConstraint::~PhysicsFixedConstraint()
-{
-    // Not used.
-}
-
 } // namespace tractor

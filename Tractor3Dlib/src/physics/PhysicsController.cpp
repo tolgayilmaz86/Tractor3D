@@ -45,6 +45,7 @@ const int PhysicsController::COLLISION = 0x02;
 const int PhysicsController::REGISTERED = 0x04;
 const int PhysicsController::REMOVE = 0x08;
 
+//----------------------------------------------------------------------------
 PhysicsController::PhysicsController()
 {
     GP_REGISTER_SCRIPT_EVENTS();

@@ -60,7 +60,7 @@ class PhysicsSocketConstraint : public PhysicsConstraint
     /**
      * Destructor.
      */
-    ~PhysicsSocketConstraint();
+    ~PhysicsSocketConstraint() = default;
 };
 
 } // namespace tractor

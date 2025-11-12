@@ -20,6 +20,7 @@
 namespace tractor
 {
 
+//----------------------------------------------------------------------------
 PhysicsSocketConstraint::PhysicsSocketConstraint(PhysicsRigidBody* a, PhysicsRigidBody* b)
     : PhysicsConstraint(a, b)
 {
@@ -42,6 +43,7 @@ PhysicsSocketConstraint::PhysicsSocketConstraint(PhysicsRigidBody* a, PhysicsRig
     }
 }
 
+//----------------------------------------------------------------------------
 PhysicsSocketConstraint::PhysicsSocketConstraint(PhysicsRigidBody* a,
                                                  const Vector3& translationOffsetA,
                                                  PhysicsRigidBody* b,
@@ -72,11 +74,6 @@ PhysicsSocketConstraint::PhysicsSocketConstraint(PhysicsRigidBody* a,
     {
         _constraint = bullet_new<btPoint2PointConstraint>(*a->_body, BV(tA));
     }
-}
-
-PhysicsSocketConstraint::~PhysicsSocketConstraint()
-{
-    // Used
 }
 
 } // namespace tractor

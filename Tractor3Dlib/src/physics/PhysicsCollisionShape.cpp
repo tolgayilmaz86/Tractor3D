@@ -25,6 +25,7 @@
 namespace tractor
 {
 
+//----------------------------------------------------------------------------
 PhysicsCollisionShape::PhysicsCollisionShape(Type type,
                                              btCollisionShape* shape,
                                              btStridingMeshInterface* meshInterface)
@@ -33,6 +34,7 @@ PhysicsCollisionShape::PhysicsCollisionShape(Type type,
     memset(&_shapeData, 0, sizeof(_shapeData));
 }
 
+//----------------------------------------------------------------------------
 PhysicsCollisionShape::~PhysicsCollisionShape()
 {
     if (_shape)
@@ -69,12 +71,13 @@ PhysicsCollisionShape::~PhysicsCollisionShape()
     }
 }
 
+//----------------------------------------------------------------------------
 PhysicsCollisionShape::Definition::Definition()
-    : type(SHAPE_NONE), isExplicit(false), centerAbsolute(false)
 {
     memset(&data, 0, sizeof(data));
 }
 
+//----------------------------------------------------------------------------
 PhysicsCollisionShape::Definition::Definition(const Definition& definition)
 {
     // Bitwise-copy the definition object (equivalent to default copy constructor).
@@ -94,6 +97,7 @@ PhysicsCollisionShape::Definition::Definition(const Definition& definition)
     }
 }
 
+//----------------------------------------------------------------------------
 PhysicsCollisionShape::Definition::~Definition()
 {
     switch (type)
@@ -108,6 +112,7 @@ PhysicsCollisionShape::Definition::~Definition()
     }
 }
 
+//----------------------------------------------------------------------------
 PhysicsCollisionShape::Definition& PhysicsCollisionShape::Definition::operator=(
     const Definition& definition)
 {
@@ -133,6 +138,7 @@ PhysicsCollisionShape::Definition& PhysicsCollisionShape::Definition::operator=(
     return *this;
 }
 
+//----------------------------------------------------------------------------
 PhysicsCollisionShape::Definition PhysicsCollisionShape::Definition::create(Node* node,
                                                                             Properties* properties)
 {
@@ -374,6 +380,7 @@ PhysicsCollisionShape::Definition PhysicsCollisionShape::Definition::create(Node
     return shape;
 }
 
+//----------------------------------------------------------------------------
 PhysicsCollisionShape::Definition PhysicsCollisionShape::box()
 {
     Definition d;
@@ -383,6 +390,7 @@ PhysicsCollisionShape::Definition PhysicsCollisionShape::box()
     return d;
 }
 
+//----------------------------------------------------------------------------
 PhysicsCollisionShape::Definition PhysicsCollisionShape::box(const Vector3& extents,
                                                              const Vector3& center,
                                                              bool absolute)
@@ -396,6 +404,7 @@ PhysicsCollisionShape::Definition PhysicsCollisionShape::box(const Vector3& exte
     return d;
 }
 
+//----------------------------------------------------------------------------
 PhysicsCollisionShape::Definition PhysicsCollisionShape::sphere()
 {
     Definition d;
@@ -405,6 +414,7 @@ PhysicsCollisionShape::Definition PhysicsCollisionShape::sphere()
     return d;
 }
 
+//----------------------------------------------------------------------------
 PhysicsCollisionShape::Definition PhysicsCollisionShape::sphere(float radius,
                                                                 const Vector3& center,
                                                                 bool absolute)
@@ -418,6 +428,7 @@ PhysicsCollisionShape::Definition PhysicsCollisionShape::sphere(float radius,
     return d;
 }
 
+//----------------------------------------------------------------------------
 PhysicsCollisionShape::Definition PhysicsCollisionShape::capsule()
 {
     Definition d;
@@ -427,6 +438,7 @@ PhysicsCollisionShape::Definition PhysicsCollisionShape::capsule()
     return d;
 }
 
+//----------------------------------------------------------------------------
 PhysicsCollisionShape::Definition PhysicsCollisionShape::capsule(float radius,
                                                                  float height,
                                                                  const Vector3& center,
@@ -442,6 +454,7 @@ PhysicsCollisionShape::Definition PhysicsCollisionShape::capsule(float radius,
     return d;
 }
 
+//----------------------------------------------------------------------------
 PhysicsCollisionShape::Definition PhysicsCollisionShape::heightfield()
 {
     Definition d;
@@ -451,6 +464,7 @@ PhysicsCollisionShape::Definition PhysicsCollisionShape::heightfield()
     return d;
 }
 
+//----------------------------------------------------------------------------
 PhysicsCollisionShape::Definition PhysicsCollisionShape::heightfield(HeightField* heightfield)
 {
     assert(heightfield);
@@ -465,6 +479,7 @@ PhysicsCollisionShape::Definition PhysicsCollisionShape::heightfield(HeightField
     return d;
 }
 
+//----------------------------------------------------------------------------
 PhysicsCollisionShape::Definition PhysicsCollisionShape::mesh(Mesh* mesh)
 {
     assert(mesh);

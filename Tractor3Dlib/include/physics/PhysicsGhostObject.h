@@ -50,7 +50,6 @@ class PhysicsGhostObject : public PhysicsCollisionObject, public Transform::List
      */
     btCollisionObject* getCollisionObject() const noexcept override { return _ghostObject; }
 
-
   protected:
     /**
      * Constructor.
@@ -83,6 +82,6 @@ class PhysicsGhostObject : public PhysicsCollisionObject, public Transform::List
     /**
      * Pointer to the Bullet ghost collision object.
      */
-    btPairCachingGhostObject* _ghostObject;
+    btPairCachingGhostObject* _ghostObject{ nullptr };
 };
 } // namespace tractor

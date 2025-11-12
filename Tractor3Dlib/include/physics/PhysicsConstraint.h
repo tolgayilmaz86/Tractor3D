@@ -13,8 +13,8 @@
  */
 #pragma once
 
-#include "math/Vector3.h"
 #include "math/Quaternion.h"
+#include "math/Vector3.h"
 
 namespace tractor
 {
@@ -115,17 +115,17 @@ class PhysicsConstraint
     /**
      * Pointer to the one rigid body bound by this constraint.
      */
-    PhysicsRigidBody* _a;
+    PhysicsRigidBody* _a{ nullptr };
 
     /**
      * Pointer to the other rigid body bound by this constraint.
      */
-    PhysicsRigidBody* _b;
+    PhysicsRigidBody* _b{ nullptr };
 
     /**
      * Pointer to the Bullet constraint.
      */
-    btTypedConstraint* _constraint;
+    btTypedConstraint* _constraint{ nullptr };
 };
 
 } // namespace tractor

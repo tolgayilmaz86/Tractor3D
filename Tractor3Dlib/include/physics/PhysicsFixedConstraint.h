@@ -39,7 +39,7 @@ class PhysicsFixedConstraint : public PhysicsGenericConstraint
     /**
      * Destructor.
      */
-    ~PhysicsFixedConstraint();
+    ~PhysicsFixedConstraint() = default;
 
     // Note: We make these functions protected to prevent usage
     // (these are public in the base class, PhysicsGenericConstraint).

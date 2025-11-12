@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
- /**
+/**
  * Much of the collision detection code for this implementation is based off the
  * btbtKinematicCharacterController class from Bullet Physics 2.7.6.
  */
@@ -61,21 +61,18 @@ class ClosestNotMeConvexResultCallback : public btCollisionWorld::ClosestConvexR
     }
 
   protected:
-    PhysicsCollisionObject* _me;
-    const btVector3 _up;
-    btScalar _minSlopeDot;
+    PhysicsCollisionObject* _me{ nullptr };
+    const btVector3 _up{ 0, 0, 0 };
+    btScalar _minSlopeDot{ 0 };
 };
 
+//----------------------------------------------------------------------------
 PhysicsCharacter::PhysicsCharacter(Node* node,
                                    const PhysicsCollisionShape::Definition& shape,
                                    float mass,
                                    int group,
                                    int mask)
-    : PhysicsGhostObject(node, shape, group, mask), _moveVelocity(0, 0, 0), _forwardVelocity(0.0f),
-      _rightVelocity(0.0f), _verticalVelocity(0, 0, 0), _currentVelocity(0, 0, 0),
-      _normalizedVelocity(0, 0, 0), _colliding(false), _collisionNormal(0, 0, 0),
-      _currentPosition(0, 0, 0), _stepHeight(0.1f), _slopeAngle(0.0f), _cosSlopeAngle(1.0f),
-      _physicsEnabled(true), _mass(mass), _actionInterface(nullptr)
+    : PhysicsGhostObject(node, shape, group, mask), _mass(mass)
 {
     setMaxSlopeAngle(45.0f);
 
@@ -92,6 +89,7 @@ PhysicsCharacter::PhysicsCharacter(Node* node,
     Game::getInstance()->getPhysicsController()->_world->addAction(_actionInterface);
 }
 
+//----------------------------------------------------------------------------
 PhysicsCharacter::~PhysicsCharacter()
 {
     // Unregister ourselves as action from world.
@@ -101,6 +99,7 @@ PhysicsCharacter::~PhysicsCharacter()
     SAFE_DELETE(_actionInterface);
 }
 
+//----------------------------------------------------------------------------
 PhysicsCharacter* PhysicsCharacter::create(Node* node, Properties* properties)
 {
     // Check if the properties is valid and has a valid namespace.
@@ -143,7 +142,7 @@ PhysicsCharacter* PhysicsCharacter::create(Node* node, Properties* properties)
 
     while (auto property = properties->getNextProperty())
     {
-        auto name = property->name;
+        const auto& name = property->name;
         if (name == "mass")
         {
             mass = properties->getFloat();
@@ -170,19 +169,20 @@ PhysicsCharacter* PhysicsCharacter::create(Node* node, Properties* properties)
     return character;
 }
 
+//----------------------------------------------------------------------------
 void PhysicsCharacter::setMaxSlopeAngle(float angle)
 {
     _slopeAngle = angle;
     _cosSlopeAngle = std::cos(MATH_DEG_TO_RAD(angle));
 }
 
+//----------------------------------------------------------------------------
 void PhysicsCharacter::setVelocity(const Vector3& velocity)
 {
     _moveVelocity.setValue(velocity.x, velocity.y, velocity.z);
 }
 
-void PhysicsCharacter::setVelocity(float x, float y, float z) { _moveVelocity.setValue(x, y, z); }
-
+//----------------------------------------------------------------------------
 void PhysicsCharacter::resetVelocityState()
 {
     _forwardVelocity = 0.0f;
@@ -193,34 +193,35 @@ void PhysicsCharacter::resetVelocityState()
     _moveVelocity.setZero();
 }
 
+//----------------------------------------------------------------------------
 void PhysicsCharacter::rotate(const Vector3& axis, float angle)
 {
     assert(_node);
     _node->rotate(axis, angle);
 }
 
+//----------------------------------------------------------------------------
 void PhysicsCharacter::rotate(const Quaternion& rotation)
 {
     assert(_node);
     _node->rotate(rotation);
 }
 
+//----------------------------------------------------------------------------
 void PhysicsCharacter::setRotation(const Vector3& axis, float angle)
 {
     assert(_node);
     _node->setRotation(axis, angle);
 }
 
+//----------------------------------------------------------------------------
 void PhysicsCharacter::setRotation(const Quaternion& rotation)
 {
     assert(_node);
     _node->setRotation(rotation);
 }
 
-void PhysicsCharacter::setForwardVelocity(float velocity) { _forwardVelocity = velocity; }
-
-void PhysicsCharacter::setRightVelocity(float velocity) { _rightVelocity = velocity; }
-
+//----------------------------------------------------------------------------
 Vector3 PhysicsCharacter::getCurrentVelocity() const
 {
     Vector3 v(_currentVelocity.x(), _currentVelocity.y(), _currentVelocity.z());
@@ -230,6 +231,7 @@ Vector3 PhysicsCharacter::getCurrentVelocity() const
     return v;
 }
 
+//----------------------------------------------------------------------------
 void PhysicsCharacter::jump(float height, bool force)
 {
     // TODO: Add support for different jump modes (i.e. double jump, changing direction in air,
@@ -254,6 +256,7 @@ void PhysicsCharacter::jump(float height, bool force)
     _verticalVelocity += BV(jumpVelocity);
 }
 
+//----------------------------------------------------------------------------
 void PhysicsCharacter::updateCurrentVelocity()
 {
     assert(_node);
@@ -303,6 +306,7 @@ void PhysicsCharacter::updateCurrentVelocity()
     }
 }
 
+//----------------------------------------------------------------------------
 void PhysicsCharacter::stepUp(btCollisionWorld* collisionWorld, btScalar time)
 {
     btVector3 targetPosition(_currentPosition);
@@ -319,6 +323,7 @@ void PhysicsCharacter::stepUp(btCollisionWorld* collisionWorld, btScalar time)
     _currentPosition = targetPosition;
 }
 
+//----------------------------------------------------------------------------
 void PhysicsCharacter::stepForwardAndStrafe(btCollisionWorld* collisionWorld, float time)
 {
     updateCurrentVelocity();
@@ -424,6 +429,7 @@ void PhysicsCharacter::stepForwardAndStrafe(btCollisionWorld* collisionWorld, fl
     _currentPosition = targetPosition;
 }
 
+//----------------------------------------------------------------------------
 void PhysicsCharacter::stepDown(btCollisionWorld* collisionWorld, btScalar time)
 {
     assert(Game::getInstance()->getPhysicsController()
@@ -523,6 +529,7 @@ void PhysicsCharacter::stepDown(btCollisionWorld* collisionWorld, btScalar time)
     _currentPosition = targetPosition;
 }
 
+//----------------------------------------------------------------------------
 /*
  * Returns the reflection direction of a ray going 'direction' hitting a surface with normal 'normal'.
  */
@@ -531,6 +538,7 @@ static btVector3 computeReflectionDirection(const btVector3& direction, const bt
     return direction - (btScalar(2.0) * direction.dot(normal)) * normal;
 }
 
+//----------------------------------------------------------------------------
 /*
  * Returns the portion of 'direction' that is parallel to 'normal'.
  */
@@ -541,6 +549,7 @@ static btVector3 parallelComponent(const btVector3& direction, const btVector3& 
 }
 
 /*
+//----------------------------------------------------------------------------
  * Returns the portion of 'direction' that is perpendicular to 'normal'.
  */
 static btVector3 perpindicularComponent(const btVector3& direction, const btVector3& normal)
@@ -548,6 +557,7 @@ static btVector3 perpindicularComponent(const btVector3& direction, const btVect
     return direction - parallelComponent(direction, normal);
 }
 
+//----------------------------------------------------------------------------
 void PhysicsCharacter::updateTargetPositionFromCollision(btVector3& targetPosition,
                                                          const btVector3& collisionNormal)
 {
@@ -579,6 +589,7 @@ void PhysicsCharacter::updateTargetPositionFromCollision(btVector3& targetPositi
     }
 }
 
+//----------------------------------------------------------------------------
 bool PhysicsCharacter::fixCollision(btCollisionWorld* world)
 {
     assert(_node);
@@ -661,22 +672,26 @@ bool PhysicsCharacter::fixCollision(btCollisionWorld* world)
     return collision;
 }
 
+//----------------------------------------------------------------------------
 PhysicsCharacter::ActionInterface::ActionInterface(PhysicsCharacter* character)
     : character(character)
 {
 }
 
+//----------------------------------------------------------------------------
 void PhysicsCharacter::ActionInterface::updateAction(btCollisionWorld* collisionWorld,
                                                      btScalar deltaTimeStep)
 {
     character->updateAction(collisionWorld, deltaTimeStep);
 }
 
+//----------------------------------------------------------------------------
 void PhysicsCharacter::ActionInterface::debugDraw(btIDebugDraw* debugDrawer)
 {
     // Not used yet.
 }
 
+//----------------------------------------------------------------------------
 void PhysicsCharacter::updateAction(btCollisionWorld* collisionWorld, btScalar deltaTimeStep)
 {
     if (!isEnabled()) return;

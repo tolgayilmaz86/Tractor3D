@@ -21,16 +21,9 @@
 namespace tractor
 {
 
-PhysicsGenericConstraint::PhysicsGenericConstraint()
-    : PhysicsConstraint(nullptr, nullptr), _rotationOffsetA(nullptr), _rotationOffsetB(nullptr),
-      _translationOffsetA(nullptr), _translationOffsetB(nullptr)
-{
-    // Not used.
-}
-
+//----------------------------------------------------------------------------
 PhysicsGenericConstraint::PhysicsGenericConstraint(PhysicsRigidBody* a, PhysicsRigidBody* b)
-    : PhysicsConstraint(a, b), _rotationOffsetA(nullptr), _rotationOffsetB(nullptr),
-      _translationOffsetA(nullptr), _translationOffsetB(nullptr)
+    : PhysicsConstraint(a, b)
 {
     assert(a && a->_body && a->getNode());
 
@@ -51,6 +44,7 @@ PhysicsGenericConstraint::PhysicsGenericConstraint(PhysicsRigidBody* a, PhysicsR
     }
 }
 
+//----------------------------------------------------------------------------
 PhysicsGenericConstraint::PhysicsGenericConstraint(PhysicsRigidBody* a,
                                                    const Quaternion& rotationOffsetA,
                                                    const Vector3& translationOffsetA,
@@ -90,6 +84,7 @@ PhysicsGenericConstraint::PhysicsGenericConstraint(PhysicsRigidBody* a,
     }
 }
 
+//----------------------------------------------------------------------------
 PhysicsGenericConstraint::~PhysicsGenericConstraint()
 {
     SAFE_DELETE(_rotationOffsetA);

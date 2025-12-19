@@ -26,7 +26,7 @@ namespace tractor
  * keep track of object ownership and having to worry about when to
  * safely delete such objects.
  */
-class Ref
+class [[deprecated("Ref is deprecated. Migrate to std::shared_ptr / std::weak_ptr ownership semantics.")]] Ref
 {
   public:
     /**

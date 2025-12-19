@@ -18,6 +18,7 @@
 #if defined(ADD_SAMPLE)
 ADD_SAMPLE("Graphics", "Post Process", PostProcessSample, 14);
 #endif
+#include <renderer/DepthStencilTarget.h>
 
 #define FRAMEBUFFER_WIDTH 1024
 #define FRAMEBUFFER_HEIGHT 1024
@@ -76,12 +77,6 @@ void PostProcessSample::Compositor::blit(const Rectangle& dst)
     _quadModel->draw();
 }
 
-PostProcessSample::PostProcessSample()
-    : _font(nullptr), _scene(nullptr), _modelNode(nullptr), _frameBuffer(nullptr),
-      _compositorIndex(0)
-{
-}
-
 void PostProcessSample::initialize()
 {
     _font = Font::create("res/ui/arial.gpb");
@@ -103,12 +98,11 @@ void PostProcessSample::initialize()
 
     // Create one frame buffer for the full screen compositerss.
     _frameBuffer = FrameBuffer::create("PostProcessSample", FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT);
-    DepthStencilTarget* dst = DepthStencilTarget::create("PostProcessSample",
-                                                         DepthStencilTarget::DEPTH_STENCIL,
-                                                         FRAMEBUFFER_WIDTH,
-                                                         FRAMEBUFFER_HEIGHT);
+    auto dst = DepthStencilTarget::create("PostProcessSample",
+                                          DepthStencilTarget::DEPTH_STENCIL,
+                                          FRAMEBUFFER_WIDTH,
+                                          FRAMEBUFFER_HEIGHT);
     _frameBuffer->setDepthStencilTarget(dst);
-    SAFE_RELEASE(dst);
 
     // Create our compositors that all output to the default framebuffer.
     Compositor* compositor = nullptr;

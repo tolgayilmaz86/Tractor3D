@@ -102,9 +102,9 @@ Animation::~Animation()
 Animation::Channel::Channel(Animation* animation,
                             AnimationTarget* target,
                             int propertyId,
-                            Curve* curve,
+                            std::shared_ptr<Curve> curve,
                             unsigned long duration)
-    : _animation(animation), _target(target), _propertyId(propertyId), _curve(curve),
+    : _animation(animation), _target(target), _propertyId(propertyId), _curve(std::move(curve)),
       _duration(duration)
 {
     assert(_animation);
@@ -114,7 +114,6 @@ Animation::Channel::Channel(Animation* animation,
     // get property component count, and ensure the property exists on the AnimationTarget by
     // getting the property component count.
     assert(_target->getAnimationPropertyComponentCount(propertyId));
-    _curve->addRef();
     _target->addChannel(this);
     _animation->addRef();
 }
@@ -128,7 +127,6 @@ Animation::Channel::Channel(const Channel& copy, Animation* animation, Animation
     assert(_target);
     assert(_animation);
 
-    _curve->addRef();
     _target->addChannel(this);
     _animation->addRef();
 }
@@ -136,7 +134,7 @@ Animation::Channel::Channel(const Channel& copy, Animation* animation, Animation
 //----------------------------------------------------------------------------
 Animation::Channel::~Channel()
 {
-    SAFE_RELEASE(_curve);
+    // _curve is a shared_ptr and will be released automatically
     SAFE_RELEASE(_animation);
 }
 
@@ -321,10 +319,10 @@ Animation::Channel* Animation::createChannel(AnimationTarget* target,
     unsigned int propertyComponentCount = target->getAnimationPropertyComponentCount(propertyId);
     assert(propertyComponentCount > 0);
 
-    Curve* curve = Curve::create(keyCount, propertyComponentCount);
+    auto curve = Curve::create(keyCount, propertyComponentCount);
     assert(curve);
     if (target->_targetType == AnimationTarget::TRANSFORM)
-        setTransformRotationOffset(curve, propertyId);
+        setTransformRotationOffset(curve.get(), propertyId);
 
     unsigned int lowest = keyTimes[0];
     unsigned long duration = keyTimes[keyCount - 1] - lowest;
@@ -356,7 +354,6 @@ Animation::Channel* Animation::createChannel(AnimationTarget* target,
     }
 
     Channel* channel = new Channel(this, target, propertyId, curve, duration);
-    curve->release();
     addChannel(channel);
     return channel;
 }
@@ -378,10 +375,10 @@ Animation::Channel* Animation::createChannel(AnimationTarget* target,
     unsigned int propertyComponentCount = target->getAnimationPropertyComponentCount(propertyId);
     assert(propertyComponentCount > 0);
 
-    Curve* curve = Curve::create(keyCount, propertyComponentCount);
+    auto curve = Curve::create(keyCount, propertyComponentCount);
     assert(curve);
     if (target->_targetType == AnimationTarget::TRANSFORM)
-        setTransformRotationOffset(curve, propertyId);
+        setTransformRotationOffset(curve.get(), propertyId);
 
     unsigned long lowest = keyTimes[0];
     unsigned long duration = keyTimes[keyCount - 1] - lowest;
@@ -421,7 +418,6 @@ Animation::Channel* Animation::createChannel(AnimationTarget* target,
     SAFE_DELETE_ARRAY(normalizedKeyTimes);
 
     Channel* channel = new Channel(this, target, propertyId, curve, duration);
-    curve->release();
     addChannel(channel);
     return channel;
 }

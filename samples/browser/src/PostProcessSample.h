@@ -15,6 +15,7 @@
 
 #include "Sample.h"
 #include "tractor.h"
+#include <vector>
 
 using namespace tractor;
 
@@ -27,7 +28,7 @@ class PostProcessSample : public Sample
     /**
      * Constructor.
      */
-    PostProcessSample();
+    PostProcessSample() = default;
 
     /**
      * @see Sample::touchEvent
@@ -92,11 +93,11 @@ class PostProcessSample : public Sample
     void drawTechniqueId(const std::string& techniqueId);
 
   private:
-    Font* _font;
-    Scene* _scene;
-    Node* _modelNode;
-    FrameBuffer* _frameBuffer;
-    unsigned int _compositorIndex;
+    Font* _font{nullptr};
+    Scene* _scene{nullptr};
+    Node* _modelNode{nullptr};
+    FrameBuffer* _frameBuffer{nullptr};
+    unsigned int _compositorIndex{0};
     std::vector<Compositor*> _compositors;
     static Model* _quadModel;
     static Material* _compositorMaterial;

@@ -75,18 +75,16 @@ void WaterSample::initialize()
 
     // Render buffer and preview for refraction
     _refractBuffer = FrameBuffer::create("refractBuffer", BUFFER_SIZE, BUFFER_SIZE);
-    DepthStencilTarget* refractDepthTarget =
+    auto refractDepthTarget =
         DepthStencilTarget::create("refractDepth", DepthStencilTarget::DEPTH, BUFFER_SIZE, BUFFER_SIZE);
     _refractBuffer->setDepthStencilTarget(refractDepthTarget);
-    SAFE_RELEASE(refractDepthTarget);
     _refractBatch = SpriteBatch::create(_refractBuffer->getRenderTarget()->getTexture());
 
     // Render buffer and preview for reflection
     _reflectBuffer = FrameBuffer::create("reflectBuffer", BUFFER_SIZE, BUFFER_SIZE);
-    DepthStencilTarget* reflectDepthTarget =
+    auto reflectDepthTarget =
         DepthStencilTarget::create("reflectDepth", DepthStencilTarget::DEPTH, BUFFER_SIZE, BUFFER_SIZE);
     _reflectBuffer->setDepthStencilTarget(reflectDepthTarget);
-    SAFE_RELEASE(reflectDepthTarget);
     _reflectBatch = SpriteBatch::create(_reflectBuffer->getRenderTarget()->getTexture());
 
     // Add a node to provide light direction

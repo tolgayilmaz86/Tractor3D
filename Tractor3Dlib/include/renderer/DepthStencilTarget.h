@@ -23,7 +23,7 @@ namespace tractor
 /**
  * Defines a container for depth and stencil targets in a frame buffer object.
  */
-class DepthStencilTarget : public Ref
+class DepthStencilTarget : public std::enable_shared_from_this<DepthStencilTarget>
 {
     friend class FrameBuffer;
 
@@ -55,10 +55,10 @@ class DepthStencilTarget : public Ref
      * @return A newly created DepthStencilTarget.
      * @script{create}
      */
-    static DepthStencilTarget* create(const std::string& id,
-                                      Format format,
-                                      unsigned int width,
-                                      unsigned int height);
+    static std::shared_ptr<DepthStencilTarget> create(const std::string& id,
+                                                      Format format,
+                                                      unsigned int width,
+                                                      unsigned int height);
 
     /**
      * Get a named DepthStencilTarget from its ID.
@@ -67,7 +67,12 @@ class DepthStencilTarget : public Ref
      *
      * @return The DepthStencilTarget with the specified ID, or nullptr if one was not found.
      */
-    static DepthStencilTarget* getDepthStencilTarget(const std::string& id);
+    static std::shared_ptr<DepthStencilTarget> getDepthStencilTarget(const std::string& id);
+
+    /**
+     * Destructor.
+     */
+    ~DepthStencilTarget();
 
     /**
      * Get the ID of this DepthStencilTarget.
@@ -109,11 +114,6 @@ class DepthStencilTarget : public Ref
      * Constructor.
      */
     DepthStencilTarget(const std::string& id, Format format, unsigned int width, unsigned int height);
-
-    /**
-     * Destructor.
-     */
-    ~DepthStencilTarget();
 
     /**
      * Hidden copy assignment operator.

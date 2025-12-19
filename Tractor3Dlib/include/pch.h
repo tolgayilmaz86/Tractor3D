@@ -122,6 +122,19 @@ namespace tractor
 // Debug new for memory leak detection
 #include "utils/DebugNew.h"
 #include "utils/Ref.h"
+#include "utils/SafeDelete.h"
+#include "utils/RefRelease.h"
+
+// =============================================================================
+// Legacy cleanup macros
+// =============================================================================
+// Note: These macros are retained because some classes have private/protected
+// destructors that are only accessible in friend/member contexts where the
+// macro is expanded. For new code with public destructors, prefer:
+//   tractor::safeDelete(x)
+//   tractor::safeDeleteArray(x)
+//   tractor::safeRelease(x)
+// =============================================================================
 
 // Object deletion macro
 #define SAFE_DELETE(x) \
@@ -137,13 +150,11 @@ namespace tractor
         x = nullptr; \
     }
 
-// Ref cleanup macro
-#define SAFE_RELEASE(x) \
-    if (x) \
-    { \
-        (x)->release(); \
-        x = nullptr; \
-    }
+// Ref cleanup macro - uses tractor::safeRelease which supports:
+// - Legacy intrusive Ref pointers (calls release())
+// - std::shared_ptr (calls reset())
+// - std::weak_ptr (calls reset())
+#define SAFE_RELEASE(x) tractor::safeRelease(x)
 
 // Math
 #define MATH_DEG_TO_RAD(x)          ((x) * 0.0174532925f)

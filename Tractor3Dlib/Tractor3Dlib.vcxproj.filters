@@ -846,5 +846,7 @@
     <ClInclude Include="include\framework\FileStream.h">
       <Filter>include\framework</Filter>
     </ClInclude>
+    <ClInclude Include="include\utils\RefRelease.h" />
+    <ClInclude Include="include\utils\SafeDelete.h" />
   </ItemGroup>
 </Project>

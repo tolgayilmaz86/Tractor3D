@@ -269,6 +269,8 @@
     <ClInclude Include="include\utils\Logger.h" />
     <ClInclude Include="include\utils\Profiler.h" />
     <ClInclude Include="include\utils\Ref.h" />
+    <ClInclude Include="include\utils\RefRelease.h" />
+    <ClInclude Include="include\utils\SafeDelete.h" />
     <ClInclude Include="include\utils\StringUtil.h" />
     <ClInclude Include="include\utils\TimeListener.h" />
   </ItemGroup>

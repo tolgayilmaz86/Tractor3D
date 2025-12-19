@@ -13,17 +13,19 @@
  */
 #pragma once
 
+#include <memory>
 #include <string>
-
-#include "utils/Ref.h"
 
 namespace tractor
 {
 
 /**
  * Defines an n-dimensional curve.
+ * 
+ * This class uses std::shared_ptr for memory management. Use Curve::create()
+ * to instantiate new curves.
  */
-class Curve : public Ref
+class Curve
 {
     friend class AnimationTarget;
     friend class Animation;
@@ -295,9 +297,10 @@ class Curve : public Ref
      *
      * @param pointCount The number of points in the curve.
      * @param componentCount The number of float component values per key value.
+     * @return A shared_ptr to the newly created Curve.
      * @script{create}
      */
-    static Curve* create(unsigned int pointCount, unsigned int componentCount);
+    static std::shared_ptr<Curve> create(unsigned int pointCount, unsigned int componentCount);
 
     /**
      * Gets the number of points in the curve.
@@ -472,6 +475,13 @@ class Curve : public Ref
         Point& operator=(const Point&) = delete;
     };
 
+public:
+    /**
+     * Destructor.
+     */
+    ~Curve();
+
+private:
     /**
      * Constructor.
      */
@@ -486,14 +496,9 @@ class Curve : public Ref
     Curve(unsigned int pointCount, unsigned int componentCount);
 
     /**
-     * Constructor.
+     * Copy constructor (deleted).
      */
-    Curve(const Curve& copy);
-
-    /**
-     * Destructor.
-     */
-    ~Curve();
+    Curve(const Curve& copy) = delete;
 
     /**
      * Hidden copy assignment operator.

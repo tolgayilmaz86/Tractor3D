@@ -52,7 +52,7 @@ bool AIAgent::processMessage(AIMessage* message)
             const auto& stateId = message->getString(0);
             if (!stateId.empty())
             {
-                AIState* state = _stateMachine->getState(stateId);
+                auto state = _stateMachine->getState(stateId);
                 if (state) _stateMachine->setStateInternal(state);
             }
         }

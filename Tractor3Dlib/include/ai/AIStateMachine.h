@@ -13,6 +13,7 @@
  */
 #pragma once
 #include <list>
+#include <memory>
 
 #include "ai/AIState.h"
 
@@ -68,25 +69,23 @@ class AIStateMachine
      *
      * @return The newly created and added state.
      */
-    AIState* addState(const std::string& id);
+    std::shared_ptr<AIState> addState(const std::string& id);
 
     /**
      * Adds a state to the state machine.
      *
      * The specified state may be shared by other state machines.
-     * Its reference count is increased while it is held by
-     * this state machine.
      *
      * @param state The state to add.
      */
-    void addState(AIState* state);
+    void addState(std::shared_ptr<AIState> state);
 
     /**
      * Removes a state from the state machine.
      *
      * @param state The state to remove.
      */
-    void removeState(AIState* state);
+    void removeState(std::shared_ptr<AIState> state);
 
     /**
      * Returns a state registered with this state machine.
@@ -95,14 +94,14 @@ class AIStateMachine
      *
      * @return The state with the given ID, or nullptr if no such state exists.
      */
-    AIState* getState(const std::string& id) const noexcept;
+    std::shared_ptr<AIState> getState(const std::string& id) const noexcept;
 
     /**
      * Returns the active state for this state machine.
      *
      * @return The active state for this state machine.
      */
-    AIState* getActiveState() const noexcept { return _currentState; }
+    std::shared_ptr<AIState> getActiveState() const noexcept { return _currentState; }
 
     /**
      * Changes the state of this state machine to the given state.
@@ -114,7 +113,7 @@ class AIStateMachine
      *
      * @return The new state, or nullptr if no matching state could be found.
      */
-    AIState* setState(const std::string& id);
+    std::shared_ptr<AIState> setState(const std::string& id);
 
     /**
      * Changes the state of this state machine to the given state.
@@ -126,7 +125,7 @@ class AIStateMachine
      *
      * @return true if the state is successfully changed, false otherwise.
      */
-    bool setState(AIState* state);
+    bool setState(std::shared_ptr<AIState> state);
 
   private:
     /**
@@ -142,17 +141,17 @@ class AIStateMachine
     /**
      * Sends a message to change the state of this state machine.
      */
-    void sendChangeStateMessage(AIState* newState);
+    void sendChangeStateMessage(std::shared_ptr<AIState> newState);
 
     /**
      * Changes the active state of the state machine.
      */
-    void setStateInternal(AIState* state);
+    void setStateInternal(std::shared_ptr<AIState> state);
 
     /**
      * Determines if the specified state exists within this state machine.
      */
-    bool hasState(AIState* state) const;
+    bool hasState(std::shared_ptr<AIState> state) const;
 
     /**
      * Called by AIController to update the state machine each frame.
@@ -160,8 +159,8 @@ class AIStateMachine
     void update(float elapsedTime) { _currentState->update(this, elapsedTime); }
 
     AIAgent* _agent;
-    AIState* _currentState;
-    std::list<AIState*> _states;
+    std::shared_ptr<AIState> _currentState;
+    std::list<std::shared_ptr<AIState>> _states;
 };
 
 } // namespace tractor

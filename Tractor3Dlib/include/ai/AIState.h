@@ -13,9 +13,8 @@
  */
 #pragma once
 
+#include <memory>
 #include <string>
-
-#include "utils/Ref.h"
 
 namespace tractor
 {
@@ -30,7 +29,7 @@ class AIStateMachine;
  * state machine. Events can be programmed or scripted when the
  * state is entered, exited and each frame/tick in its update event.
  */
-class AIState : public Ref
+class AIState : public std::enable_shared_from_this<AIState>
 {
     friend class AIStateMachine;
 
@@ -82,7 +81,18 @@ class AIState : public Ref
      * @return The new AIState.
      * @script{create}
      */
-    static AIState* create(const std::string& id);
+    static std::shared_ptr<AIState> create(const std::string& id);
+
+    /**
+     * Constructs a new AIState.
+     * Note: Use create() factory method for public construction.
+     */
+    explicit AIState(const std::string& id);
+
+    /**
+     * Destructor.
+     */
+    ~AIState() = default;
 
     /**
      * Returns the ID of this state.
@@ -99,15 +109,6 @@ class AIState : public Ref
     void setListener(Listener* listener);
 
   private:
-    /**
-     * Constructs a new AIState.
-     */
-    AIState(const std::string& id);
-
-    /**
-     * Destructor.
-     */
-    ~AIState() = default;
 
     /**
      * Hidden copy constructor.
@@ -138,6 +139,6 @@ class AIState : public Ref
     Listener* _listener;
 
     // The default/empty state.
-    static AIState* _empty;
+    static std::shared_ptr<AIState> _empty;
 };
 } // namespace tractor

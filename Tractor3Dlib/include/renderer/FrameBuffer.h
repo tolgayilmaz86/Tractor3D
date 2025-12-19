@@ -151,14 +151,14 @@ class FrameBuffer : public Ref
      *
      * @param target The DepthStencilTarget to set on this FrameBuffer.
      */
-    void setDepthStencilTarget(DepthStencilTarget* target);
+    void setDepthStencilTarget(std::shared_ptr<DepthStencilTarget> target);
 
     /**
      * Get this FrameBuffer's DepthStencilTarget.
      *
      * @return This FrameBuffer's DepthStencilTarget.
      */
-    DepthStencilTarget* getDepthStencilTarget() const noexcept { return _depthStencilTarget; }
+    std::shared_ptr<DepthStencilTarget> getDepthStencilTarget() const noexcept { return _depthStencilTarget; }
 
     /**
      * Determines whether this is the default frame buffer.
@@ -238,7 +238,7 @@ class FrameBuffer : public Ref
     FrameBufferHandle _handle;
     RenderTarget** _renderTargets{ nullptr };
     unsigned int _renderTargetCount{ 0 };
-    DepthStencilTarget* _depthStencilTarget{ nullptr };
+    std::shared_ptr<DepthStencilTarget> _depthStencilTarget{ nullptr };
 
     static unsigned int _maxRenderTargets;
     static std::vector<FrameBuffer*> _frameBuffers;

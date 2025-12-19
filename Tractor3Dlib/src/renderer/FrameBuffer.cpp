@@ -51,7 +51,8 @@ FrameBuffer::~FrameBuffer()
         SAFE_DELETE_ARRAY(_renderTargets);
     }
 
-    if (_depthStencilTarget) SAFE_RELEASE(_depthStencilTarget);
+    // shared_ptr automatically handles cleanup, no need for SAFE_RELEASE
+    _depthStencilTarget.reset();
 
     // Release GL resource.
     if (_handle) GL_ASSERT(glDeleteFramebuffers(1, &_handle));
@@ -251,20 +252,15 @@ RenderTarget* FrameBuffer::getRenderTarget(unsigned int index) const
 }
 
 //----------------------------------------------------------------------------
-void FrameBuffer::setDepthStencilTarget(DepthStencilTarget* target)
+void FrameBuffer::setDepthStencilTarget(std::shared_ptr<DepthStencilTarget> target)
 {
     if (_depthStencilTarget == target) return;
 
-    // Release our existing depth stencil target.
-    SAFE_RELEASE(_depthStencilTarget);
-
+    // shared_ptr assignment handles the reference counting automatically
     _depthStencilTarget = target;
 
     if (target)
     {
-        // The FrameBuffer now owns this DepthStencilTarget.
-        target->addRef();
-
         // Now set this target as the color attachment corresponding to index.
         GL_ASSERT(glBindFramebuffer(GL_FRAMEBUFFER, _handle));
 

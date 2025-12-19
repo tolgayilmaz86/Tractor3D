@@ -132,18 +132,18 @@ class Animation : public Ref
         Channel(Animation* animation,
                 AnimationTarget* target,
                 int propertyId,
-                Curve* curve,
+                std::shared_ptr<Curve> curve,
                 unsigned long duration);
         Channel(const Channel& copy, Animation* animation, AnimationTarget* target);
         Channel(const Channel&); // Hidden copy constructor.
         ~Channel();
         Channel& operator=(const Channel&) = delete;
-        Curve* getCurve() const noexcept { return _curve; }
+        Curve* getCurve() const noexcept { return _curve.get(); }
 
         Animation* _animation;    // Reference to the animation this channel belongs to.
         AnimationTarget* _target; // The target of this channel.
         int _propertyId;          // The target property this channel targets.
-        Curve* _curve;            // The curve used to represent the animation data.
+        std::shared_ptr<Curve> _curve; // The curve used to represent the animation data.
         unsigned long _duration;  // The length of the animation (in milliseconds).
     };
 

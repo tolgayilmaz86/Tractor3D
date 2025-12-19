@@ -83,9 +83,9 @@ class AnimationValue
     ~AnimationValue();
 
     /**
-     * Hidden copy assignment operator.
+     * Copy assignment operator using copy-and-swap idiom.
      */
-    AnimationValue& operator=(const AnimationValue& v);
+    AnimationValue& operator=(AnimationValue v);
 
     unsigned int _componentCount; // The number of float values for the property.
     unsigned int _componentSize;  // The number of bytes of memory the property is.

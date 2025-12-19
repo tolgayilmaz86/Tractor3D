@@ -39,20 +39,11 @@ AnimationValue::AnimationValue(const AnimationValue& copy)
 AnimationValue::~AnimationValue() { SAFE_DELETE_ARRAY(_value); }
 
 //----------------------------------------------------------------------------
-AnimationValue& AnimationValue::operator=(const AnimationValue& v)
+AnimationValue& AnimationValue::operator=(AnimationValue v)
 {
-    if (this != &v)
-    {
-        if (_value == nullptr || _componentSize != v._componentSize
-            || _componentCount != v._componentCount)
-        {
-            _componentSize = v._componentSize;
-            _componentCount = v._componentCount;
-            SAFE_DELETE_ARRAY(_value);
-            _value = new float[v._componentCount];
-        }
-        memcpy(_value, v._value, _componentSize);
-    }
+    std::swap(_value, v._value);
+    std::swap(_componentSize, v._componentSize);
+    std::swap(_componentCount, v._componentCount);
     return *this;
 }
 

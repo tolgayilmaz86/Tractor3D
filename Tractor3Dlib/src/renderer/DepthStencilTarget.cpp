@@ -25,7 +25,7 @@
 namespace tractor
 {
 
-static std::vector<DepthStencilTarget*> __depthStencilTargets;
+static std::vector<std::weak_ptr<DepthStencilTarget>> __depthStencilTargets;
 
 //----------------------------------------------------------------------------
 DepthStencilTarget::DepthStencilTarget(const std::string& id,
@@ -44,24 +44,24 @@ DepthStencilTarget::~DepthStencilTarget()
     if (_depthBuffer) GL_ASSERT(glDeleteRenderbuffers(1, &_depthBuffer));
     if (_stencilBuffer) GL_ASSERT(glDeleteRenderbuffers(1, &_stencilBuffer));
 
-    // Remove from vector.
-    std::vector<DepthStencilTarget*>::iterator it =
-        std::find(__depthStencilTargets.begin(), __depthStencilTargets.end(), this);
-    if (it != __depthStencilTargets.end())
-    {
-        __depthStencilTargets.erase(it);
-    }
+    // Remove from vector (remove expired weak_ptrs).
+    std::erase_if(__depthStencilTargets, [](const std::weak_ptr<DepthStencilTarget>& wp) {
+        return wp.expired();
+    });
 }
 
 //----------------------------------------------------------------------------
-DepthStencilTarget* DepthStencilTarget::create(const std::string& id,
-                                               Format format,
-                                               unsigned int width,
-                                               unsigned int height)
+std::shared_ptr<DepthStencilTarget> DepthStencilTarget::create(const std::string& id,
+                                                               Format format,
+                                                               unsigned int width,
+                                                               unsigned int height)
 {
-    // Create and add the depth stencil target in place.
-    const auto& depthStencilTarget =
-        __depthStencilTargets.emplace_back(new DepthStencilTarget(id, format, width, height));
+    // Create the depth stencil target
+    auto depthStencilTarget = std::shared_ptr<DepthStencilTarget>(
+        new DepthStencilTarget(id, format, width, height));
+
+    // Add to the cache as a weak_ptr
+    __depthStencilTargets.push_back(depthStencilTarget);
 
     // Create a render buffer for this new depth+stencil target
     GL_ASSERT(glGenRenderbuffers(1, &depthStencilTarget->_depthBuffer));
@@ -109,17 +109,17 @@ DepthStencilTarget* DepthStencilTarget::create(const std::string& id,
 }
 
 //----------------------------------------------------------------------------
-DepthStencilTarget* DepthStencilTarget::getDepthStencilTarget(const std::string& id)
+std::shared_ptr<DepthStencilTarget> DepthStencilTarget::getDepthStencilTarget(const std::string& id)
 {
-    if (auto target = std::ranges::find_if(__depthStencilTargets,
-                                           [id](const DepthStencilTarget* dst)
-                                           {
-                                               assert(dst);
-                                               return id == dst->getId();
-                                           });
-        target != __depthStencilTargets.end())
+    for (auto& weakTarget : __depthStencilTargets)
     {
-        return *target;
+        if (auto target = weakTarget.lock())
+        {
+            if (id == target->getId())
+            {
+                return target;
+            }
+        }
     }
 
     return nullptr;

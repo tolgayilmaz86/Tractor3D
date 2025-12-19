@@ -102,9 +102,9 @@ namespace tractor
 {
 
 //----------------------------------------------------------------------------
-Curve* Curve::create(unsigned int pointCount, unsigned int componentCount)
+std::shared_ptr<Curve> Curve::create(unsigned int pointCount, unsigned int componentCount)
 {
-    return new Curve(pointCount, componentCount);
+    return std::shared_ptr<Curve>(new Curve(pointCount, componentCount));
 }
 
 //----------------------------------------------------------------------------
@@ -127,16 +127,21 @@ Curve::Curve(unsigned int pointCount, unsigned int componentCount)
 //----------------------------------------------------------------------------
 Curve::~Curve()
 {
-    SAFE_DELETE_ARRAY(_points);
-    SAFE_DELETE_ARRAY(_quaternionOffset);
+    delete[] _points;
+    _points = nullptr;
+    delete[] _quaternionOffset;
+    _quaternionOffset = nullptr;
 }
 
 //----------------------------------------------------------------------------
 Curve::Point::~Point()
 {
-    SAFE_DELETE_ARRAY(value);
-    SAFE_DELETE_ARRAY(inValue);
-    SAFE_DELETE_ARRAY(outValue);
+    delete[] value;
+    value = nullptr;
+    delete[] inValue;
+    inValue = nullptr;
+    delete[] outValue;
+    outValue = nullptr;
 }
 
 //----------------------------------------------------------------------------

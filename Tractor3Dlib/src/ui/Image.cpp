@@ -30,7 +30,7 @@ static void readStream(png_structp png, png_bytep data, png_size_t length)
 }
 
 //----------------------------------------------------------------
-Image* Image::create(const std::string& path)
+std::shared_ptr<Image> Image::create(const std::string& path)
 {
     // Open the file.
     std::unique_ptr<Stream> stream(FileSystem::open(path));
@@ -86,7 +86,7 @@ Image* Image::create(const std::string& path)
                      | PNG_TRANSFORM_GRAY_TO_RGB,
                  nullptr);
 
-    Image* image = new Image();
+    auto image = std::shared_ptr<Image>(new Image());
     image->_width = png_get_image_width(png, info);
     image->_height = png_get_image_height(png, info);
 
@@ -126,7 +126,7 @@ Image* Image::create(const std::string& path)
 }
 
 //----------------------------------------------------------------
-Image* Image::create(unsigned int width, unsigned int height, Image::Format format, unsigned char* data)
+std::shared_ptr<Image> Image::create(unsigned int width, unsigned int height, Image::Format format, unsigned char* data)
 {
     assert(width > 0 && height > 0);
     assert(format >= RGB && format <= RGBA);
@@ -142,7 +142,7 @@ Image* Image::create(unsigned int width, unsigned int height, Image::Format form
             break;
     }
 
-    Image* image = new Image();
+    auto image = std::shared_ptr<Image>(new Image());
 
     unsigned int dataSize = width * height * pixelSize;
 

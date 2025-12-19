@@ -24,7 +24,7 @@ namespace tractor
  * Defines a linear area of display memory and usually resides
  * in the display memory of the graphics device.
  */
-class RenderTarget : public Ref
+class RenderTarget : public std::enable_shared_from_this<RenderTarget>
 {
     friend class FrameBuffer;
 
@@ -41,10 +41,10 @@ class RenderTarget : public Ref
      * @return A newly created RenderTarget.
      * @script{create}
      */
-    static RenderTarget* create(const std::string& id,
-                                unsigned int width,
-                                unsigned int height,
-                                Texture::Format format = Texture::RGBA);
+    static std::shared_ptr<RenderTarget> create(const std::string& id,
+                                                unsigned int width,
+                                                unsigned int height,
+                                                Texture::Format format = Texture::RGBA);
 
     /**
      * Create a RenderTarget from the given Texture and add it to the list of
@@ -59,7 +59,7 @@ class RenderTarget : public Ref
      * @return A newly created RenderTarget.
      * @script{create}
      */
-    static RenderTarget* create(const std::string& id, Texture* texture);
+    static std::shared_ptr<RenderTarget> create(const std::string& id, Texture* texture);
 
     /**
      * Get a named RenderTarget from its ID.
@@ -68,7 +68,12 @@ class RenderTarget : public Ref
      *
      * @return The RenderTarget with the specified ID, or nullptr if one was not found.
      */
-    static RenderTarget* getRenderTarget(const std::string& id) noexcept;
+    static std::shared_ptr<RenderTarget> getRenderTarget(const std::string& id) noexcept;
+
+    /**
+     * Destructor.
+     */
+    ~RenderTarget();
 
     /**
      * Get the ID of this RenderTarget.
@@ -103,11 +108,6 @@ class RenderTarget : public Ref
      * Constructor.
      */
     RenderTarget(const std::string& id);
-
-    /**
-     * Destructor.
-     */
-    ~RenderTarget();
 
     /**
      * Hidden copy assignment operator.

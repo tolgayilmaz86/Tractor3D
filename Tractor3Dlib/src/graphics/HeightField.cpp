@@ -85,7 +85,7 @@ HeightField* HeightField::create(const std::string& path,
     if (ext == ".PNG")
     {
         // Normal image
-        Image* image = Image::create(path);
+        auto image = Image::create(path);
         if (!image) return nullptr;
 
         unsigned int pixelSize = 0;
@@ -98,7 +98,6 @@ HeightField* HeightField::create(const std::string& path,
                 pixelSize = 4;
                 break;
             default:
-                SAFE_RELEASE(image);
                 GP_WARN("Unsupported pixel format for heightfield image: %s.", path);
                 return nullptr;
         }
@@ -118,8 +117,6 @@ HeightField* HeightField::create(const std::string& path,
                     + normalizedHeightPacked(data[idx], data[idx + 1], data[idx + 2]) * heightScale;
             }
         }
-
-        SAFE_RELEASE(image);
     }
     else if (ext == ".RAW" || ext == ".R16")
     {

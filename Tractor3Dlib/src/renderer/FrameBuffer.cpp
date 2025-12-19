@@ -39,19 +39,10 @@ FrameBuffer::FrameBuffer(const std::string& id,
 //----------------------------------------------------------------------------
 FrameBuffer::~FrameBuffer()
 {
-    if (_renderTargets)
-    {
-        for (size_t i = 0; i < _maxRenderTargets; ++i)
-        {
-            if (_renderTargets[i])
-            {
-                SAFE_RELEASE(_renderTargets[i]);
-            }
-        }
-        SAFE_DELETE_ARRAY(_renderTargets);
-    }
+    // shared_ptr vector handles cleanup automatically
+    _renderTargets.clear();
 
-    // shared_ptr automatically handles cleanup, no need for SAFE_RELEASE
+    // shared_ptr automatically handles cleanup
     _depthStencilTarget.reset();
 
     // Release GL resource.
@@ -98,7 +89,7 @@ FrameBuffer* FrameBuffer::create(const std::string& id,
                                  unsigned int height,
                                  Texture::Format format)
 {
-    RenderTarget* renderTarget = nullptr;
+    std::shared_ptr<RenderTarget> renderTarget = nullptr;
     if (width > 0 && height > 0)
     {
         // Create a default RenderTarget with same ID.
@@ -116,14 +107,12 @@ FrameBuffer* FrameBuffer::create(const std::string& id,
 
     const auto& frameBuffer = _frameBuffers.emplace_back(new FrameBuffer(id, width, height, handle));
 
-    // Create the render target array for the new frame buffer
-    frameBuffer->_renderTargets = new RenderTarget*[_maxRenderTargets];
-    memset(frameBuffer->_renderTargets, 0, sizeof(RenderTarget*) * _maxRenderTargets);
+    // Initialize the render target vector with the correct size
+    frameBuffer->_renderTargets.resize(_maxRenderTargets);
 
     if (renderTarget)
     {
         frameBuffer->setRenderTarget(renderTarget, 0);
-        SAFE_RELEASE(renderTarget);
     }
 
     return frameBuffer;
@@ -146,7 +135,7 @@ FrameBuffer* FrameBuffer::getFrameBuffer(const std::string& id)
 //----------------------------------------------------------------------------
 unsigned int FrameBuffer::getWidth() const
 {
-    if (_renderTargetCount > 0 && _renderTargets != nullptr && _renderTargets[0] != nullptr)
+    if (_renderTargetCount > 0 && !_renderTargets.empty() && _renderTargets[0] != nullptr)
         return _renderTargets[0]->getWidth();
 
     return 0;
@@ -155,14 +144,14 @@ unsigned int FrameBuffer::getWidth() const
 //----------------------------------------------------------------------------
 unsigned int FrameBuffer::getHeight() const
 {
-    if (_renderTargetCount > 0 && _renderTargets != nullptr && _renderTargets[0] != nullptr)
+    if (_renderTargetCount > 0 && !_renderTargets.empty() && _renderTargets[0] != nullptr)
         return _renderTargets[0]->getHeight();
 
     return 0;
 }
 
 //----------------------------------------------------------------------------
-void FrameBuffer::setRenderTarget(RenderTarget* target, unsigned int index)
+void FrameBuffer::setRenderTarget(std::shared_ptr<RenderTarget> target, unsigned int index)
 {
     assert(!target
            || (target->getTexture() && target->getTexture()->getType() == Texture::TEXTURE_2D));
@@ -174,7 +163,7 @@ void FrameBuffer::setRenderTarget(RenderTarget* target, unsigned int index)
 }
 
 //----------------------------------------------------------------------------
-void FrameBuffer::setRenderTarget(RenderTarget* target, Texture::CubeFace face, unsigned int index)
+void FrameBuffer::setRenderTarget(std::shared_ptr<RenderTarget> target, Texture::CubeFace face, unsigned int index)
 {
     assert(face >= Texture::POSITIVE_X && face <= Texture::NEGATIVE_Z);
     assert(!target
@@ -184,15 +173,15 @@ void FrameBuffer::setRenderTarget(RenderTarget* target, Texture::CubeFace face, 
 }
 
 //----------------------------------------------------------------------------
-void FrameBuffer::setRenderTarget(RenderTarget* target, unsigned int index, GLenum textureTarget)
+void FrameBuffer::setRenderTarget(std::shared_ptr<RenderTarget> target, unsigned int index, GLenum textureTarget)
 {
     assert(index < _maxRenderTargets);
-    assert(_renderTargets);
+    assert(!_renderTargets.empty());
 
     // Release our reference to the current RenderTarget at this index.
     if (_renderTargets[index])
     {
-        SAFE_RELEASE(_renderTargets[index]);
+        _renderTargets[index].reset();
         --_renderTargetCount;
     }
 
@@ -201,9 +190,6 @@ void FrameBuffer::setRenderTarget(RenderTarget* target, unsigned int index, GLen
     if (target)
     {
         ++_renderTargetCount;
-
-        // This FrameBuffer now references the RenderTarget.
-        target->addRef();
 
         // Now set this target as the color attachment corresponding to index.
         GL_ASSERT(glBindFramebuffer(GL_FRAMEBUFFER, _handle));
@@ -241,10 +227,9 @@ void FrameBuffer::setRenderTarget(RenderTarget* target, unsigned int index, GLen
 }
 
 //----------------------------------------------------------------------------
-RenderTarget* FrameBuffer::getRenderTarget(unsigned int index) const
+std::shared_ptr<RenderTarget> FrameBuffer::getRenderTarget(unsigned int index) const
 {
-    assert(_renderTargets);
-    if (index < _maxRenderTargets)
+    if (index < _renderTargets.size())
     {
         return _renderTargets[index];
     }
@@ -306,7 +291,7 @@ FrameBuffer* FrameBuffer::bind(GLenum type)
 }
 
 //----------------------------------------------------------------------------
-void FrameBuffer::getScreenshot(Image* image)
+void FrameBuffer::getScreenshot(const std::shared_ptr<Image>& image)
 {
     assert(image);
 
@@ -321,12 +306,12 @@ void FrameBuffer::getScreenshot(Image* image)
 }
 
 //----------------------------------------------------------------------------
-Image* FrameBuffer::createScreenshot(Image::Format format)
+std::shared_ptr<Image> FrameBuffer::createScreenshot(Image::Format format)
 {
-    Image* screenshot = Image::create(_currentFrameBuffer->getWidth(),
-                                      _currentFrameBuffer->getHeight(),
-                                      format,
-                                      nullptr);
+    auto screenshot = Image::create(_currentFrameBuffer->getWidth(),
+                                    _currentFrameBuffer->getHeight(),
+                                    format,
+                                    nullptr);
     getScreenshot(screenshot);
 
     return screenshot;

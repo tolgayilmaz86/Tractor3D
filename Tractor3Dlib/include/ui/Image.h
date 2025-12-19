@@ -13,7 +13,7 @@
  */
 #pragma once
 
-#include "utils/Ref.h"
+#include <memory>
 
 namespace tractor
 {
@@ -23,7 +23,7 @@ namespace tractor
  *
  * Currently only supports loading from .png image files.
  */
-class Image : public Ref
+class Image : public std::enable_shared_from_this<Image>
 {
   public:
     /**
@@ -42,7 +42,7 @@ class Image : public Ref
      * @return The newly created image.
      * @script{create}
      */
-    static Image* create(const std::string& path);
+    static std::shared_ptr<Image> create(const std::string& path);
 
     /**
      * Creates an image from the data provided
@@ -54,10 +54,15 @@ class Image : public Ref
      * @return The newly created image.
      * @script{create}
      */
-    static Image* create(unsigned int width,
-                         unsigned int height,
-                         Format format,
-                         unsigned char* data = nullptr);
+    static std::shared_ptr<Image> create(unsigned int width,
+                                         unsigned int height,
+                                         Format format,
+                                         unsigned char* data = nullptr);
+
+    /**
+     * Destructor.
+     */
+    ~Image();
 
     /**
      * Gets the image's raw pixel data.
@@ -93,11 +98,6 @@ class Image : public Ref
      * Constructor.
      */
     Image() = default;
-
-    /**
-     * Destructor.
-     */
-    ~Image();
 
     /**
      * Hidden copy assignment operator.

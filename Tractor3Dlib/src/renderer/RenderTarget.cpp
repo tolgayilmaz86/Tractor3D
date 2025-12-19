@@ -14,11 +14,13 @@
 #include "pch.h"
 
 #include "renderer/RenderTarget.h"
+#include <vector>
+#include <memory>
 
 namespace tractor
 {
 
-static std::vector<RenderTarget*> __renderTargets;
+static std::vector<std::weak_ptr<RenderTarget>> __renderTargets;
 
 //----------------------------------------------------------------------------
 RenderTarget::RenderTarget(const std::string& id) : _id(id) {}
@@ -28,18 +30,17 @@ RenderTarget::~RenderTarget()
 {
     SAFE_RELEASE(_texture);
 
-    // Remove ourself from the cache.
-    std::vector<RenderTarget*>::iterator it =
-        std::find(__renderTargets.begin(), __renderTargets.end(), this);
-    if (it != __renderTargets.end())
-        __renderTargets.erase(it);
+    // Remove expired weak_ptrs from the cache
+    std::erase_if(__renderTargets, [](const std::weak_ptr<RenderTarget>& wp) {
+        return wp.expired();
+    });
 }
 
 //----------------------------------------------------------------------------
-RenderTarget* RenderTarget::create(const std::string& id,
-                                   unsigned int width,
-                                   unsigned int height,
-                                   Texture::Format format)
+std::shared_ptr<RenderTarget> RenderTarget::create(const std::string& id,
+                                                   unsigned int width,
+                                                   unsigned int height,
+                                                   Texture::Format format)
 {
     // Create a new texture with the given width.
     Texture* texture = Texture::create(format, width, height, nullptr, false);
@@ -49,31 +50,38 @@ RenderTarget* RenderTarget::create(const std::string& id,
         return nullptr;
     }
 
-    RenderTarget* rt = create(id, texture);
+    auto rt = create(id, texture);
     texture->release();
 
     return rt;
 }
 
 //----------------------------------------------------------------------------
-RenderTarget* RenderTarget::create(const std::string& id, Texture* texture)
+std::shared_ptr<RenderTarget> RenderTarget::create(const std::string& id, Texture* texture)
 {
-    const auto& renderTarget = __renderTargets.emplace_back(new RenderTarget(id));
+    auto renderTarget = std::shared_ptr<RenderTarget>(new RenderTarget(id));
 
     renderTarget->_texture = texture;
     renderTarget->_texture->addRef();
+
+    // Add to cache as weak_ptr
+    __renderTargets.push_back(renderTarget);
 
     return renderTarget;
 }
 
 //----------------------------------------------------------------------------
-RenderTarget* RenderTarget::getRenderTarget(const std::string& id) noexcept
+std::shared_ptr<RenderTarget> RenderTarget::getRenderTarget(const std::string& id) noexcept
 {
-    if (auto it = std::ranges::find_if(__renderTargets,
-                                       [&id](const auto& rt) { return id == rt->getId(); });
-        it != __renderTargets.end())
+    for (auto& weakTarget : __renderTargets)
     {
-        return *it;
+        if (auto target = weakTarget.lock())
+        {
+            if (id == target->getId())
+            {
+                return target;
+            }
+        }
     }
 
     return nullptr;

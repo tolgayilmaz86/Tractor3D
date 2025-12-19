@@ -123,9 +123,8 @@ Texture* Texture::create(const std::string& path, bool generateMipmaps)
 
     if (ext == ".png")
     {
-        Image* image = Image::create(path);
-        if (image) texture = create(image, generateMipmaps);
-        SAFE_RELEASE(image);
+        auto image = Image::create(path);
+        if (image) texture = create(image.get(), generateMipmaps);
     }
     else if (ext == ".pvr")
     {

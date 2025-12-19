@@ -119,7 +119,7 @@ class FrameBuffer : public Ref
      * @param target The 2D RenderTarget to set.
      * @param index The index of the color attachment to set.
      */
-    void setRenderTarget(RenderTarget* target, unsigned int index = 0);
+    void setRenderTarget(std::shared_ptr<RenderTarget> target, unsigned int index = 0);
 
     /**
      * Set a RenderTarget on this FrameBuffer's color attachment at the specified index.
@@ -128,7 +128,7 @@ class FrameBuffer : public Ref
      * @param face The face of the cubemap to target.
      * @param index The index of the color attachment to set.
      */
-    void setRenderTarget(RenderTarget* target, Texture::CubeFace face, unsigned int index = 0);
+    void setRenderTarget(std::shared_ptr<RenderTarget> target, Texture::CubeFace face, unsigned int index = 0);
 
     /**
      * Get the RenderTarget attached to the FrameBuffer's color attachment at the specified index.
@@ -137,7 +137,7 @@ class FrameBuffer : public Ref
      *
      * @return The RenderTarget attached at the specified index.
      */
-    RenderTarget* getRenderTarget(unsigned int index = 0) const;
+    std::shared_ptr<RenderTarget> getRenderTarget(unsigned int index = 0) const;
 
     /**
      * Returns the current number of render targets attached to this frame buffer.
@@ -182,7 +182,7 @@ class FrameBuffer : public Ref
      * @param format The format the Image should be in.
      * @return A screenshot of the current framebuffer's content.
      */
-    static Image* createScreenshot(Image::Format format = Image::RGBA);
+    static std::shared_ptr<Image> createScreenshot(Image::Format format = Image::RGBA);
 
     /**
      * Records a screenshot of what is stored on the current FrameBuffer to an Image.
@@ -191,7 +191,7 @@ class FrameBuffer : public Ref
      *
      * @param image The Image to write the current framebuffer's content to.
      */
-    static void getScreenshot(Image* image);
+    static void getScreenshot(const std::shared_ptr<Image>& image);
 
     /**
      * Binds the default FrameBuffer for rendering to the display.
@@ -226,7 +226,7 @@ class FrameBuffer : public Ref
      */
     FrameBuffer& operator=(const FrameBuffer&) = delete;
 
-    void setRenderTarget(RenderTarget* target, unsigned int index, GLenum textureTarget);
+    void setRenderTarget(std::shared_ptr<RenderTarget> target, unsigned int index, GLenum textureTarget);
 
     static void initialize();
 
@@ -236,7 +236,7 @@ class FrameBuffer : public Ref
 
     std::string _id{};
     FrameBufferHandle _handle;
-    RenderTarget** _renderTargets{ nullptr };
+    std::vector<std::shared_ptr<RenderTarget>> _renderTargets;
     unsigned int _renderTargetCount{ 0 };
     std::shared_ptr<DepthStencilTarget> _depthStencilTarget{ nullptr };
 

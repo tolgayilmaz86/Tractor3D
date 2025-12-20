@@ -54,7 +54,7 @@ Node::~Node()
     if (_audioSource) _audioSource->setNode(nullptr);
     Ref* ref = dynamic_cast<Ref*>(_drawable);
     SAFE_RELEASE(ref);
-    SAFE_RELEASE(_camera);
+    if (_camera) _camera->setNode(nullptr);
     if (_light) _light->setNode(nullptr);
     SAFE_RELEASE(_userObject);
     setAgent(nullptr);
@@ -699,21 +699,19 @@ Animation* Node::getAnimation(const std::string& id) const
 }
 
 //----------------------------------------------------------------------------
-void Node::setCamera(Camera* camera)
+void Node::setCamera(const CameraPtr& camera)
 {
     if (_camera == camera) return;
 
     if (_camera)
     {
         _camera->setNode(nullptr);
-        SAFE_RELEASE(_camera);
     }
 
     _camera = camera;
 
     if (_camera)
     {
-        _camera->addRef();
         _camera->setNode(this);
     }
 }
@@ -925,10 +923,8 @@ void Node::cloneInto(Node* node, NodeCloneContext& context) const
     }
     if (Camera* camera = getCamera())
     {
-        Camera* clone = camera->clone(context);
+        CameraPtr clone = camera->clone(context);
         node->setCamera(clone);
-        Ref* ref = dynamic_cast<Ref*>(clone);
-        if (ref) ref->release();
     }
     if (Light* light = getLight())
     {

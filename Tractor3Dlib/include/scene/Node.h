@@ -52,6 +52,8 @@ class Node : public Transform, public Ref
     friend class Bundle;
     friend class MeshSkin;
     friend class Light;
+    friend class AudioListener;
+    friend class TerrainPatch;
 
     GP_SCRIPT_EVENTS_START();
     GP_SCRIPT_EVENT(update, "<Node>f");
@@ -457,7 +459,7 @@ class Node : public Transform, public Ref
      *
      * @return Gets the camera attached to this node.
      */
-    Camera* getCamera() const noexcept { return _camera; }
+    Camera* getCamera() const noexcept { return _camera.get(); }
 
     /**
      * Attaches a camera to this node.
@@ -467,7 +469,7 @@ class Node : public Transform, public Ref
      *
      * @param camera The new camera. May be nullptr.
      */
-    void setCamera(Camera* camera);
+    void setCamera(const CameraPtr& camera);
 
     /**
      * Get the light attached to this node.
@@ -754,7 +756,7 @@ class Node : public Transform, public Ref
     /** The drawble component attached to this node. */
     Drawable* _drawable{ nullptr };
     /** The camera component attached to this node. */
-    Camera* _camera{ nullptr };
+    CameraPtr _camera;
     /** The light component attached to this node. */
     LightPtr _light;
     /** The audio source component attached to this node. */

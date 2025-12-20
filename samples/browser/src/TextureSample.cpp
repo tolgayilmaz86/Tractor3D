@@ -74,10 +74,10 @@ void TextureSample::initialize()
     _scene = Scene::create();
 
     // Create a camera and add it to the scene as the active camera.
-    Camera* camera = Camera::createPerspective(45.0f, getAspectRatio(), 1, 1000);
+    auto camera = Camera::createPerspective(45.0f, getAspectRatio(), 1, 1000);
     Node* cameraNode = _scene->addNode("camera");
     cameraNode->setCamera(camera);
-    _scene->setActiveCamera(camera);
+    _scene->setActiveCamera(camera.get());
     cameraNode->translate(0, 0, 50);
     SAFE_RELEASE(camera);
 

@@ -669,10 +669,9 @@ bool Bundle::skipNode()
     }
 
     // Skip over the node's camera, light, and model attachments.
-    Camera* camera = readCamera();
-    SAFE_RELEASE(camera);
-    readLight();  // LightPtr will auto-release
-    Model* model = readModel(id);
+    readCamera();  // CameraPtr will auto-release
+    readLight();   // LightPtr will auto-release
+    auto model = readModel(id);
     SAFE_RELEASE(model);
 
     return true;
@@ -790,11 +789,10 @@ Node* Bundle::readNode(Scene* sceneContext, Node* nodeContext)
     }
 
     // Read camera.
-    Camera* camera = readCamera();
+    auto camera = readCamera();
     if (camera)
     {
         node->setCamera(camera);
-        SAFE_RELEASE(camera);
     }
 
     // Read light.
@@ -815,7 +813,7 @@ Node* Bundle::readNode(Scene* sceneContext, Node* nodeContext)
 }
 
 //----------------------------------------------------------------------------
-Camera* Bundle::readCamera()
+CameraPtr Bundle::readCamera()
 {
     unsigned char cameraType;
     if (!read(&cameraType))
@@ -851,7 +849,7 @@ Camera* Bundle::readCamera()
         return nullptr;
     }
 
-    Camera* camera = nullptr;
+    CameraPtr camera = nullptr;
     if (cameraType == Camera::PERSPECTIVE)
     {
         float fieldOfView;

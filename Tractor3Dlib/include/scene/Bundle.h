@@ -378,9 +378,9 @@ class Bundle : public Ref
     /**
      * Reads a camera from the current file position.
      *
-     * @return A pointer to a new camera or nullptr if there was an error.
+     * @return A shared pointer to a new camera or nullptr if there was an error.
      */
-    Camera* readCamera();
+    CameraPtr readCamera();
 
     /**
      * Reads a light from the current file position.

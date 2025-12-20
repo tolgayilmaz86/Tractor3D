@@ -51,10 +51,9 @@ TerrainPatch::~TerrainPatch()
         deleteLayer(*_layers.begin());
     }
 
-    if (_camera != nullptr)
+    if (auto camera = _camera.lock())
     {
-        _camera->removeListener(this);
-        SAFE_RELEASE(_camera);
+        camera->removeListener(this);
     }
 }
 
@@ -632,16 +631,25 @@ const BoundingBox& TerrainPatch::getBoundingBox(bool worldSpace) const
 //----------------------------------------------------------------------------
 unsigned int TerrainPatch::computeLOD(Camera* camera, const BoundingBox& worldBounds)
 {
-    if (camera != _camera)
+    auto cachedCamera = _camera.lock();
+    if (!cachedCamera || cachedCamera.get() != camera)
     {
-        if (_camera != nullptr)
+        if (cachedCamera)
         {
-            _camera->removeListener(this);
-            _camera->release();
+            cachedCamera->removeListener(this);
         }
-        _camera = camera;
-        _camera->addRef();
-        _camera->addListener(this);
+        if (camera && camera->getNode())
+        {
+            _camera = camera->getNode()->_camera;
+            if (auto newCamera = _camera.lock())
+            {
+                newCamera->addListener(this);
+            }
+        }
+        else
+        {
+            _camera.reset();
+        }
         _bits |= TERRAINPATCH_DIRTY_LEVEL;
     }
 

@@ -129,12 +129,11 @@ void ParticlesSample::initialize()
     Node* cameraNode = _scene->addNode("Camera");
     _cameraParent = _scene->addNode("CameraParent");
     _cameraParent->addChild(cameraNode);
-    Camera* camera =
+    auto camera =
         Camera::createPerspective(45.0f, (float)getWidth() / (float)getHeight(), 0.25f, 1000.0f);
     cameraNode->setCamera(camera);
     cameraNode->setTranslation(0.0f, 0.0f, ZOOM_DEFAULT);
-    _scene->setActiveCamera(camera);
-    SAFE_RELEASE(camera);
+    _scene->setActiveCamera(camera.get());
 
     addGrid(61);
 

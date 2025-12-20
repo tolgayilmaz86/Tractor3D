@@ -39,12 +39,10 @@ Scene::~Scene()
     if (_activeCamera)
     {
         AudioListener* audioListener = AudioListener::getInstance();
-        if (audioListener && (audioListener->getCamera() == _activeCamera))
+        if (audioListener && (audioListener->getCamera() == _activeCamera.get()))
         {
             audioListener->setCamera(nullptr);
         }
-
-        SAFE_RELEASE(_activeCamera);
     }
 
     // Remove all nodes from the scene
@@ -280,30 +278,34 @@ void Scene::removeAllNodes()
 void Scene::setActiveCamera(Camera* camera)
 {
     // Make sure we don't release the camera if the same camera is set twice.
-    if (_activeCamera != camera)
+    if (_activeCamera.get() != camera)
     {
         AudioListener* audioListener = AudioListener::getInstance();
 
         if (_activeCamera)
         {
             // Unbind the active camera from the audio listener
-            if (audioListener && (audioListener->getCamera() == _activeCamera))
+            if (audioListener && (audioListener->getCamera() == _activeCamera.get()))
             {
                 audioListener->setCamera(nullptr);
             }
-
-            SAFE_RELEASE(_activeCamera);
         }
 
-        _activeCamera = camera;
+        // Find the node that owns this camera and get the shared_ptr
+        if (camera && camera->getNode())
+        {
+            _activeCamera = camera->getNode()->_camera;
+        }
+        else
+        {
+            _activeCamera.reset();
+        }
 
         if (_activeCamera)
         {
-            _activeCamera->addRef();
-
             if (audioListener && _bindAudioListenerToCamera)
             {
-                audioListener->setCamera(_activeCamera);
+                audioListener->setCamera(_activeCamera.get());
             }
         }
     }
@@ -318,7 +320,7 @@ void Scene::bindAudioListenerToCamera(bool bind)
 
         if (AudioListener::getInstance())
         {
-            AudioListener::getInstance()->setCamera(bind ? _activeCamera : nullptr);
+            AudioListener::getInstance()->setCamera(bind ? _activeCamera.get() : nullptr);
         }
     }
 }

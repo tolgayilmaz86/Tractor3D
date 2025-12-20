@@ -14,23 +14,30 @@
 #pragma once
 
 #include <list>
+#include <memory>
 
 #include "graphics/Frustum.h"
 #include "graphics/Rectangle.h"
 #include "math/Transform.h"
 #include "scene/Properties.h"
-#include "utils/Ref.h"
 
 namespace tractor
 {
 
 class Node;
 class NodeCloneContext;
+class Camera;
+
+/** Shared pointer type for Camera. */
+using CameraPtr = std::shared_ptr<Camera>;
+
+/** Weak pointer type for Camera. */
+using CameraWeakPtr = std::weak_ptr<Camera>;
 
 /**
  * Defines a camera which acts as a view of a scene to be rendered.
  */
-class Camera : public Ref, public Transform::Listener
+class Camera : public std::enable_shared_from_this<Camera>, public Transform::Listener
 {
     friend class Node;
 
@@ -72,10 +79,10 @@ class Camera : public Ref, public Transform::Listener
      *
      * @return The new Camera.
      */
-    static Camera* createPerspective(float fieldOfView,
-                                     float aspectRatio,
-                                     float nearPlane,
-                                     float farPlane);
+    static CameraPtr createPerspective(float fieldOfView,
+                                       float aspectRatio,
+                                       float nearPlane,
+                                       float farPlane);
 
     /**
      * Creates an orthographic camera.
@@ -90,11 +97,11 @@ class Camera : public Ref, public Transform::Listener
      *
      * @return The new Camera.
      */
-    static Camera* createOrthographic(float zoomX,
-                                      float zoomY,
-                                      float aspectRatio,
-                                      float nearPlane,
-                                      float farPlane);
+    static CameraPtr createOrthographic(float zoomX,
+                                        float zoomY,
+                                        float aspectRatio,
+                                        float nearPlane,
+                                        float farPlane);
 
     /**
      * Creates a camera from a properties definition.
@@ -107,7 +114,7 @@ class Camera : public Ref, public Transform::Listener
      *
      * @return The new Camera.
      */
-    static Camera* create(Properties* properties);
+    static CameraPtr create(Properties* properties);
 
     /**
      * Gets the type of camera.
@@ -234,13 +241,6 @@ class Camera : public Ref, public Transform::Listener
     /**
      * Sets a custom projection matrix to be used by the camera.
      *
-     * Setting a custom projection matrix results in the internally
-     * computed projection matrix being completely overridden until
-     * the resetProjectionMatrix method is called. A custom projection
-     * matrix is normally not necessary, but can be used for special
-     * projection effects, such as setting an oblique view frustum
-     * for near plane clipping.
-     *
      * @param matrix Custom projection matrix.
      */
     void setProjectionMatrix(const Matrix& matrix);
@@ -275,12 +275,6 @@ class Camera : public Ref, public Transform::Listener
     /**
      * Projects the specified world position into the viewport coordinates.
      *
-     * @param viewport The viewport rectangle to use.
-     * @param position The world space position.
-     * @param x The returned viewport x coordinate.
-     * @param y The returned viewport y coordinate.
-     * @param depth The returned pixel depth (can be nullptr).
-     *
      * @script{ignore}
      */
     void project(const Rectangle& viewport,
@@ -291,43 +285,21 @@ class Camera : public Ref, public Transform::Listener
 
     /**
      * Projects the specified world position into the viewport coordinates.
-     *
-     * @param viewport The viewport rectangle to use.
-     * @param position The world space position.
-     * @param out Populated with the resulting screen-space position.
      */
     void project(const Rectangle& viewport, const Vector3& position, Vector2* out) const;
 
     /**
      * Projects the specified world position into the viewport coordinates.
-     *
-     * @param viewport The viewport rectangle to use.
-     * @param position The world space position.
-     * @param out Populated with the resulting screen-space position, with the pixel depth in the Z coordinate.
      */
     void project(const Rectangle& viewport, const Vector3& position, Vector3* out) const;
 
     /**
      * Converts a viewport-space coordinate to a world-space position for the given depth value.
-     *
-     * The depth parameter is a value ranging between 0 and 1, where 0 returns a point on the
-     * near clipping plane and 1 returns a point on the far clipping plane.
-     *
-     * @param viewport The viewport rectangle to use.
-     * @param x The viewport-space x coordinate.
-     * @param y The viewport-space y coordinate.
-     * @param depth The depth range.
-     * @param dst The world space position.
      */
     void unproject(const Rectangle& viewport, float x, float y, float depth, Vector3* dst) const;
 
     /**
      * Picks a ray that can be used for picking given the specified viewport-space coordinates.
-     *
-     * @param viewport The viewport rectangle to use.
-     * @param x The viewport x-coordinate.
-     * @param y The viewport y-coordinate.
-     * @param dst The computed pick ray.
      */
     void pickRay(const Rectangle& viewport, float x, float y, Ray* dst) const;
 
@@ -372,7 +344,7 @@ class Camera : public Ref, public Transform::Listener
      * @param context The clone context.
      * @return The newly created camera.
      */
-    Camera* clone(NodeCloneContext& context) const;
+    CameraPtr clone(NodeCloneContext& context) const;
 
     /**
      * Sets the node associated with this camera.

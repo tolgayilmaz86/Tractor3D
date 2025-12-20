@@ -183,7 +183,7 @@ class TerrainPatch : public Camera::Listener
     std::vector<Texture::Sampler*> _samplers{};
     mutable BoundingBox _boundingBox{};
     mutable BoundingBox _boundingBoxWorld{};
-    mutable Camera* _camera{ nullptr };
+    mutable CameraWeakPtr _camera;
     mutable unsigned int _level{ 0 };
     mutable int _bits{ TERRAINPATCH_DIRTY_MATERIAL | TERRAINPATCH_DIRTY_BOUNDS
                        | TERRAINPATCH_DIRTY_LEVEL };

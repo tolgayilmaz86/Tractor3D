@@ -116,13 +116,12 @@ void FormsSample::initialize()
     button->setFocus();
 
     // Create a scene with a camera node.
-    Camera* camera =
+    auto camera =
         Camera::createPerspective(45.0f, (float)getWidth() / (float)getHeight(), 0.25f, 100.0f);
     _scene = Scene::create();
     Node* cameraNode = _scene->addNode("Camera");
     cameraNode->setCamera(camera);
-    _scene->setActiveCamera(camera);
-    SAFE_RELEASE(camera);
+    _scene->setActiveCamera(camera.get());
     _formNodeParent = _scene->addNode("FormParent");
     _formNode = Node::create("Form");
     _formNodeParent->addChild(_formNode);

@@ -149,7 +149,7 @@ class AudioListener : public Camera::Listener
      *
      * @return camera The camera currently associated with the audio listener.
      */
-    Camera* getCamera() const noexcept { return _camera; }
+    Camera* getCamera() const noexcept { return _camera.get(); }
 
     /**
      * Sets the camera that is associated with the audio listener. This should usually be the current camera.
@@ -178,7 +178,7 @@ class AudioListener : public Camera::Listener
     Vector3 _position;
     Vector3 _velocity;
     Vector3 _orientation[2];
-    Camera* _camera{ nullptr };
+    CameraPtr _camera;
 };
 
 } // namespace tractor

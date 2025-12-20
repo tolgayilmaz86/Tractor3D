@@ -150,7 +150,7 @@ class Scene : public Ref
      * @return The active camera for the scene.
      * @see VisibleSet#getActiveCamera
      */
-    Camera* getActiveCamera() { return _activeCamera; }
+    Camera* getActiveCamera() { return _activeCamera.get(); }
 
     /**
      * Sets the active camera on the scene.
@@ -307,7 +307,7 @@ class Scene : public Ref
     bool isNodeVisible(Node* node);
 
     std::string _id{};
-    Camera* _activeCamera{ nullptr };
+    CameraPtr _activeCamera;
     Node* _firstNode{ nullptr };
     Node* _lastNode{ nullptr };
     unsigned int _nodeCount{ 0 };

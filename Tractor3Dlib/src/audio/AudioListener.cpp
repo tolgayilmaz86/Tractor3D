@@ -58,20 +58,26 @@ void AudioListener::setOrientation(float forwardX,
 //----------------------------------------------------------------------------
 void AudioListener::setCamera(Camera* camera)
 {
-    if (_camera == camera) return;
+    if (_camera.get() == camera) return;
 
     // Disconnect our current camera.
     if (_camera)
     {
         _camera->removeListener(this);
-        SAFE_RELEASE(_camera);
     }
 
     // Connect the new camera.
-    _camera = camera;
+    if (camera && camera->getNode())
+    {
+        _camera = camera->getNode()->_camera;
+    }
+    else
+    {
+        _camera.reset();
+    }
+    
     if (_camera)
     {
-        _camera->addRef();
         _camera->addListener(this);
     }
 }
@@ -79,7 +85,7 @@ void AudioListener::setCamera(Camera* camera)
 //----------------------------------------------------------------------------
 void AudioListener::cameraChanged(Camera* camera)
 {
-    if (_camera != camera) setCamera(camera);
+    if (_camera.get() != camera) setCamera(camera);
 
     if (_camera)
     {

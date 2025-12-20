@@ -336,9 +336,8 @@ void SceneLoader::applyNodeProperty(SceneNode& sceneNode,
             }
             case SceneNodeProperty::CAMERA:
             {
-                Camera* camera = Camera::create(p);
+                auto camera = Camera::create(p);
                 node->setCamera(camera);
-                SAFE_RELEASE(camera);
                 break;
             }
             case SceneNodeProperty::COLLISION_OBJECT:

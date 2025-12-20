@@ -31,9 +31,8 @@ void FirstPersonCamera::initialize(float nearPlane, float farPlane, float fov)
 
     float aspectRatio = Game::getInstance()->getAspectRatio();
     assert(aspectRatio > 0.0f);
-    Camera* camera = Camera::createPerspective(fov, aspectRatio, nearPlane, farPlane);
+    auto camera = Camera::createPerspective(fov, aspectRatio, nearPlane, farPlane);
     _pitchNode->setCamera(camera);
-    SAFE_RELEASE(camera);
 }
 
 Node* FirstPersonCamera::getRootNode() { return _rootNode; }

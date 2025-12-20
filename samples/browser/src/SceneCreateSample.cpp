@@ -68,15 +68,14 @@ void SceneCreateSample::initialize()
     _scene = Scene::create();
 
     // Create the camera.
-    Camera* camera = Camera::createPerspective(45.0f, getAspectRatio(), 1.0f, 10.0f);
+    auto camera = Camera::createPerspective(45.0f, getAspectRatio(), 1.0f, 10.0f);
     Node* cameraNode = _scene->addNode("camera");
 
     // Attach the camera to a node. This determines the position of the camera.
     cameraNode->setCamera(camera);
 
     // Make this the active camera of the scene.
-    _scene->setActiveCamera(camera);
-    SAFE_RELEASE(camera);
+    _scene->setActiveCamera(camera.get());
 
     // Move the camera to look at the origin.
     cameraNode->translate(0, 1, 5);

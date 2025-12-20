@@ -54,11 +54,10 @@ void WaterSample::initialize()
     camPitchNode->rotate(m);
     _cameraNode->addChild(camPitchNode);
     _scene->addNode(_cameraNode);
-    Camera* camera =
+    auto camera =
         Camera::createPerspective(45.f, Game::getInstance()->getAspectRatio(), 0.1f, 150.f);
     camPitchNode->setCamera(camera);
-    _scene->setActiveCamera(camera);
-    SAFE_RELEASE(camera);
+    _scene->setActiveCamera(camera.get());
     SAFE_RELEASE(camPitchNode);
 
     // Add a second camera do draw the reflections
@@ -68,9 +67,8 @@ void WaterSample::initialize()
     m = Matrix::createLookAt(_reflectCameraNode->getTranslation(), Vector3::zero(), Vector3::unitY());
     camPitchNode->rotate(m);
     _reflectCameraNode->addChild(camPitchNode);
-    camera = Camera::createPerspective(45.f, Game::getInstance()->getAspectRatio(), 0.1f, 150.f);
-    camPitchNode->setCamera(camera);
-    SAFE_RELEASE(camera);
+    auto reflectCamera = Camera::createPerspective(45.f, Game::getInstance()->getAspectRatio(), 0.1f, 150.f);
+    camPitchNode->setCamera(reflectCamera);
     SAFE_RELEASE(camPitchNode);
 
     // Render buffer and preview for refraction

@@ -57,23 +57,23 @@ Camera::Camera(float zoomX, float zoomY, float aspectRatio, float nearPlane, flo
 Camera::~Camera() { _listeners.clear(); }
 
 //----------------------------------------------------------------------------
-Camera* Camera::createPerspective(float fieldOfView, float aspectRatio, float nearPlane, float farPlane)
+CameraPtr Camera::createPerspective(float fieldOfView, float aspectRatio, float nearPlane, float farPlane)
 {
-    return new Camera(fieldOfView, aspectRatio, nearPlane, farPlane);
+    return CameraPtr(new Camera(fieldOfView, aspectRatio, nearPlane, farPlane));
 }
 
 //----------------------------------------------------------------------------
-Camera* Camera::createOrthographic(float zoomX,
-                                   float zoomY,
-                                   float aspectRatio,
-                                   float nearPlane,
-                                   float farPlane)
+CameraPtr Camera::createOrthographic(float zoomX,
+                                     float zoomY,
+                                     float aspectRatio,
+                                     float nearPlane,
+                                     float farPlane)
 {
-    return new Camera(zoomX, zoomY, aspectRatio, nearPlane, farPlane);
+    return CameraPtr(new Camera(zoomX, zoomY, aspectRatio, nearPlane, farPlane));
 }
 
 //----------------------------------------------------------------------------
-Camera* Camera::create(Properties* properties)
+CameraPtr Camera::create(Properties* properties)
 {
     assert(properties);
 
@@ -117,7 +117,7 @@ Camera* Camera::create(Properties* properties)
     else
         farPlane = 100; // use some reasonable default value
 
-    Camera* camera = nullptr;
+    CameraPtr camera = nullptr;
 
     switch (type)
     {
@@ -476,9 +476,9 @@ void Camera::pickRay(const Rectangle& viewport, float x, float y, Ray* dst) cons
 }
 
 //----------------------------------------------------------------------------
-Camera* Camera::clone(NodeCloneContext& context) const
+CameraPtr Camera::clone(NodeCloneContext& context) const
 {
-    Camera* cameraClone = nullptr;
+    CameraPtr cameraClone = nullptr;
     if (getCameraType() == PERSPECTIVE)
     {
         cameraClone = createPerspective(_fieldOfView, _aspectRatio, _nearPlane, _farPlane);

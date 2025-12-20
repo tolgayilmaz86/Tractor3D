@@ -13,14 +13,22 @@
  */
 #pragma once
 
+#include <memory>
+
 #include "ai/AIMessage.h"
 #include "ai/AIStateMachine.h"
-#include "utils/Ref.h"
 
 namespace tractor
 {
 
 class Node;
+class AIAgent;
+
+/** Shared pointer type for AIAgent. */
+using AIAgentPtr = std::shared_ptr<AIAgent>;
+
+/** Weak pointer type for AIAgent. */
+using AIAgentWeakPtr = std::weak_ptr<AIAgent>;
 
 /**
  * Defines an AI agent that can be added to nodes in a scene.
@@ -30,7 +38,7 @@ class Node;
  * such as state machines. By default, an AIAgent has an empty state
  * machine.
  */
-class AIAgent : public Ref
+class AIAgent : public std::enable_shared_from_this<AIAgent>
 {
     friend class Node;
     friend class AIState;
@@ -71,7 +79,12 @@ class AIAgent : public Ref
      * @return A new AIAgent.
      * @script{create}
      */
-    static AIAgent* create();
+    static AIAgentPtr create();
+
+    /**
+     * Destructor.
+     */
+    virtual ~AIAgent() = default;
 
     /**
      * Returns the identifier for the AIAgent.
@@ -135,13 +148,6 @@ class AIAgent : public Ref
     AIAgent();
 
     /**
-     * Destructor.
-     *
-     * Hidden, use SAFE_RELEASE instead.
-     */
-    virtual ~AIAgent() = default;
-
-    /**
      * Hidden copy constructor.
      */
     AIAgent(const AIAgent&);
@@ -174,7 +180,6 @@ class AIAgent : public Ref
     Node* _node{ nullptr };
     bool _enabled{ true };
     Listener* _listener{ nullptr };
-    AIAgent* _next{ nullptr };
 };
 
 } // namespace tractor

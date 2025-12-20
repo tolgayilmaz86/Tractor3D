@@ -27,7 +27,10 @@ AIAgent::AIAgent()
 }
 
 //----------------------------------------------------------------------------
-AIAgent* AIAgent::create() { return new AIAgent(); }
+std::shared_ptr<AIAgent> AIAgent::create()
+{
+    return std::shared_ptr<AIAgent>(new AIAgent());
+}
 
 //----------------------------------------------------------------------------
 const std::string& AIAgent::getId() const

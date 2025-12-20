@@ -331,9 +331,8 @@ void SceneLoader::applyNodeProperty(SceneNode& sceneNode,
             }
             case SceneNodeProperty::LIGHT:
             {
-                Light* light = Light::create(p);
+                auto light = Light::create(p);
                 node->setLight(light);
-                SAFE_RELEASE(light);
                 break;
             }
             case SceneNodeProperty::CAMERA:

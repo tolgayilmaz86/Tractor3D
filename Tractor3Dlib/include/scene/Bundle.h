@@ -385,9 +385,9 @@ class Bundle : public Ref
     /**
      * Reads a light from the current file position.
      *
-     * @return A pointer to a new light or nullptr if there was an error.
+     * @return A shared pointer to a new light or nullptr if there was an error.
      */
-    Light* readLight();
+    LightPtr readLight();
 
     /**
      * Reads a model from the current file position.

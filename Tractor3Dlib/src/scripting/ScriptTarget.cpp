@@ -88,7 +88,7 @@ ScriptTarget::~ScriptTarget()
         ScriptEntry* tmp = se;
         se = se->next;
 
-        SAFE_RELEASE(tmp->script);
+        // shared_ptr will release automatically when ScriptEntry is deleted
         SAFE_DELETE(tmp);
     }
 
@@ -125,12 +125,12 @@ void ScriptTarget::registerEvents(EventRegistry* registry)
     }
 }
 
-Script* ScriptTarget::addScript(const std::string& path)
+ScriptPtr ScriptTarget::addScript(const std::string& path)
 {
     ScriptController* sc = Game::getInstance()->getScriptController();
 
     // Load the script
-    Script* script = sc->loadScript(path, Script::PROTECTED);
+    ScriptPtr script = sc->loadScript(path, Script::PROTECTED);
     if (!script) return nullptr;
 
     // Attach the script
@@ -157,7 +157,7 @@ Script* ScriptTarget::addScript(const std::string& path)
         for (size_t i = 0, count = events.size(); i < count; ++i)
         {
             const Event* event = events[i];
-            if (sc->functionExists(event->name.c_str(), script))
+            if (sc->functionExists(event->name.c_str(), script.get()))
             {
                 if (!_scriptCallbacks)
                     _scriptCallbacks = new std::map<const Event*, std::vector<CallbackFunction>>();
@@ -168,9 +168,9 @@ Script* ScriptTarget::addScript(const std::string& path)
     }
 
     // Automatically call the 'attached' event if it is defined within the script
-    if (sc->functionExists("attached", script))
+    if (sc->functionExists("attached", script.get()))
     {
-        sc->executeFunction<void>(script, "attached", "<ScriptTarget>", nullptr, (void*)this);
+        sc->executeFunction<void>(script.get(), "attached", "<ScriptTarget>", nullptr, (void*)this);
     }
 
     return script;
@@ -201,7 +201,7 @@ void ScriptTarget::removeScript(ScriptEntry* se)
     if (se->next) se->next->prev = se->prev;
     if (_scripts == se) _scripts = se->next;
 
-    Script* script = se->script;
+    ScriptPtr script = se->script;
 
     // Delete the ScriptEntry
     SAFE_DELETE(se);
@@ -210,43 +210,16 @@ void ScriptTarget::removeScript(ScriptEntry* se)
     if (_scriptCallbacks)
     {
         std::ranges::for_each(*_scriptCallbacks,
-                              [script](auto& pair)
+                              [&script](auto& pair)
                               {
                                   auto& callbacks = pair.second;
                                   std::erase_if(callbacks,
-                                                [script](const CallbackFunction& callback)
+                                                [&script](const CallbackFunction& callback)
                                                 { return callback.script == script; });
                               });
-
-        // There are many ways you can implement logic above
-        //
-        // std::for_each(_scriptCallbacks->begin(), _scriptCallbacks->end(), [script](auto& pair) {
-        //  auto& callbacks = pair.second;
-        //  callbacks.erase(
-        //    std::remove_if(callbacks.begin(), callbacks.end(), [script](const CallbackFunction& callback) {
-        //      return callback.script == script;
-        //      }),
-        //    callbacks.end()
-        //  );
-        //  });
-
-        // std::map<const Event*, std::vector<CallbackFunction>>::iterator itr =
-        // _scriptCallbacks->begin(); for (; itr != _scriptCallbacks->end(); ++itr)
-        //{
-        //   std::vector<CallbackFunction>& callbacks = itr->second;
-        //   std::vector<CallbackFunction>::iterator itr2 = callbacks.begin();
-        //   while (itr2 != callbacks.end())
-        //   {
-        //     if (itr2->script == script)
-        //       itr2 = callbacks.erase(itr2);
-        //     else
-        //       ++itr2;
-        //   }
-        // }
     }
 
-    // Free the script
-    SAFE_RELEASE(script);
+    // script shared_ptr will release automatically when going out of scope
 }
 
 void ScriptTarget::addScriptCallback(const Event* event, const char* function)
@@ -266,7 +239,7 @@ void ScriptTarget::addScriptCallback(const Event* event, const char* function)
 
     // Have we already loaded this global script?
     bool loaded = true;
-    Script* script = nullptr;
+    ScriptPtr script = nullptr;
     if (!scriptPath.empty())
     {
         loaded = false;
@@ -348,7 +321,7 @@ void ScriptTarget::removeScriptCallback(const Event* event, const char* function
             }
         }
     }
-    Script* script = scriptEntry ? scriptEntry->script : nullptr;
+    ScriptPtr script = scriptEntry ? scriptEntry->script : nullptr;
 
     // Remove any registered callback functions that match the specified one
     int removedCallbacks = 0;
@@ -371,29 +344,6 @@ void ScriptTarget::removeScriptCallback(const Event* event, const char* function
                               [&](const CallbackFunction& cb)
                               { return cb.script == script && (forEvent && cb.function == func); });
         }
-        // ^ Instead of this
-        // std::map<const Event*, std::vector<CallbackFunction>>::iterator itr =
-        // _scriptCallbacks->begin(); for (; itr != _scriptCallbacks->end(); ++itr)
-        //{
-        //  // Erase matching callback functions for this event
-        //  bool forEvent = itr->first == event;
-        //  std::vector<CallbackFunction>& callbacks = itr->second;
-        //  std::vector<CallbackFunction>::iterator itr2 = callbacks.begin();
-        //  while (itr2 != callbacks.end())
-        //  {
-        //    if (itr2->script == script)
-        //    {
-        //      ++totalCallbacks; // sum total number of callbacks found for this script
-        //      if (forEvent && itr2->function == func)
-        //      {
-        //        itr2 = callbacks.erase(itr2);
-        //        ++removedCallbacks; // sum number of callbacks removed
-        //      }
-        //      else
-        //        ++itr2;
-        //    }
-        //  }
-        //}
     }
 
     // Cleanup the script if there are no remaining callbacks for it
@@ -469,7 +419,7 @@ template <> void ScriptTarget::fireScriptEvent<void>(const Event* event, ...)
         for (size_t i = 0, count = callbacks.size(); i < count; ++i)
         {
             CallbackFunction& cb = callbacks[i];
-            sc->executeFunction<void>(cb.script,
+            sc->executeFunction<void>(cb.script.get(),
                                       cb.function.c_str(),
                                       event->args.c_str(),
                                       nullptr,
@@ -500,7 +450,7 @@ template <> bool ScriptTarget::fireScriptEvent<bool>(const Event* event, ...)
         {
             CallbackFunction& cb = callbacks[i];
             bool result = false;
-            if (sc->executeFunction<bool>(cb.script,
+            if (sc->executeFunction<bool>(cb.script.get(),
                                           cb.function.c_str(),
                                           event->args.c_str(),
                                           &result,

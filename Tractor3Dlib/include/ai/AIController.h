@@ -13,6 +13,9 @@
  */
 #pragma once
 
+#include <memory>
+#include <vector>
+
 #include "ai/AIAgent.h"
 #include "ai/AIMessage.h"
 
@@ -52,7 +55,7 @@ class AIController
      *
      * @return The first agent matching the specified ID, or nullptr if no matching agent could be found.
      */
-    AIAgent* findAgent(const std::string& id) const;
+    AIAgentPtr findAgent(const std::string& id) const;
 
     /**
      * Constructor.
@@ -103,13 +106,13 @@ class AIController
      */
     void update(float elapsedTime);
 
-    void addAgent(AIAgent* agent);
+    void addAgent(const AIAgentPtr& agent);
 
-    void removeAgent(AIAgent* agent);
+    void removeAgent(const AIAgentPtr& agent);
 
     bool _paused{ false };
     AIMessage* _firstMessage{ nullptr };
-    AIAgent* _firstAgent{ nullptr };
+    std::vector<AIAgentPtr> _agents;
 };
 
 } // namespace tractor

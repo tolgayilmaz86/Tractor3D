@@ -55,11 +55,10 @@ Node::~Node()
     Ref* ref = dynamic_cast<Ref*>(_drawable);
     SAFE_RELEASE(ref);
     SAFE_RELEASE(_camera);
-    SAFE_RELEASE(_light);
+    if (_light) _light->setNode(nullptr);
     SAFE_RELEASE(_audioSource);
     SAFE_RELEASE(_userObject);
     setAgent(nullptr);
-    //----------------------------------------------------------------------------
 }
 
 //----------------------------------------------------------------------------
@@ -721,21 +720,19 @@ void Node::setCamera(Camera* camera)
 }
 
 //----------------------------------------------------------------------------
-void Node::setLight(Light* light)
+void Node::setLight(const LightPtr& light)
 {
     if (_light == light) return;
 
     if (_light)
     {
         _light->setNode(nullptr);
-        SAFE_RELEASE(_light);
     }
 
     _light = light;
 
     if (_light)
     {
-        _light->addRef();
         _light->setNode(this);
     }
 
@@ -936,10 +933,8 @@ void Node::cloneInto(Node* node, NodeCloneContext& context) const
     }
     if (Light* light = getLight())
     {
-        Light* clone = light->clone(context);
+        LightPtr clone = light->clone(context);
         node->setLight(clone);
-        Ref* ref = dynamic_cast<Ref*>(clone);
-        if (ref) ref->release();
     }
     if (AudioSource* audio = getAudioSource())
     {
@@ -1131,7 +1126,7 @@ PhysicsCollisionObject* Node::setCollisionObject(Properties* properties)
 }
 
 //----------------------------------------------------------------------------
-AIAgent* Node::getAgent() const
+AIAgentPtr Node::getAgent() const
 {
     // Lazily create a new Agent for this Node if we don't have one yet.
     // Basically, all Nodes by default can have an Agent, we just won't
@@ -1147,7 +1142,7 @@ AIAgent* Node::getAgent() const
 }
 
 //----------------------------------------------------------------------------
-void Node::setAgent(AIAgent* agent)
+void Node::setAgent(const AIAgentPtr& agent)
 {
     if (agent == _agent) return;
 
@@ -1155,14 +1150,12 @@ void Node::setAgent(AIAgent* agent)
     {
         Game::getInstance()->getAIController()->removeAgent(_agent);
         _agent->setNode(nullptr);
-        SAFE_RELEASE(_agent);
     }
 
     _agent = agent;
 
     if (_agent)
     {
-        _agent->addRef();
         _agent->setNode(this);
         Game::getInstance()->getAIController()->addAgent(_agent);
     }

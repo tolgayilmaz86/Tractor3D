@@ -671,8 +671,7 @@ bool Bundle::skipNode()
     // Skip over the node's camera, light, and model attachments.
     Camera* camera = readCamera();
     SAFE_RELEASE(camera);
-    Light* light = readLight();
-    SAFE_RELEASE(light);
+    readLight();  // LightPtr will auto-release
     Model* model = readModel(id);
     SAFE_RELEASE(model);
 
@@ -799,11 +798,10 @@ Node* Bundle::readNode(Scene* sceneContext, Node* nodeContext)
     }
 
     // Read light.
-    Light* light = readLight();
+    LightPtr light = readLight();
     if (light)
     {
         node->setLight(light);
-        SAFE_RELEASE(light);
     }
 
     // Read model.
@@ -892,7 +890,7 @@ Camera* Bundle::readCamera()
 }
 
 //----------------------------------------------------------------------------
-Light* Bundle::readLight()
+LightPtr Bundle::readLight()
 {
     unsigned char type;
     if (!read(&type))
@@ -916,7 +914,7 @@ Light* Bundle::readLight()
     }
     Vector3 color(red, blue, green);
 
-    Light* light = nullptr;
+    LightPtr light = nullptr;
     if (type == Light::DIRECTIONAL)
     {
         light = Light::createDirectional(color);

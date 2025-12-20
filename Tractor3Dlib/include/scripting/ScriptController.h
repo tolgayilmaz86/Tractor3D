@@ -47,9 +47,9 @@ class ScriptController
      *
      * @return The loaded script, or nullptr if the script could not be loaded.
      */
-    Script* loadScript(const std::string& path,
-                       Script::Scope scope = Script::GLOBAL,
-                       bool forceReload = false);
+    ScriptPtr loadScript(const std::string& path,
+                         Script::Scope scope = Script::GLOBAL,
+                         bool forceReload = false);
 
     /**
      * Calls a zero-parameter global function.
@@ -561,7 +561,7 @@ class ScriptController
      * @return The currently executing script, or nullptr if either there is no currently
      *      executing script or the global script environment is current.
      */
-    Script* getCurrentScript() const;
+    ScriptPtr getCurrentScript() const;
 
     /**
      * Prints the string to the platform's output stream or log file.
@@ -599,7 +599,7 @@ class ScriptController
         /**
          * Constructor.
          */
-        ScriptTimeListener(Script* script, const char* function);
+        ScriptTimeListener(const ScriptPtr& script, const char* function);
 
         /**
          * Destructor.
@@ -612,7 +612,7 @@ class ScriptController
         void timeEvent(long timeDiff, void* cookie);
 
         /** Holds the script to execute the function within. */
-        Script* script;
+        ScriptPtr script;
         /** Holds the name of the Lua script function to call back. */
         std::string function;
     };
@@ -737,14 +737,14 @@ class ScriptController
      */
     void schedule(float timeOffset, const char* function);
 
-    void pushScript(Script* script);
+    void pushScript(const ScriptPtr& script);
 
     void popScript();
 
     lua_State* _lua{ nullptr };
     unsigned int _returnCount;
-    std::map<std::string, std::vector<Script*>> _scripts;
-    std::vector<Script*> _envStack;
+    std::map<std::string, std::vector<ScriptPtr>> _scripts;
+    std::vector<ScriptPtr> _envStack;
     std::list<ScriptTimeListener*> _timeListeners;
 };
 

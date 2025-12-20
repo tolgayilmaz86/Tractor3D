@@ -19,12 +19,106 @@ namespace tractor
 /**
  * Defines the base class for game objects that require lifecycle management.
  *
- * This class provides reference counting support for game objects that
- * contain system resources or data that is normally long lived and
- * referenced from possibly several sources at the same time. The built-in
- * reference counting eliminates the need for programmers to manually
- * keep track of object ownership and having to worry about when to
- * safely delete such objects.
+ * @deprecated This class is deprecated. Migrate to std::shared_ptr / std::weak_ptr ownership semantics.
+ * 
+ * ## Migration Guide: From Ref to Smart Pointers
+ * 
+ * When migrating a class from Ref to smart pointers, follow these steps:
+ * 
+ * ### 1. Remove Ref Inheritance
+ * ```cpp
+ * // Before:
+ * class MyClass : public Ref { ... };
+ * 
+ * // After:
+ * class MyClass : public std::enable_shared_from_this<MyClass> { ... };
+ * ```
+ * 
+ * ### 2. Make Destructor Public
+ * ```cpp
+ * // Before:
+ * private:
+ *     virtual ~MyClass() = default;  // Hidden, use SAFE_RELEASE
+ * 
+ * // After:
+ * public:
+ *     virtual ~MyClass() = default;
+ * ```
+ * 
+ * ### 3. Update Factory Methods
+ * ```cpp
+ * // Before:
+ * static MyClass* create();
+ * MyClass* MyClass::create() { return new MyClass(); }
+ * 
+ * // After:
+ * static std::shared_ptr<MyClass> create();
+ * std::shared_ptr<MyClass> MyClass::create() { 
+ *     return std::shared_ptr<MyClass>(new MyClass()); 
+ * }
+ * ```
+ * 
+ * ### 4. Update Member Storage
+ * ```cpp
+ * // Before:
+ * MyClass* _member{ nullptr };
+ * 
+ * // After (for owned resources):
+ * std::shared_ptr<MyClass> _member;
+ * 
+ * // After (for weak references to avoid cycles):
+ * std::weak_ptr<MyClass> _memberWeak;
+ * ```
+ * 
+ * ### 5. Remove addRef()/release() Calls
+ * ```cpp
+ * // Before:
+ * void setMember(MyClass* member) {
+ *     if (_member) _member->release();
+ *     _member = member;
+ *     if (_member) _member->addRef();
+ * }
+ * 
+ * // After:
+ * void setMember(const std::shared_ptr<MyClass>& member) {
+ *     _member = member;  // shared_ptr handles ref counting
+ * }
+ * ```
+ * 
+ * ### 6. Replace SAFE_RELEASE
+ * ```cpp
+ * // Before:
+ * SAFE_RELEASE(_member);
+ * 
+ * // After:
+ * _member.reset();  // or just let destructor handle it
+ * ```
+ * 
+ * ### 7. Update Linked Lists to Vector
+ * ```cpp
+ * // Before (intrusive linked list):
+ * MyClass* _first{ nullptr };
+ * MyClass* _next{ nullptr };  // in MyClass
+ * 
+ * // After:
+ * std::vector<std::shared_ptr<MyClass>> _items;
+ * ```
+ * 
+ * ### Classes Still Using Ref (Migration Pending)
+ * The following classes still inherit from Ref and need to be migrated:
+ * - Animation, AnimationClip
+ * - AudioBuffer, AudioSource
+ * - Effect, HeightField, Light, Model, ParticleEmitter, Sprite, Terrain, TileSet
+ * - PhysicsCollisionShape
+ * - Camera, Font, FrameBuffer, RenderState, RenderState::StateBlock
+ * - MaterialParameter::MethodBinding
+ * - Text, Texture, Texture::Sampler, VertexAttributeBinding
+ * - Bundle, Scene, Node
+ * - Control, Layout, Theme (and its nested classes)
+ * - ThemeStyle::Overlay
+ * 
+ * ### Successfully Migrated Classes
+ * - AIAgent (uses std::shared_ptr)
  */
 class [[deprecated("Ref is deprecated. Migrate to std::shared_ptr / std::weak_ptr ownership semantics.")]] Ref
 {

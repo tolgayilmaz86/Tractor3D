@@ -13,15 +13,23 @@
  */
 #pragma once
 
+#include <memory>
+
 #include "math/Vector3.h"
 #include "scene/Properties.h"
-#include "utils/Ref.h"
 
 namespace tractor
 {
 
 class Node;
 class NodeCloneContext;
+class Light;
+
+/** Shared pointer type for Light. */
+using LightPtr = std::shared_ptr<Light>;
+
+/** Weak pointer type for Light. */
+using LightWeakPtr = std::weak_ptr<Light>;
 
 /**
  * Defines a light.
@@ -29,7 +37,7 @@ class NodeCloneContext;
  * There are 3 types of lights that can be created
  * directional, point and spot lights.
  */
-class Light : public Ref
+class Light : public std::enable_shared_from_this<Light>
 {
     friend class Node;
 
@@ -52,7 +60,7 @@ class Light : public Ref
      * @return The new directional light.
      * @script{create}
      */
-    static Light* createDirectional(const Vector3& color);
+    static LightPtr createDirectional(const Vector3& color);
 
     /**
      * Creates a directional light.
@@ -64,7 +72,7 @@ class Light : public Ref
      * @return The new directional light.
      * @script{create}
      */
-    static Light* createDirectional(float red, float green, float blue);
+    static LightPtr createDirectional(float red, float green, float blue);
 
     /**
      * Creates a point light.
@@ -75,7 +83,7 @@ class Light : public Ref
      * @return The new point light.
      * @script{create}
      */
-    static Light* createPoint(const Vector3& color, float range);
+    static LightPtr createPoint(const Vector3& color, float range);
 
     /**
      * Creates a point light.
@@ -88,7 +96,7 @@ class Light : public Ref
      * @return The new point light.
      * @script{create}
      */
-    static Light* createPoint(float red, float green, float blue, float range);
+    static LightPtr createPoint(float red, float green, float blue, float range);
 
     /**
      * Creates a spot light.
@@ -101,7 +109,7 @@ class Light : public Ref
      * @return The new spot light.
      * @script{create}
      */
-    static Light* createSpot(const Vector3& color, float range, float innerAngle, float outerAngle);
+    static LightPtr createSpot(const Vector3& color, float range, float innerAngle, float outerAngle);
 
     /**
      * Creates a spot light.
@@ -116,12 +124,12 @@ class Light : public Ref
      * @return The new spot light.
      * @script{create}
      */
-    static Light* createSpot(float red,
-                             float green,
-                             float blue,
-                             float range,
-                             float innerAngle,
-                             float outerAngle);
+    static LightPtr createSpot(float red,
+                               float green,
+                               float blue,
+                               float range,
+                               float innerAngle,
+                               float outerAngle);
 
     /**
      * Creates a light from a properties definition.
@@ -134,7 +142,7 @@ class Light : public Ref
      *
      * @return The new Light.
      */
-    static Light* create(Properties* properties);
+    static LightPtr create(Properties* properties);
 
     /**
      * Destructor.
@@ -316,7 +324,7 @@ class Light : public Ref
      * @param context The clone context.
      * @return The newly created light.
      */
-    Light* clone(NodeCloneContext& context);
+    LightPtr clone(NodeCloneContext& context);
 
     Light::Type _type;
 

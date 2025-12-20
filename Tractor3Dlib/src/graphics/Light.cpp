@@ -60,40 +60,43 @@ Light::~Light()
 }
 
 //----------------------------------------------------------------------------
-Light* Light::createDirectional(const Vector3& color) { return new Light(DIRECTIONAL, color); }
-
-//----------------------------------------------------------------------------
-Light* Light::createDirectional(float red, float green, float blue)
-{
-    return new Light(DIRECTIONAL, Vector3(red, green, blue));
+LightPtr Light::createDirectional(const Vector3& color) 
+{ 
+    return LightPtr(new Light(DIRECTIONAL, color)); 
 }
 
 //----------------------------------------------------------------------------
-Light* Light::createPoint(const Vector3& color, float range)
+LightPtr Light::createDirectional(float red, float green, float blue)
 {
-    return new Light(POINT, color, range);
+    return LightPtr(new Light(DIRECTIONAL, Vector3(red, green, blue)));
 }
 
 //----------------------------------------------------------------------------
-Light* Light::createPoint(float red, float green, float blue, float range)
+LightPtr Light::createPoint(const Vector3& color, float range)
 {
-    return new Light(POINT, Vector3(red, green, blue), range);
+    return LightPtr(new Light(POINT, color, range));
 }
 
 //----------------------------------------------------------------------------
-Light* Light::createSpot(const Vector3& color, float range, float innerAngle, float outerAngle)
+LightPtr Light::createPoint(float red, float green, float blue, float range)
 {
-    return new Light(SPOT, color, range, innerAngle, outerAngle);
+    return LightPtr(new Light(POINT, Vector3(red, green, blue), range));
 }
 
 //----------------------------------------------------------------------------
-Light* Light::createSpot(float red, float green, float blue, float range, float innerAngle, float outerAngle)
+LightPtr Light::createSpot(const Vector3& color, float range, float innerAngle, float outerAngle)
 {
-    return new Light(SPOT, Vector3(red, green, blue), range, innerAngle, outerAngle);
+    return LightPtr(new Light(SPOT, color, range, innerAngle, outerAngle));
 }
 
 //----------------------------------------------------------------------------
-Light* Light::create(Properties* properties)
+LightPtr Light::createSpot(float red, float green, float blue, float range, float innerAngle, float outerAngle)
+{
+    return LightPtr(new Light(SPOT, Vector3(red, green, blue), range, innerAngle, outerAngle));
+}
+
+//----------------------------------------------------------------------------
+LightPtr Light::create(Properties* properties)
 {
     assert(properties);
 
@@ -128,7 +131,7 @@ Light* Light::create(Properties* properties)
     }
 
     // Read light-specific parameters
-    Light* light = nullptr;
+    LightPtr light = nullptr;
     switch (type)
     {
         case DIRECTIONAL:
@@ -333,9 +336,9 @@ float Light::getOuterAngleCos() const
 }
 
 //----------------------------------------------------------------------------
-Light* Light::clone(NodeCloneContext& context)
+LightPtr Light::clone(NodeCloneContext& context)
 {
-    Light* lightClone = nullptr;
+    LightPtr lightClone = nullptr;
     switch (_type)
     {
         case DIRECTIONAL:

@@ -473,7 +473,7 @@ class Node : public Transform, public Ref
      *
      * @return The light attached to this node.
      */
-    Light* getLight() const noexcept { return _light; }
+    Light* getLight() const noexcept { return _light.get(); }
 
     /**
      * Attaches a light to this node.
@@ -483,7 +483,7 @@ class Node : public Transform, public Ref
      *
      * @param light The new light. May be nullptr.
      */
-    void setLight(Light* light);
+    void setLight(const LightPtr& light);
 
     /**
      * Gets the audio source attached to this node.
@@ -576,14 +576,14 @@ class Node : public Transform, public Ref
      *
      * @return The AI agent for this node.
      */
-    AIAgent* getAgent() const;
+    AIAgentPtr getAgent() const;
 
     /**
      * Sets the AI agent for this node.
      *
      * @param agent The AI agent to set.
      */
-    void setAgent(AIAgent* agent);
+    void setAgent(const AIAgentPtr& agent);
 
     /**
      * Gets the user object assigned to this node.
@@ -758,13 +758,13 @@ class Node : public Transform, public Ref
     /** The camera component attached to this node. */
     Camera* _camera{ nullptr };
     /** The light component attached to this node. */
-    Light* _light{ nullptr };
+    LightPtr _light;
     /** The audio source component attached to this node. */
     AudioSource* _audioSource{ nullptr };
     /** The collision object component attached to this node. */
     std::unique_ptr<PhysicsCollisionObject> _collisionObject;
     /** The AI agent component attached to this node. */
-    mutable AIAgent* _agent{ nullptr };
+    mutable AIAgentPtr _agent;
     /** The user object component attached to this node. */
     Ref* _userObject{ nullptr };
     /** The world matrix for this node. */

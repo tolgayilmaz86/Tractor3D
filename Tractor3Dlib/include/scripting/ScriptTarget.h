@@ -244,7 +244,7 @@ class ScriptTarget
      * @param path Path to the script.
      * @return A pointer to the successfully loaded script, or nullptr if unsuccessful.
      */
-    Script* addScript(const std::string& path);
+    ScriptPtr addScript(const std::string& path);
 
     /**
      * Removes a previously attached script from this object.
@@ -350,7 +350,7 @@ class ScriptTarget
     struct ScriptEntry
     {
         /** The script. */
-        Script* script;
+        ScriptPtr script;
         /** The next script entry. */
         ScriptEntry* next;
         /** The previous script entry. */
@@ -361,7 +361,7 @@ class ScriptTarget
          *
          * @param script The script to create an entry for.
          */
-        ScriptEntry(Script* script) : script(script), next(nullptr), prev(nullptr) {}
+        ScriptEntry(const ScriptPtr& script) : script(script), next(nullptr), prev(nullptr) {}
 
         DEFINE_ITERATOR(ScriptEntry)
     };
@@ -372,7 +372,7 @@ class ScriptTarget
     struct CallbackFunction
     {
         /** The script the callback belongs to (or nullptr if the callback is a global function) */
-        Script* script;
+        ScriptPtr script;
         /** The function within the script to call. */
         std::string function;
 
@@ -381,7 +381,7 @@ class ScriptTarget
          * @param script The script.
          * @param function The script function.
          */
-        CallbackFunction(Script* script, const char* function) : script(script), function(function)
+        CallbackFunction(const ScriptPtr& script, const char* function) : script(script), function(function)
         {
         }
     };

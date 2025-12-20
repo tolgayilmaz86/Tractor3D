@@ -83,11 +83,9 @@ void SceneCreateSample::initialize()
     cameraNode->rotateX(MATH_DEG_TO_RAD(-11.25f));
 
     // Create a white light.
-    Light* light = Light::createDirectional(0.75f, 0.75f, 0.75f);
+    auto light = Light::createDirectional(0.75f, 0.75f, 0.75f);
     Node* lightNode = _scene->addNode("light");
     lightNode->setLight(light);
-    // Release the light because the node now holds a reference to it.
-    SAFE_RELEASE(light);
     lightNode->rotateX(MATH_DEG_TO_RAD(-45.0f));
 
     // Create the cube mesh and model.

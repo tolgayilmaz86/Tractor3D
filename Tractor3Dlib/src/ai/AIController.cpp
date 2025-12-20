@@ -25,15 +25,8 @@ void AIController::initialize() {}
 //----------------------------------------------------------------------------
 void AIController::finalize()
 {
-    // Remove all agents
-    AIAgent* agent = _firstAgent;
-    while (agent)
-    {
-        AIAgent* temp = agent;
-        agent = agent->_next;
-        SAFE_RELEASE(temp);
-    }
-    _firstAgent = nullptr;
+    // Clear all agents (shared_ptr handles cleanup automatically)
+    _agents.clear();
 
     // Remove all messages
     AIMessage* message = _firstMessage;
@@ -55,18 +48,16 @@ void AIController::sendMessage(AIMessage* message, float delay)
         if (message->getReceiver().empty())
         {
             // Broadcast message to all agents
-            AIAgent* agent = _firstAgent;
-            while (agent)
+            for (const auto& agent : _agents)
             {
                 if (agent->processMessage(message))
                     break; // message consumed by this agent - stop bubbling
-                agent = agent->_next;
             }
         }
         else
         {
             // Single recipient
-            AIAgent* agent = findAgent(message->getReceiver());
+            auto agent = findAgent(message->getReceiver());
             if (agent)
             {
                 agent->processMessage(message);
@@ -119,59 +110,36 @@ void AIController::update(float elapsedTime)
     }
 
     // Update all enabled agents
-    AIAgent* agent = _firstAgent;
-    while (agent)
+    for (const auto& agent : _agents)
     {
-        if (agent->isEnabled()) agent->update(elapsedTime);
-
-        agent = agent->_next;
+        if (agent->isEnabled()) 
+            agent->update(elapsedTime);
     }
 }
 
 //----------------------------------------------------------------------------
-void AIController::addAgent(AIAgent* agent)
+void AIController::addAgent(const AIAgentPtr& agent)
 {
-    agent->addRef();
-
-    if (_firstAgent) agent->_next = _firstAgent;
-
-    _firstAgent = agent;
+    _agents.push_back(agent);
 }
 
 //----------------------------------------------------------------------------
-void AIController::removeAgent(AIAgent* agent)
+void AIController::removeAgent(const AIAgentPtr& agent)
 {
-    // Search our linked list of agents and link this agent out.
-    AIAgent* prevAgent = nullptr;
-    AIAgent* itr = _firstAgent;
-    while (itr)
+    auto it = std::find(_agents.begin(), _agents.end(), agent);
+    if (it != _agents.end())
     {
-        if (itr == agent)
-        {
-            if (prevAgent)
-                prevAgent->_next = agent->_next;
-            else
-                _firstAgent = agent->_next;
-
-            agent->_next = nullptr;
-            agent->release();
-            break;
-        }
-
-        prevAgent = itr;
-        itr = itr->_next;
+        _agents.erase(it);
     }
 }
 
 //----------------------------------------------------------------------------
-AIAgent* AIController::findAgent(const std::string& id) const
+AIAgentPtr AIController::findAgent(const std::string& id) const
 {
-    AIAgent* agent = _firstAgent;
-    while (agent)
+    for (const auto& agent : _agents)
     {
-        if (id == agent->getId()) return agent;
-
-        agent = agent->_next;
+        if (id == agent->getId()) 
+            return agent;
     }
 
     return nullptr;

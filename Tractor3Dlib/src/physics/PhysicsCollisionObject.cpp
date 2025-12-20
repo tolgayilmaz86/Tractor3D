@@ -308,7 +308,10 @@ void PhysicsCollisionObject::PhysicsMotionState::setCenterOfMassOffset(const Vec
 }
 
 //----------------------------------------------------------------------------
-PhysicsCollisionObject::ScriptListener::~ScriptListener() { SAFE_RELEASE(script); }
+PhysicsCollisionObject::ScriptListener::~ScriptListener() 
+{
+    // script shared_ptr will release automatically
+}
 
 //----------------------------------------------------------------------------
 PhysicsCollisionObject::ScriptListener* PhysicsCollisionObject::ScriptListener::create(
@@ -323,7 +326,7 @@ PhysicsCollisionObject::ScriptListener* PhysicsCollisionObject::ScriptListener::
         scriptPath = "";
     }
 
-    Script* script = nullptr;
+    ScriptPtr script = nullptr;
     if (!scriptPath.empty())
     {
         script = Game::getInstance()->getScriptController()->loadScript(scriptPath, Script::GLOBAL);

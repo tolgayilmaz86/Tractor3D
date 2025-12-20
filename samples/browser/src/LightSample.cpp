@@ -45,10 +45,9 @@ void LightSample::initialize()
     _model = dynamic_cast<Model*>(_modelNode->getDrawable());
 
     // Create a directional light and a reference icon for the light
-    Light* directionalLight = Light::createDirectional(Vector3::one());
+    auto directionalLight = Light::createDirectional(Vector3::one());
     _directionalLightNode = Node::create("directionalLight");
     _directionalLightNode->setLight(directionalLight);
-    SAFE_RELEASE(directionalLight);
 
     auto directionalLightQuadMesh = Mesh::createQuad(-0.3f, -0.3f, 0.6f, 0.6f);
     _directionalLightQuadModel = Model::create(directionalLightQuadMesh);
@@ -60,11 +59,10 @@ void LightSample::initialize()
     _scene->addNode(_directionalLightNode);
 
     // Create a spotlight and create a reference icon for the light
-    Light* spotLight =
+    auto spotLight =
         Light::createSpot(Vector3::one(), 100.0f, MATH_DEG_TO_RAD(30.0f), MATH_DEG_TO_RAD(40.0f));
     _spotLightNode = Node::create("spotLight");
     _spotLightNode->setLight(spotLight);
-    SAFE_RELEASE(spotLight);
 
     auto spotLightQuadMesh = Mesh::createQuad(-0.3f, -0.3f, 0.6f, 0.6f);
     _spotLightQuadModel = Model::create(spotLightQuadMesh);
@@ -76,10 +74,9 @@ void LightSample::initialize()
     _scene->addNode(_spotLightNode);
 
     // Create a point light and create a reference icon for the light
-    Light* pointLight = Light::createPoint(Vector3::one(), 16.0f);
+    auto pointLight = Light::createPoint(Vector3::one(), 16.0f);
     _pointLightNode = Node::create("pointLight");
     _pointLightNode->setLight(pointLight);
-    SAFE_RELEASE(pointLight);
 
     auto pointLightQuadMesh = Mesh::createQuad(-0.3f, -0.3f, 0.6f, 0.6f);
     _pointLightQuadModel = Model::create(pointLightQuadMesh);

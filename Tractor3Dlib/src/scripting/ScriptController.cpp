@@ -185,15 +185,15 @@ static bool getNestedVariable(lua_State* lua, const char* name, int env = 0)
 }
 
 //----------------------------------------------------------------------------
-Script* ScriptController::loadScript(const std::string& path, Script::Scope scope, bool forceReload)
+ScriptPtr ScriptController::loadScript(const std::string& path, Script::Scope scope, bool forceReload)
 {
-    Script* script = nullptr;
+    ScriptPtr script = nullptr;
 
     // For global scripts, check if a script with the same path and scope is already loaded.
     // Protected scripts are always loaded into a new instance.
     if (scope == Script::GLOBAL)
     {
-        std::map<std::string, std::vector<Script*>>::iterator itr = _scripts.find(path);
+        auto itr = _scripts.find(path);
         if (itr != _scripts.end())
         {
             for (size_t i = 0, count = itr->second.size(); i < count; ++i)
@@ -208,27 +208,24 @@ Script* ScriptController::loadScript(const std::string& path, Script::Scope scop
         }
     }
 
-    // If the script is already loaded and forceReload was not specified, increase its
-    // reference count and return it
+    // If the script is already loaded and forceReload was not specified, return it
     if (script && !forceReload)
     {
-        script->addRef();
         return script;
     }
 
     // Create a new script object if neccessary
     if (script == nullptr)
     {
-        script = new Script();
+        script = ScriptPtr(new Script());
         script->_path = path;
         script->_scope = scope;
     }
 
     // Attempt to load the script into the given scope
-    if (!loadScript(script))
+    if (!loadScript(script.get()))
     {
-        // Freeing the script will cause it to be removed from _scripts
-        SAFE_RELEASE(script);
+        return nullptr;
     }
 
     return script;
@@ -246,8 +243,34 @@ bool ScriptController::loadScript(Script* script)
     }
 
     // Insert an entry into _scripts before loading the script, to prevent load recursion
-    std::vector<Script*>& scripts = _scripts[script->_path];
-    scripts.push_back(script);
+    // We need to find the shared_ptr for this raw pointer
+    ScriptPtr scriptPtr = nullptr;
+    auto itr = _scripts.find(script->_path);
+    if (itr != _scripts.end())
+    {
+        for (auto& sp : itr->second)
+        {
+            if (sp.get() == script)
+            {
+                scriptPtr = sp;
+                break;
+            }
+        }
+    }
+    
+    // Track whether we added the script to the map (so we can remove it on failure)
+    bool addedToMap = false;
+    
+    // If not found, create a temporary shared_ptr (for reloading scenarios)
+    if (!scriptPtr)
+    {
+        // Create a new shared_ptr with the raw pointer - but we need to be careful here
+        // For reload case, we shouldn't create a new shared_ptr
+        // Just insert into the map for tracking purposes
+        scriptPtr = script->shared_from_this();
+        _scripts[script->_path].push_back(scriptPtr);
+        addedToMap = true;
+    }
 
     // Load the contents of the script, but don't execute it yet
     const char* scriptSource = FileSystem::readAll(script->_path);
@@ -256,52 +279,53 @@ bool ScriptController::loadScript(Script* script)
 
     if (ret == LUA_OK)
     {
-        // If the requested scope is protected, create a new script env table to execute
-        // the script within, using a metatable to fallback to the global table (_G)
         if (script->_scope == Script::PROTECTED)
         {
-            // Create a new table as an environment for the new script
-            lua_newtable(_lua); // new ENV for script [chunk, env]
-
-            // Store a ref to the table in the registry (this pops the table) [chunk]
+            lua_newtable(_lua);
             script->_env = luaL_ref(_lua, LUA_REGISTRYINDEX);
-
-            // Put the env table back on top of the stack
-            lua_rawgeti(_lua, LUA_REGISTRYINDEX, script->_env); // [chunk, env]
-
-            // Create a metatable that forwards missed lookups to global table _G
-            lua_newtable(_lua); // metatable [chunk, env, meta]
-            lua_pushglobaltable(
-                _lua); // pushes _G, which will be the __index metatable entry [chunk, env, meta, _G]
-
-            // Set the __index property of the metatable to _G
-            lua_setfield(_lua, -2, "__index"); // metatable on top [chunk, env, meta]
-
-            // Set the metatable for our new environment table
-            lua_setmetatable(_lua, -2); // [chunk, env]
-
-            // Store a pointer to the ENV table in the table itself, so it can refer to itself.
-            // This is similar to how the _G field works for accessing the global table, and
-            // how _G._G is valid.
-            lua_pushvalue(_lua, -1);         // [chunk, env, env]
-            lua_setfield(_lua, -2, "_THIS"); // [chunk, env]
-
-            // Set the first upvalue (_ENV) for our chunk to the new environment table
-            if (lua_setupvalue(_lua, -2, 1) == nullptr) // [chunk]
+            lua_rawgeti(_lua, LUA_REGISTRYINDEX, script->_env);
+            lua_newtable(_lua);
+            lua_pushglobaltable(_lua);
+            lua_setfield(_lua, -2, "__index");
+            lua_setmetatable(_lua, -2);
+            lua_pushvalue(_lua, -1);
+            lua_setfield(_lua, -2, "_THIS");
+            if (lua_setupvalue(_lua, -2, 1) == nullptr)
             {
                 GP_WARN("Error setting environment table for script: %s.", script->_path.c_str());
             }
         }
-
-        // Execute the script
         ret = lua_pcall(_lua, 0, 0, 0);
     }
 
     if (ret != LUA_OK)
     {
-        script->_env = 0; // clear _env on failure
+        script->_env = 0;
         auto err = lua_tostring(_lua, -1);
         GP_WARN("Failed to load script: %s. %s.", script->_path.c_str(), lua_tostring(_lua, -1));
+        
+        // Remove the script from the map if we added it, to prevent double-free
+        if (addedToMap)
+        {
+            auto mapItr = _scripts.find(script->_path);
+            if (mapItr != _scripts.end())
+            {
+                std::vector<ScriptPtr>& scripts = mapItr->second;
+                for (size_t i = 0, count = scripts.size(); i < count; ++i)
+                {
+                    if (scripts[i].get() == script)
+                    {
+                        scripts.erase(scripts.begin() + i);
+                        break;
+                    }
+                }
+                if (scripts.empty())
+                {
+                    _scripts.erase(mapItr);
+                }
+            }
+        }
+        
         return false;
     }
 
@@ -313,22 +337,18 @@ void ScriptController::unloadScript(Script* script)
 {
     if (script->_env != 0)
     {
-        // Release the reference to the environment table for this non-global script
         luaL_unref(_lua, LUA_REGISTRYINDEX, script->_env);
         script->_env = 0;
     }
 
-    // TODO: What else can we clean up here?
-    // Can we test this with manual GC and breaking on gameplay object constructors that were delcared in the script?
-
     // Remove the script from our managed list
-    std::map<std::string, std::vector<Script*>>::iterator itr = _scripts.find(script->_path);
+    auto itr = _scripts.find(script->_path);
     if (itr != _scripts.end())
     {
-        std::vector<Script*>& scripts = itr->second;
+        std::vector<ScriptPtr>& scripts = itr->second;
         for (size_t i = 0, count = scripts.size(); i < count; ++i)
         {
-            if (scripts[i] == script)
+            if (scripts[i].get() == script)
             {
                 scripts.erase(scripts.begin() + i);
                 break;
@@ -707,7 +727,7 @@ bool ScriptController::functionExists(const char* name, const Script* script) co
 }
 
 //----------------------------------------------------------------------------
-Script* ScriptController::getCurrentScript() const
+ScriptPtr ScriptController::getCurrentScript() const
 {
     return _envStack.empty() ? nullptr : _envStack.back();
 }
@@ -828,6 +848,12 @@ void ScriptController::finalize()
     }
     _timeListeners.clear();
 
+    // Clear env stack
+    _envStack.clear();
+
+    // Clear scripts - shared_ptr will handle cleanup
+    _scripts.clear();
+
     if (_lua)
     {
         // Perform a full garbage collection cycle.
@@ -863,7 +889,7 @@ bool ScriptController::executeFunctionHelper(int resultCount,
     if (!script && !_envStack.empty())
     {
         // Execute in the currently running script's environment
-        script = _envStack.back();
+        script = _envStack.back().get();
     }
     int env = script ? script->_env : 0;
 
@@ -976,7 +1002,25 @@ bool ScriptController::executeFunctionHelper(int resultCount,
         }
     }
 
-    pushScript(script);
+    // Find the shared_ptr for this raw pointer to push onto the stack
+    ScriptPtr scriptPtr = nullptr;
+    if (script)
+    {
+        // Try to get the shared_ptr from our cache
+        auto itr = _scripts.find(script->_path);
+        if (itr != _scripts.end())
+        {
+            for (auto& sp : itr->second)
+            {
+                if (sp.get() == script)
+                {
+                    scriptPtr = sp;
+                    break;
+                }
+            }
+        }
+    }
+    pushScript(scriptPtr);
 
     // Perform the function call.
     // This will push 'resultCount' values onto the stack if it succeeds.
@@ -997,13 +1041,7 @@ bool ScriptController::executeFunctionHelper(int resultCount,
 void ScriptController::schedule(float timeOffset, const char* function)
 {
     // Get the currently execute script
-    Script* script = _envStack.empty() ? nullptr : _envStack.back();
-    if (script)
-    {
-        // Increase the reference count of the script while we hold it so it doesn't
-        // get destroyed while waiting for the event to fire.
-        script->addRef();
-    }
+    ScriptPtr script = _envStack.empty() ? nullptr : _envStack.back();
 
     auto& listener = _timeListeners.emplace_back(new ScriptTimeListener(script, function));
 
@@ -1011,12 +1049,8 @@ void ScriptController::schedule(float timeOffset, const char* function)
 }
 
 //----------------------------------------------------------------------------
-void ScriptController::pushScript(Script* script)
+void ScriptController::pushScript(const ScriptPtr& script)
 {
-    // Increase the reference count of the script while it's pushed,
-    // to prevent it from being destroyed during this time.
-    if (script) script->addRef();
-
     _envStack.push_back(script);
 }
 
@@ -1024,16 +1058,11 @@ void ScriptController::pushScript(Script* script)
 void ScriptController::popScript()
 {
     assert(!_envStack.empty());
-
-    Script* script = _envStack.back();
-
     _envStack.pop_back();
-
-    SAFE_RELEASE(script);
 }
 
 //----------------------------------------------------------------------------
-ScriptController::ScriptTimeListener::ScriptTimeListener(Script* script, const char* function)
+ScriptController::ScriptTimeListener::ScriptTimeListener(const ScriptPtr& script, const char* function)
     : script(script), function(function)
 {
 }
@@ -1041,8 +1070,7 @@ ScriptController::ScriptTimeListener::ScriptTimeListener(Script* script, const c
 //----------------------------------------------------------------------------
 ScriptController::ScriptTimeListener::~ScriptTimeListener()
 {
-    // Release
-    SAFE_RELEASE(script);
+    // shared_ptr will release automatically
 }
 
 //----------------------------------------------------------------------------
@@ -1054,14 +1082,13 @@ void ScriptController::ScriptTimeListener::timeEvent(long timeDiff, void* cookie
     if (itr != list.end()) list.erase(itr);
 
     // Call the script function
-    Game::getInstance()->getScriptController()->executeFunction<void>(script,
+    Game::getInstance()->getScriptController()->executeFunction<void>(script.get(),
                                                                       function.c_str(),
                                                                       "l",
                                                                       nullptr,
                                                                       timeDiff);
 
-    // Free ourself.
-    // IMPORTANT: Don't do anything else after this line!!
+    // Free ourself
     delete this;
 }
 
@@ -1251,22 +1278,19 @@ bool ScriptController::executeFunction<unsigned long>(Script* script,
 }
 
 //----------------------------------------------------------------------------
-template <>
-bool ScriptController::executeFunction<float>(Script* script, const char* func, float* out)
+template <> bool ScriptController::executeFunction<float>(Script* script, const char* func, float* out)
 {
     SCRIPT_EXECUTE_FUNCTION_NO_PARAM(script, float, luaL_checknumber);
 }
 
 //----------------------------------------------------------------------------
-template <>
-bool ScriptController::executeFunction<double>(Script* script, const char* func, double* out)
+template <> bool ScriptController::executeFunction<double>(Script* script, const char* func, double* out)
 {
     SCRIPT_EXECUTE_FUNCTION_NO_PARAM(script, double, luaL_checknumber);
 }
 
 //----------------------------------------------------------------------------
-template <>
-bool ScriptController::executeFunction<std::string>(Script* script, const char* func, std::string* out)
+template <> bool ScriptController::executeFunction<std::string>(Script* script, const char* func, std::string* out)
 {
     SCRIPT_EXECUTE_FUNCTION_NO_PARAM(script, std::string, luaL_checkstring);
 }
@@ -1659,7 +1683,10 @@ bool ScriptController::executeFunction<void>(Script* script,
                                              va_list* list)
 {
     int top = lua_gettop(_lua);
-    bool success = executeFunctionHelper(0, func, args, list, script);
+    va_list list2;
+    va_copy(list2, *list);
+    bool success = executeFunctionHelper(0, func, args, &list2, script);
+    va_end(list2);
     lua_settop(_lua, top);
     return success;
 }
@@ -2444,5 +2471,4 @@ bool ScriptController::executeFunction(Script* script,
     lua_settop(_lua, top);
     return success;
 }
-
 } // namespace tractor

@@ -305,7 +305,7 @@ class PhysicsCollisionObject
         /** The URL to the Lua script function to use as the callback. */
         std::string url;
         /** The loaded script that contains the function. */
-        Script* script{ nullptr };
+        ScriptPtr script{ nullptr };
         /** The name of the Lua script function to use as the callback. */
         std::string function;
 

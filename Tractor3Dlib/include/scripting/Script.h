@@ -15,7 +15,7 @@
 
 #include "pch.h"
 
-#include "utils/Ref.h"
+#include <memory>
 
 namespace tractor
 {
@@ -23,7 +23,7 @@ namespace tractor
 /**
  * Represents a script that has been loaded by the scripting system.
  */
-class Script : public Ref
+class Script : public std::enable_shared_from_this<Script>
 {
     friend class ScriptController;
 
@@ -65,6 +65,11 @@ class Script : public Ref
          */
         PROTECTED
     };
+
+    /**
+     * Destructor.
+     */
+    ~Script();
 
     /**
      * Returns the path from which this Script was loaded.
@@ -112,16 +117,19 @@ class Script : public Ref
     /**
      * Copy constructor (hidden).
      */
-    Script(const Script& copy);
+    Script(const Script& copy) = delete;
 
     /**
-     * Destructor.
+     * Copy assignment operator (hidden).
      */
-    ~Script();
+    Script& operator=(const Script&) = delete;
 
     std::string _path{};
     Scope _scope{ GLOBAL };
     int _env{ 0 };
 };
+
+/** Shared pointer type for Script. */
+using ScriptPtr = std::shared_ptr<Script>;
 
 } // namespace tractor

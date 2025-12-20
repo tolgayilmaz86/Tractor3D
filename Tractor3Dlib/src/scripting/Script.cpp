@@ -37,7 +37,7 @@ bool Script::reload()
     sc->unloadScript(this);
 
     // Now attempt to reload the script
-    return Game::getInstance()->getScriptController()->loadScript(this);
+    return sc->loadScript(this);
 }
 
 } // namespace tractor

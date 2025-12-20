@@ -18,7 +18,7 @@
 #include <framework/FileSystem.h>
 
 // Audio buffer cache
-static std::vector<tractor::AudioBuffer*> __buffers;
+static std::vector<tractor::AudioBufferPtr> __buffers;
 static constexpr int STREAMING_BUFFER_SIZE = 48000;
 
 namespace
@@ -370,11 +370,9 @@ AudioBuffer::AudioBuffer(const std::string& path, ALuint* buffer, bool streamed)
 AudioBuffer::~AudioBuffer()
 {
     // Remove the buffer from the cache.
-    unsigned int bufferCount = (unsigned int)__buffers.size();
-
     if (!_streamed)
     {
-        std::erase_if(__buffers, [this](const auto& buffer) { return this == buffer; });
+        std::erase_if(__buffers, [this](const auto& buffer) { return this == buffer.get(); });
     }
     else if (_streamStateOgg.get())
     {
@@ -392,13 +390,13 @@ AudioBuffer::~AudioBuffer()
 }
 
 //----------------------------------------------------------------------------
-AudioBuffer* AudioBuffer::create(const std::string& path, bool streamed)
+AudioBufferPtr AudioBuffer::create(const std::string& path, bool streamed)
 {
-    AudioBuffer* buffer = nullptr;
+    AudioBufferPtr buffer = nullptr;
     if (!streamed)
     {
         auto buff = std::ranges::find_if(__buffers,
-                                         [path](AudioBuffer* buffer)
+                                         [path](const AudioBufferPtr& buffer)
                                          {
                                              assert(buffer);
                                              return buffer->_filePath.compare(path) == 0;
@@ -469,7 +467,7 @@ AudioBuffer* AudioBuffer::create(const std::string& path, bool streamed)
         goto cleanup;
     }
 
-    buffer = new AudioBuffer(path, alBuffer, streamed);
+    buffer = AudioBufferPtr(new AudioBuffer(path, alBuffer, streamed));
 
     buffer->_fileStream.reset(stream.release());
     buffer->_streamStateWav.reset(streamStateWav.release());
@@ -492,6 +490,7 @@ cleanup:
     }
     return nullptr;
 }
+
 //----------------------------------------------------------------------------
 bool AudioBuffer::streamData(ALuint buffer, bool looped)
 {

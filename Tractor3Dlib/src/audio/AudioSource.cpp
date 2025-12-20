@@ -24,7 +24,7 @@ namespace tractor
 {
 
 //----------------------------------------------------------------------------
-AudioSource::AudioSource(AudioBuffer* buffer, ALuint source)
+AudioSource::AudioSource(AudioBufferPtr buffer, ALuint source)
     : _alSource(source), _buffer(buffer), _looped(false), _gain(1.0f), _pitch(1.0f), _node(nullptr)
 {
     assert(buffer);
@@ -47,10 +47,6 @@ AudioSource::~AudioSource()
     if (_alSource)
     {
         // Remove the source from the controller's set of currently playing sources
-        // regardless of the source's state. E.g. when the AudioController::pause is called
-        // all sources are paused but still remain in controller's set of currently
-        // playing sources. When the source is deleted afterwards, it should be removed
-        // from controller's set regardless of its playing state.
         AudioController* audioController = Game::getInstance()->getAudioController();
 
         assert(audioController);
@@ -59,11 +55,10 @@ AudioSource::~AudioSource()
         AL_CHECK(alDeleteSources(1, &_alSource));
         _alSource = 0;
     }
-    SAFE_RELEASE(_buffer);
 }
 
 //----------------------------------------------------------------------------
-AudioSource* AudioSource::create(const std::string& url, bool streamed)
+AudioSourcePtr AudioSource::create(const std::string& url, bool streamed)
 {
     // Load from a .audio file.
     std::string pathStr = url;
@@ -76,13 +71,13 @@ AudioSource* AudioSource::create(const std::string& url, bool streamed)
             return nullptr;
         }
 
-        AudioSource* audioSource = create(
+        AudioSourcePtr audioSource = create(
             properties->getNamespace().length() > 0 ? properties.get() : properties->getNextNamespace());
         return audioSource;
     }
 
     // Create an audio buffer from this URL.
-    AudioBuffer* buffer = AudioBuffer::create(url, streamed);
+    AudioBufferPtr buffer = AudioBuffer::create(url, streamed);
     if (buffer == nullptr) return nullptr;
 
     // Load the audio source.
@@ -91,16 +86,15 @@ AudioSource* AudioSource::create(const std::string& url, bool streamed)
     AL_CHECK(alGenSources(1, &alSource));
     if (AL_LAST_ERROR())
     {
-        SAFE_RELEASE(buffer);
         GP_ERROR("Error generating audio source.");
         return nullptr;
     }
 
-    return new AudioSource(buffer, alSource);
+    return AudioSourcePtr(new AudioSource(buffer, alSource));
 }
 
 //----------------------------------------------------------------------------
-AudioSource* AudioSource::create(Properties* properties)
+AudioSourcePtr AudioSource::create(Properties* properties)
 {
     // Check if the properties is valid and has a valid namespace.
     assert(properties);
@@ -125,7 +119,7 @@ AudioSource* AudioSource::create(Properties* properties)
     }
 
     // Create the audio source.
-    AudioSource* audio = AudioSource::create(path, streamed);
+    AudioSourcePtr audio = AudioSource::create(path, streamed);
     if (audio == nullptr)
     {
         GP_ERROR("Audio file '%s' failed to load properly.", path.c_str());
@@ -294,7 +288,7 @@ void AudioSource::transformChanged(Transform* transform, long cookie)
 }
 
 //----------------------------------------------------------------------------
-AudioSource* AudioSource::clone(NodeCloneContext& context)
+AudioSourcePtr AudioSource::clone(NodeCloneContext& context)
 {
     assert(_buffer);
 
@@ -305,9 +299,8 @@ AudioSource* AudioSource::clone(NodeCloneContext& context)
         GP_ERROR("Unable to cloning audio.");
         return nullptr;
     }
-    AudioSource* audioClone = new AudioSource(_buffer, alSource);
+    AudioSourcePtr audioClone = AudioSourcePtr(new AudioSource(_buffer, alSource));
 
-    _buffer->addRef();
     audioClone->setLooped(isLooped());
     audioClone->setGain(getGain());
     audioClone->setPitch(getPitch());

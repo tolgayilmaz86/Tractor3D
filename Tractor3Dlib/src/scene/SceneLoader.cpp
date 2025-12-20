@@ -293,9 +293,8 @@ void SceneLoader::applyNodeProperty(SceneNode& sceneNode,
         {
             case SceneNodeProperty::AUDIO:
             {
-                AudioSource* audioSource = AudioSource::create(p);
+                auto audioSource = AudioSource::create(p);
                 node->setAudioSource(audioSource);
-                SAFE_RELEASE(audioSource);
                 break;
             }
             case SceneNodeProperty::MATERIAL:

@@ -136,8 +136,8 @@ class SpaceshipGame : public Game
     MaterialParameter* _shipSpecularParameter;
 
     // Sounds
-    AudioSource* _backgroundMusic;
-    AudioSource* _spaceshipSound;
+    AudioSourcePtr _backgroundMusic;
+    AudioSourcePtr _spaceshipSound;
 
     bool _hitSomething;
 };

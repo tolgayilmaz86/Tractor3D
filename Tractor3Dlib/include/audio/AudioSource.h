@@ -13,23 +13,31 @@
  */
 #pragma once
 
+#include <memory>
+
+#include "audio/AudioBuffer.h"
 #include "math/Transform.h"
 #include "math/Vector3.h"
-#include "utils/Ref.h"
 
 namespace tractor
 {
 
-class AudioBuffer;
 class Node;
 class NodeCloneContext;
+class AudioSource;
+
+/** Shared pointer type for AudioSource. */
+using AudioSourcePtr = std::shared_ptr<AudioSource>;
+
+/** Weak pointer type for AudioSource. */
+using AudioSourceWeakPtr = std::weak_ptr<AudioSource>;
 
 /**
  * Defines an audio source in 3D space.
  *
  * This can be attached to a Node for applying its 3D transformation.
  */
-class AudioSource : public Ref, public Transform::Listener
+class AudioSource : public std::enable_shared_from_this<AudioSource>, public Transform::Listener
 {
   public:
     friend class Node;
@@ -49,7 +57,7 @@ class AudioSource : public Ref, public Transform::Listener
     /**
      * Constructor that takes an AudioBuffer.
      */
-    AudioSource(AudioBuffer* buffer, ALuint source);
+    AudioSource(AudioBufferPtr buffer, ALuint source);
 
     /**
      * Destructor.
@@ -70,7 +78,7 @@ class AudioSource : public Ref, public Transform::Listener
      * @return The newly created audio source, or nullptr if an audio source cannot be created.
      * @script{create}
      */
-    static AudioSource* create(const std::string& url, bool streamed = false);
+    static AudioSourcePtr create(const std::string& url, bool streamed = false);
 
     /**
      * Create an audio source from the given properties object.
@@ -79,7 +87,7 @@ class AudioSource : public Ref, public Transform::Listener
      * @return The newly created audio source, or <code>nullptr</code> if the audio source failed to load.
      * @script{create}
      */
-    static AudioSource* create(Properties* properties);
+    static AudioSourcePtr create(Properties* properties);
 
     /**
      * Plays the audio source.
@@ -215,12 +223,12 @@ class AudioSource : public Ref, public Transform::Listener
      * @param context The clone context.
      * @return The newly created audio source.
      */
-    AudioSource* clone(NodeCloneContext& context);
+    AudioSourcePtr clone(NodeCloneContext& context);
 
     bool streamDataIfNeeded();
 
     ALuint _alSource;
-    AudioBuffer* _buffer;
+    AudioBufferPtr _buffer;
     bool _looped;
     float _gain;
     float _pitch;

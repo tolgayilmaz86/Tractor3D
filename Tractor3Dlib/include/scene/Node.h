@@ -14,6 +14,7 @@
 #pragma once
 
 #include "ai/AIAgent.h"
+#include "audio/AudioSource.h"
 #include "graphics/BoundingBox.h"
 #include "graphics/Light.h"
 #include "graphics/Model.h"
@@ -490,17 +491,14 @@ class Node : public Transform, public Ref
      *
      * @return The audio source attached to this node.
      */
-    AudioSource* getAudioSource() const noexcept { return _audioSource; }
+    AudioSource* getAudioSource() const noexcept { return _audioSource.get(); }
 
     /**
      * Attaches an audio source to this node.
      *
-     * This will increase the reference count of the new audio source and decrease
-     * the reference count of the old audio source.
-     *
      * @param audio The new audio source. May be nullptr.
      */
-    void setAudioSource(AudioSource* audio);
+    void setAudioSource(const AudioSourcePtr& audio);
 
     /**
      * Returns the pointer to this node's physics collision object.
@@ -760,7 +758,7 @@ class Node : public Transform, public Ref
     /** The light component attached to this node. */
     LightPtr _light;
     /** The audio source component attached to this node. */
-    AudioSource* _audioSource{ nullptr };
+    AudioSourcePtr _audioSource;
     /** The collision object component attached to this node. */
     std::unique_ptr<PhysicsCollisionObject> _collisionObject;
     /** The AI agent component attached to this node. */

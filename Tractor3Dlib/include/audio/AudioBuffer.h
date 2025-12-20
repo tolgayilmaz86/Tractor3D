@@ -13,16 +13,24 @@
  */
 #pragma once
 
+#include <memory>
+
 #include <AL/al.h>
 #include <vorbis/vorbisfile.h>
 
 #include "framework/Stream.h"
-#include "utils/Ref.h"
 
 namespace tractor
 {
 
 class AudioSource;
+class AudioBuffer;
+
+/** Shared pointer type for AudioBuffer. */
+using AudioBufferPtr = std::shared_ptr<AudioBuffer>;
+
+/** Weak pointer type for AudioBuffer. */
+using AudioBufferWeakPtr = std::weak_ptr<AudioBuffer>;
 
 // State information for streaming a wav file
 struct AudioStreamStateWav
@@ -48,7 +56,7 @@ struct AudioStreamStateOgg
  *
  * Currently only supports supported formats: .ogg, .wav, .au and .raw files.
  */
-class AudioBuffer : public Ref
+class AudioBuffer : public std::enable_shared_from_this<AudioBuffer>
 {
     friend class AudioSource;
 
@@ -86,7 +94,7 @@ class AudioBuffer : public Ref
      *
      * @return The buffer from a file.
      */
-    static AudioBuffer* create(const std::string& path, bool streamed);
+    static AudioBufferPtr create(const std::string& path, bool streamed);
 
   private:
     static constexpr int STREAMING_BUFFER_QUEUE_SIZE = 3;

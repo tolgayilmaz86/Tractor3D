@@ -56,7 +56,6 @@ Node::~Node()
     SAFE_RELEASE(ref);
     SAFE_RELEASE(_camera);
     if (_light) _light->setNode(nullptr);
-    SAFE_RELEASE(_audioSource);
     SAFE_RELEASE(_userObject);
     setAgent(nullptr);
 }
@@ -938,10 +937,8 @@ void Node::cloneInto(Node* node, NodeCloneContext& context) const
     }
     if (AudioSource* audio = getAudioSource())
     {
-        AudioSource* clone = audio->clone(context);
+        AudioSourcePtr clone = audio->clone(context);
         node->setAudioSource(clone);
-        Ref* ref = dynamic_cast<Ref*>(clone);
-        if (ref) ref->release();
     }
     if (_tags)
     {
@@ -955,25 +952,24 @@ void Node::cloneInto(Node* node, NodeCloneContext& context) const
 }
 
 //----------------------------------------------------------------------------
-void Node::setAudioSource(AudioSource* audio)
+void Node::setAudioSource(const AudioSourcePtr& audio)
 {
     if (_audioSource == audio) return;
 
     if (_audioSource)
     {
         _audioSource->setNode(nullptr);
-        SAFE_RELEASE(_audioSource);
     }
 
     _audioSource = audio;
 
     if (_audioSource)
     {
-        _audioSource->addRef();
         _audioSource->setNode(this);
     }
 }
 
+//----------------------------------------------------------------------------
 PhysicsCollisionObject* Node::setCollisionObject(PhysicsCollisionObject::Type type,
                                                  const PhysicsCollisionShape::Definition& shape,
                                                  PhysicsRigidBody::Parameters* rigidBodyParameters,

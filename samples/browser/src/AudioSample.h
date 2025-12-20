@@ -37,7 +37,7 @@ class AudioSample : public Sample, Control::Listener
     Form* _formBackground;
     Form* _formEngine;
     Form* _formBraking;
-    AudioSource* _audioBackground;
-    AudioSource* _audioEngine;
-    AudioSource* _audioBraking;
+    AudioSourcePtr _audioBackground;
+    AudioSourcePtr _audioEngine;
+    AudioSourcePtr _audioBraking;
 };

@@ -126,7 +126,7 @@ class RacerGame : public Game, Control::Listener
     float _upsetTimer{ 0.0f };
 
     // Music and Sounds
-    AudioSource* _backgroundMusic{ nullptr };
-    AudioSource* _engineSound{ nullptr };
-    AudioSource* _brakingSound{ nullptr };
+    AudioSourcePtr _backgroundMusic;
+    AudioSourcePtr _engineSound;
+    AudioSourcePtr _brakingSound;
 };

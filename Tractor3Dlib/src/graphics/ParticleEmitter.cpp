@@ -40,9 +40,9 @@ ParticleEmitter::~ParticleEmitter()
 }
 
 //----------------------------------------------------------------------------
-ParticleEmitter* ParticleEmitter::create(const std::string& textureFile,
-                                         BlendMode blendMode,
-                                         unsigned int particleCountMax)
+ParticleEmitterPtr ParticleEmitter::create(const std::string& textureFile,
+                                           BlendMode blendMode,
+                                           unsigned int particleCountMax)
 {
     Texture* texture = Texture::create(textureFile, true);
 
@@ -54,17 +54,17 @@ ParticleEmitter* ParticleEmitter::create(const std::string& textureFile,
     assert(texture->getWidth());
     assert(texture->getHeight());
 
-    ParticleEmitter* emitter = ParticleEmitter::create(texture, blendMode, particleCountMax);
+    ParticleEmitterPtr emitter = ParticleEmitter::create(texture, blendMode, particleCountMax);
     SAFE_RELEASE(texture);
     return emitter;
 }
 
 //----------------------------------------------------------------------------
-ParticleEmitter* ParticleEmitter::create(Texture* texture,
-                                         BlendMode blendMode,
-                                         unsigned int particleCountMax)
+ParticleEmitterPtr ParticleEmitter::create(Texture* texture,
+                                           BlendMode blendMode,
+                                           unsigned int particleCountMax)
 {
-    ParticleEmitter* emitter = new ParticleEmitter(particleCountMax);
+    ParticleEmitterPtr emitter(new ParticleEmitter(particleCountMax));
     assert(emitter);
 
     emitter->setTexture(texture, blendMode);
@@ -73,7 +73,7 @@ ParticleEmitter* ParticleEmitter::create(Texture* texture,
 }
 
 //----------------------------------------------------------------------------
-ParticleEmitter* ParticleEmitter::create(const std::string& url)
+ParticleEmitterPtr ParticleEmitter::create(const std::string& url)
 {
     auto properties = std::unique_ptr<Properties>(Properties::create(url));
     if (!properties)
@@ -82,14 +82,14 @@ ParticleEmitter* ParticleEmitter::create(const std::string& url)
         return nullptr;
     }
 
-    ParticleEmitter* particle =
+    ParticleEmitterPtr particle =
         create(properties->getNamespace().length() > 0 ? properties.get() : properties->getNextNamespace());
 
     return particle;
 }
 
 //----------------------------------------------------------------------------
-ParticleEmitter* ParticleEmitter::create(Properties* properties)
+ParticleEmitterPtr ParticleEmitter::create(Properties* properties)
 {
     if (!properties || properties->getNamespace() != "particle")
     {
@@ -184,7 +184,7 @@ ParticleEmitter* ParticleEmitter::create(Properties* properties)
     bool orbitAcceleration = properties->getBool("orbitAcceleration");
 
     // Apply all properties to a newly created ParticleEmitter.
-    ParticleEmitter* emitter = ParticleEmitter::create(texturePath, blendMode, particleCountMax);
+    ParticleEmitterPtr emitter = ParticleEmitter::create(texturePath, blendMode, particleCountMax);
     if (!emitter)
     {
         GP_ERROR("Failed to create particle emitter.");
@@ -890,10 +890,10 @@ unsigned int ParticleEmitter::draw(bool wireframe)
 //----------------------------------------------------------------------------
 Drawable* ParticleEmitter::clone(NodeCloneContext& context)
 {
-    // Create a clone of this emitter
-    ParticleEmitter* clone = ParticleEmitter::create(_spriteBatch->getSampler()->getTexture(),
-                                                     _spriteBlendMode,
-                                                     _particleCountMax);
+    // Create a clone of this emitter - use new directly since clone returns raw pointer
+    ParticleEmitter* clone = new ParticleEmitter(_particleCountMax);
+    clone->setTexture(_spriteBatch->getSampler()->getTexture(), _spriteBlendMode);
+    
     // Clone properties
     clone->setEmissionRate(_emissionRate);
     clone->_ellipsoid = _ellipsoid;

@@ -317,16 +317,14 @@ void SceneLoader::applyNodeProperty(SceneNode& sceneNode,
             }
             case SceneNodeProperty::PARTICLE:
             {
-                ParticleEmitter* particleEmitter = ParticleEmitter::create(p);
-                node->setDrawable(particleEmitter);
-                SAFE_RELEASE(particleEmitter);
+                ParticleEmitterPtr particleEmitter = ParticleEmitter::create(p);
+                node->setDrawable(std::move(particleEmitter));
                 break;
             }
             case SceneNodeProperty::TERRAIN:
             {
-                Terrain* terrain = Terrain::create(p);
-                node->setDrawable(terrain);
-                SAFE_RELEASE(terrain);
+                TerrainPtr terrain = Terrain::create(p);
+                node->setDrawable(std::move(terrain));
                 break;
             }
             case SceneNodeProperty::LIGHT:
@@ -420,16 +418,14 @@ void SceneLoader::applyNodeProperty(SceneNode& sceneNode,
             }
             case SceneNodeProperty::TILESET:
             {
-                TileSet* tileset = TileSet::create(p);
-                node->setDrawable(tileset);
-                SAFE_RELEASE(tileset);
+                TileSetPtr tileset = TileSet::create(p);
+                node->setDrawable(std::move(tileset));
                 break;
             }
             case SceneNodeProperty::TEXT:
             {
-                auto text = Text::create(p);
-                node->setDrawable(text);
-                SAFE_RELEASE(text);
+                TextPtr text = Text::create(p);
+                node->setDrawable(std::move(text));
                 break;
             }
             default:

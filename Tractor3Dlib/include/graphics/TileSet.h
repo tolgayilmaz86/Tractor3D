@@ -13,16 +13,25 @@
  */
 #pragma once
 
+#include <memory>
+
 #include "graphics/Drawable.h"
 #include "graphics/Effect.h"
 #include "graphics/SpriteBatch.h"
 #include "math/Vector2.h"
 #include "math/Vector4.h"
 #include "scene/Properties.h"
-#include "utils/Ref.h"
 
 namespace tractor
 {
+
+class TileSet;
+
+/** Shared pointer type for TileSet. */
+using TileSetPtr = std::shared_ptr<TileSet>;
+
+/** Weak pointer type for TileSet. */
+using TileSetWeakPtr = std::weak_ptr<TileSet>;
 
 /**
  * Defines a grid of tiles for rendering a 2D planer region.
@@ -39,7 +48,7 @@ namespace tractor
  *
  * The tile set does not support rotation or scaling.
  */
-class TileSet : public Ref, public Drawable
+class TileSet : public Drawable
 {
     friend class Node;
 
@@ -55,11 +64,11 @@ class TileSet : public Ref, public Drawable
      *
      * @return The tile set created.
      */
-    static TileSet* create(const std::string& imagePath,
-                           float tileWidth,
-                           float tileHeight,
-                           unsigned int rowCount,
-                           unsigned int columnCount);
+    static TileSetPtr create(const std::string& imagePath,
+                             float tileWidth,
+                             float tileHeight,
+                             unsigned int rowCount,
+                             unsigned int columnCount);
 
     /**
      * Creates a tile set from a properties object.
@@ -67,7 +76,12 @@ class TileSet : public Ref, public Drawable
      * @param properties The properties object to load from.
      * @return The tile set created.
      */
-    static TileSet* create(Properties* properties);
+    static TileSetPtr create(Properties* properties);
+
+    /**
+     * Destructor
+     */
+    ~TileSet();
 
     /**
      * Sets the tile source location for the specified column and row.
@@ -165,18 +179,13 @@ class TileSet : public Ref, public Drawable
     /**
      * @see Drawable::draw
      */
-    unsigned int draw(bool wireframe = false);
+    unsigned int draw(bool wireframe = false) override;
 
   protected:
     /**
      * Constructor
      */
     TileSet() = default;
-
-    /**
-     * Destructor
-     */
-    ~TileSet();
 
     /**
      * operator=
@@ -186,7 +195,7 @@ class TileSet : public Ref, public Drawable
     /**
      * @see Drawable::clone
      */
-    Drawable* clone(NodeCloneContext& context);
+    Drawable* clone(NodeCloneContext& context) override;
 
   private:
     Vector2* _tiles{ nullptr };

@@ -52,16 +52,16 @@ Terrain::~Terrain()
 }
 
 //----------------------------------------------------------------------------
-Terrain* Terrain::create(const std::string& path) { return create(path, nullptr); }
+TerrainPtr Terrain::create(const std::string& path) { return create(path, nullptr); }
 
 //----------------------------------------------------------------------------
-Terrain* Terrain::create(Properties* properties)
+TerrainPtr Terrain::create(Properties* properties)
 {
     return create(properties->getNamespace(), properties);
 }
 
 //----------------------------------------------------------------------------
-Terrain* Terrain::create(const std::string& path, Properties* properties)
+TerrainPtr Terrain::create(const std::string& path, Properties* properties)
 {
     // Terrain properties
     Properties* p = properties;
@@ -244,14 +244,14 @@ Terrain* Terrain::create(const std::string& path, Properties* properties)
                   terrainSize.z / (heightfield->getRowCount() - 1));
 
     // Create terrain
-    Terrain* terrain = create(heightfield,
-                              scale,
-                              (unsigned int)patchSize,
-                              (unsigned int)detailLevels,
-                              skirtScale,
-                              normalMap,
-                              materialPath,
-                              pTerrain);
+    TerrainPtr terrain = create(heightfield,
+                                scale,
+                                (unsigned int)patchSize,
+                                (unsigned int)detailLevels,
+                                skirtScale,
+                                normalMap,
+                                materialPath,
+                                pTerrain);
 
     if (!externalProperties) SAFE_DELETE(p);
 
@@ -259,13 +259,13 @@ Terrain* Terrain::create(const std::string& path, Properties* properties)
 }
 
 //----------------------------------------------------------------------------
-Terrain* Terrain::create(HeightField* heightfield,
-                         const Vector3& scale,
-                         unsigned int patchSize,
-                         unsigned int detailLevels,
-                         float skirtScale,
-                         const std::string& normalMapPath,
-                         const std::string& materialPath)
+TerrainPtr Terrain::create(HeightField* heightfield,
+                           const Vector3& scale,
+                           unsigned int patchSize,
+                           unsigned int detailLevels,
+                           float skirtScale,
+                           const std::string& normalMapPath,
+                           const std::string& materialPath)
 {
     return create(heightfield,
                   scale,
@@ -278,14 +278,14 @@ Terrain* Terrain::create(HeightField* heightfield,
 }
 
 //----------------------------------------------------------------------------
-Terrain* Terrain::create(HeightField* heightfield,
-                         const Vector3& scale,
-                         unsigned int patchSize,
-                         unsigned int detailLevels,
-                         float skirtScale,
-                         const std::string& normalMapPath,
-                         const std::string& materialPath,
-                         Properties* properties)
+TerrainPtr Terrain::create(HeightField* heightfield,
+                           const Vector3& scale,
+                           unsigned int patchSize,
+                           unsigned int detailLevels,
+                           float skirtScale,
+                           const std::string& normalMapPath,
+                           const std::string& materialPath,
+                           Properties* properties)
 {
     assert(heightfield);
 
@@ -293,7 +293,7 @@ Terrain* Terrain::create(HeightField* heightfield,
     unsigned int height = heightfield->getRowCount();
 
     // Create the terrain object
-    Terrain* terrain = new Terrain();
+    TerrainPtr terrain(new Terrain());
     terrain->_heightfield = heightfield;
     terrain->_materialPath = materialPath.empty() ? TERRAIN_MATERIAL : materialPath;
 
@@ -332,7 +332,7 @@ Terrain* Terrain::create(HeightField* heightfield,
             x2 = std::min(x1 + patchSize, width - 1);
 
             // Create this patch
-            TerrainPatch* patch = TerrainPatch::create(terrain,
+            TerrainPatch* patch = TerrainPatch::create(terrain.get(),
                                                        terrain->_patches.size(),
                                                        row,
                                                        column,

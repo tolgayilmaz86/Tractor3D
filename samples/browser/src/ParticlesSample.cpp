@@ -328,7 +328,7 @@ void ParticlesSample::saveFile()
 
     if (filename.length() == 0) return;
 
-    ParticleEmitter* e = _particleEmitter;
+    ParticleEmitter* e = dynamic_cast<ParticleEmitter*>(_particleEmitterNode->getDrawable());
 
     // Extract just the particle name from the filename
     std::string dir = FileSystem::getDirectoryName(filename);
@@ -811,7 +811,8 @@ void ParticlesSample::controlEvent(Control* control, EventType evt)
 
 void ParticlesSample::updateFrames()
 {
-    Texture* texture = _particleEmitter->getTexture();
+    ParticleEmitter* emitter = dynamic_cast<ParticleEmitter*>(_particleEmitterNode->getDrawable());
+    Texture* texture = emitter->getTexture();
     TextBox* cBox = (TextBox*)_form->getControl("frameCount");
     TextBox* wBox = (TextBox*)_form->getControl("frameWidth");
     TextBox* hBox = (TextBox*)_form->getControl("frameHeight");
@@ -820,7 +821,7 @@ void ParticlesSample::updateFrames()
     unsigned int h = (unsigned int)atoi(hBox->getText().c_str());
     if (fc > 0 && fc < 256 && fc < 1000 && w > 0 && h > 0 && w < 4096 && h < 4096)
     {
-        if (w > _particleEmitter->getTexture()->getWidth())
+        if (w > emitter->getTexture()->getWidth())
         {
             wBox->setText(toString(texture->getWidth()));
         }
@@ -829,7 +830,7 @@ void ParticlesSample::updateFrames()
             hBox->setText(toString(texture->getHeight()));
         }
 
-        _particleEmitter->setSpriteFrameCoords(fc, w, h);
+        emitter->setSpriteFrameCoords(fc, w, h);
     }
 }
 
@@ -1068,11 +1069,10 @@ void ParticlesSample::loadEmitters()
 
 void ParticlesSample::emitterChanged()
 {
-    ParticleEmitter* emitter = _particleEmitter;
+    ParticleEmitter* emitter = _particleEmitter.get();
 
     // Set the new emitter on the node.
-    _particleEmitterNode->setDrawable(_particleEmitter);
-    _particleEmitter->release();
+    _particleEmitterNode->setDrawable(std::move(_particleEmitter));
 
     // Reset camera view and zoom.
     _scene->getActiveCamera()->getNode()->setTranslation(0.0f, 0.0f, 40.0f);
@@ -1212,8 +1212,9 @@ void ParticlesSample::updateTexture()
         FileSystem::displayFileDialog(FileSystem::OPEN, "Select Texture", "Texture Files", "png", "res");
     if (file.length() > 0)
     {
+        ParticleEmitter* emitter = dynamic_cast<ParticleEmitter*>(_particleEmitterNode->getDrawable());
         // Set new sprite on our emitter
-        _particleEmitter->setTexture(file, _particleEmitter->getBlendMode());
+        emitter->setTexture(file, emitter->getBlendMode());
 
         // Update the UI to display the new sprite
         updateImageControl();
@@ -1222,12 +1223,13 @@ void ParticlesSample::updateTexture()
 
 void ParticlesSample::updateImageControl()
 {
+    ParticleEmitter* emitter = dynamic_cast<ParticleEmitter*>(_particleEmitterNode->getDrawable());
     ImageControl* img = (ImageControl*)_form->getControl("sprite");
-    img->setImage(_particleEmitter->getTexture()->getPath());
+    img->setImage(emitter->getTexture()->getPath());
 
     // Resize the image control so keep it to scale
-    int w = _particleEmitter->getTexture()->getWidth();
-    int h = _particleEmitter->getTexture()->getHeight();
+    int w = emitter->getTexture()->getWidth();
+    int h = emitter->getTexture()->getHeight();
     int max = w > h ? w : h;
     if (max > 120)
     {
@@ -1239,11 +1241,11 @@ void ParticlesSample::updateImageControl()
     _form->getControl("image")->setHeight(h + _form->getControl("imageSettings")->getHeight() + 50);
 
     ((TextBox*)_form->getControl("frameCount"))
-        ->setText(toString(_particleEmitter->getSpriteFrameCount()));
-    ((TextBox*)_form->getControl("frameWidth"))->setText(toString(_particleEmitter->getSpriteWidth()));
-    ((TextBox*)_form->getControl("frameHeight"))->setText(toString(_particleEmitter->getSpriteHeight()));
+        ->setText(toString(emitter->getSpriteFrameCount()));
+    ((TextBox*)_form->getControl("frameWidth"))->setText(toString(emitter->getSpriteWidth()));
+    ((TextBox*)_form->getControl("frameHeight"))->setText(toString(emitter->getSpriteHeight()));
 
-    switch (_particleEmitter->getBlendMode())
+    switch (emitter->getBlendMode())
     {
         case ParticleEmitter::BLEND_ADDITIVE:
             ((RadioButton*)_form->getControl("additive"))->setSelected(true);

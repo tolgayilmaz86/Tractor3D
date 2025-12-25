@@ -13,6 +13,8 @@
  */
 #pragma once
 
+#include <memory>
+
 #include "graphics/BoundingBox.h"
 #include "graphics/Drawable.h"
 #include "graphics/HeightField.h"
@@ -20,13 +22,19 @@
 #include "math/Transform.h"
 #include "renderer/Texture.h"
 #include "scene/Properties.h"
-#include "utils/Ref.h"
 
 namespace tractor
 {
 
 class TerrainPatch;
 class TerrainAutoBindingResolver;
+class Terrain;
+
+/** Shared pointer type for Terrain. */
+using TerrainPtr = std::shared_ptr<Terrain>;
+
+/** Weak pointer type for Terrain. */
+using TerrainWeakPtr = std::weak_ptr<Terrain>;
 
 /**
  * Defines a Terrain that is capable of rendering large landscapes from 2D heightmap images.
@@ -91,7 +99,7 @@ class TerrainAutoBindingResolver;
  * approaches. In practice, the skirts are often not noticeable at all unless the LOD variation
  * is very large and the terrain is excessively hilly on the edge of a LOD transition.
  */
-class Terrain : public Ref, public Drawable, public Transform::Listener
+class Terrain : public Drawable, public Transform::Listener
 {
     friend class Node;
     friend class PhysicsController;
@@ -141,7 +149,7 @@ class Terrain : public Ref, public Drawable, public Transform::Listener
      * @return A new Terrain.
      * @script{create}
      */
-    static Terrain* create(const std::string& path);
+    static TerrainPtr create(const std::string& path);
 
     /**
      * Creates a new terrain definition from the configuration in the specified Properties object.
@@ -153,7 +161,7 @@ class Terrain : public Ref, public Drawable, public Transform::Listener
      * @see create(const string&)
      * @script{create}
      */
-    static Terrain* create(Properties* properties);
+    static TerrainPtr create(Properties* properties);
 
     /**
      * Creates a terrain from the given heightfield.
@@ -182,13 +190,18 @@ class Terrain : public Ref, public Drawable, public Transform::Listener
      * @return A new Terrain.
      * @script{create}
      */
-    static Terrain* create(HeightField* heightfield,
-                           const Vector3& scale = Vector3::one(),
-                           unsigned int patchSize = 32,
-                           unsigned int detailLevels = 1,
-                           float skirtScale = 0.0f,
-                           const std::string& normalMapPath = EMPTY_STRING,
-                           const std::string& materialPath = EMPTY_STRING);
+    static TerrainPtr create(HeightField* heightfield,
+                             const Vector3& scale = Vector3::one(),
+                             unsigned int patchSize = 32,
+                             unsigned int detailLevels = 1,
+                             float skirtScale = 0.0f,
+                             const std::string& normalMapPath = EMPTY_STRING,
+                             const std::string& materialPath = EMPTY_STRING);
+
+    /**
+     * Destructor.
+     */
+    ~Terrain();
 
     /**
      * Determines if the specified terrain flag is currently set.
@@ -283,18 +296,18 @@ class Terrain : public Ref, public Drawable, public Transform::Listener
     /**
      * @see Drawable#draw
      */
-    unsigned int draw(bool wireframe = false);
+    unsigned int draw(bool wireframe = false) override;
 
   protected:
     /**
      * @see Drawable::setNode
      */
-    void setNode(Node* node);
+    void setNode(Node* node) override;
 
     /**
      * @see Drawable::clone
      */
-    Drawable* clone(NodeCloneContext& context);
+    Drawable* clone(NodeCloneContext& context) override;
 
   private:
     /**
@@ -313,31 +326,26 @@ class Terrain : public Ref, public Drawable, public Transform::Listener
     Terrain& operator=(const Terrain&) = delete;
 
     /**
-     * Destructor.
+     * Internal method for creating terrain.
      */
-    ~Terrain();
+    static TerrainPtr create(HeightField* heightfield,
+                             const Vector3& scale,
+                             unsigned int patchSize,
+                             unsigned int detailLevels,
+                             float skirtScale,
+                             const std::string& normalMapPath,
+                             const std::string& materialPath,
+                             Properties* properties);
 
     /**
      * Internal method for creating terrain.
      */
-    static Terrain* create(HeightField* heightfield,
-                           const Vector3& scale,
-                           unsigned int patchSize,
-                           unsigned int detailLevels,
-                           float skirtScale,
-                           const std::string& normalMapPath,
-                           const std::string& materialPath,
-                           Properties* properties);
-
-    /**
-     * Internal method for creating terrain.
-     */
-    static Terrain* create(const std::string& path, Properties* properties);
+    static TerrainPtr create(const std::string& path, Properties* properties);
 
     /**
      * @see Transform::Listener::transformChanged.
      */
-    void transformChanged(Transform* transform, long cookie);
+    void transformChanged(Transform* transform, long cookie) override;
 
     /**
      * Returns the terrain's inverse world matrix, used for transforming world-space positions

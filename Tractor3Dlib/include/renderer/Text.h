@@ -13,6 +13,8 @@
  */
 #pragma once
 
+#include <memory>
+
 #include "animation/AnimationTarget.h"
 #include "graphics/Drawable.h"
 #include "graphics/Effect.h"
@@ -20,17 +22,24 @@
 #include "math/Vector4.h"
 #include "renderer/Font.h"
 #include "scene/Properties.h"
-#include "utils/Ref.h"
 
 namespace tractor
 {
+
+class Text;
+
+/** Shared pointer type for Text. */
+using TextPtr = std::shared_ptr<Text>;
+
+/** Weak pointer type for Text. */
+using TextWeakPtr = std::weak_ptr<Text>;
 
 /**
  * Defines a text block of characters to be drawn.
  *
  * Text can be attached to a node.
  */
-class Text : public Ref, public Drawable, public AnimationTarget
+class Text : public Drawable, public AnimationTarget
 {
     friend class Node;
 
@@ -58,10 +67,10 @@ class Text : public Ref, public Drawable, public AnimationTarget
      *
      * @return A Text object.
      */
-    static Text* create(const std::string& fontPath,
-                        const std::string& str,
-                        const Vector4& color = Vector4::one(),
-                        unsigned int size = 0);
+    static TextPtr create(const std::string& fontPath,
+                          const std::string& str,
+                          const Vector4& color = Vector4::one(),
+                          unsigned int size = 0);
 
     /**
      * Creates text from a properties object.
@@ -69,7 +78,12 @@ class Text : public Ref, public Drawable, public AnimationTarget
      * @param properties The properties object to load from.
      * @return The tile set created.
      */
-    static Text* create(Properties* properties);
+    static TextPtr create(Properties* properties);
+
+    /**
+     * Destructor
+     */
+    ~Text();
 
     /**
      * Sets the text to be drawn.
@@ -221,18 +235,13 @@ class Text : public Ref, public Drawable, public AnimationTarget
     /**
      * @see Drawable::draw
      */
-    unsigned int draw(bool wireframe = false);
+    unsigned int draw(bool wireframe = false) override;
 
   protected:
     /**
      * Constructor
      */
     Text() = default;
-
-    /**
-     * Destructor
-     */
-    ~Text();
 
     /**
      * operator=
@@ -242,27 +251,27 @@ class Text : public Ref, public Drawable, public AnimationTarget
     /**
      * @see Drawable::clone
      */
-    Drawable* clone(NodeCloneContext& context);
+    Drawable* clone(NodeCloneContext& context) override;
 
     /**
      * @see AnimationTarget::getPropertyId
      */
-    int getPropertyId(TargetType type, const std::string& propertyIdStr);
+    int getPropertyId(TargetType type, const std::string& propertyIdStr) override;
 
     /**
      * @see AnimationTarget::getAnimationPropertyComponentCount
      */
-    unsigned int getAnimationPropertyComponentCount(int propertyId) const;
+    unsigned int getAnimationPropertyComponentCount(int propertyId) const override;
 
     /**
      * @see AnimationTarget::getAnimationProperty
      */
-    void getAnimationPropertyValue(int propertyId, AnimationValue* value);
+    void getAnimationPropertyValue(int propertyId, AnimationValue* value) override;
 
     /**
      * @see AnimationTarget::setAnimationProperty
      */
-    void setAnimationPropertyValue(int propertyId, AnimationValue* value, float blendWeight = 1.0f);
+    void setAnimationPropertyValue(int propertyId, AnimationValue* value, float blendWeight = 1.0f) override;
 
   private:
     Font* _font{ nullptr };

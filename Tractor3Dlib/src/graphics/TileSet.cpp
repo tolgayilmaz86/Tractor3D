@@ -29,11 +29,11 @@ TileSet::~TileSet()
 }
 
 //----------------------------------------------------------------------------
-TileSet* TileSet::create(const std::string& imagePath,
-                         float tileWidth,
-                         float tileHeight,
-                         unsigned int rowCount,
-                         unsigned int columnCount)
+TileSetPtr TileSet::create(const std::string& imagePath,
+                           float tileWidth,
+                           float tileHeight,
+                           unsigned int rowCount,
+                           unsigned int columnCount)
 {
     assert(tileWidth > 0 && tileHeight > 0);
     assert(rowCount > 0 && columnCount > 0);
@@ -44,7 +44,7 @@ TileSet* TileSet::create(const std::string& imagePath,
     batch->getStateBlock()->setDepthWrite(false);
     batch->getStateBlock()->setDepthTest(true);
 
-    TileSet* tileset = new TileSet();
+    TileSetPtr tileset(new TileSet());
     tileset->_batch = batch;
     tileset->_tiles = new Vector2[rowCount * columnCount];
     memset(tileset->_tiles, -1, sizeof(float) * rowCount * columnCount * 2);
@@ -58,7 +58,7 @@ TileSet* TileSet::create(const std::string& imagePath,
 }
 
 //----------------------------------------------------------------------------
-TileSet* TileSet::create(Properties* properties)
+TileSetPtr TileSet::create(Properties* properties)
 {
     // Check if the Properties is valid and has a valid namespace.
     if (!properties || properties->getNamespace() != "tileset")
@@ -104,7 +104,7 @@ TileSet* TileSet::create(Properties* properties)
     }
 
     // Create tile set
-    TileSet* set = TileSet::create(imagePath, tileWidth, tileHeight, rows, columns);
+    TileSetPtr set = TileSet::create(imagePath, tileWidth, tileHeight, rows, columns);
 
     // Get color
     if (properties->exists("color"))

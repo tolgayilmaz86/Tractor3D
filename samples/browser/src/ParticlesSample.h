@@ -115,7 +115,7 @@ class ParticlesSample : public Sample, Control::Listener
     Scene* _scene{ nullptr };
     Node* _cameraParent{ nullptr };
     Node* _particleEmitterNode{ nullptr };
-    ParticleEmitter* _particleEmitter{ nullptr };
+    ParticleEmitterPtr _particleEmitter;
     bool _wDown{ false }, _sDown{ false }, _aDown{ false }, _dDown{ false };
     bool _touched{ false };
     int _prevX{ 0 }, _prevY{ 0 };

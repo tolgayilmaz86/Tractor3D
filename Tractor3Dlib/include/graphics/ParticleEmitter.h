@@ -13,6 +13,8 @@
  */
 #pragma once
 
+#include <memory>
+
 #include "graphics/Drawable.h"
 #include "graphics/Mesh.h"
 #include "graphics/Rectangle.h"
@@ -27,6 +29,13 @@ namespace tractor
 {
 
 class Node;
+class ParticleEmitter;
+
+/** Shared pointer type for ParticleEmitter. */
+using ParticleEmitterPtr = std::shared_ptr<ParticleEmitter>;
+
+/** Weak pointer type for ParticleEmitter. */
+using ParticleEmitterWeakPtr = std::weak_ptr<ParticleEmitter>;
 
 /**
  * Defines a particle emitter that can be made to simulate and render a particle system.
@@ -149,7 +158,7 @@ class Node;
  * be set before rendering the particle system and then will be reset to their original
  * values.  Accepts the same symbolic constants as glBlendFunc().
  */
-class ParticleEmitter : public Ref, public Drawable
+class ParticleEmitter : public Drawable
 {
     friend class Node;
 
@@ -176,7 +185,7 @@ class ParticleEmitter : public Ref, public Drawable
      * @return An initialized ParticleEmitter.
      * @script{create}
      */
-    static ParticleEmitter* create(const std::string& url);
+    static ParticleEmitterPtr create(const std::string& url);
 
     /**
      * Creates a particle emitter from the specified properties object.
@@ -186,7 +195,7 @@ class ParticleEmitter : public Ref, public Drawable
      * @return The newly created particle emitter, or <code>nullptr</code> if the particle emitter failed to load.
      * @script{create}
      */
-    static ParticleEmitter* create(Properties* properties);
+    static ParticleEmitterPtr create(Properties* properties);
 
     /**
      * Creates an uninitialized ParticleEmitter.
@@ -197,9 +206,14 @@ class ParticleEmitter : public Ref, public Drawable
      * ParticleEmitter's system.
      * @script{create}
      */
-    static ParticleEmitter* create(const std::string& texturePath,
-                                   BlendMode blendMode,
-                                   unsigned int particleCountMax);
+    static ParticleEmitterPtr create(const std::string& texturePath,
+                                     BlendMode blendMode,
+                                     unsigned int particleCountMax);
+
+    /**
+     * Destructor.
+     */
+    ~ParticleEmitter();
 
     /**
      * Sets a new texture for this particle emitter.
@@ -730,7 +744,7 @@ class ParticleEmitter : public Ref, public Drawable
      *
      * Draws the particles currently being emitted.
      */
-    unsigned int draw(bool wireframe = false);
+    unsigned int draw(bool wireframe = false) override;
 
   private:
     /**
@@ -739,14 +753,9 @@ class ParticleEmitter : public Ref, public Drawable
     explicit ParticleEmitter(unsigned int particlesCount);
 
     /**
-     * Destructor.
-     */
-    ~ParticleEmitter();
-
-    /**
      * @see Drawable::clone
      */
-    Drawable* clone(NodeCloneContext& context);
+    Drawable* clone(NodeCloneContext& context) override;
 
     /**
      * Creates an uninitialized ParticleEmitter.
@@ -757,9 +766,9 @@ class ParticleEmitter : public Ref, public Drawable
      * ParticleEmitter's system.
      * @script{create}
      */
-    static ParticleEmitter* create(Texture* texture,
-                                   BlendMode blendMode,
-                                   unsigned int particleCountMax);
+    static ParticleEmitterPtr create(Texture* texture,
+                                     BlendMode blendMode,
+                                     unsigned int particleCountMax);
 
     /**
      * Hidden copy assignment operator.

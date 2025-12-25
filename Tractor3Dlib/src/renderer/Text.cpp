@@ -30,10 +30,10 @@ Text::~Text()
 }
 
 //----------------------------------------------------------------------------
-Text* Text::create(const std::string& fontPath,
-                   const std::string& str,
-                   const Vector4& color,
-                   unsigned int size)
+TextPtr Text::create(const std::string& fontPath,
+                     const std::string& str,
+                     const Vector4& color,
+                     unsigned int size)
 {
     Font* font = Font::create(fontPath);
     Font* drawFont;
@@ -52,7 +52,7 @@ Text* Text::create(const std::string& fontPath,
 
     unsigned int widthOut, heightOut;
     font->measureText(str, size, &widthOut, &heightOut);
-    Text* text = new Text();
+    TextPtr text(new Text());
     text->_font = font;
     text->_drawFont = drawFont;
     text->_text = str;
@@ -65,7 +65,7 @@ Text* Text::create(const std::string& fontPath,
 }
 
 //----------------------------------------------------------------------------
-Text* Text::create(Properties* properties)
+TextPtr Text::create(Properties* properties)
 {
     // Check if the Properties is valid and has a valid namespace.
     if (!properties || properties->getNamespace() != "text")

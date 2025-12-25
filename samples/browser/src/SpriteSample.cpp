@@ -101,7 +101,7 @@ void SpriteSample::initialize()
 
 void SpriteSample::finalize()
 {
-    SAFE_RELEASE(_scene);
+    _scene.reset();
     SAFE_RELEASE(_font);
 }
 

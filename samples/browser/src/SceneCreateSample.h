@@ -41,6 +41,7 @@ class SceneCreateSample : public Sample
     bool drawScene(Node* node);
 
     Font* _font;
-    Scene* _scene;
+    ScenePtr _scene;
     Node* _cubeNode;
+    Model* _cubeModel;
 };

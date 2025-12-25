@@ -14,13 +14,14 @@
 #pragma once
 
 #include "FirstPersonCamera.h"
+#include "Grid.h"
 #include "Sample.h"
 #include "tractor.h"
 
 using namespace tractor;
 
 /**
- * Sample 3D audio within multiple sources and a listener bound to Nodes.
+ * Sample for 3D audio
  */
 class Audio3DSample : public Sample
 {
@@ -45,9 +46,9 @@ class Audio3DSample : public Sample
     void render(float elapsedTime);
 
   private:
-    bool drawScene(Node* node);
-
     void addSound(const std::string& file);
+
+    bool drawScene(Node* node);
 
     void drawDebugText(int x, int y, unsigned int fontSize);
 
@@ -57,10 +58,10 @@ class Audio3DSample : public Sample
 
   private:
     FirstPersonCamera _fpCamera;
-    std::map<std::string, Node*> _audioNodes;
     Font* _font;
-    Scene* _scene;
+    ScenePtr _scene;
     Node* _cubeNode;
+    std::map<std::string, Node*> _audioNodes;
     Gamepad* _gamepad;
     unsigned int _moveFlags;
     int _prevX;

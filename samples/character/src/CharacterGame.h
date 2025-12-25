@@ -99,7 +99,7 @@ class CharacterGame : public tractor::Game,
     float _kickDelay{ 0.0f };
 
     tractor::Font* _font{ nullptr };
-    tractor::Scene* _scene{ nullptr };
+    tractor::ScenePtr _scene;
     tractor::PhysicsCharacter* _character{ nullptr };
     tractor::Node* _characterNode{ nullptr };
     tractor::Node* _characterMeshNode{ nullptr };

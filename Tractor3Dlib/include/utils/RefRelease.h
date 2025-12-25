@@ -19,13 +19,28 @@
 namespace tractor
 {
 
+namespace detail
+{
+    // SFINAE helper to detect if type has release() method
+    template <typename T, typename = void>
+    struct has_release : std::false_type {};
+
+    template <typename T>
+    struct has_release<T, std::void_t<decltype(std::declval<T>().release())>> : std::true_type {};
+
+    template <typename T>
+    inline constexpr bool has_release_v = has_release<T>::value;
+}
+
 /**
  * @brief Safely releases a Ref-derived object and sets the pointer to nullptr.
  * 
  * This function is for legacy intrusive reference-counted objects that inherit
  * from tractor::Ref and have addRef()/release() methods.
  * 
- * @tparam T Type that has a release() method (e.g., Ref-derived classes)
+ * For types without release(), this function will delete the object instead.
+ * 
+ * @tparam T Type that may have a release() method (e.g., Ref-derived classes)
  * @param p Reference to the pointer to release
  * 
  * Example:
@@ -37,7 +52,14 @@ inline void safeRelease(T*& p)
 {
     if (p)
     {
-        p->release();
+        if constexpr (detail::has_release_v<T>)
+        {
+            p->release();
+        }
+        else
+        {
+            delete p;
+        }
         p = nullptr;
     }
 }

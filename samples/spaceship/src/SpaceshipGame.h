@@ -101,7 +101,7 @@ class SpaceshipGame : public Game
     void drawText();
 
     // Scene variables
-    Scene* _scene;
+    ScenePtr _scene;
     Node* _cameraNode;
     Node* _shipGroupNode;
     Node* _shipNode;

@@ -161,8 +161,7 @@ void MeshPrimitiveSample::initialize()
 
     // Create a model for the triangle mesh. A model is an instance of a Mesh that can be drawn with a specified material.
     auto triangleMesh = createTriangleMesh();
-    _triangles = Model::create(triangleMesh);
-    // SAFE_RELEASE(triangleMesh);
+    _triangles = Model::createRaw(triangleMesh);
 
     // Create a material from the built-in "colored-unlit" vertex and fragment shaders.
     // This sample doesn't use lighting so the unlit shader is used.
@@ -170,8 +169,7 @@ void MeshPrimitiveSample::initialize()
     _triangles->setMaterial("res/shaders/colored.vert", "res/shaders/colored.frag", "VERTEX_COLOR");
 
     auto triangleStripMesh = createTriangleStripMesh();
-    _triangleStrip = Model::create(triangleStripMesh);
-    // SAFE_RELEASE(triangleStripMesh);
+    _triangleStrip = Model::createRaw(triangleStripMesh);
     Material* material = _triangleStrip->setMaterial("res/shaders/colored.vert",
                                                      "res/shaders/colored.frag",
                                                      "VERTEX_COLOR");
@@ -179,13 +177,11 @@ void MeshPrimitiveSample::initialize()
     material->getStateBlock()->setDepthWrite(true);
 
     auto lineStripMesh = createLineStripMesh();
-    _lineStrip = Model::create(lineStripMesh);
-    // SAFE_RELEASE(lineStripMesh);
+    _lineStrip = Model::createRaw(lineStripMesh);
     _lineStrip->setMaterial("res/shaders/colored.vert", "res/shaders/colored.frag", "VERTEX_COLOR");
 
     auto lineMesh = createLinesMesh();
-    _lines = Model::create(lineMesh);
-    // SAFE_RELEASE(lineMesh);
+    _lines = Model::createRaw(lineMesh);
     _lines->setMaterial("res/shaders/colored.vert", "res/shaders/colored.frag", "VERTEX_COLOR");
 }
 

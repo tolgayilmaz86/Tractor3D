@@ -51,7 +51,7 @@ class SpriteSample : public Sample
     float getTime() const;
 
     Font* _font;
-    Scene* _scene;
+    ScenePtr _scene;
     Node* _cameraNode;
     Sprite* _playerSprite;
     Node* _playerNode;

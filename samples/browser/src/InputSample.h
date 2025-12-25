@@ -73,7 +73,7 @@ class InputSample : public Sample, Control::Listener
     Rectangle _crosshairSrcRect;
     Vector2 _crosshairLowerLimit;
     Vector2 _crosshairUpperLimit;
-    Scene* _scene;
+    ScenePtr _scene;
     Node* _formNode;
     Node* _formNodeParent;
     Vector3 _formNodeRestPosition;

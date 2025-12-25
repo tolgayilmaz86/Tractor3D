@@ -35,7 +35,7 @@ FormsSample::FormsSample()
 
 void FormsSample::finalize()
 {
-    SAFE_RELEASE(_scene);
+    _scene.reset();
     SAFE_RELEASE(_formNode);
     SAFE_RELEASE(_formSelect);
     for (size_t i = 0; i < _forms.size(); i++)

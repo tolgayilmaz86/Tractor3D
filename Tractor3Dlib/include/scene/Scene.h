@@ -13,6 +13,8 @@
  */
 #pragma once
 
+#include <memory>
+
 #include "graphics/Light.h"
 #include "graphics/MeshBatch.h"
 #include "graphics/Model.h"
@@ -22,10 +24,17 @@
 namespace tractor
 {
 
+class Scene;
+
+/**
+ * Shared pointer type for Scene.
+ */
+using ScenePtr = std::shared_ptr<Scene>;
+
 /**
  * Defines the root container for a hierarchy of Node objects.
  */
-class Scene : public Ref
+class Scene : public std::enable_shared_from_this<Scene>
 {
   public:
     /**
@@ -36,7 +45,7 @@ class Scene : public Ref
      * @return The newly created empty scene.
      * @script{create}
      */
-    static Scene* create(const std::string& id = EMPTY_STRING);
+    static ScenePtr create(const std::string& id = EMPTY_STRING);
 
     /**
      * Loads a scene from the given '.scene' or '.gpb' file.
@@ -46,7 +55,7 @@ class Scene : public Ref
      *      could not be loaded from the given file.
      * @script{create}
      */
-    static Scene* load(const std::string& filePath);
+    static ScenePtr load(const std::string& filePath);
 
     /**
      * Gets a currently active scene.
@@ -58,6 +67,16 @@ class Scene : public Ref
      * @return The scene that matches the specified ID, or nullptr if no matching scene could be found.
      */
     static Scene* getScene(const std::string& id = EMPTY_STRING);
+
+    /**
+     * Constructor.
+     */
+    Scene();
+
+    /**
+     * Destructor.
+     */
+    virtual ~Scene();
 
     /**
      * Gets the identifier for the scene.
@@ -267,19 +286,9 @@ class Scene : public Ref
 
   private:
     /**
-     * Constructor.
-     */
-    Scene();
-
-    /**
      * Hidden copy constructor.
      */
     Scene(const Scene& copy);
-
-    /**
-     * Destructor.
-     */
-    virtual ~Scene();
 
     /**
      * Hidden copy assignment operator.

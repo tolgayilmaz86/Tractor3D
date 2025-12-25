@@ -24,7 +24,6 @@
 #include "graphics/TileSet.h"
 #include "renderer/Text.h"
 #include "scene/Bundle.h"
-#include <utility>
 
 namespace tractor
 {
@@ -40,14 +39,14 @@ extern Properties* getPropertiesFromNamespacePath(Properties* properties,
                                                   const std::vector<std::string>& namespacePath);
 
 //----------------------------------------------------------------------------
-Scene* SceneLoader::load(const std::string& url)
+ScenePtr SceneLoader::load(const std::string& url)
 {
     SceneLoader loader;
     return loader.loadInternal(url);
 }
 
 //----------------------------------------------------------------------------
-Scene* SceneLoader::loadInternal(const std::string& url)
+ScenePtr SceneLoader::loadInternal(const std::string& url)
 {
     // Get the file part of the url that we are loading the scene from.
     std::string id;
@@ -388,9 +387,8 @@ void SceneLoader::applyNodeProperty(SceneNode& sceneNode,
                                 // collision object creation.
                                 Model* model = dynamic_cast<Model*>(node->getDrawable());
 
-                                // Up ref count to prevent node from releasing the model when we
-                                // swap it.
-                                if (model) model->addRef();
+                                // Store the original drawable - Node manages its lifetime
+                                Drawable* originalDrawable = node->getDrawable();
 
                                 // Create collision object with new rigidBodyModel (aka
                                 // collisionMesh) set.
@@ -398,10 +396,7 @@ void SceneLoader::applyNodeProperty(SceneNode& sceneNode,
                                 node->setCollisionObject(p);
 
                                 // Restore original model.
-                                node->setDrawable(model);
-
-                                // Decrement temporarily added reference.
-                                if (model) model->release();
+                                node->setDrawable(originalDrawable);
                             }
                         }
                     }
@@ -964,7 +959,7 @@ PhysicsConstraint* SceneLoader::loadHingeConstraint(const Properties* constraint
 }
 
 //----------------------------------------------------------------------------
-Scene* SceneLoader::loadMainSceneData(const Properties* sceneProperties)
+ScenePtr SceneLoader::loadMainSceneData(const Properties* sceneProperties)
 {
     assert(sceneProperties);
 
@@ -978,7 +973,7 @@ Scene* SceneLoader::loadMainSceneData(const Properties* sceneProperties)
 
     // TODO: Support loading a specific scene from a GPB file using the URL syntax (i.e.
     // "res/scene.gpb#myscene").
-    Scene* scene = bundle->loadScene();
+    ScenePtr scene = bundle->loadScene();
     if (!scene)
     {
         GP_WARN("Failed to load scene from '%s'.", _gpbPath.c_str());
@@ -1352,7 +1347,7 @@ void SceneLoader::processExternalFile(SceneNode& sceneNode,
     {
         if (sceneNode._exactMatch)
         {
-            Node* node = tmpBundle->loadNode(id, _scene);
+            Node* node = tmpBundle->loadNode(id, _scene.get());
             if (node)
             {
                 node->setId(sceneNode._nodeID);

@@ -140,7 +140,7 @@ bool RacerGame::initializeScene(Node* node)
 
 void RacerGame::finalize()
 {
-    SAFE_RELEASE(_scene);
+    _scene.reset();
     SAFE_RELEASE(_font);
     SAFE_RELEASE(_menu);
     SAFE_RELEASE(_overlay);

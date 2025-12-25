@@ -54,8 +54,9 @@ class BillboardSample : public Sample
   private:
     FirstPersonCamera _camera;
     std::vector<Node*> _billboards;
+    std::vector<Model*> _billboardModels;
     Font* _font;
-    Scene* _scene;
+    ScenePtr _scene;
     Model* _ground;
     Gamepad* _gamepad;
     unsigned int _moveFlags;

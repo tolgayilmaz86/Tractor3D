@@ -21,10 +21,9 @@ ADD_SAMPLE("Graphics", "Textures", TextureSample, 4);
 
 Node* addQuadModelAndNode(Scene* scene, std::shared_ptr<Mesh> mesh)
 {
-    Model* model = Model::create(mesh);
+    auto model = Model::create(mesh);
     Node* node = scene->addNode();
     node->setDrawable(model);
-    SAFE_RELEASE(model);
     return node;
 }
 
@@ -40,7 +39,6 @@ Node* addQuadModelAndNode(Scene* scene,
 {
     auto mesh = Mesh::createQuad(x, y, width, height, s1, t1, s2, t2);
     Node* node = addQuadModelAndNode(scene, mesh);
-    // SAFE_RELEASE(mesh);
     return node;
 }
 
@@ -89,7 +87,7 @@ void TextureSample::initialize()
     textWidth = x - (getWidth() >> 1);
     // Textured quad mesh
     {
-        Node* node = addQuadModelAndNode(_scene, 0, 0, cubeSize, cubeSize);
+        Node* node = addQuadModelAndNode(_scene.get(), 0, 0, cubeSize, cubeSize);
         setTextureUnlitMaterial(dynamic_cast<Model*>(node->getDrawable()), "res/png/color-wheel.png");
         node->setTranslation(-25, cubeSize, 0);
         // Find the position of the node in screen space
@@ -104,7 +102,7 @@ void TextureSample::initialize()
                                      Vector3(0, 0, 0),
                                      Vector3(cubeSize, cubeSize, 0),
                                      Vector3(cubeSize, 0, 0));
-        Node* node = addQuadModelAndNode(_scene, mesh);
+        Node* node = addQuadModelAndNode(_scene.get(), mesh);
         // SAFE_RELEASE(mesh);
 
         setTextureUnlitMaterial(dynamic_cast<Model*>(node->getDrawable()), "res/png/color-wheel.png");
@@ -115,7 +113,7 @@ void TextureSample::initialize()
     }
     // Texture clamp
     {
-        Node* node = addQuadModelAndNode(_scene, 0, 0, cubeSize, cubeSize, -1, -1, 2, 2);
+        Node* node = addQuadModelAndNode(_scene.get(), 0, 0, cubeSize, cubeSize, -1, -1, 2, 2);
         setTextureUnlitMaterial(dynamic_cast<Model*>(node->getDrawable()), "res/png/color-wheel.png");
         node->setId("clamp");
         node->setTranslation(-3, cubeSize, 0);
@@ -125,7 +123,7 @@ void TextureSample::initialize()
     }
     // Texture wrapped+repeat
     {
-        Node* node = addQuadModelAndNode(_scene, 0, 0, cubeSize, cubeSize, -1, -1, 2, 2);
+        Node* node = addQuadModelAndNode(_scene.get(), 0, 0, cubeSize, cubeSize, -1, -1, 2, 2);
         setTextureUnlitMaterial(dynamic_cast<Model*>(node->getDrawable()), "res/png/color-wheel.png");
         node->setId("repeat");
         Texture::Sampler* sampler = dynamic_cast<Model*>(node->getDrawable())
@@ -143,7 +141,7 @@ void TextureSample::initialize()
     }
     // Mipmapping Off
     {
-        Node* node = addQuadModelAndNode(_scene, 0, 0, cubeSize, cubeSize);
+        Node* node = addQuadModelAndNode(_scene.get(), 0, 0, cubeSize, cubeSize);
         setTextureUnlitMaterial(dynamic_cast<Model*>(node->getDrawable()), "res/png/logo.png", false);
         node->setId("mipmap off");
         node->setTranslation(-25.5f, -2.5f, 0);
@@ -153,7 +151,7 @@ void TextureSample::initialize()
     }
     // Mipmapping On
     {
-        Node* node = addQuadModelAndNode(_scene, 0, 0, cubeSize, cubeSize);
+        Node* node = addQuadModelAndNode(_scene.get(), 0, 0, cubeSize, cubeSize);
         setTextureUnlitMaterial(dynamic_cast<Model*>(node->getDrawable()), "res/png/logo.png");
         node->setId("mipmap on");
         node->setTranslation(-5.5f, -2.5f, 0);
@@ -166,7 +164,7 @@ void TextureSample::initialize()
 void TextureSample::finalize()
 {
     // Model and font are reference counted and should be released before closing this sample.
-    SAFE_RELEASE(_scene);
+    _scene.reset();
     SAFE_RELEASE(_font);
 }
 

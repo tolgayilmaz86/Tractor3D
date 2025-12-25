@@ -94,7 +94,7 @@ class PostProcessSample : public Sample
 
   private:
     Font* _font{nullptr};
-    Scene* _scene{nullptr};
+    ScenePtr _scene;
     Node* _modelNode{nullptr};
     FrameBuffer* _frameBuffer{nullptr};
     unsigned int _compositorIndex{0};

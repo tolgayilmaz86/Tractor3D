@@ -54,7 +54,7 @@ bool SceneLoadSample::initializeMaterials(Node* node)
 void SceneLoadSample::finalize()
 {
     SAFE_RELEASE(_font);
-    SAFE_RELEASE(_scene);
+    _scene.reset();
 }
 
 void SceneLoadSample::update(float elapsedTime) {}

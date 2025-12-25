@@ -18,6 +18,7 @@
 #include "graphics/MeshSkin.h"
 #include "renderer/Font.h"
 #include "scene/Node.h"
+#include "scene/Scene.h"
 
 namespace tractor
 {
@@ -56,7 +57,7 @@ class Bundle : public Ref
      * @return The loaded scene, or nullptr if the scene could not be loaded.
      * @script{create}
      */
-    Scene* loadScene(const std::string& id = EMPTY_STRING);
+    ScenePtr loadScene(const std::string& id = EMPTY_STRING);
 
     /**
      * Loads a node with the specified ID from the bundle.

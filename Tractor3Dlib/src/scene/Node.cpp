@@ -57,7 +57,15 @@ Node::~Node()
         if (!_drawableHolder.has_value())
         {
             Ref* ref = dynamic_cast<Ref*>(_drawable);
-            SAFE_RELEASE(ref);
+            if (ref)
+            {
+                SAFE_RELEASE(ref);
+            }
+            else
+            {
+                // Drawable doesn't inherit from Ref, delete directly
+                delete _drawable;
+            }
         }
     }
     if (_audioSource) _audioSource->setNode(nullptr);
@@ -761,7 +769,15 @@ void Node::setDrawableInternal(Drawable* drawable, std::any holder)
             if (!_drawableHolder.has_value())
             {
                 Ref* ref = dynamic_cast<Ref*>(_drawable);
-                if (ref) ref->release();
+                if (ref)
+                {
+                    ref->release();
+                }
+                else
+                {
+                    // Drawable doesn't inherit from Ref, delete directly
+                    delete _drawable;
+                }
             }
         }
 
@@ -774,6 +790,8 @@ void Node::setDrawableInternal(Drawable* drawable, std::any holder)
             if (!_drawableHolder.has_value())
             {
                 Ref* ref = dynamic_cast<Ref*>(_drawable);
+                // Note: If drawable doesn't inherit from Ref, ownership is transferred directly
+                // and no addRef is needed (caller should not delete)
                 if (ref) ref->addRef();
             }
             _drawable->setNode(this);

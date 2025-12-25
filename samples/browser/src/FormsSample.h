@@ -42,7 +42,7 @@ class FormsSample : public Sample, Control::Listener
 
     void createSampleForm();
 
-    Scene* _scene{ nullptr };
+    ScenePtr _scene;
     Node* _formNode{ nullptr };
     Node* _formNodeParent{ nullptr };
     Form* _formSelect{ nullptr };

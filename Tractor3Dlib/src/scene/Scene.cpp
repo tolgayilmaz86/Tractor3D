@@ -26,7 +26,7 @@
 namespace tractor
 {
 
-// Global list of active scenes
+// Global list of active scenes (raw pointers for lookup only, not owning)
 static std::vector<Scene*> __sceneList;
 
 //----------------------------------------------------------------------------
@@ -54,19 +54,19 @@ Scene::~Scene()
 }
 
 //----------------------------------------------------------------------------
-Scene* Scene::create(const std::string& id)
+ScenePtr Scene::create(const std::string& id)
 {
-    Scene* scene = new Scene();
+    auto scene = std::make_shared<Scene>();
     scene->setId(id);
     return scene;
 }
 
 //----------------------------------------------------------------------------
-Scene* Scene::load(const std::string& filePath)
+ScenePtr Scene::load(const std::string& filePath)
 {
     if (endsWithIgnoreCase(filePath, ".gpb"))
     {
-        Scene* scene = nullptr;
+        ScenePtr scene = nullptr;
         Bundle* bundle = Bundle::create(filePath);
         if (bundle)
         {
@@ -81,7 +81,7 @@ Scene* Scene::load(const std::string& filePath)
 //----------------------------------------------------------------------------
 Scene* Scene::getScene(const std::string& id)
 {
-    if (!id.empty()) return __sceneList.size() ? __sceneList[0] : nullptr;
+    if (id.empty()) return __sceneList.size() ? __sceneList[0] : nullptr;
 
     for (size_t i = 0, count = __sceneList.size(); i < count; ++i)
     {

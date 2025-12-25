@@ -103,12 +103,10 @@ void ParticlesSample::addGrid(unsigned int lineCount)
     mesh->setPrimitiveType(Mesh::LINES);
     mesh->setVertexData(&vertices[0], 0, pointCount);
 
-    Model* model = Model::create(mesh);
+    Model* model = Model::createRaw(mesh);
     model->setMaterial("res/common/particles/grid.material");
-    // SAFE_RELEASE(mesh);
 
     _scene->addNode("grid")->setDrawable(model);
-    model->release();
 }
 
 void ParticlesSample::initialize()

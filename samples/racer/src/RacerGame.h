@@ -110,7 +110,7 @@ class RacerGame : public Game, Control::Listener
      */
     bool isUpset() const;
 
-    Scene* _scene{ nullptr };
+    ScenePtr _scene;
     Font* _font{ nullptr };
     Form* _menu{ nullptr };
     Form* _overlay{ nullptr };

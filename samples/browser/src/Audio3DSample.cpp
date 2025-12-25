@@ -61,7 +61,7 @@ void Audio3DSample::initialize()
     _cubeNode->addRef();
     _scene->removeNode(_cubeNode);
 
-    loadGrid(_scene);
+    loadGrid(_scene.get());
 
     // Initialize cameraa
     Vector3 cameraPosition(5, 5, 1);
@@ -83,7 +83,7 @@ void Audio3DSample::initialize()
 
 void Audio3DSample::finalize()
 {
-    SAFE_RELEASE(_scene);
+    _scene.reset();
     SAFE_RELEASE(_font);
     SAFE_RELEASE(_cubeNode);
     for (std::map<std::string, Node*>::iterator it = _audioNodes.begin(); it != _audioNodes.end();
@@ -352,7 +352,6 @@ void Audio3DSample::loadGrid(Scene* scene)
     gridModel->setMaterial("res/common/grid.material");
     Node* node = scene->addNode("grid");
     node->setDrawable(gridModel);
-    SAFE_RELEASE(gridModel);
 }
 
 void Audio3DSample::gamepadEvent(Gamepad::GamepadEvent evt, Gamepad* gamepad)

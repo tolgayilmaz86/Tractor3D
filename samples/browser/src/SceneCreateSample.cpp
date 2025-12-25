@@ -57,7 +57,7 @@ static std::shared_ptr<Mesh> createCubeMesh(float size = 1.0f)
     return mesh;
 }
 
-SceneCreateSample::SceneCreateSample() : _font(nullptr), _scene(nullptr), _cubeNode(nullptr) {}
+SceneCreateSample::SceneCreateSample() : _font(nullptr), _scene(nullptr), _cubeNode(nullptr), _cubeModel(nullptr) {}
 
 void SceneCreateSample::initialize()
 {
@@ -89,14 +89,12 @@ void SceneCreateSample::initialize()
 
     // Create the cube mesh and model.
     auto cubeMesh = createCubeMesh();
-    Model* cubeModel = Model::create(cubeMesh);
-    // Release the mesh because the model now holds a reference to it.
-    // SAFE_RELEASE(cubeMesh);
+    _cubeModel = Model::createRaw(cubeMesh);
 
     // Create the material for the cube model and assign it to the first mesh part.
-    Material* material = cubeModel->setMaterial("res/shaders/textured.vert",
-                                                "res/shaders/textured.frag",
-                                                "DIRECTIONAL_LIGHT_COUNT 1");
+    Material* material = _cubeModel->setMaterial("res/shaders/textured.vert",
+                                                 "res/shaders/textured.frag",
+                                                 "DIRECTIONAL_LIGHT_COUNT 1");
 
     // These parameters are normally set in a .material file but this example sets them programmatically.
     // Bind the uniform "u_worldViewProjectionMatrix" to use the WORLD_VIEW_PROJECTION_MATRIX from
@@ -121,15 +119,17 @@ void SceneCreateSample::initialize()
     material->getStateBlock()->setDepthWrite(true);
 
     _cubeNode = _scene->addNode("cube");
-    _cubeNode->setDrawable(cubeModel);
+    _cubeNode->setDrawable(_cubeModel);
     _cubeNode->rotateY(MATH_PIOVER4);
-    SAFE_RELEASE(cubeModel);
 }
 
 void SceneCreateSample::finalize()
 {
+    // Clear drawable references before deleting models to avoid dangling pointer access
+    if (_cubeNode) _cubeNode->setDrawable(nullptr);
+    
     SAFE_RELEASE(_font);
-    SAFE_RELEASE(_scene);
+    _scene.reset();
 }
 
 void SceneCreateSample::update(float elapsedTime)

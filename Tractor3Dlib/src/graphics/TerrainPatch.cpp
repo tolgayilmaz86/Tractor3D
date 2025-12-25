@@ -352,7 +352,7 @@ void TerrainPatch::addLOD(float* heights,
     SAFE_DELETE_ARRAY(indices);
 
     // Add this level
-    _levels.emplace_back(new Level())->model = Model::create(mesh);
+    _levels.emplace_back(new Level())->model = Model::createRaw(mesh);
 
     // mesh->release();
 }

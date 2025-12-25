@@ -98,7 +98,7 @@ void InputSample::finalize()
         displayKeyboard(false);
     }
 
-    SAFE_RELEASE(_scene);
+    _scene.reset();
     SAFE_RELEASE(_formNode);
     SAFE_RELEASE(_inputSampleControls);
     SAFE_DELETE(_crosshair);

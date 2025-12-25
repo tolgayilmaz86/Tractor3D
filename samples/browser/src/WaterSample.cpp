@@ -125,7 +125,7 @@ void WaterSample::finalize()
     SAFE_RELEASE(_refractBuffer);
     SAFE_RELEASE(_reflectCameraNode);
     SAFE_RELEASE(_cameraNode);
-    SAFE_RELEASE(_scene);
+    _scene.reset();
     SAFE_RELEASE(_font);
 }
 

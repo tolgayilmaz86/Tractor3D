@@ -45,7 +45,7 @@ TerrainSample::~TerrainSample()
     SAFE_RELEASE(_sphere);
     SAFE_RELEASE(_form);
     SAFE_RELEASE(_font);
-    SAFE_RELEASE(_scene);
+    _scene.reset();
 }
 
 void TerrainSample::initialize()

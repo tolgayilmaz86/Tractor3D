@@ -13,6 +13,8 @@
  */
 #pragma once
 
+#include <memory>
+
 #include "graphics/Drawable.h"
 #include "graphics/Mesh.h"
 #include "graphics/MeshSkin.h"
@@ -23,6 +25,13 @@ namespace tractor
 
 class Bundle;
 class MeshSkin;
+class Model;
+
+/** Shared pointer type for Model. */
+using ModelPtr = std::shared_ptr<Model>;
+
+/** Weak pointer type for Model. */
+using ModelWeakPtr = std::weak_ptr<Model>;
 
 /**
  * Defines a Model or mesh renderer which is an instance of a Mesh.
@@ -30,7 +39,7 @@ class MeshSkin;
  * A model has a mesh that can be drawn with the specified materials for
  * each of the mesh parts within it.
  */
-class Model : public Ref, public Drawable
+class Model : public Drawable
 {
     friend class Node;
     friend class Scene;
@@ -39,10 +48,30 @@ class Model : public Ref, public Drawable
 
   public:
     /**
-     * Creates a new Model.
+     * Creates a new Model and returns ownership via shared_ptr.
      * @script{create}
      */
-    static Model* create(std::shared_ptr<Mesh> mesh);
+    static ModelPtr create(std::shared_ptr<Mesh> mesh);
+
+    /**
+     * Creates a new Model and returns a raw pointer.
+     * The caller is responsible for deleting the Model.
+     * 
+     * @deprecated Prefer using create() which returns a shared_ptr for safer memory management.
+     */
+    static Model* createRaw(std::shared_ptr<Mesh> mesh);
+
+    /**
+     * Constructor.
+     * 
+     * @param mesh The mesh for this model.
+     */
+    explicit Model(std::shared_ptr<Mesh> mesh);
+
+    /**
+     * Destructor.
+     */
+    ~Model();
 
     /**
      * Returns the Mesh for this Model.
@@ -152,23 +181,13 @@ class Model : public Ref, public Drawable
      * rendering states, shader state, and so on, should be set
      * up before calling this method.
      */
-    unsigned int draw(bool wireframe = false);
+    unsigned int draw(bool wireframe = false) override;
 
   private:
     /**
-     * Constructor.
+     * Default constructor.
      */
     Model() = default;
-
-    /**
-     * Constructor.
-     */
-    Model(std::shared_ptr<Mesh> mesh);
-
-    /**
-     * Destructor. Hidden use release() instead.
-     */
-    ~Model();
 
     /**
      * Hidden copy assignment operator.
@@ -178,12 +197,12 @@ class Model : public Ref, public Drawable
     /**
      * @see Drawable::setNode
      */
-    void setNode(Node* node);
+    void setNode(Node* node) override;
 
     /**
      * @see Drawable::clone
      */
-    Drawable* clone(NodeCloneContext& context);
+    Drawable* clone(NodeCloneContext& context) override;
 
     /**
      * Sets the MeshSkin for this model.

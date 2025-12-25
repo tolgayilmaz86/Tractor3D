@@ -73,15 +73,25 @@ void BillboardSample::initialize()
 
 void BillboardSample::finalize()
 {
-    for (std::vector<Node*>::iterator it = _billboards.begin(); it != _billboards.end(); ++it)
+    // Clear drawable references first to avoid dangling pointers
+    for (auto* node : _billboards)
     {
-        Node* node = *it;
+        node->setDrawable(nullptr);
         node->release();
     }
     _billboards.clear();
-    SAFE_RELEASE(_scene);
+    
+    // Delete billboard models
+    _billboardModels.clear();
+    
+    // Clear ground drawable before deleting
+    if (_ground && _ground->getNode())
+    {
+        _ground->getNode()->setDrawable(nullptr);
+    }
+    
+    _scene.reset();
     SAFE_RELEASE(_font);
-    SAFE_RELEASE(_ground);
 }
 
 void BillboardSample::update(float elapsedTime)
@@ -294,8 +304,7 @@ void BillboardSample::loadGround()
     auto mesh =
         Mesh::createQuad(-(GROUND_WIDTH / 2.0f), -(GROUND_HEIGHT / 2.0f), GROUND_WIDTH, GROUND_HEIGHT);
     Node* node = Node::create();
-    _ground = Model::create(mesh);
-    // SAFE_RELEASE(mesh);
+    _ground = Model::createRaw(mesh);
 
     node->setDrawable(_ground);
     _scene->addNode(node);
@@ -336,7 +345,8 @@ void BillboardSample::loadBillboards()
     {
         auto& node = _billboards.emplace_back(Node::create());
 
-        Model* model = Model::create(mesh);
+        Model* model = Model::createRaw(mesh);
+        _billboardModels.push_back(model);  // Store for later cleanup
 
         node->setDrawable(model);
         _scene->addNode(node);
@@ -348,7 +358,7 @@ void BillboardSample::loadBillboards()
         material->setParameterAutoBinding("u_worldViewProjectionMatrix",
                                           RenderState::WORLD_VIEW_PROJECTION_MATRIX);
         model->setMaterial(material);
-        SAFE_RELEASE(model);
+        // Don't release model here - we keep it in _billboardModels
         SAFE_RELEASE(material);
 
         // Randomly postiion within the domain
@@ -357,7 +367,6 @@ void BillboardSample::loadBillboards()
         node->translate(tx, (BILLBOARD_HEIGHT / 2.0f), tz);
     }
     SAFE_RELEASE(effect);
-    // SAFE_RELEASE(mesh);
 }
 
 void BillboardSample::gamepadEvent(Gamepad::GamepadEvent evt, Gamepad* gamepad)

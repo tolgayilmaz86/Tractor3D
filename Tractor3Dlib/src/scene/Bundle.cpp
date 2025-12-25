@@ -376,7 +376,7 @@ Bundle::Reference* Bundle::seekToFirstType(unsigned int type)
 }
 
 //----------------------------------------------------------------------------
-Scene* Bundle::loadScene(const std::string& id)
+ScenePtr Bundle::loadScene(const std::string& id)
 {
     clearLoadSession();
 
@@ -400,14 +400,13 @@ Scene* Bundle::loadScene(const std::string& id)
         }
     }
 
-    Scene* scene = Scene::create(getIdFromOffset());
+    ScenePtr scene = Scene::create(getIdFromOffset());
 
     // Read the number of children.
     unsigned int childrenCount;
     if (!read(&childrenCount))
     {
         GP_ERROR("Failed to read the scene's number of children.");
-        SAFE_RELEASE(scene);
         return nullptr;
     }
     if (childrenCount > 0)
@@ -415,7 +414,7 @@ Scene* Bundle::loadScene(const std::string& id)
         // Read each child directly into the scene.
         for (size_t i = 0; i < childrenCount; i++)
         {
-            Node* node = readNode(scene, nullptr);
+            Node* node = readNode(scene.get(), nullptr);
             if (node)
             {
                 scene->addNode(node);
@@ -440,21 +439,18 @@ Scene* Bundle::loadScene(const std::string& id)
     {
         GP_ERROR("Failed to read red component of the scene's ambient color in bundle '%s'.",
                  _path.c_str());
-        SAFE_RELEASE(scene);
         return nullptr;
     }
     if (!read(&green))
     {
         GP_ERROR("Failed to read green component of the scene's ambient color in bundle '%s'.",
                  _path.c_str());
-        SAFE_RELEASE(scene);
         return nullptr;
     }
     if (!read(&blue))
     {
         GP_ERROR("Failed to read blue component of the scene's ambient color in bundle '%s'.",
                  _path.c_str());
-        SAFE_RELEASE(scene);
         return nullptr;
     }
     scene->setAmbientColor(red, green, blue);
@@ -474,11 +470,11 @@ Scene* Bundle::loadScene(const std::string& id)
                          _path.c_str());
                 return nullptr;
             }
-            readAnimations(scene);
+            readAnimations(scene.get());
         }
     }
 
-    resolveJointReferences(scene, nullptr);
+    resolveJointReferences(scene.get(), nullptr);
 
     return scene;
 }
@@ -807,7 +803,6 @@ Node* Bundle::readNode(Scene* sceneContext, Node* nodeContext)
     if (model)
     {
         node->setDrawable(model);
-        SAFE_RELEASE(model);
     }
     return node;
 }
@@ -964,8 +959,7 @@ Model* Bundle::readModel(const std::string& nodeId)
         auto mesh = loadMesh(xref.substr(1), nodeId);
         if (mesh.get())
         {
-            Model* model = Model::create(mesh);
-            // SAFE_RELEASE(mesh);
+            Model* model = Model::createRaw(mesh);
 
             // Read skin.
             unsigned char hasSkin;

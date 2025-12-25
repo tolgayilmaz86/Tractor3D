@@ -97,8 +97,7 @@ Model* createGridModel(unsigned int lineCount)
     auto mesh = createGridMesh(lineCount);
     if (!mesh) return nullptr;
 
-    Model* model = Model::create(mesh);
-    // mesh->release();
+    Model* model = Model::createRaw(mesh);
     assert(model);
     return model;
 }

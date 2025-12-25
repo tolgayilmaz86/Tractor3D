@@ -45,6 +45,6 @@ class SceneLoadSample : public Sample
     bool drawScene(Node* node);
 
     Font* _font;
-    Scene* _scene;
+    ScenePtr _scene;
     bool _wireFrame;
 };

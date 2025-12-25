@@ -63,7 +63,7 @@ class LightSample : public Sample, Control::Listener
     bool drawScene(Node* node);
 
     Font* _font;
-    Scene* _scene;
+    ScenePtr _scene;
     Node* _modelNode;
     Node* _directionalLightNode;
     Node* _pointLightNode;

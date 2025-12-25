@@ -61,7 +61,7 @@ class PhysicsCollisionObjectSample : public Sample, Control::Listener
     };
 
     Font* _font;
-    Scene* _scene;
+    ScenePtr _scene;
     Node* _lightNode;
     Form* _form;
     int _objectType;

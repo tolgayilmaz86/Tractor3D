@@ -50,8 +50,7 @@ void LightSample::initialize()
     _directionalLightNode->setLight(directionalLight);
 
     auto directionalLightQuadMesh = Mesh::createQuad(-0.3f, -0.3f, 0.6f, 0.6f);
-    _directionalLightQuadModel = Model::create(directionalLightQuadMesh);
-    // SAFE_RELEASE(directionalLightQuadMesh);
+    _directionalLightQuadModel = Model::createRaw(directionalLightQuadMesh);
 
     setUnlitMaterialTexture(_directionalLightQuadModel, "res/png/light-directional.png");
     _directionalLightNode->setDrawable(_directionalLightQuadModel);
@@ -65,8 +64,7 @@ void LightSample::initialize()
     _spotLightNode->setLight(spotLight);
 
     auto spotLightQuadMesh = Mesh::createQuad(-0.3f, -0.3f, 0.6f, 0.6f);
-    _spotLightQuadModel = Model::create(spotLightQuadMesh);
-    // SAFE_RELEASE(spotLightQuadMesh);
+    _spotLightQuadModel = Model::createRaw(spotLightQuadMesh);
 
     setUnlitMaterialTexture(_spotLightQuadModel, "res/png/light-spot.png");
     _spotLightNode->setDrawable(_spotLightQuadModel);
@@ -79,8 +77,7 @@ void LightSample::initialize()
     _pointLightNode->setLight(pointLight);
 
     auto pointLightQuadMesh = Mesh::createQuad(-0.3f, -0.3f, 0.6f, 0.6f);
-    _pointLightQuadModel = Model::create(pointLightQuadMesh);
-    // SAFE_RELEASE(pointLightQuadMesh);
+    _pointLightQuadModel = Model::createRaw(pointLightQuadMesh);
 
     setUnlitMaterialTexture(_pointLightQuadModel, "res/png/light-point.png");
     _pointLightNode->setDrawable(_pointLightQuadModel);
@@ -138,15 +135,32 @@ void LightSample::initialize()
 
 void LightSample::finalize()
 {
-    SAFE_RELEASE(_directionalLightQuadModel);
+    // Clear drawable references - Node::setDrawable(nullptr) will delete the Models
+    // since Model doesn't inherit from Ref. We must NOT call SAFE_RELEASE on the
+    // model pointers afterward since they've already been deleted by setDrawable.
+    if (_directionalLightNode)
+    {
+        _directionalLightNode->setDrawable(nullptr);
+        _directionalLightQuadModel = nullptr;  // Already deleted by setDrawable
+    }
+    if (_spotLightNode)
+    {
+        _spotLightNode->setDrawable(nullptr);
+        _spotLightQuadModel = nullptr;  // Already deleted by setDrawable
+    }
+    if (_pointLightNode)
+    {
+        _pointLightNode->setDrawable(nullptr);
+        _pointLightQuadModel = nullptr;  // Already deleted by setDrawable
+    }
+    
+    // Release nodes and other resources
     SAFE_RELEASE(_directionalLightNode);
-    SAFE_RELEASE(_spotLightQuadModel);
     SAFE_RELEASE(_spotLightNode);
-    SAFE_RELEASE(_pointLightQuadModel);
     SAFE_RELEASE(_pointLightNode);
     SAFE_RELEASE(_lighting);
     SAFE_RELEASE(_font);
-    SAFE_RELEASE(_scene);
+    _scene.reset();
     SAFE_RELEASE(_form);
 }
 

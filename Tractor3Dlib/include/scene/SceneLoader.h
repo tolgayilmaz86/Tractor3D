@@ -41,7 +41,7 @@ class SceneLoader
      *
      * @param url The URL pointing to the Properties object defining the scene.
      */
-    static Scene* load(const std::string& url);
+    static ScenePtr load(const std::string& url);
 
     /**
      * Helper structures and functions for SceneLoader::load(const char*).
@@ -103,7 +103,7 @@ class SceneLoader
 
     SceneLoader() = default;
 
-    Scene* loadInternal(const std::string& url);
+    ScenePtr loadInternal(const std::string& url);
 
     void applyTags(SceneNode& sceneNode);
 
@@ -148,7 +148,7 @@ class SceneLoader
                                            PhysicsRigidBody* rbA,
                                            PhysicsRigidBody* rbB);
 
-    Scene* loadMainSceneData(const Properties* sceneProperties);
+    ScenePtr loadMainSceneData(const Properties* sceneProperties);
 
     void loadPhysics(Properties* physics);
 
@@ -177,7 +177,7 @@ class SceneLoader
     std::vector<SceneNode> _sceneNodes; // Holds all the nodes+properties declared in the .scene file.
     std::string _gpbPath;               // The path of the main GPB for the scene being loaded.
     std::string _path;                  // The path of the scene file being loaded.
-    Scene* _scene{ nullptr };           // The scene being loaded
+    ScenePtr _scene;                    // The scene being loaded
 };
 
 /**

@@ -272,7 +272,7 @@ void SpaceshipGame::finalize()
 {
     SAFE_RELEASE(_font);
     _stateBlock.reset();
-    SAFE_RELEASE(_scene);
+    _scene.reset();
 }
 
 void SpaceshipGame::update(float elapsedTime)

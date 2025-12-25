@@ -53,7 +53,7 @@ class WaterSample : public Sample
     };
 
     Font* _font;
-    Scene* _scene;
+    ScenePtr _scene;
     Node* _cameraNode;
     Node* _reflectCameraNode;
 

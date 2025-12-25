@@ -80,7 +80,7 @@ bool CharacterGame::initializeScene(Node* node)
     Model* model = dynamic_cast<Model*>(node->getDrawable());
     if (model && model->getMaterial())
     {
-        initializeMaterial(_scene, node, model->getMaterial());
+        initializeMaterial(_scene.get(), node, model->getMaterial());
     }
 
     return true;
@@ -148,8 +148,8 @@ void CharacterGame::initializeCharacter()
 //----------------------------------------------------------------
 void CharacterGame::finalize()
 {
-    SAFE_RELEASE(_scene);
     SAFE_RELEASE(_font);
+    _scene.reset();
 }
 
 //----------------------------------------------------------------

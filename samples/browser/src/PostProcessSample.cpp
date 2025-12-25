@@ -40,8 +40,7 @@ PostProcessSample::Compositor* PostProcessSample::Compositor::create(FrameBuffer
     if (_quadModel == nullptr)
     {
         auto mesh = Mesh::createQuadFullscreen();
-        _quadModel = Model::create(mesh);
-        // SAFE_RELEASE(mesh);
+        _quadModel = Model::createRaw(mesh);
     }
 
     return new Compositor(srcBuffer, dstBuffer, material, techniqueId);
@@ -163,7 +162,7 @@ void PostProcessSample::initialize()
 void PostProcessSample::finalize()
 {
     SAFE_RELEASE(_font);
-    SAFE_RELEASE(_scene);
+    _scene.reset();
     for (std::vector<Compositor*>::iterator it = _compositors.begin(); it != _compositors.end(); ++it)
     {
         delete *it;

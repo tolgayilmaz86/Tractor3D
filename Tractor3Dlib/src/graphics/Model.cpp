@@ -45,10 +45,16 @@ Model::~Model()
 }
 
 //----------------------------------------------------------------------------
-Model* Model::create(std::shared_ptr<Mesh> mesh)
+ModelPtr Model::create(std::shared_ptr<Mesh> mesh)
 {
     assert(mesh);
-    // mesh->addRef();
+    return std::make_shared<Model>(mesh);
+}
+
+//----------------------------------------------------------------------------
+Model* Model::createRaw(std::shared_ptr<Mesh> mesh)
+{
+    assert(mesh);
     return new Model(mesh);
 }
 
@@ -417,7 +423,9 @@ void Model::setMaterialNodeBinding(Material* material)
 //----------------------------------------------------------------------------
 Drawable* Model::clone(NodeCloneContext& context)
 {
-    Model* model = Model::create(_mesh);
+    // Create a new Model directly (not via create()) for cloning
+    // The caller (Node::cloneInto) will manage the lifetime
+    Model* model = new Model(_mesh);
     if (!model)
     {
         GP_ERROR("Failed to clone model.");

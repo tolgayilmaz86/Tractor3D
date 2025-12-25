@@ -50,10 +50,17 @@ Node::Node(const std::string& id) : _id(id), _dirtyBits(NODE_DIRTY_ALL)
 Node::~Node()
 {
     removeAllChildren();
-    if (_drawable) _drawable->setNode(nullptr);
+    if (_drawable)
+    {
+        _drawable->setNode(nullptr);
+        // Only release if we don't have a shared_ptr holder
+        if (!_drawableHolder.has_value())
+        {
+            Ref* ref = dynamic_cast<Ref*>(_drawable);
+            SAFE_RELEASE(ref);
+        }
+    }
     if (_audioSource) _audioSource->setNode(nullptr);
-    Ref* ref = dynamic_cast<Ref*>(_drawable);
-    SAFE_RELEASE(ref);
     if (_camera) _camera->setNode(nullptr);
     if (_light) _light->setNode(nullptr);
     SAFE_RELEASE(_userObject);
@@ -739,21 +746,36 @@ void Node::setLight(const LightPtr& light)
 //----------------------------------------------------------------------------
 void Node::setDrawable(Drawable* drawable)
 {
+    setDrawableInternal(drawable, std::any{});
+}
+
+//----------------------------------------------------------------------------
+void Node::setDrawableInternal(Drawable* drawable, std::any holder)
+{
     if (_drawable != drawable)
     {
         if (_drawable)
         {
             _drawable->setNode(nullptr);
-            Ref* ref = dynamic_cast<Ref*>(_drawable);
-            if (ref) ref->release();
+            // Only release if we don't have a shared_ptr holder
+            if (!_drawableHolder.has_value())
+            {
+                Ref* ref = dynamic_cast<Ref*>(_drawable);
+                if (ref) ref->release();
+            }
         }
 
         _drawable = drawable;
+        _drawableHolder = std::move(holder);
 
         if (_drawable)
         {
-            Ref* ref = dynamic_cast<Ref*>(_drawable);
-            if (ref) ref->addRef();
+            // Only addRef if we don't have a shared_ptr holder
+            if (!_drawableHolder.has_value())
+            {
+                Ref* ref = dynamic_cast<Ref*>(_drawable);
+                if (ref) ref->addRef();
+            }
             _drawable->setNode(this);
         }
     }

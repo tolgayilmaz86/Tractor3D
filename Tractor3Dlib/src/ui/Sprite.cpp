@@ -208,18 +208,18 @@ namespace tractor
 {
 
 //----------------------------------------------------------------
-Sprite* Sprite::create(const std::string& imagePath, float width, float height, Effect* effect)
+SpritePtr Sprite::create(const std::string& imagePath, float width, float height, Effect* effect)
 {
     return Sprite::create(imagePath, width, height, Rectangle(0, 0, -1, -1), 1, effect);
 }
 
 //----------------------------------------------------------------
-Sprite* Sprite::create(const std::string& imagePath,
-                       float width,
-                       float height,
-                       const Rectangle& source,
-                       unsigned int frameCount,
-                       Effect* effect)
+SpritePtr Sprite::create(const std::string& imagePath,
+                         float width,
+                         float height,
+                         const Rectangle& source,
+                         unsigned int frameCount,
+                         Effect* effect)
 {
     assert(width >= -1 && height >= -1);
     assert(source.width >= -1 && source.height >= -1);
@@ -236,7 +236,7 @@ Sprite* Sprite::create(const std::string& imagePath,
     if (width == -1) width = imageWidth;
     if (height == -1) height = imageHeight;
 
-    Sprite* sprite = new Sprite();
+    SpritePtr sprite(new Sprite());
     sprite->_width = width;
     sprite->_height = height;
     sprite->_batch = std::shared_ptr<SpriteBatch>(batch);
@@ -251,7 +251,7 @@ Sprite* Sprite::create(const std::string& imagePath,
 }
 
 //----------------------------------------------------------------
-Sprite* Sprite::create(Properties* properties)
+SpritePtr Sprite::create(Properties* properties)
 {
     // Check if the Properties is valid and has a valid namespace.
     if (!properties || properties->getNamespace() != "sprite")
@@ -301,7 +301,7 @@ Sprite* Sprite::create(Properties* properties)
         }
     }
 
-    Sprite* sprite;
+    SpritePtr sprite;
     if (properties->exists("source"))
     {
         // Get source frame

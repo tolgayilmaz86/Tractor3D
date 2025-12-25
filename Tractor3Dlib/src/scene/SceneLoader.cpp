@@ -24,6 +24,7 @@
 #include "graphics/TileSet.h"
 #include "renderer/Text.h"
 #include "scene/Bundle.h"
+#include <utility>
 
 namespace tractor
 {
@@ -413,9 +414,8 @@ void SceneLoader::applyNodeProperty(SceneNode& sceneNode,
             }
             case SceneNodeProperty::SPRITE:
             {
-                Sprite* sprite = Sprite::create(p);
-                node->setDrawable(sprite);
-                SAFE_RELEASE(sprite);
+                auto sprite = Sprite::create(p);
+                node->setDrawable(std::move(sprite));
                 break;
             }
             case SceneNodeProperty::TILESET:
@@ -427,7 +427,7 @@ void SceneLoader::applyNodeProperty(SceneNode& sceneNode,
             }
             case SceneNodeProperty::TEXT:
             {
-                Text* text = Text::create(p);
+                auto text = Text::create(p);
                 node->setDrawable(text);
                 SAFE_RELEASE(text);
                 break;

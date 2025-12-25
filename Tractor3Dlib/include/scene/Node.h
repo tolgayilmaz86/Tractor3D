@@ -13,6 +13,8 @@
  */
 #pragma once
 
+#include <any>
+
 #include "ai/AIAgent.h"
 #include "audio/AudioSource.h"
 #include "graphics/BoundingBox.h"
@@ -455,6 +457,20 @@ class Node : public Transform, public Ref
     void setDrawable(Drawable* drawable);
 
     /**
+     * Set the drawable object to be attached to this node using a shared pointer.
+     *
+     * This overload is for Drawable types that use std::shared_ptr for lifetime management.
+     * The node will keep a reference to the shared pointer internally.
+     *
+     * @param drawable The new drawable component as a shared pointer. May be nullptr.
+     */
+    template <typename T, typename = std::enable_if_t<std::is_base_of_v<Drawable, T>>>
+    void setDrawable(const std::shared_ptr<T>& drawable)
+    {
+        setDrawableInternal(drawable.get(), drawable);
+    }
+
+    /**
      * Gets the camera attached to this node.
      *
      * @return Gets the camera attached to this node.
@@ -734,6 +750,11 @@ class Node : public Transform, public Ref
 
     PhysicsCollisionObject* setCollisionObject(Properties* properties);
 
+    /**
+     * Internal method to set drawable with optional shared_ptr holder.
+     */
+    void setDrawableInternal(Drawable* drawable, std::any holder);
+
   protected:
     /** The scene this node is attached to. */
     Scene* _scene{ nullptr };
@@ -755,6 +776,8 @@ class Node : public Transform, public Ref
     std::map<std::string, std::string>* _tags{ nullptr };
     /** The drawble component attached to this node. */
     Drawable* _drawable{ nullptr };
+    /** Holder for shared_ptr to drawable (for types using shared_ptr lifetime management). */
+    std::any _drawableHolder;
     /** The camera component attached to this node. */
     CameraPtr _camera;
     /** The light component attached to this node. */

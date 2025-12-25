@@ -13,6 +13,8 @@
  */
 #pragma once
 
+#include <memory>
+
 #include "animation/AnimationTarget.h"
 #include "graphics/Drawable.h"
 #include "graphics/Effect.h"
@@ -20,10 +22,17 @@
 #include "graphics/SpriteBatch.h"
 #include "math/Vector4.h"
 #include "scene/Properties.h"
-#include "utils/Ref.h"
 
 namespace tractor
 {
+
+class Sprite;
+
+/** Shared pointer type for Sprite. */
+using SpritePtr = std::shared_ptr<Sprite>;
+
+/** Weak pointer type for Sprite. */
+using SpriteWeakPtr = std::weak_ptr<Sprite>;
 
 /**
  * Defines a sprite for rendering a 2D region.
@@ -38,7 +47,7 @@ namespace tractor
  * Sprites can be animated using the animation system.
  * Sprites can have physics applied to them via their node binding.
  */
-class Sprite : public Ref, public Drawable, public AnimationTarget
+class Sprite : public Drawable, public AnimationTarget
 {
     friend class Node;
 
@@ -111,7 +120,7 @@ class Sprite : public Ref, public Drawable, public AnimationTarget
      * @param effect The custom effect to render with.
      * @return The new sprite.
      */
-    static Sprite* create(const std::string& imagePath,
+    static SpritePtr create(const std::string& imagePath,
                           float width = -1,
                           float height = -1,
                           Effect* = nullptr);
@@ -130,7 +139,7 @@ class Sprite : public Ref, public Drawable, public AnimationTarget
      * @param effect The custom effect to render with.
      * @return The new sprite.
      */
-    static Sprite* create(const std::string& imagePath,
+    static SpritePtr create(const std::string& imagePath,
                           float width,
                           float height,
                           const Rectangle& source,
@@ -143,7 +152,12 @@ class Sprite : public Ref, public Drawable, public AnimationTarget
      * @param properties The properties object to create from.
      * @return The new Sprite.
      */
-    static Sprite* create(Properties* properties);
+    static SpritePtr create(Properties* properties);
+
+    /**
+     * Destructor.
+     */
+    ~Sprite() = default;
 
     /**
      * Gets the width of the sprite.
@@ -350,18 +364,13 @@ class Sprite : public Ref, public Drawable, public AnimationTarget
     /**
      * @see Drawable::draw
      */
-    unsigned int draw(bool wireframe = false);
+    unsigned int draw(bool wireframe = false) override;
 
   protected:
     /**
      * Constructor.
      */
     Sprite() = default;
-
-    /**
-     * Destructor.
-     */
-    ~Sprite() = default;
 
     /**
      * operator=
@@ -371,27 +380,27 @@ class Sprite : public Ref, public Drawable, public AnimationTarget
     /**
      * @see Drawable::clone
      */
-    Drawable* clone(NodeCloneContext& context);
+    Drawable* clone(NodeCloneContext& context) override;
 
     /**
      * @see AnimationTarget::getPropertyId
      */
-    int getPropertyId(TargetType type, const std::string& propertyIdStr);
+    int getPropertyId(TargetType type, const std::string& propertyIdStr) override;
 
     /**
      * @see AnimationTarget::getAnimationPropertyComponentCount
      */
-    unsigned int getAnimationPropertyComponentCount(int propertyId) const;
+    unsigned int getAnimationPropertyComponentCount(int propertyId) const override;
 
     /**
      * @see AnimationTarget::getAnimationProperty
      */
-    void getAnimationPropertyValue(int propertyId, AnimationValue* value);
+    void getAnimationPropertyValue(int propertyId, AnimationValue* value) override;
 
     /**
      * @see AnimationTarget::setAnimationProperty
      */
-    void setAnimationPropertyValue(int propertyId, AnimationValue* value, float blendWeight = 1.0f);
+    void setAnimationPropertyValue(int propertyId, AnimationValue* value, float blendWeight = 1.0f) override;
 
   private:
     float _width{ 0.0f };

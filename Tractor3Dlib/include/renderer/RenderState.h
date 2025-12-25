@@ -13,6 +13,8 @@
  */
 #pragma once
 
+#include <memory>
+
 #include "math/Vector3.h"
 #include "math/Vector4.h"
 #include "utils/Ref.h"
@@ -24,6 +26,9 @@ class MaterialParameter;
 class Node;
 class NodeCloneContext;
 class Pass;
+
+// Forward declaration for smart pointer types
+class RenderState;
 
 /**
  * Defines the rendering state of the graphics device.
@@ -278,17 +283,28 @@ class RenderState : public Ref
      * Defines a block of fixed-function render states that can be applied to a
      * RenderState object.
      */
-    class StateBlock : public Ref
+    class StateBlock : public std::enable_shared_from_this<StateBlock>
     {
         friend class RenderState;
         friend class Game;
 
       public:
+        /** Shared pointer type for StateBlock. */
+        using Ptr = std::shared_ptr<StateBlock>;
+        
+        /** Weak pointer type for StateBlock. */
+        using WeakPtr = std::weak_ptr<StateBlock>;
+
         /**
          * Creates a new StateBlock with default render state settings.
          * @script{create}
          */
-        static StateBlock* create();
+        static Ptr create();
+
+        /**
+         * Destructor.
+         */
+        ~StateBlock() = default;
 
         /**
          * Binds the state in this StateBlock to the renderer.
@@ -440,11 +456,6 @@ class RenderState : public Ref
          */
         StateBlock(const StateBlock& copy) = default;
 
-        /**
-         * Destructor.
-         */
-        ~StateBlock() = default;
-
         void bindNoRestore();
 
         static void restore(long stateOverrideBits);
@@ -476,7 +487,7 @@ class RenderState : public Ref
         StencilOperation _stencilOpDpfail{ RenderState::STENCIL_OP_KEEP };
         StencilOperation _stencilOpDppass{ RenderState::STENCIL_OP_KEEP };
 
-        static StateBlock* _defaultState;
+        static Ptr _defaultState;
     };
 
     /**
@@ -547,25 +558,24 @@ class RenderState : public Ref
      * Sets the fixed-function render state of this object to the state contained
      * in the specified StateBlock.
      *
-     * The passed in StateBlock is stored in this RenderState object with an
-     * increased reference count and released when either a different StateBlock
-     * is assigned, or when this RenderState object is destroyed.
+     * The passed in StateBlock is stored in this RenderState object and released
+     * when either a different StateBlock is assigned, or when this RenderState
+     * object is destroyed.
      *
      * @param state The state block to set.
      */
-    void setStateBlock(StateBlock* state);
+    void setStateBlock(const StateBlock::Ptr& state);
 
     /**
      * Gets the fixed-function StateBlock for this RenderState object.
      *
-     * The returned StateBlock is referenced by this RenderState and therefore
-     * should not be released by the user. To release a StateBlock for a
-     * RenderState, the setState(StateBlock*) method should be called, passing
-     * nullptr. This removes the StateBlock and resets the fixed-function render
-     * state to the default state.
+     * The returned StateBlock is referenced by this RenderState. To release a
+     * StateBlock for a RenderState, the setStateBlock method should be called,
+     * passing nullptr. This removes the StateBlock and resets the fixed-function
+     * render state to the default state.
      *
      * It is legal to pass the returned StateBlock to another RenderState object.
-     * In this case, the StateBlock will be referenced by both RenderState objects
+     * In this case, the StateBlock will be shared by both RenderState objects
      * and any changes to the StateBlock will be reflected in all objects
      * that reference it.
      *
@@ -679,7 +689,7 @@ class RenderState : public Ref
     /**
      * The StateBlock of fixed-function render states that can be applied to the RenderState.
      */
-    mutable StateBlock* _state{ nullptr };
+    mutable StateBlock::Ptr _state;
 
     /**
      * The RenderState's parent.

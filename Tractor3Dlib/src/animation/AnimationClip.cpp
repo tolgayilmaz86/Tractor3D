@@ -28,6 +28,15 @@ namespace tractor
 extern void splitURL(const std::string& url, std::string* file, std::string* id);
 
 //----------------------------------------------------------------------------
+AnimationClipPtr AnimationClip::create(const std::string& id,
+                                        Animation* animation,
+                                        unsigned long startTime,
+                                        unsigned long endTime)
+{
+    return AnimationClipPtr(new AnimationClip(id, animation, startTime, endTime));
+}
+
+//----------------------------------------------------------------------------
 AnimationClip::AnimationClip(const std::string& id,
                              Animation* animation,
                              unsigned long startTime,
@@ -63,7 +72,7 @@ AnimationClip::~AnimationClip()
     }
     _values.clear();
 
-    SAFE_RELEASE(_crossFadeToClip);
+    _crossFadeToClip.reset();
     SAFE_DELETE(_beginListeners);
     SAFE_DELETE(_endListeners);
 
@@ -212,23 +221,22 @@ void AnimationClip::crossFade(AnimationClip* clip, unsigned long duration)
     // Check if the given clip is fading into this clip.
     // We should reset the clip from fading out, and this one from fading in
     // in order to start the crossfade back the other way.
-    if (clip->isClipStateBitSet(CLIP_IS_FADING_OUT_BIT) && clip->_crossFadeToClip == this)
+    if (clip->isClipStateBitSet(CLIP_IS_FADING_OUT_BIT) && clip->_crossFadeToClip.get() == this)
     {
         clip->resetClipStateBit(CLIP_IS_FADING_OUT_BIT);
         clip->_crossFadeToClip->resetClipStateBit(CLIP_IS_FADING_IN_BIT);
-        SAFE_RELEASE(clip->_crossFadeToClip);
+        clip->_crossFadeToClip.reset();
     }
 
     // If I already have a clip I'm fading to and it's not the same as the given clip release it.
     // Assign the new clip and increase it's ref count.
     if (_crossFadeToClip)
     {
-        SAFE_RELEASE(_crossFadeToClip);
+        _crossFadeToClip.reset();
     }
 
     // Set and initialize the crossfade clip
-    _crossFadeToClip = clip;
-    _crossFadeToClip->addRef();
+    _crossFadeToClip = clip->shared_from_this();
     _crossFadeToClip->setClipStateBit(CLIP_IS_FADING_IN_BIT);
     _crossFadeToClip->_blendWeight = 0.0f;
 
@@ -530,7 +538,7 @@ bool AnimationClip::update(float elapsedTime)
             resetClipStateBit(CLIP_IS_STARTED_BIT);
             resetClipStateBit(CLIP_IS_FADING_OUT_BIT);
             _crossFadeToClip->resetClipStateBit(CLIP_IS_FADING_IN_BIT);
-            SAFE_RELEASE(_crossFadeToClip);
+            _crossFadeToClip.reset();
         }
     }
 
@@ -576,7 +584,8 @@ bool AnimationClip::update(float elapsedTime)
 //----------------------------------------------------------------------------
 void AnimationClip::onBegin()
 {
-    this->addRef();
+    // Keep a shared_ptr to prevent destruction during callbacks
+    auto self = shared_from_this();
 
     // Initialize animation to play.
     setClipStateBit(CLIP_IS_STARTED_BIT);
@@ -607,14 +616,13 @@ void AnimationClip::onBegin()
 
     // Fire script begin event
     fireScriptEvent<void>(GP_GET_SCRIPT_EVENT(AnimationClip, clipBegin), this);
-
-    this->release();
 }
 
 //----------------------------------------------------------------------------
 void AnimationClip::onEnd()
 {
-    this->addRef();
+    // Keep a shared_ptr to prevent destruction during callbacks
+    auto self = shared_from_this();
 
     _blendWeight = 1.0f;
     resetClipStateBit(CLIP_ALL_BITS);
@@ -633,15 +641,13 @@ void AnimationClip::onEnd()
 
     // Fire script end event
     fireScriptEvent<void>(GP_GET_SCRIPT_EVENT(AnimationClip, clipEnd), this);
-
-    this->release();
 }
 
 //----------------------------------------------------------------------------
-AnimationClip* AnimationClip::clone(Animation* animation) const
+AnimationClipPtr AnimationClip::clone(Animation* animation) const
 {
     // Don't clone the elapsed time, listeners or crossfade information.
-    AnimationClip* newClip = new AnimationClip(getId(), animation, getStartTime(), getEndTime());
+    auto newClip = AnimationClip::create(getId(), animation, getStartTime(), getEndTime());
     newClip->setSpeed(getSpeed());
     newClip->setRepeatCount(getRepeatCount());
     newClip->setBlendWeight(getBlendWeight());

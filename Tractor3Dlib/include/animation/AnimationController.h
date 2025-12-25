@@ -13,10 +13,13 @@
  */
 #pragma once
 
+#include <memory>
+
 #include "animation/Animation.h"
 #include "animation/AnimationClip.h"
 #include "animation/AnimationTarget.h"
 #include "scene/Properties.h"
+#include <list>
 
 namespace tractor
 {
@@ -107,7 +110,7 @@ class AnimationController
     void update(float elapsedTime);
 
     State _state{ STOPPED };                   // The current state of the AnimationController.
-    std::list<AnimationClip*> _runningClips{}; // A list of running AnimationClips.
+    std::list<AnimationClipPtr> _runningClips{}; // A list of running AnimationClips.
 };
 
 } // namespace tractor

@@ -13,6 +13,8 @@
  */
 #pragma once
 
+#include <memory>
+
 #include "graphics/Curve.h"
 #include "scene/Properties.h"
 #include "utils/Ref.h"
@@ -23,6 +25,9 @@ namespace tractor
 class AnimationTarget;
 class AnimationController;
 class AnimationClip;
+
+/** Forward declare AnimationClipPtr */
+using AnimationClipPtr = std::shared_ptr<AnimationClip>;
 
 /**
  * Defines a generic property animation.
@@ -204,7 +209,7 @@ class Animation : public Ref
     /**
      * Adds a clip to this Animation.
      */
-    void addClip(AnimationClip* clip);
+    void addClip(const AnimationClipPtr& clip);
 
     /**
      * Finds the clip with the given ID.
@@ -264,8 +269,8 @@ class Animation : public Ref
     std::string _id;                        // The Animation's ID.
     unsigned long _duration{ 0L };          // the length of the animation (in milliseconds).
     std::vector<Channel*> _channels;        // The channels within this Animation.
-    AnimationClip* _defaultClip{ nullptr }; // The Animation's default clip.
-    std::unordered_map<std::string, AnimationClip*> _clipsMap; // All the clips created from this Animation.
+    AnimationClipPtr _defaultClip;          // The Animation's default clip.
+    std::unordered_map<std::string, AnimationClipPtr> _clipsMap; // All the clips created from this Animation.
 };
 
 } // namespace tractor

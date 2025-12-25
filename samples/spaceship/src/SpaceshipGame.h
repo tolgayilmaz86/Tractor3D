@@ -107,7 +107,7 @@ class SpaceshipGame : public Game
     Node* _shipNode;
     Node* _propulsionNode;
     Node* _glowNode;
-    RenderState::StateBlock* _stateBlock;
+    RenderState::StateBlock::Ptr _stateBlock;
     Vector3 _initialShipPos;
     Quaternion _initialShipRot;
     Vector3 _initialCameraPos;

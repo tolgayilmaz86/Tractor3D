@@ -81,21 +81,19 @@ Animation::~Animation()
         if (_defaultClip->isClipStateBitSet(AnimationClip::CLIP_IS_PLAYING_BIT))
         {
             assert(_controller);
-            _controller->unschedule(_defaultClip);
+            _controller->unschedule(_defaultClip.get());
         }
     }
-    SAFE_RELEASE(_defaultClip);
+    _defaultClip.reset();
 
-
-        for (auto& [clipId, clipPtr] : _clipsMap)
+    for (auto& [clipId, clipPtr] : _clipsMap)
+    {
+        if (clipPtr && clipPtr->isClipStateBitSet(AnimationClip::CLIP_IS_PLAYING_BIT))
         {
-            if (clipPtr && clipPtr->isClipStateBitSet(AnimationClip::CLIP_IS_PLAYING_BIT))
-            {
-                _controller->unschedule(clipPtr);
-            }
-            SAFE_RELEASE(clipPtr);
+            _controller->unschedule(clipPtr.get());
         }
-        _clipsMap.clear();
+    }
+    _clipsMap.clear();
 }
 
 //----------------------------------------------------------------------------
@@ -157,11 +155,11 @@ void Animation::createClips(const std::string& url)
 //----------------------------------------------------------------------------
 AnimationClip* Animation::createClip(const std::string& id, unsigned long begin, unsigned long end)
 {
-    auto clip = new AnimationClip(id, this, begin, end);
+    auto clip = AnimationClip::create(id, this, begin, end);
 
     addClip(clip);
 
-    return clip;
+    return clip.get();
 }
 
 //----------------------------------------------------------------------------
@@ -172,7 +170,7 @@ AnimationClip* Animation::getClip(const std::string& id)
     {
         if (!_defaultClip) createDefaultClip();
 
-        return _defaultClip;
+        return _defaultClip.get();
     }
     else
     {
@@ -245,7 +243,7 @@ bool Animation::targets(AnimationTarget* target) const
 //----------------------------------------------------------------------------
 void Animation::createDefaultClip()
 {
-    _defaultClip = new AnimationClip("default_clip", this, 0.0f, _duration);
+    _defaultClip = AnimationClip::create("default_clip", this, 0.0f, _duration);
 }
 
 //----------------------------------------------------------------------------
@@ -294,12 +292,12 @@ void Animation::createClips(Properties* animationProperties, unsigned int frameC
 }
 
 //----------------------------------------------------------------------------
-void Animation::addClip(AnimationClip* clip) { _clipsMap.insert({ clip->getId(), clip }); }
+void Animation::addClip(const AnimationClipPtr& clip) { _clipsMap.insert({ clip->getId(), clip }); }
 
 //----------------------------------------------------------------------------
 AnimationClip* Animation::findClip(const std::string& id) const
 {
-    if (auto clip = _clipsMap.find(id); clip != _clipsMap.end()) return clip->second;
+    if (auto clip = _clipsMap.find(id); clip != _clipsMap.end()) return clip->second.get();
 
     return nullptr;
 }

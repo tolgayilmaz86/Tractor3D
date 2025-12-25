@@ -13,22 +13,30 @@
  */
 #pragma once
 
+#include <memory>
+
 #include "animation/Animation.h"
 #include "animation/AnimationValue.h"
 #include "graphics/Curve.h"
 #include "scripting/ScriptTarget.h"
-#include "utils/ref.h"
 
 namespace tractor
 {
 
 class Animation;
 class AnimationValue;
+class AnimationClip;
+
+/** Shared pointer type for AnimationClip. */
+using AnimationClipPtr = std::shared_ptr<AnimationClip>;
+
+/** Weak pointer type for AnimationClip. */
+using AnimationClipWeakPtr = std::weak_ptr<AnimationClip>;
 
 /**
  * Defines the runtime session of an Animation to be played.
  */
-class AnimationClip : public Ref, public ScriptTarget
+class AnimationClip : public std::enable_shared_from_this<AnimationClip>, public ScriptTarget
 {
     friend class AnimationController;
     friend class Animation;
@@ -46,17 +54,18 @@ class AnimationClip : public Ref, public ScriptTarget
     static const unsigned int REPEAT_INDEFINITE = 0;
 
     /**
-     * Constructor.
+     * Creates an AnimationClip.
+     *
+     * @param id The ID of the clip.
+     * @param animation The animation this clip belongs to.
+     * @param startTime The start time in milliseconds.
+     * @param endTime The end time in milliseconds.
+     * @return The newly created AnimationClip.
      */
-    AnimationClip() = default;
-
-    /**
-     * Constructor.
-     */
-    AnimationClip(const std::string& id,
-                  Animation* animation,
-                  unsigned long startTime,
-                  unsigned long endTime);
+    static AnimationClipPtr create(const std::string& id,
+                                   Animation* animation,
+                                   unsigned long startTime,
+                                   unsigned long endTime);
 
     /**
      * Destructor.
@@ -361,6 +370,19 @@ class AnimationClip : public Ref, public ScriptTarget
     /**
      * Constructor.
      */
+    AnimationClip() = default;
+
+    /**
+     * Constructor.
+     */
+    AnimationClip(const std::string& id,
+                  Animation* animation,
+                  unsigned long startTime,
+                  unsigned long endTime);
+
+    /**
+     * Constructor.
+     */
     AnimationClip(const AnimationClip& copy);
 
     /**
@@ -405,7 +427,7 @@ class AnimationClip : public Ref, public ScriptTarget
      *
      * @return The newly created animation clip.
      */
-    AnimationClip* clone(Animation* animation) const;
+    AnimationClipPtr clone(Animation* animation) const;
 
     std::string _id{};                // AnimationClip ID.
     Animation* _animation{ nullptr }; // The Animation this clip is created from.
@@ -419,7 +441,7 @@ class AnimationClip : public Ref, public ScriptTarget
     float _speed { 1.0f }; // The speed that the clip is playing. Default is 1.0. Negative goes in reverse.
     double _timeStarted{ 0.0 }; // The game time when this clip was actually started.
     float _elapsedTime{ 0.0f }; // Time elapsed while the clip is running.
-    AnimationClip* _crossFadeToClip{ nullptr }; // The clip to cross fade to.
+    AnimationClipPtr _crossFadeToClip; // The clip to cross fade to.
     float _crossFadeOutElapsed{ 0.0f }; // The amount of time that has elapsed for the crossfade.
     unsigned long _crossFadeOutDuration{ 0 };           // The duration of the cross fade.
     float _blendWeight{ 1.0f };                         // The clip's blendweight.

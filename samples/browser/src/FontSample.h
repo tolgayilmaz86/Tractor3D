@@ -39,7 +39,7 @@ class FontSample : public Sample, public Control::Listener
     void buildQuad(Texture* texture);
 
     Form* _form;
-    RenderState::StateBlock* _stateBlock;
+    RenderState::StateBlock::Ptr _stateBlock;
     unsigned int _size;
     bool _wrap;
     bool _ignoreClip;

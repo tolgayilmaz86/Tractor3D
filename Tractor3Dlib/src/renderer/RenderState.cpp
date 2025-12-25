@@ -39,13 +39,13 @@ constexpr int RS_FRONT_FACE = 2048;
 namespace tractor
 {
 
-RenderState::StateBlock* RenderState::StateBlock::_defaultState = nullptr;
+RenderState::StateBlock::Ptr RenderState::StateBlock::_defaultState;
 std::vector<RenderState::AutoBindingResolver*> RenderState::_customAutoBindingResolvers;
 
 //----------------------------------------------------------------------------
 RenderState::~RenderState()
 {
-    SAFE_RELEASE(_state);
+    _state.reset();
 
     // Destroy all the material parameters
     for (size_t i = 0, count = _parameters.size(); i < count; ++i)
@@ -57,11 +57,11 @@ RenderState::~RenderState()
 //----------------------------------------------------------------------------
 void RenderState::initialize()
 {
-    if (StateBlock::_defaultState == nullptr) StateBlock::_defaultState = StateBlock::create();
+    if (!StateBlock::_defaultState) StateBlock::_defaultState = StateBlock::create();
 }
 
 //----------------------------------------------------------------------------
-void RenderState::finalize() { SAFE_RELEASE(StateBlock::_defaultState); }
+void RenderState::finalize() { StateBlock::_defaultState.reset(); }
 
 //----------------------------------------------------------------------------
 MaterialParameter* RenderState::getParameter(const std::string& name) const
@@ -176,23 +176,17 @@ void RenderState::setParameterAutoBinding(const std::string& name, const std::st
 }
 
 //----------------------------------------------------------------------------
-void RenderState::setStateBlock(StateBlock* state)
+void RenderState::setStateBlock(const StateBlock::Ptr& state)
 {
-    if (_state != state)
-    {
-        SAFE_RELEASE(_state);
-
-        _state = state;
-        if (_state) _state->addRef();
-    }
+    _state = state;
 }
 
 //----------------------------------------------------------------------------
 RenderState::StateBlock* RenderState::getStateBlock() const
 {
-    if (not _state) _state = StateBlock::create();
+    if (!_state) _state = StateBlock::create();
 
-    return _state;
+    return _state.get();
 }
 
 //----------------------------------------------------------------------------
@@ -499,7 +493,10 @@ void RenderState::cloneInto(RenderState* renderState, NodeCloneContext& context)
 }
 
 //----------------------------------------------------------------------------
-RenderState::StateBlock* RenderState::StateBlock::create() { return new RenderState::StateBlock(); }
+RenderState::StateBlock::Ptr RenderState::StateBlock::create() 
+{ 
+    return Ptr(new RenderState::StateBlock()); 
+}
 
 //----------------------------------------------------------------------------
 void RenderState::StateBlock::bind()

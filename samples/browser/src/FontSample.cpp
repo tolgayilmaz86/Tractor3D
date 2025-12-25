@@ -38,7 +38,7 @@ FontSample::FontSample()
 
 void FontSample::finalize()
 {
-    SAFE_RELEASE(_stateBlock);
+    _stateBlock.reset();
 
     for (size_t i = 0; i < _fonts.size(); i++)
     {

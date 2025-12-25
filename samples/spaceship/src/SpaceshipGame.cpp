@@ -271,7 +271,7 @@ void SpaceshipGame::initializeMaterial(Material* material, bool lighting, bool s
 void SpaceshipGame::finalize()
 {
     SAFE_RELEASE(_font);
-    SAFE_RELEASE(_stateBlock);
+    _stateBlock.reset();
     SAFE_RELEASE(_scene);
 }
 

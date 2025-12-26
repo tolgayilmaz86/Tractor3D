@@ -23,6 +23,11 @@ namespace tractor
 /**
  * Defines a container that contains zero or more controls.
  */
+class Container;
+
+/** Shared pointer type for Container. */
+using ContainerPtr = std::shared_ptr<Container>;
+
 class Container : public Control
 {
     friend class Form;
@@ -69,7 +74,7 @@ class Container : public Control
      * @return The new container.
      * @script{create}
      */
-    static Container* create(const std::string& id,
+    static ContainerPtr create(const std::string& id,
                              Theme::Style* style = nullptr,
                              Layout::Type layout = Layout::LAYOUT_ABSOLUTE);
 
@@ -88,7 +93,7 @@ class Container : public Control
      *
      * @return This container's layout object.
      */
-    Layout* getLayout() const noexcept { return _layout; }
+    Layout* getLayout() const noexcept { return _layout.get(); }
 
     /**
      * Sets the layout type for this container.
@@ -99,6 +104,18 @@ class Container : public Control
 
     /**
      * Adds a new control to this container.
+     *
+     * @param control The control to add (as shared_ptr).
+     *
+     * @return The index assigned to the new Control.
+     */
+    unsigned int addControl(const ControlPtr& control);
+
+    /**
+     * Adds a new control to this container.
+     *
+     * Note: This method wraps the raw pointer in a shared_ptr. If the control
+     * is already managed by a shared_ptr, use the ControlPtr overload instead.
      *
      * @param control The control to add.
      *
@@ -164,7 +181,7 @@ class Container : public Control
      * @return The vector of the controls within this container.
      * @script{ignore}
      */
-    const std::vector<Control*>& getControls() const noexcept { return _controls; }
+    const std::vector<ControlPtr>& getControls() const noexcept { return _controls; }
 
     /**
      * Determines if this container is a top level form.
@@ -320,7 +337,6 @@ class Container : public Control
                                            AnimationValue* value,
                                            float blendWeight = 1.0f);
 
-  protected:
     /**
      * Constructor.
      */
@@ -331,6 +347,7 @@ class Container : public Control
      */
     virtual ~Container();
 
+  protected:
     /**
      * Create a container with a given style and properties, including a list of controls.
      *
@@ -338,9 +355,9 @@ class Container : public Control
      * @param properties A properties object containing a definition of the container and its nested
      * controls (optional).
      *
-     * @return The new container.
+     * @return The new container as a shared_ptr.
      */
-    static Control* create(Theme::Style* style, Properties* properties = nullptr);
+    static ControlPtr create(Theme::Style* style, Properties* properties = nullptr);
 
     /**
      * @see Control::initialize
@@ -394,7 +411,7 @@ class Container : public Control
      * @param type The type of layout to create.
      * @return The new Layout.
      */
-    static Layout* createLayout(Layout::Type type);
+    static LayoutPtr createLayout(Layout::Type type);
 
     /**
      * Adds controls nested within a properties object to this container.
@@ -460,11 +477,11 @@ class Container : public Control
     /**
      * The container's layout.
      */
-    Layout* _layout{ nullptr };
+    LayoutPtr _layout{ nullptr };
     /**
      * List of controls within the container.
      */
-    std::vector<Control*> _controls;
+    std::vector<ControlPtr> _controls;
     /**
      * The active control for the container.
      */

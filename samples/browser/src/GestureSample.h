@@ -50,6 +50,6 @@ class GestureSample : public Sample
     void render(float elapsedTime);
 
   private:
-    Font* _font{ nullptr };
+    FontPtr _font{ nullptr };
     std::list<std::string> _eventLog{};
 };

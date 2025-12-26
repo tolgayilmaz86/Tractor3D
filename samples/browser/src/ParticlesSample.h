@@ -82,7 +82,7 @@ class ParticlesSample : public Sample, Control::Listener
 
     void emitterChanged();
 
-    void drawFrameRate(Font* font,
+    void drawFrameRate(const FontPtr& font,
                        const Vector4& color,
                        unsigned int x,
                        unsigned int y,
@@ -122,8 +122,8 @@ class ParticlesSample : public Sample, Control::Listener
     bool _panning{ false };
     bool _rotating{ false };
     bool _zooming{ false };
-    Font* _font{ nullptr };
-    Form* _form{ nullptr };
+    FontPtr _font;
+    FormPtr _form{ nullptr };
     Slider* _startRed{ nullptr };
     Slider* _startGreen{ nullptr };
     Slider* _startBlue{ nullptr };

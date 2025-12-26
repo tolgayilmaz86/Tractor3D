@@ -40,7 +40,7 @@ class SceneCreateSample : public Sample
   private:
     bool drawScene(Node* node);
 
-    Font* _font;
+    FontPtr _font;
     ScenePtr _scene;
     Node* _cubeNode;
     Model* _cubeModel;

@@ -52,7 +52,7 @@ class WaterSample : public Sample
         MOVE_RIGHT = (1 << 3)
     };
 
-    Font* _font;
+    FontPtr _font;
     ScenePtr _scene;
     Node* _cameraNode;
     Node* _reflectCameraNode;

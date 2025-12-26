@@ -23,15 +23,26 @@ constexpr auto OPENGL_ES_DEFINE = "OPENGL_ES";
 namespace tractor
 {
 
-// Cache of unique effects.
-static std::map<std::string, Effect*> __effectCache;
+// Cache of unique effects (uses weak_ptr to allow automatic cleanup when not in use).
+static std::map<std::string, std::weak_ptr<Effect>> __effectCache;
 static Effect* __currentEffect = nullptr;
+static bool __effectCacheDestroyed = false;
+
+// Guard to track when the static cache is destroyed during program shutdown
+struct EffectCacheGuard
+{
+    ~EffectCacheGuard() { __effectCacheDestroyed = true; }
+};
+static EffectCacheGuard __effectCacheGuard;
 
 //----------------------------------------------------------------------------
 Effect::~Effect()
 {
-    // Remove this effect from the cache.
-    __effectCache.erase(_id);
+    // Remove this effect from the cache (only if cache hasn't been destroyed yet).
+    if (!__effectCacheDestroyed)
+    {
+        __effectCache.erase(_id);
+    }
     // Free uniforms.
     std::for_each(_uniforms.begin(), _uniforms.end(), [](auto& pair) { SAFE_DELETE(pair.second); });
 
@@ -50,9 +61,9 @@ Effect::~Effect()
 }
 
 //----------------------------------------------------------------------------
-Effect* Effect::createFromFile(const std::string& vshPath,
-                               const std::string& fshPath,
-                               const std::string& defines)
+EffectPtr Effect::createFromFile(const std::string& vshPath,
+                                 const std::string& fshPath,
+                                 const std::string& defines)
 {
     // Search the effect cache for an identical effect that is already loaded.
     std::string uniqueId = vshPath;
@@ -63,13 +74,18 @@ Effect* Effect::createFromFile(const std::string& vshPath,
     {
         uniqueId += defines;
     }
+    
+    // Check cache for existing effect
     const auto itr = __effectCache.find(uniqueId);
     if (itr != __effectCache.end())
     {
-        // Found an exiting effect with this id, so increase its ref count and return it.
-        assert(itr->second);
-        itr->second->addRef();
-        return itr->second;
+        // Try to lock the weak_ptr to get a shared_ptr
+        if (auto existing = itr->second.lock())
+        {
+            return existing;
+        }
+        // If lock failed, the effect was destroyed, remove stale entry
+        __effectCache.erase(itr);
     }
 
     // Read source from file.
@@ -87,7 +103,7 @@ Effect* Effect::createFromFile(const std::string& vshPath,
         return nullptr;
     }
 
-    Effect* effect = createFromSource(vshPath, vshSource, fshPath, fshSource, defines);
+    EffectPtr effect = createFromSource(vshPath, vshSource, fshPath, fshSource, defines);
 
     SAFE_DELETE_ARRAY(vshSource);
     SAFE_DELETE_ARRAY(fshSource);
@@ -107,9 +123,9 @@ Effect* Effect::createFromFile(const std::string& vshPath,
 }
 
 //----------------------------------------------------------------------------
-Effect* Effect::createFromSource(const std::string& vshSource,
-                                 const std::string& fshSource,
-                                 const std::string& defines)
+EffectPtr Effect::createFromSource(const std::string& vshSource,
+                                   const std::string& fshSource,
+                                   const std::string& defines)
 {
     return createFromSource(EMPTY_STRING, vshSource, EMPTY_STRING, fshSource, defines);
 }
@@ -120,7 +136,6 @@ static void replaceDefines(const std::string& defines, std::string& out)
     Properties* graphicsConfig = Game::getInstance()->getConfig()->getNamespace("graphics", true);
     auto globalDefines = graphicsConfig ? graphicsConfig->getString("shaderDefines") : EMPTY_STRING;
 
-    // Build full semicolon delimited list of defines
 #ifdef OPENGL_ES
     out = OPENGL_ES_DEFINE;
 #else
@@ -137,7 +152,6 @@ static void replaceDefines(const std::string& defines, std::string& out)
         out += defines;
     }
 
-    // Replace semicolons
     if (out.length() > 0)
     {
         size_t pos;
@@ -239,11 +253,11 @@ static void writeShaderToErrorFile(const std::string& filePath, const std::strin
 }
 
 //----------------------------------------------------------------------------
-Effect* Effect::createFromSource(const std::string& vshPath,
-                                 const std::string& vshSource,
-                                 const std::string& fshPath,
-                                 const std::string& fshSource,
-                                 const std::string& defines)
+EffectPtr Effect::createFromSource(const std::string& vshPath,
+                                   const std::string& vshSource,
+                                   const std::string& fshPath,
+                                   const std::string& fshSource,
+                                   const std::string& defines)
 {
     const unsigned int SHADER_SOURCE_LENGTH = 3;
     const GLchar* shaderSource[SHADER_SOURCE_LENGTH];
@@ -275,10 +289,7 @@ Effect* Effect::createFromSource(const std::string& vshPath,
     if (success != GL_TRUE)
     {
         GL_ASSERT(glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &length));
-        if (length == 0)
-        {
-            length = 4096;
-        }
+        if (length == 0) length = 4096;
         if (length > 0)
         {
             infoLog = new char[length];
@@ -293,10 +304,7 @@ Effect* Effect::createFromSource(const std::string& vshPath,
                  vshPath == EMPTY_STRING ? vshSource : vshPath,
                  infoLog == EMPTY_STRING ? "" : infoLog);
         SAFE_DELETE_ARRAY(infoLog);
-
-        // Clean up.
         GL_ASSERT(glDeleteShader(vertexShader));
-
         return nullptr;
     }
 
@@ -316,10 +324,7 @@ Effect* Effect::createFromSource(const std::string& vshPath,
     if (success != GL_TRUE)
     {
         GL_ASSERT(glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &length));
-        if (length == 0)
-        {
-            length = 4096;
-        }
+        if (length == 0) length = 4096;
         if (length > 0)
         {
             infoLog = new char[length];
@@ -334,11 +339,8 @@ Effect* Effect::createFromSource(const std::string& vshPath,
                  fshPath == EMPTY_STRING ? fshSource : fshPath,
                  infoLog == EMPTY_STRING ? "" : infoLog);
         SAFE_DELETE_ARRAY(infoLog);
-
-        // Clean up.
         GL_ASSERT(glDeleteShader(vertexShader));
         GL_ASSERT(glDeleteShader(fragmentShader));
-
         return nullptr;
     }
 
@@ -357,10 +359,7 @@ Effect* Effect::createFromSource(const std::string& vshPath,
     if (success != GL_TRUE)
     {
         GL_ASSERT(glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length));
-        if (length == 0)
-        {
-            length = 4096;
-        }
+        if (length == 0) length = 4096;
         if (length > 0)
         {
             infoLog = new char[length];
@@ -372,24 +371,15 @@ Effect* Effect::createFromSource(const std::string& vshPath,
                  fshPath == EMPTY_STRING ? "nullptr" : fshPath,
                  infoLog == EMPTY_STRING ? "" : infoLog);
         SAFE_DELETE_ARRAY(infoLog);
-
-        // Clean up.
         GL_ASSERT(glDeleteProgram(program));
-
         return nullptr;
     }
 
-    // Create and return the new Effect.
-    Effect* effect = new Effect();
+    // Create and return the new Effect using shared_ptr
+    auto effect = std::make_shared<Effect>();
     effect->_program = program;
 
     // Query and store vertex attribute meta-data from the program.
-    // NOTE: Rather than using glBindAttribLocation to explicitly specify our own
-    // preferred attribute locations, we're going to query the locations that were
-    // automatically bound by the GPU. While it can sometimes be convenient to use
-    // glBindAttribLocation, some vendors actually reserve certain attribute indices
-    // and therefore using this function can create compatibility issues between
-    // different hardware vendors.
     GLint activeAttributes;
     GL_ASSERT(glGetProgramiv(program, GL_ACTIVE_ATTRIBUTES, &activeAttributes));
     if (activeAttributes > 0)
@@ -459,7 +449,7 @@ Effect* Effect::createFromSource(const std::string& vshPath,
                 GL_ASSERT(uniformLocation = glGetUniformLocation(program, uniformName));
 
                 Uniform* uniform = new Uniform();
-                uniform->_effect = effect;
+                uniform->_effect = effect.get();
                 uniform->_name = uniformName;
                 uniform->_location = uniformLocation;
                 uniform->_type = uniformType;
@@ -496,7 +486,6 @@ Uniform* Effect::getUniform(const std::string& name) const
 
     if (itr != _uniforms.end())
     {
-        // Return cached uniform variable
         return itr->second;
     }
 
@@ -504,7 +493,6 @@ Uniform* Effect::getUniform(const std::string& name) const
     GL_ASSERT(uniformLocation = glGetUniformLocation(_program, name.c_str()));
     if (uniformLocation > -1)
     {
-        // Check for array uniforms ("u_directionalLightColor[0]" -> "u_directionalLightColor")
         char* parentname = new char[name.length() + 1];
         strcpy(parentname, name.c_str());
         if (strtok(parentname, "[") != nullptr)
@@ -529,7 +517,6 @@ Uniform* Effect::getUniform(const std::string& name) const
         SAFE_DELETE_ARRAY(parentname);
     }
 
-    // No uniform variable found - return nullptr
     return nullptr;
 }
 
@@ -641,10 +628,7 @@ void Effect::setValue(Uniform* uniform, const Texture::Sampler* sampler)
                && uniform->_type == GL_SAMPLER_CUBE));
 
     GL_ASSERT(glActiveTexture(GL_TEXTURE0 + uniform->_index));
-
-    // Bind the sampler - this binds the texture and applies sampler state
     const_cast<Texture::Sampler*>(sampler)->bind();
-
     GL_ASSERT(glUniform1i(uniform->_location, uniform->_index));
 }
 
@@ -655,7 +639,6 @@ void Effect::setValue(Uniform* uniform, const Texture::Sampler** values, unsigne
     assert(uniform->_type == GL_SAMPLER_2D || uniform->_type == GL_SAMPLER_CUBE);
     assert(values);
 
-    // Set samplers as active and load texture unit array
     GLint units[32];
     for (size_t i = 0; i < count; ++i)
     {
@@ -665,14 +648,10 @@ void Effect::setValue(Uniform* uniform, const Texture::Sampler** values, unsigne
                        == Texture::TEXTURE_CUBE
                    && uniform->_type == GL_SAMPLER_CUBE));
         GL_ASSERT(glActiveTexture(GL_TEXTURE0 + uniform->_index + i));
-
-        // Bind the sampler - this binds the texture and applies sampler state
         const_cast<Texture::Sampler*>(values[i])->bind();
-
         units[i] = uniform->_index + i;
     }
 
-    // Pass texture unit array to GL
     GL_ASSERT(glUniform1iv(uniform->_location, count, units));
 }
 
@@ -680,7 +659,6 @@ void Effect::setValue(Uniform* uniform, const Texture::Sampler** values, unsigne
 void Effect::bind()
 {
     GL_ASSERT(glUseProgram(_program));
-
     __currentEffect = this;
 }
 
@@ -691,10 +669,7 @@ Effect* Effect::getCurrentEffect() { return __currentEffect; }
 Uniform::Uniform() : _location(-1), _type(0), _index(0), _effect(nullptr) {}
 
 //----------------------------------------------------------------------------
-Uniform::~Uniform()
-{
-    // hidden
-}
+Uniform::~Uniform() {}
 
 //----------------------------------------------------------------------------
 Effect* Uniform::getEffect() const noexcept { return _effect; }

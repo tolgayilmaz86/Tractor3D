@@ -13,6 +13,8 @@
  */
 #pragma once
 
+#include <memory>
+
 #include "graphics/Rectangle.h"
 #include "input/Gamepad.h"
 #include "input/Keyboard.h"
@@ -22,18 +24,24 @@
 #include "scripting/ScriptTarget.h"
 #include "ui/Theme.h"
 #include "ui/ThemeStyle.h"
-#include "utils/Ref.h"
 
 namespace tractor
 {
 
 class Container;
 class Form;
+class Control;
+
+/** Shared pointer type for Control. */
+using ControlPtr = std::shared_ptr<Control>;
+
+/** Weak pointer type for Control. */
+using ControlWeakPtr = std::weak_ptr<Control>;
 
 /**
  * Defines the base class for all controls.
  */
-class Control : public Ref, public AnimationTarget, public ScriptTarget
+class Control : public std::enable_shared_from_this<Control>, public AnimationTarget, public ScriptTarget
 {
     friend class Form;
     friend class Container;
@@ -248,6 +256,11 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
      * Opacity property.  Data = opacity
      */
     static const int ANIMATE_OPACITY = 7;
+
+    /**
+     * Virtual destructor.
+     */
+    virtual ~Control();
 
     /**
      * Extends ScriptTarget::getTypeName() to return the type name of this class.
@@ -1043,11 +1056,6 @@ class Control : public Ref, public AnimationTarget, public ScriptTarget
      * Constructor.
      */
     Control();
-
-    /**
-     * Destructor.
-     */
-    virtual ~Control();
 
     /**
      * Hidden copy assignment operator.

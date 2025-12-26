@@ -116,8 +116,7 @@ Material* Material::create(Effect* effect)
     const auto& technique = material->_techniques.emplace_back(new Technique(EMPTY_STRING, material));
 
     const auto& pass = technique->_passes.emplace_back(new Pass(EMPTY_STRING, technique));
-    pass->_effect = effect;
-    effect->addRef();
+    pass->_effect = effect->shared_from_this();  // Get shared_ptr from raw pointer
 
     material->_currentTechnique = technique;
 

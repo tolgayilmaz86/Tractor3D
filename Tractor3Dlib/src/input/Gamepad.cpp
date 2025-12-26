@@ -45,7 +45,7 @@ Gamepad::Gamepad(const std::string& formPath) : _handle((GamepadHandle)INT_MAX)
         _uiButtons[i] = nullptr;
     }
 
-    bindGamepadControls(_form);
+    bindGamepadControls(_form.get());
 }
 
 //----------------------------------------------------------------------------
@@ -65,8 +65,7 @@ Gamepad::Gamepad(GamepadHandle handle,
 }
 
 //----------------------------------------------------------------------------
-Gamepad::~Gamepad() { SAFE_RELEASE(_form); }
-
+Gamepad::~Gamepad() { _form.reset(); }
 //----------------------------------------------------------------------------
 Gamepad* Gamepad::add(GamepadHandle handle,
                       unsigned int buttonCount,
@@ -132,9 +131,10 @@ void Gamepad::remove(Gamepad* gamepad)
 //----------------------------------------------------------------------------
 void Gamepad::bindGamepadControls(Container* container)
 {
-    std::vector<Control*> controls = container->getControls();
-    for (auto& control : controls)
+    const std::vector<ControlPtr>& controls = container->getControls();
+    for (const auto& controlPtr : controls)
     {
+        Control* control = controlPtr.get();
         const auto& controlName = control->getTypeName();
         if (control->isContainer())
         {

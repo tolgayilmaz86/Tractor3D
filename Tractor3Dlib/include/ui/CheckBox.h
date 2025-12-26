@@ -21,6 +21,11 @@
 namespace tractor
 {
 
+class CheckBox;
+
+/** Shared pointer type for CheckBox. */
+using CheckBoxPtr = std::shared_ptr<CheckBox>;
+
 /**
  * Defines a checkbox control.
  *
@@ -41,7 +46,7 @@ class CheckBox : public Button
      * @return The new checkbox.
      * @script{create}
      */
-    static CheckBox* create(const std::string& id, Theme::Style* style = nullptr);
+    static CheckBoxPtr create(const std::string& id, Theme::Style* style = nullptr);
 
     /**
      * Extends ScriptTarget::getTypeName() to return the type name of this class.
@@ -79,7 +84,6 @@ class CheckBox : public Button
      */
     virtual void addListener(Control::Listener* listener, int eventFlags);
 
-  protected:
     /**
      * Constructor.
      */
@@ -90,15 +94,16 @@ class CheckBox : public Button
      */
     ~CheckBox() = default;
 
+  protected:
     /**
      * Create a checkbox with a given style and properties.
      *
      * @param style The style to apply to this checkbox.
      * @param properties A properties object containing a definition of the checkbox (optional).
      *
-     * @return The new checkbox.
+     * @return The new checkbox as a shared_ptr.
      */
-    static Control* create(Theme::Style* style, Properties* properties = nullptr);
+    static ControlPtr create(Theme::Style* style, Properties* properties = nullptr);
 
     /**
      * @see Control::initialize

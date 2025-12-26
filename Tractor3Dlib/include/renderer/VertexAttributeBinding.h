@@ -13,14 +13,22 @@
  */
 #pragma once
 
+#include <memory>
+
+#include "graphics/Effect.h"
 #include "renderer/VertexFormat.h"
-#include "utils/Ref.h"
 
 namespace tractor
 {
 
 class Mesh;
-class Effect;
+class VertexAttributeBinding;
+
+/** Shared pointer type for VertexAttributeBinding. */
+using VertexAttributeBindingPtr = std::shared_ptr<VertexAttributeBinding>;
+
+/** Weak pointer type for VertexAttributeBinding. */
+using VertexAttributeBindingWeakPtr = std::weak_ptr<VertexAttributeBinding>;
 
 /**
  * Defines a binding between the vertex layout of a Mesh and the vertex
@@ -40,9 +48,14 @@ class Effect;
  * should only be used when writing custom code that use client-side vertex
  * arrays, since it is slower than the server-side VAOs used by OpenGL
  * (when creating a VertexAttributeBinding between a Mesh and Effect).
+ * 
+ * @note VertexAttributeBinding uses std::shared_ptr for memory management.
+ * Use the static create() methods which return VertexAttributeBindingPtr.
  */
-class VertexAttributeBinding : public Ref
+class VertexAttributeBinding : public std::enable_shared_from_this<VertexAttributeBinding>
 {
+    friend class Pass;
+
   public:
     /**
      * Creates a new VertexAttributeBinding between the given Mesh and Effect.
@@ -59,7 +72,7 @@ class VertexAttributeBinding : public Ref
      * @return A VertexAttributeBinding for the requested parameters.
      * @script{create}
      */
-    static VertexAttributeBinding* create(std::shared_ptr<Mesh> mesh, Effect* effect);
+    static VertexAttributeBindingPtr create(std::shared_ptr<Mesh> mesh, Effect* effect);
 
     /**
      * Creates a client-side vertex attribute binding.
@@ -77,9 +90,14 @@ class VertexAttributeBinding : public Ref
      * @return A VertexAttributeBinding for the requested parameters.
      * @script{ignore}
      */
-    static VertexAttributeBinding* create(const VertexFormat& vertexFormat,
-                                          void* vertexPointer,
-                                          Effect* effect);
+    static VertexAttributeBindingPtr create(const VertexFormat& vertexFormat,
+                                            void* vertexPointer,
+                                            Effect* effect);
+
+    /**
+     * Destructor.
+     */
+    ~VertexAttributeBinding();
 
     /**
      * Binds this vertex array object.
@@ -103,25 +121,26 @@ class VertexAttributeBinding : public Ref
         void* pointer;
     };
 
-    /**
-     * Constructor.
-     */
-    VertexAttributeBinding() = default;
+    // Private struct to allow make_shared while keeping constructor effectively private
+    struct PrivateTag {};
 
+  public:
     /**
-     * Destructor.
+     * Constructor (use create() methods instead).
+     * @internal This constructor is public to enable std::make_shared but should not be called directly.
      */
-    ~VertexAttributeBinding();
+    explicit VertexAttributeBinding(PrivateTag) {}
 
+  private:
     /**
      * Hidden copy assignment operator.
      */
     VertexAttributeBinding& operator=(const VertexAttributeBinding&) = delete;
 
-    static VertexAttributeBinding* create(std::shared_ptr<Mesh> mesh,
-                                          const VertexFormat& vertexFormat,
-                                          void* vertexPointer,
-                                          Effect* effect);
+    static VertexAttributeBindingPtr create(std::shared_ptr<Mesh> mesh,
+                                            const VertexFormat& vertexFormat,
+                                            void* vertexPointer,
+                                            Effect* effect);
 
     void setVertexAttribPointer(GLuint indx,
                                 GLint size,
@@ -133,7 +152,7 @@ class VertexAttributeBinding : public Ref
     GLuint _handle{ 0 };
     VertexAttribute* _attributes{ nullptr };
     std::shared_ptr<Mesh> _mesh;
-    Effect* _effect{ nullptr };
+    EffectPtr _effect;
 };
 
 } // namespace tractor

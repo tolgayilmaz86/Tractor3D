@@ -29,11 +29,18 @@ class AbsoluteLayout : public Layout
 
   public:
     /**
+     * Create an AbsoluteLayout.
+     *
+     * @return An AbsoluteLayout object.
+     */
+    static std::shared_ptr<AbsoluteLayout> create();
+
+    /**
      * Get the type of this Layout.
      *
      * @return Layout::LAYOUT_ABSOLUTE
      */
-    Layout::Type getType() const noexcept;
+    Layout::Type getType() const noexcept override;
 
   protected:
     /**
@@ -44,7 +51,7 @@ class AbsoluteLayout : public Layout
      *
      * @param container The container to update.
      */
-    void update(const Container* container);
+    void update(const Container* container) override;
 
   private:
     /*
@@ -55,19 +62,7 @@ class AbsoluteLayout : public Layout
     /*
      * Constructor.
      */
-    AbsoluteLayout(const AbsoluteLayout& copy);
-
-    /*
-     * Destructor.
-     */
-    virtual ~AbsoluteLayout();
-
-    /**
-     * Create an AbsoluteLayout.
-     *
-     * @return An AbsoluteLayout object.
-     */
-    static AbsoluteLayout* create();
+    AbsoluteLayout(const AbsoluteLayout& copy) = delete;
 };
 
 } // namespace tractor

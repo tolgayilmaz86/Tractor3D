@@ -274,7 +274,7 @@ class Text : public Drawable, public AnimationTarget
     void setAnimationPropertyValue(int propertyId, AnimationValue* value, float blendWeight = 1.0f) override;
 
   private:
-    Font* _font{ nullptr };
+    FontPtr _font{ nullptr };
     Font* _drawFont{ nullptr };
     std::string _text{ "" };
     unsigned int _size{ 0 };

@@ -61,11 +61,11 @@ class TerrainSample : public Sample, public Control::Listener, private RenderSta
 
     bool resolveAutoBinding(const std::string& autoBinding, Node* node, MaterialParameter* parameter);
 
-    Font* _font;
+    FontPtr _font;
     ScenePtr _scene;
     Terrain* _terrain;
     Node* _sky;
-    Form* _form;
+    FormPtr _form;
     bool _formVisible;
     Vector2 _formSize;
     bool _wireframe;

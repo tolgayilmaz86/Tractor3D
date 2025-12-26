@@ -78,7 +78,8 @@ PhysicsCollisionObject::~PhysicsCollisionObject()
     }
 
     assert(Game::getInstance()->getPhysicsController());
-    Game::getInstance()->getPhysicsController()->destroyShape(_collisionShape);
+    Game::getInstance()->getPhysicsController()->destroyShape(_collisionShape.get());
+    _collisionShape.reset();
 }
 
 //----------------------------------------------------------------------------

@@ -19,6 +19,11 @@
 namespace tractor
 {
 
+class Label;
+
+/** Shared pointer type for Label. */
+using LabelPtr = std::shared_ptr<Label>;
+
 /**
  * Defines a label control.
  *
@@ -39,7 +44,7 @@ class Label : public Control
      * @return The new label.
      * @script{create}
      */
-    static Label* create(const std::string& id, Theme::Style* style = nullptr);
+    static LabelPtr create(const std::string& id, Theme::Style* style = nullptr);
 
     /**
      * Extends ScriptTarget::getTypeName() to return the type name of this class.
@@ -77,7 +82,6 @@ class Label : public Control
      */
     virtual void addListener(Control::Listener* listener, int eventFlags);
 
-  protected:
     /**
      * Constructor.
      */
@@ -88,16 +92,17 @@ class Label : public Control
      */
     virtual ~Label() = default;
 
+  protected:
     /**
      * Create a new label control.
      *
      * @param style The control's custom style.
      * @param properties A properties object containing a definition of the label (optional).
      *
-     * @return The new label.
+     * @return The new label as a shared_ptr.
      * @script{create}
      */
-    static Control* create(Theme::Style* style, Properties* properties);
+    static ControlPtr create(Theme::Style* style, Properties* properties);
 
     /**
      * @see Control::initialize

@@ -24,7 +24,6 @@ namespace tractor
 //----------------------------------------------------------------------------
 Text::~Text()
 {
-    SAFE_RELEASE(_font);
     // _drawFont is a child of _font, so it should never be released
     _drawFont = nullptr;
 }
@@ -35,13 +34,13 @@ TextPtr Text::create(const std::string& fontPath,
                      const Vector4& color,
                      unsigned int size)
 {
-    Font* font = Font::create(fontPath);
+    FontPtr font = Font::create(fontPath);
     Font* drawFont;
 
     if (size == 0)
     {
         size = font->_size;
-        drawFont = font;
+        drawFont = font.get();
     }
     else
     {
@@ -128,7 +127,6 @@ Drawable* Text::clone(NodeCloneContext& context)
 {
     Text* textClone = new Text();
     textClone->_font = _font;
-    _font->addRef();
     textClone->_drawFont = _drawFont;
     textClone->_text = _text;
     textClone->_size = _size;

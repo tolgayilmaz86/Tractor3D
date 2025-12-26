@@ -309,10 +309,10 @@ void BillboardSample::loadGround()
     node->setDrawable(_ground);
     _scene->addNode(node);
     node->rotateX(MATH_DEG_TO_RAD(90));
-    Effect* effect = Effect::createFromFile("res/shaders/textured.vert",
-                                            "res/shaders/textured.frag",
-                                            "TEXTURE_REPEAT");
-    Material* material = Material::create(effect);
+    EffectPtr effect = Effect::createFromFile("res/shaders/textured.vert",
+                                              "res/shaders/textured.frag",
+                                              "TEXTURE_REPEAT");
+    Material* material = Material::create(effect.get());
     material->getStateBlock()->setDepthTest(true);
     material->getStateBlock()->setBlend(false);
     Texture::Sampler* sampler =
@@ -324,7 +324,7 @@ void BillboardSample::loadGround()
                                       RenderState::WORLD_VIEW_PROJECTION_MATRIX);
     _ground->setMaterial(material);
     SAFE_RELEASE(material);
-    SAFE_RELEASE(effect);
+    // effect is managed by shared_ptr
     SAFE_RELEASE(node);
 }
 
@@ -336,9 +336,9 @@ void BillboardSample::loadBillboards()
                                  BILLBOARD_HEIGHT);
     mesh->setBoundingSphere(BoundingSphere(Vector3::zero(), BILLBOARD_HEIGHT));
 
-    Effect* effect = Effect::createFromFile("res/shaders/textured.vert",
-                                            "res/shaders/textured.frag",
-                                            "TEXTURE_DISCARD_ALPHA");
+    EffectPtr effect = Effect::createFromFile("res/shaders/textured.vert",
+                                              "res/shaders/textured.frag",
+                                              "TEXTURE_DISCARD_ALPHA");
 
     // Create the model and node and bind the material
     for (size_t i = 0; i < BILLBOARD_COUNT; i++)
@@ -351,7 +351,7 @@ void BillboardSample::loadBillboards()
         node->setDrawable(model);
         _scene->addNode(node);
 
-        Material* material = Material::create(effect);
+        Material* material = Material::create(effect.get());
         material->getStateBlock()->setDepthTest(true);
         material->getStateBlock()->setBlend(false);
         material->getParameter("u_diffuseTexture")->setValue("res/png/grass.png", true);
@@ -361,12 +361,12 @@ void BillboardSample::loadBillboards()
         // Don't release model here - we keep it in _billboardModels
         SAFE_RELEASE(material);
 
-        // Randomly postiion within the domain
+        // Randomly position within the domain
         float tx = MATH_RANDOM_0_1() * GROUND_WIDTH - (GROUND_WIDTH / 2.0f);
         float tz = MATH_RANDOM_0_1() * GROUND_HEIGHT - (GROUND_HEIGHT / 2.0f);
         node->translate(tx, (BILLBOARD_HEIGHT / 2.0f), tz);
     }
-    SAFE_RELEASE(effect);
+    // effect is managed by shared_ptr
 }
 
 void BillboardSample::gamepadEvent(Gamepad::GamepadEvent evt, Gamepad* gamepad)

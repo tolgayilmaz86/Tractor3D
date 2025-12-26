@@ -13,13 +13,13 @@
  */
 #pragma once
 
+#include "animation/Animation.h"
 #include "animation/AnimationController.h"
 #include "graphics/Curve.h"
 
 namespace tractor
 {
 
-class Animation;
 class AnimationValue;
 class NodeCloneContext;
 
@@ -47,12 +47,12 @@ class AnimationTarget
      *
      * @return The newly created animation.
      */
-    Animation* createAnimation(const std::string& id,
-                               int propertyId,
-                               unsigned int keyCount,
-                               unsigned int* keyTimes,
-                               float* keyValues,
-                               Curve::InterpolationType type);
+    AnimationPtr createAnimation(const std::string& id,
+                                 int propertyId,
+                                 unsigned int keyCount,
+                                 unsigned int* keyTimes,
+                                 float* keyValues,
+                                 Curve::InterpolationType type);
 
     /**
      * Creates an animation on this target from a set of key value and key time pairs.
@@ -68,14 +68,14 @@ class AnimationTarget
      *
      * @return The newly created animation.
      */
-    Animation* createAnimation(const std::string& id,
-                               int propertyId,
-                               unsigned int keyCount,
-                               unsigned int* keyTimes,
-                               float* keyValues,
-                               float* keyInValue,
-                               float* keyOutValue,
-                               Curve::InterpolationType type);
+    AnimationPtr createAnimation(const std::string& id,
+                                 int propertyId,
+                                 unsigned int keyCount,
+                                 unsigned int* keyTimes,
+                                 float* keyValues,
+                                 float* keyInValue,
+                                 float* keyOutValue,
+                                 Curve::InterpolationType type);
 
     /**
      * Creates an animation on this target using the data from the Properties object defined at the
@@ -88,7 +88,7 @@ class AnimationTarget
      *
      * @return The newly created animation.
      */
-    Animation* createAnimation(const std::string& id, const std::string& url);
+    AnimationPtr createAnimation(const std::string& id, const std::string& url);
 
     /**
      * Creates an animation on this target using the data from the given properties object.
@@ -98,7 +98,7 @@ class AnimationTarget
      *
      * @return The newly created animation.
      */
-    Animation* createAnimation(const std::string& id, Properties* animationProperties);
+    AnimationPtr createAnimation(const std::string& id, Properties* animationProperties);
 
     /**
      * Creates a simple two keyframe from-to animation.
@@ -114,12 +114,12 @@ class AnimationTarget
      *
      * @return The newly created animation.
      */
-    Animation* createAnimationFromTo(const std::string& id,
-                                     int propertyId,
-                                     float* from,
-                                     float* to,
-                                     Curve::InterpolationType type,
-                                     unsigned long duration);
+    AnimationPtr createAnimationFromTo(const std::string& id,
+                                       int propertyId,
+                                       float* from,
+                                       float* to,
+                                       Curve::InterpolationType type,
+                                       unsigned long duration);
 
     /**
      * Creates a simple two keyframe from-by animation.
@@ -135,12 +135,12 @@ class AnimationTarget
      *
      * @return The newly created animation.
      */
-    Animation* createAnimationFromBy(const std::string& id,
-                                     int propertyId,
-                                     float* from,
-                                     float* by,
-                                     Curve::InterpolationType type,
-                                     unsigned long duration);
+    AnimationPtr createAnimationFromBy(const std::string& id,
+                                       int propertyId,
+                                       float* from,
+                                       float* by,
+                                       Curve::InterpolationType type,
+                                       unsigned long duration);
 
     /**
      * Destroys the animation with the specified ID. Destroys the first animation if ID is nullptr.
@@ -182,6 +182,7 @@ class AnimationTarget
      * first animation it finds.
      *
      * @param id The name of the animation to get.
+     * @return Raw pointer to Animation (non-owning). Returns nullptr if not found.
      */
     Animation* getAnimation(const std::string& id = EMPTY_STRING) const;
 
@@ -281,5 +282,11 @@ class AnimationTarget
     std::vector<Animation::Channel*>* _animationChannels{
         nullptr
     }; // Collection of all animation channels that target the AnimationTarget
+
+    /**
+     * Storage for animations owned by this target.
+     * This ensures AnimationPtr lifetime is maintained while channels reference the animation.
+     */
+    std::unordered_map<std::string, AnimationPtr> _animations;
 };
 } // namespace tractor

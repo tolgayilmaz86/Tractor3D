@@ -177,6 +177,6 @@ class SamplesGame : public Game, Control::Listener
     static std::vector<SampleRecordList>* _samples;
 
     Sample* _activeSample{ nullptr };
-    Font* _font{ nullptr };
-    Form* _sampleSelectForm{ nullptr };
+    FontPtr _font{ nullptr };
+    FormPtr _sampleSelectForm{ nullptr };
 };

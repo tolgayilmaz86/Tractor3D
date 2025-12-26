@@ -13,13 +13,13 @@
  */
 #pragma once
 
+#include "ui/Control.h"
 #include "ui/Theme.h"
 
 namespace tractor
 {
 
 class Properties;
-class Control;
 
 /**
  * Defines a factory for creating core controls and registered custom controls.
@@ -34,8 +34,9 @@ class ControlFactory
   public:
     /**
      * The activator interface for controls that are created.
+     * Returns a ControlPtr (shared_ptr<Control>) to ensure proper enable_shared_from_this initialization.
      */
-    typedef Control* (*ControlActivator)(Theme::Style*, Properties*);
+    typedef ControlPtr (*ControlActivator)(Theme::Style*, Properties*);
 
     /**
      * Gets the single instance of the control factory used to create controls and
@@ -94,11 +95,11 @@ class ControlFactory
      * @param typeName The type of the control to create.
      * @param style The style to apply to the control.
      * @param properties A Properties object describing the control (optional).
-     * @return The new control.
+     * @return The new control as a shared_ptr.
      */
-    Control* createControl(const std::string& typeName,
-                           Theme::Style* style,
-                           Properties* properties = nullptr);
+    ControlPtr createControl(const std::string& typeName,
+                             Theme::Style* style,
+                             Properties* properties = nullptr);
 
     /**
      * Registers the standard (built-in) controls

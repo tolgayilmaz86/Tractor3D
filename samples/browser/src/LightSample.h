@@ -62,7 +62,7 @@ class LightSample : public Sample, Control::Listener
 
     bool drawScene(Node* node);
 
-    Font* _font;
+    FontPtr _font;
     ScenePtr _scene;
     Node* _modelNode;
     Node* _directionalLightNode;
@@ -95,7 +95,7 @@ class LightSample : public Sample, Control::Listener
     CheckBox* _addSpecular;
     CheckBox* _addBumped;
 
-    Form* _form;
+    FormPtr _form;
 
     bool _touched;
     int _touchX, _touchY;

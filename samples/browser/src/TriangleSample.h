@@ -38,7 +38,7 @@ class TriangleSample : public Sample
     void render(float elapsedTime);
 
   private:
-    Font* _font;
+    FontPtr _font;
     Model* _model;
     float _spinDirection;
     Matrix _worldViewProjectionMatrix;

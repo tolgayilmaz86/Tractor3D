@@ -45,9 +45,9 @@ class FormsSample : public Sample, Control::Listener
     ScenePtr _scene;
     Node* _formNode{ nullptr };
     Node* _formNodeParent{ nullptr };
-    Form* _formSelect{ nullptr };
+    FormPtr _formSelect{ nullptr };
     Form* _activeForm{ nullptr };
-    std::vector<Form*> _forms;
+    std::vector<FormPtr> _forms;
     Gamepad* _gamepad{ nullptr };
     unsigned int _keyFlags{ 0 };
     bool _touched{ false };

@@ -28,6 +28,19 @@ namespace tractor
  * On mobile device you can tap or click within the text box to
  * bring up the virtual keyboard.
  */
+class TextBox;
+
+/** Shared pointer type for TextBox. */
+using TextBoxPtr = std::shared_ptr<TextBox>;
+
+/**
+ * Defines a text control.
+ *
+ * Listeners can listen for a TEXT_CHANGED event, and then query the text box
+ * for the last keypress it received.
+ * On mobile device you can tap or click within the text box to
+ * bring up the virtual keyboard.
+ */
 class TextBox : public Label
 {
     friend class Container;
@@ -59,7 +72,7 @@ class TextBox : public Label
      * @return The new textbox.
      * @script{create}
      */
-    static TextBox* create(const std::string& id, Theme::Style* style = nullptr);
+    static TextBoxPtr create(const std::string& id, Theme::Style* style = nullptr);
 
     /**
      * Extends ScriptTarget::getTypeName() to return the type name of this class.
@@ -130,7 +143,6 @@ class TextBox : public Label
      */
     void setText(const std::string& text) override;
 
-  protected:
     /**
      * Constructor.
      */
@@ -141,15 +153,16 @@ class TextBox : public Label
      */
     virtual ~TextBox() = default;
 
+  protected:
     /**
      * Create a text box with a given style and properties.
      *
      * @param style The style to apply to this text box.
      * @param properties A properties object containing a definition of the text box (optional).
      *
-     * @return The new text box.
+     * @return The new text box as a shared_ptr.
      */
-    static Control* create(Theme::Style* style, Properties* properties = nullptr);
+    static ControlPtr create(Theme::Style* style, Properties* properties = nullptr);
 
     /**
      * @see Control::initialize

@@ -58,7 +58,7 @@ class Audio3DSample : public Sample
 
   private:
     FirstPersonCamera _fpCamera;
-    Font* _font;
+    FontPtr _font;
     ScenePtr _scene;
     Node* _cubeNode;
     std::map<std::string, Node*> _audioNodes;

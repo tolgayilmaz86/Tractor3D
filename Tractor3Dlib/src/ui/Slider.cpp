@@ -25,18 +25,18 @@ static constexpr float SCROLLWHEEL_FRACTION = 0.1f;
 static constexpr float MOVE_FRACTION = 0.005f;
 
 //----------------------------------------------------------------
-Slider* Slider::create(const std::string& id, Theme::Style* style)
+SliderPtr Slider::create(const std::string& id, Theme::Style* style)
 {
-    Slider* slider = new Slider();
+    auto slider = std::make_shared<Slider>();
     slider->_id = id;
     slider->initialize("Slider", style, nullptr);
     return slider;
 }
 
 //----------------------------------------------------------------
-Control* Slider::create(Theme::Style* style, Properties* properties)
+ControlPtr Slider::create(Theme::Style* style, Properties* properties)
 {
-    Slider* slider = new Slider();
+    auto slider = std::make_shared<Slider>();
     slider->initialize("Slider", style, properties);
     return slider;
 }

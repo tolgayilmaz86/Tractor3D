@@ -87,7 +87,7 @@ class Bundle : public Ref
      * @return The loaded font, or nullptr if the font could not be loaded.
      * @script{create}
      */
-    Font* loadFont(const std::string& id);
+    FontPtr loadFont(const std::string& id);
 
     /**
      * Determines if this bundle contains a top-level object with the given ID.
@@ -445,7 +445,9 @@ class Bundle : public Ref
      *
      * @return The animation that the channel was loaded into.
      */
-    Animation* readAnimationChannel(Scene* scene, Animation* animation, const std::string& animationId);
+    AnimationPtr readAnimationChannel(Scene* scene,
+                                      AnimationPtr animation,
+                                      const std::string& animationId);
 
     /**
      * Reads the animation channel data at the current file position into the given animation
@@ -461,7 +463,7 @@ class Bundle : public Ref
      *
      * @return The animation that the channel was loaded into.
      */
-    Animation* readAnimationChannelData(Animation* animation,
+    AnimationPtr readAnimationChannelData(AnimationPtr animation,
                                         const std::string& id,
                                         AnimationTarget* target,
                                         unsigned int targetAttribute);

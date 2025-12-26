@@ -23,6 +23,11 @@
 namespace tractor
 {
 
+class Slider;
+
+/** Shared pointer type for Slider. */
+using SliderPtr = std::shared_ptr<Slider>;
+
 /**
  * Defines a slider control.
  *
@@ -43,7 +48,7 @@ class Slider : public Label
      * @return The new slider.
      * @script{create}
      */
-    static Slider* create(const std::string& id, Theme::Style* style = nullptr);
+    static SliderPtr create(const std::string& id, Theme::Style* style = nullptr);
 
     /**
      * Extends ScriptTarget::getTypeName() to return the type name of this class.
@@ -167,7 +172,6 @@ class Slider : public Label
      */
     void addListener(Control::Listener* listener, int eventFlags);
 
-  protected:
     /**
      * Constructor.
      */
@@ -178,15 +182,16 @@ class Slider : public Label
      */
     ~Slider() = default;
 
+  protected:
     /**
      * Create a slider with a given style and properties.
      *
      * @param style The style to apply to this slider.
      * @param properties A properties object containing a definition of the slider (optional).
      *
-     * @return The new slider.
+     * @return The new slider as a shared_ptr.
      */
-    static Control* create(Theme::Style* style, Properties* properties = nullptr);
+    static ControlPtr create(Theme::Style* style, Properties* properties = nullptr);
 
     /**
      * @see Control::initialize

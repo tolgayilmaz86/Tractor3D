@@ -530,7 +530,7 @@ Node* Bundle::loadNode(const std::string& id, Scene* sceneContext)
                     return nullptr;
                 }
 
-                Animation* animation = nullptr;
+                AnimationPtr animation = nullptr;
                 for (size_t k = 0; k < animationChannelCount; k++)
                 {
                     // Read target id.
@@ -1223,7 +1223,7 @@ void Bundle::readAnimation(Scene* scene)
         return;
     }
 
-    Animation* animation = nullptr;
+    AnimationPtr animation = nullptr;
     for (size_t i = 0; i < animationChannelCount; i++)
     {
         animation = readAnimationChannel(scene, animation, animationId);
@@ -1248,9 +1248,9 @@ void Bundle::readAnimations(Scene* scene)
 }
 
 //----------------------------------------------------------------------------
-Animation* Bundle::readAnimationChannel(Scene* scene,
-                                        Animation* animation,
-                                        const std::string& animationId)
+AnimationPtr Bundle::readAnimationChannel(Scene* scene,
+                                          AnimationPtr animation,
+                                          const std::string& animationId)
 {
     // Read target id.
     std::string targetId = readString(_stream.get());
@@ -1287,10 +1287,10 @@ Animation* Bundle::readAnimationChannel(Scene* scene,
 }
 
 //----------------------------------------------------------------------------
-Animation* Bundle::readAnimationChannelData(Animation* animation,
-                                            const std::string& id,
-                                            AnimationTarget* target,
-                                            unsigned int targetAttribute)
+AnimationPtr Bundle::readAnimationChannelData(AnimationPtr animation,
+                                              const std::string& id,
+                                              AnimationTarget* target,
+                                              unsigned int targetAttribute)
 {
     std::vector<unsigned int> keyTimes;
     std::vector<float> values;
@@ -1649,7 +1649,7 @@ std::unique_ptr<Bundle::MeshData> Bundle::readMeshData(const std::string& url)
 }
 
 //----------------------------------------------------------------------------
-Font* Bundle::loadFont(const std::string& id)
+FontPtr Bundle::loadFont(const std::string& id)
 {
     assert(_stream);
 
@@ -1688,7 +1688,7 @@ Font* Bundle::loadFont(const std::string& id)
         }
     }
 
-    Font* masterFont = nullptr;
+    FontPtr masterFont = nullptr;
 
     for (size_t i = 0; i < fontSizeCount; ++i)
     {
@@ -1825,7 +1825,7 @@ Font* Bundle::loadFont(const std::string& id)
         }
 
         // Create the font for this size
-        Font* font =
+        FontPtr font =
             Font::create(family, Font::PLAIN, size, glyphs, glyphCount, texture, (Font::Format)format);
 
         // Free the glyph array.

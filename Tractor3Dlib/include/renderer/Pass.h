@@ -13,6 +13,7 @@
  */
 #pragma once
 
+#include "graphics/Effect.h"
 #include "renderer/RenderState.h"
 #include "renderer/VertexAttributeBinding.h"
 
@@ -44,7 +45,7 @@ class Pass : public RenderState
     /**
      * Returns the effect for this Pass.
      */
-    Effect* getEffect() const noexcept { return _effect; }
+    Effect* getEffect() const noexcept { return _effect.get(); }
 
     /**
      * Sets a vertex attribute binding for this pass.
@@ -54,14 +55,14 @@ class Pass : public RenderState
      *
      * @param binding The VertexAttributeBinding to set (or nullptr to remove an existing binding).
      */
-    void setVertexAttributeBinding(VertexAttributeBinding* binding);
+    void setVertexAttributeBinding(VertexAttributeBindingPtr binding);
 
     /**
      * Sets a vertex attribute binding for this pass.
      *
      * @return The vertex attribute binding for this pass.
      */
-    VertexAttributeBinding* getVertexAttributeBinding() const noexcept { return _vaBinding; }
+    VertexAttributeBinding* getVertexAttributeBinding() const noexcept { return _vaBinding.get(); }
 
     /**
      * Binds the render state for this pass.
@@ -122,8 +123,8 @@ class Pass : public RenderState
 
     std::string _id{};
     Technique* _technique{ nullptr };
-    Effect* _effect{ nullptr };
-    VertexAttributeBinding* _vaBinding{ nullptr };
+    EffectPtr _effect;
+    VertexAttributeBindingPtr _vaBinding;
 };
 
 } // namespace tractor

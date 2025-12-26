@@ -108,7 +108,7 @@ class Sample
     virtual void finalize() = 0;
     virtual void update(float elapsedTime) = 0;
     virtual void render(float elapsedTime) = 0;
-    static void drawFrameRate(Font* font,
+    static void drawFrameRate(const FontPtr& font,
                               const Vector4& color,
                               unsigned int x,
                               unsigned int y,

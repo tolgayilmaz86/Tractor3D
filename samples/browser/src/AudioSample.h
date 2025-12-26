@@ -34,9 +34,9 @@ class AudioSample : public Sample, Control::Listener
     void controlEvent(Control* control, EventType evt);
 
   private:
-    Form* _formBackground;
-    Form* _formEngine;
-    Form* _formBraking;
+    FormPtr _formBackground;
+    FormPtr _formEngine;
+    FormPtr _formBraking;
     AudioSourcePtr _audioBackground;
     AudioSourcePtr _audioEngine;
     AudioSourcePtr _audioBraking;

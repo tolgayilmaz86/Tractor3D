@@ -22,23 +22,25 @@ namespace tractor
 {
 
 static GLuint __maxVertexAttribs = 0;
-static std::vector<VertexAttributeBinding*> __vertexAttributeBindingCache;
+static bool __cacheDestroyed = false;
+
+static std::vector<VertexAttributeBindingWeakPtr>& getVertexAttributeBindingCache()
+{
+    static std::vector<VertexAttributeBindingWeakPtr> cache;
+    return cache;
+}
+
+// Call this to mark when shutdown is complete and cache should not be accessed
+struct CacheGuard
+{
+    ~CacheGuard() { __cacheDestroyed = true; }
+};
+static CacheGuard __cacheGuard;
 
 //----------------------------------------------------------------------------
 VertexAttributeBinding::~VertexAttributeBinding()
 {
-    // Delete from the vertex attribute binding cache.
-    std::erase(__vertexAttributeBindingCache, this);
-
-    // Old method
-    // std::vector<VertexAttributeBinding*>::iterator itr = std::find(__vertexAttributeBindingCache.begin(),
-    // __vertexAttributeBindingCache.end(), this); if (itr != __vertexAttributeBindingCache.end())
-    //{
-    //  __vertexAttributeBindingCache.erase(itr);
-    //}
-
-    // SAFE_RELEASE(_mesh);
-    SAFE_RELEASE(_effect);
+    _effect.reset();
     SAFE_DELETE_ARRAY(_attributes);
 
     if (_handle)
@@ -49,48 +51,56 @@ VertexAttributeBinding::~VertexAttributeBinding()
 }
 
 //----------------------------------------------------------------------------
-VertexAttributeBinding* VertexAttributeBinding::create(std::shared_ptr<Mesh> mesh, Effect* effect)
+VertexAttributeBindingPtr VertexAttributeBinding::create(std::shared_ptr<Mesh> mesh, Effect* effect)
 {
     assert(mesh);
 
     // Search for an existing vertex attribute binding that can be used.
-    VertexAttributeBinding* b;
-    for (size_t i = 0, count = __vertexAttributeBindingCache.size(); i < count; ++i)
+    auto& cache = getVertexAttributeBindingCache();
+    
+    // Clean up expired weak pointers and search for existing binding
+    for (auto it = cache.begin(); it != cache.end(); )
     {
-        b = __vertexAttributeBindingCache[i];
-        assert(b);
-        if (b->_mesh == mesh && b->_effect == effect)
+        if (auto b = it->lock())
         {
-            // Found a match!
-            b->addRef();
-            return b;
+            if (b->_mesh == mesh && b->_effect.get() == effect)
+            {
+                // Found a match!
+                return b;
+            }
+            ++it;
+        }
+        else
+        {
+            // Remove expired weak pointer
+            it = cache.erase(it);
         }
     }
 
-    b = create(mesh, mesh->getVertexFormat(), 0, effect);
+    auto b = create(mesh, mesh->getVertexFormat(), 0, effect);
 
     // Add the new vertex attribute binding to the cache.
     if (b)
     {
-        __vertexAttributeBindingCache.push_back(b);
+        cache.push_back(b);
     }
 
     return b;
 }
 
 //----------------------------------------------------------------------------
-VertexAttributeBinding* VertexAttributeBinding::create(const VertexFormat& vertexFormat,
-                                                       void* vertexPointer,
-                                                       Effect* effect)
+VertexAttributeBindingPtr VertexAttributeBinding::create(const VertexFormat& vertexFormat,
+                                                         void* vertexPointer,
+                                                         Effect* effect)
 {
     return create(nullptr, vertexFormat, vertexPointer, effect);
 }
 
 //----------------------------------------------------------------------------
-VertexAttributeBinding* VertexAttributeBinding::create(std::shared_ptr<Mesh> mesh,
-                                                       const VertexFormat& vertexFormat,
-                                                       void* vertexPointer,
-                                                       Effect* effect)
+VertexAttributeBindingPtr VertexAttributeBinding::create(std::shared_ptr<Mesh> mesh,
+                                                         const VertexFormat& vertexFormat,
+                                                         void* vertexPointer,
+                                                         Effect* effect)
 {
     assert(effect);
 
@@ -110,7 +120,7 @@ VertexAttributeBinding* VertexAttributeBinding::create(std::shared_ptr<Mesh> mes
     }
 
     // Create a new VertexAttributeBinding.
-    VertexAttributeBinding* b = new VertexAttributeBinding();
+    auto b = std::make_shared<VertexAttributeBinding>(VertexAttributeBinding::PrivateTag{});
 
 #ifdef GP_USE_VAO
     if (mesh && glGenVertexArrays)
@@ -124,7 +134,6 @@ VertexAttributeBinding* VertexAttributeBinding::create(std::shared_ptr<Mesh> mes
         if (b->_handle == 0)
         {
             GP_ERROR("Failed to create VAO handle.");
-            SAFE_DELETE(b);
             return nullptr;
         }
 
@@ -155,11 +164,9 @@ VertexAttributeBinding* VertexAttributeBinding::create(std::shared_ptr<Mesh> mes
     if (mesh)
     {
         b->_mesh = mesh;
-        // mesh->addRef();
     }
 
-    b->_effect = effect;
-    effect->addRef();
+    b->_effect = effect->shared_from_this();  // Get shared_ptr from raw pointer
 
     // Call setVertexAttribPointer for each vertex element.
     std::string name;

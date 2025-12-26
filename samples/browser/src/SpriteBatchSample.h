@@ -38,7 +38,7 @@ class SpriteBatchSample : public Sample
     void render(float elapsedTime);
 
   private:
-    Font* _font;
+    FontPtr _font;
     SpriteBatch* _spriteBatch;
     Matrix _worldViewProjectionMatrix;
 };

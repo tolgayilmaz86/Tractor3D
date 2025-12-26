@@ -20,18 +20,18 @@ namespace tractor
 {
 
 //----------------------------------------------------------------
-TextBox* TextBox::create(const std::string& id, Theme::Style* style)
+TextBoxPtr TextBox::create(const std::string& id, Theme::Style* style)
 {
-    TextBox* textBox = new TextBox();
+    auto textBox = std::make_shared<TextBox>();
     textBox->_id = id;
     textBox->initialize("TextBox", style, nullptr);
     return textBox;
 }
 
 //----------------------------------------------------------------
-Control* TextBox::create(Theme::Style* style, Properties* properties)
+ControlPtr TextBox::create(Theme::Style* style, Properties* properties)
 {
-    TextBox* textBox = new TextBox();
+    auto textBox = std::make_shared<TextBox>();
     textBox->initialize("TextBox", style, properties);
     return textBox;
 }
@@ -64,7 +64,6 @@ void TextBox::setCaretLocation(unsigned int index)
     _caretLocation = index;
     if (_caretLocation > _text.length()) _caretLocation = (unsigned int)_text.length();
 }
-
 //----------------------------------------------------------------
 bool TextBox::touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex)
 {

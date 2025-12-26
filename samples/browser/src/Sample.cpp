@@ -197,7 +197,7 @@ Gamepad* Sample::getGamepad(unsigned int index, bool preferPhysical) const
     return Game::getInstance()->getGamepad(index, preferPhysical);
 }
 
-void Sample::drawFrameRate(Font* font,
+void Sample::drawFrameRate(const FontPtr& font,
                            const Vector4& color,
                            unsigned int x,
                            unsigned int y,

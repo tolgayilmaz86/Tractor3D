@@ -21,19 +21,19 @@
 namespace tractor
 {
 
-static FlowLayout* __instance;
-
-FlowLayout::~FlowLayout() { __instance = nullptr; }
+static std::weak_ptr<FlowLayout> __instance;
 
 //----------------------------------------------------------------
-FlowLayout* FlowLayout::create()
+std::shared_ptr<FlowLayout> FlowLayout::create()
 {
-    if (!__instance)
-        __instance = new FlowLayout();
-    else
-        __instance->addRef();
+    auto instance = __instance.lock();
+    if (!instance)
+    {
+        instance = std::shared_ptr<FlowLayout>(new FlowLayout());
+        __instance = instance;
+    }
 
-    return __instance;
+    return instance;
 }
 
 //----------------------------------------------------------------
@@ -61,10 +61,10 @@ void FlowLayout::update(const Container* container)
     float rowY = 0;
     float tallestHeight = 0;
 
-    std::vector<Control*> controls = container->getControls();
+    const std::vector<ControlPtr>& controls = container->getControls();
     for (size_t i = 0, controlsCount = controls.size(); i < controlsCount; i++)
     {
-        Control* control = controls.at(i);
+        Control* control = controls.at(i).get();
         assert(control);
 
         if (!control->isVisible()) continue;

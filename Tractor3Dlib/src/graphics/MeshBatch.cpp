@@ -161,10 +161,9 @@ void MeshBatch::updateVertexAttributeBinding()
         {
             Pass* pass = t->getPassByIndex(j);
             assert(pass);
-            VertexAttributeBinding* binder =
+            VertexAttributeBindingPtr binder =
                 VertexAttributeBinding::create(_vertexFormat, _vertices, pass->getEffect());
             pass->setVertexAttributeBinding(binder);
-            SAFE_RELEASE(binder);
         }
     }
 }

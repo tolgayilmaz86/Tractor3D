@@ -48,8 +48,7 @@ Control::~Control()
 
     if (_style)
     {
-        // Release the style's theme since we addRef'd it in initialize()
-        _style->getTheme()->release();
+        // Theme lifetime is now managed by shared_ptr - no need for manual ref counting
 
         if (_styleOverridden)
         {
@@ -114,8 +113,7 @@ void Control::initialize(const std::string& typeName, Theme::Style* style, Prope
                 style ? style->getTheme()->getEmptyStyle() : Theme::getDefault()->getEmptyStyle();
         }
     }
-    // Increase the reference count of the style's theme while we hold the style
-    _style->getTheme()->addRef();
+    // Theme lifetime is now managed by shared_ptr - no need for manual ref counting
     if (properties)
     {
         const auto& id = properties->getId();
@@ -996,7 +994,8 @@ void Control::notifyListeners(Control::Listener::EventType eventType)
     // This method runs untrusted code by notifying listeners of events.
     // If the user calls exit() or otherwise releases this control, we
     // need to keep it alive until the method returns.
-    this->addRef();
+    // Use shared_from_this() to prevent destruction during callback
+    auto self = shared_from_this();
 
     controlEvent(eventType);
 
@@ -1018,8 +1017,6 @@ void Control::notifyListeners(Control::Listener::EventType eventType)
     fireScriptEvent<void>(GP_GET_SCRIPT_EVENT(Control, controlEvent),
                           dynamic_cast<void*>(this),
                           eventType);
-
-    this->release();
 }
 
 //----------------------------------------------------------------------------
@@ -1462,7 +1459,7 @@ Theme::ThemeImage* Control::getImage(const std::string& id, State state)
         if (imageList) image = imageList->getImage(id);
     }
 
-    return image ? image : _style->getTheme()->_emptyImage;
+    return image ? image : _style->getTheme()->_emptyImage.get();
 }
 
 //----------------------------------------------------------------------------
@@ -1705,9 +1702,8 @@ void Control::overrideThemedProperties(Properties* properties, unsigned char sta
 
     if (properties->exists("font"))
     {
-        Font* font = Font::create(properties->getString("font"));
-        setFont(font, states);
-        font->release();
+        FontPtr font = Font::create(properties->getString("font"));
+        setFont(font.get(), states);
     }
 
     if (properties->exists("fontSize"))

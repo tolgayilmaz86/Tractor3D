@@ -74,20 +74,20 @@ void InputSample::initialize()
     _formNode = Node::create("Form");
     _formNodeParent->addChild(_formNode);
     Theme* theme = _inputSampleControls->getTheme();
-    Form* form = Form::create("testForm", theme->getStyle("basicContainer"), Layout::LAYOUT_ABSOLUTE);
+    FormPtr form = Form::create("testForm", theme->getStyle("basicContainer"), Layout::LAYOUT_ABSOLUTE);
     form->setSize(225, 100);
-    Label* label = Label::create("sensorLabel", theme->getStyle("iconNoBorder"));
+    auto label = Label::create("sensorLabel", theme->getStyle("iconNoBorder"));
     label->setPosition(25, 15);
     label->setSize(175, 50);
     label->setText("Raw sensor response (accel/gyro)");
     form->addControl(label);
-    label->release();
+    // No need to release - addControl takes ownership via shared_ptr
     _formNode->setScale(0.0015f, 0.0015f, 1.0f);
     _formNodeRestPosition.set(0, 0, -1.5f);
     _formNodeParent->setTranslation(_formNodeRestPosition);
     _formNode->setTranslation(-0.2f, -0.2f, 0);
-    _formNode->setDrawable(form);
-    form->release();
+    _formNode->setDrawable(form.get());
+    // No need to release form - setDrawable takes ownership
 }
 
 void InputSample::finalize()
@@ -100,9 +100,8 @@ void InputSample::finalize()
 
     _scene.reset();
     SAFE_RELEASE(_formNode);
-    SAFE_RELEASE(_inputSampleControls);
+    _inputSampleControls.reset();
     SAFE_DELETE(_crosshair);
-    SAFE_RELEASE(_font);
 }
 
 void InputSample::update(float elapsedTime)

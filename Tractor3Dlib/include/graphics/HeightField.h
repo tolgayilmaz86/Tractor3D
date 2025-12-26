@@ -13,10 +13,18 @@
  */
 #pragma once
 
-#include "utils/Ref.h"
+#include <memory>
 
 namespace tractor
 {
+
+class HeightField;
+
+/** Shared pointer type for HeightField. */
+using HeightFieldPtr = std::shared_ptr<HeightField>;
+
+/** Weak pointer type for HeightField. */
+using HeightFieldWeakPtr = std::weak_ptr<HeightField>;
 
 /**
  * Defines height data used to store values representing elevation.
@@ -25,7 +33,7 @@ namespace tractor
  * heightfield defintions, which are used in heightfield rigid body creation. Heightfields can
  * be populated manually, or loaded from images and RAW files.
  */
-class HeightField : public Ref
+class HeightField : public std::enable_shared_from_this<HeightField>
 {
   public:
     /**
@@ -36,7 +44,7 @@ class HeightField : public Ref
      *
      * @return The new HeightField.
      */
-    static HeightField* create(unsigned int rows, unsigned int columns);
+    static HeightFieldPtr create(unsigned int rows, unsigned int columns);
 
     /**
      * Creates a HeightField from the specified heightfield image.
@@ -54,9 +62,9 @@ class HeightField : public Ref
      *
      * @return The new HeightField.
      */
-    static HeightField* createFromImage(const std::string& path,
-                                        float heightMin = 0,
-                                        float heightMax = 1);
+    static HeightFieldPtr createFromImage(const std::string& path,
+                                          float heightMin = 0,
+                                          float heightMax = 1);
 
     /**
      * Creates a HeightField from the specified RAW8 or RAW16 file.
@@ -83,11 +91,16 @@ class HeightField : public Ref
      *
      * @return The new HeightField.
      */
-    static HeightField* createFromRAW(const std::string& path,
-                                      unsigned int width,
-                                      unsigned int height,
-                                      float heightMin = 0,
-                                      float heightMax = 1);
+    static HeightFieldPtr createFromRAW(const std::string& path,
+                                        unsigned int width,
+                                        unsigned int height,
+                                        float heightMin = 0,
+                                        float heightMax = 1);
+
+    /**
+     * Destructor.
+     */
+    ~HeightField();
 
     /**
      * Returns a pointer to the underlying height array.
@@ -132,23 +145,18 @@ class HeightField : public Ref
 
   private:
     /**
-     * Hidden constructor.
+     * Constructor.
      */
     HeightField(unsigned int columns, unsigned int rows);
 
     /**
-     * Hidden destructor (use Ref::release()).
-     */
-    ~HeightField();
-
-    /**
      * Internal method for creating a HeightField.
      */
-    static HeightField* create(const std::string& path,
-                               unsigned int width,
-                               unsigned int height,
-                               float heightMin,
-                               float heightMax);
+    static HeightFieldPtr create(const std::string& path,
+                                 unsigned int width,
+                                 unsigned int height,
+                                 float heightMin,
+                                 float heightMax);
 
     float* _array;
     unsigned int _cols;

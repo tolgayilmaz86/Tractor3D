@@ -35,68 +35,82 @@ AnimationTarget::~AnimationTarget()
         {
             Animation::Channel* channel = (*itr);
             assert(channel);
-            assert(channel->_animation);
-            channel->_animation->removeChannel(channel);
+            auto animation = channel->getAnimation();
+            if (animation)
+            {
+                animation->removeChannel(channel);
+            }
             SAFE_DELETE(channel);
             itr++;
         }
         _animationChannels->clear();
         SAFE_DELETE(_animationChannels);
     }
+    
+    // Clear stored animations (shared_ptrs will release automatically)
+    _animations.clear();
 }
 
 //----------------------------------------------------------------------------
-Animation* AnimationTarget::createAnimation(const std::string& id,
-                                            int propertyId,
-                                            unsigned int keyCount,
-                                            unsigned int* keyTimes,
-                                            float* keyValues,
-                                            Curve::InterpolationType type)
+AnimationPtr AnimationTarget::createAnimation(const std::string& id,
+                                              int propertyId,
+                                              unsigned int keyCount,
+                                              unsigned int* keyTimes,
+                                              float* keyValues,
+                                              Curve::InterpolationType type)
 {
     assert(type != Curve::BEZIER && type != Curve::HERMITE);
     assert(keyCount >= 1 && keyTimes && keyValues);
 
-    Animation* animation = new Animation(id, this, propertyId, keyCount, keyTimes, keyValues, type);
+    auto animation = Animation::create(id);
+    animation->createChannel(this, propertyId, keyCount, keyTimes, keyValues, type);
+
+    // Store the animation to maintain its lifetime
+    _animations[id] = animation;
 
     return animation;
 }
 
 //----------------------------------------------------------------------------
-Animation* AnimationTarget::createAnimation(const std::string& id,
-                                            int propertyId,
-                                            unsigned int keyCount,
-                                            unsigned int* keyTimes,
-                                            float* keyValues,
-                                            float* keyInValue,
-                                            float* keyOutValue,
-                                            Curve::InterpolationType type)
+AnimationPtr AnimationTarget::createAnimation(const std::string& id,
+                                              int propertyId,
+                                              unsigned int keyCount,
+                                              unsigned int* keyTimes,
+                                              float* keyValues,
+                                              float* keyInValue,
+                                              float* keyOutValue,
+                                              Curve::InterpolationType type)
 {
     assert(keyCount >= 1 && keyTimes && keyValues && keyInValue && keyOutValue);
-    Animation* animation =
-        new Animation(id, this, propertyId, keyCount, keyTimes, keyValues, keyInValue, keyOutValue, type);
+    
+    auto animation = Animation::create(id);
+    animation->createChannel(this, propertyId, keyCount, keyTimes, keyValues, keyInValue, keyOutValue, type);
+
+    // Store the animation to maintain its lifetime
+    _animations[id] = animation;
 
     return animation;
 }
 
 //----------------------------------------------------------------------------
-Animation* AnimationTarget::createAnimation(const std::string& id, const std::string& url)
+AnimationPtr AnimationTarget::createAnimation(const std::string& id, const std::string& url)
 {
     auto p = std::unique_ptr<Properties>(Properties::create(url));
     assert(p);
 
-    Animation* animation =
+    AnimationPtr animation =
         createAnimation(id, (p->getNamespace().length() > 0) ? p.get() : p->getNextNamespace());
 
     return animation;
 }
 
 //----------------------------------------------------------------------------
-Animation* AnimationTarget::createAnimationFromTo(const std::string& id,
-                                                  int propertyId,
-                                                  float* from,
-                                                  float* to,
-                                                  Curve::InterpolationType type,
-                                                  unsigned long duration)
+AnimationPtr AnimationTarget::createAnimationFromTo(const std::string& id,
+                                                    int propertyId,
+                                                    float* from,
+                                                    float* to,
+                                                    Curve::InterpolationType type,
+                                                    unsigned long duration)
 {
     assert(from);
     assert(to);
@@ -112,7 +126,7 @@ Animation* AnimationTarget::createAnimationFromTo(const std::string& id,
     keyTimes[0] = 0;
     keyTimes[1] = (unsigned int)duration;
 
-    Animation* animation = createAnimation(id, propertyId, 2, keyTimes, keyValues, type);
+    AnimationPtr animation = createAnimation(id, propertyId, 2, keyTimes, keyValues, type);
 
     SAFE_DELETE_ARRAY(keyValues);
     SAFE_DELETE_ARRAY(keyTimes);
@@ -121,12 +135,12 @@ Animation* AnimationTarget::createAnimationFromTo(const std::string& id,
 }
 
 //----------------------------------------------------------------------------
-Animation* AnimationTarget::createAnimationFromBy(const std::string& id,
-                                                  int propertyId,
-                                                  float* from,
-                                                  float* by,
-                                                  Curve::InterpolationType type,
-                                                  unsigned long duration)
+AnimationPtr AnimationTarget::createAnimationFromBy(const std::string& id,
+                                                    int propertyId,
+                                                    float* from,
+                                                    float* by,
+                                                    Curve::InterpolationType type,
+                                                    unsigned long duration)
 {
     assert(from);
     assert(by);
@@ -144,7 +158,7 @@ Animation* AnimationTarget::createAnimationFromBy(const std::string& id,
     keyTimes[0] = 0;
     keyTimes[1] = (unsigned int)duration;
 
-    Animation* animation = createAnimation(id, propertyId, 2, keyTimes, keyValues, type);
+    AnimationPtr animation = createAnimation(id, propertyId, 2, keyTimes, keyValues, type);
 
     SAFE_DELETE_ARRAY(keyValues);
     SAFE_DELETE_ARRAY(keyTimes);
@@ -153,7 +167,7 @@ Animation* AnimationTarget::createAnimationFromBy(const std::string& id,
 }
 
 //----------------------------------------------------------------------------
-Animation* AnimationTarget::createAnimation(const std::string& id, Properties* animationProperties)
+AnimationPtr AnimationTarget::createAnimation(const std::string& id, Properties* animationProperties)
 {
     assert(animationProperties);
     if (animationProperties->getNamespace() != "animation")
@@ -317,7 +331,7 @@ Animation* AnimationTarget::createAnimation(const std::string& id, Properties* a
 
     int curve = Curve::getInterpolationType(curveStr);
 
-    Animation* animation = nullptr;
+    AnimationPtr animation = nullptr;
     if (keyIn && keyOut)
     {
         animation = createAnimation(id,
@@ -340,7 +354,7 @@ Animation* AnimationTarget::createAnimation(const std::string& id, Properties* a
     }
 
     const auto& repeat = animationProperties->getString("repeatCount");
-    if (!repeat.empty())
+    if (!repeat.empty() && animation)
     {
         if (repeat == ANIMATION_TARGET_INDEFINITE_STR)
         {
@@ -360,7 +374,7 @@ Animation* AnimationTarget::createAnimation(const std::string& id, Properties* a
     SAFE_DELETE_ARRAY(keyTimes);
 
     Properties* pClip = animationProperties->getNextNamespace();
-    if (pClip && pClip->getNamespace() == "clip")
+    if (pClip && pClip->getNamespace() == "clip" && animation)
     {
         int frameCount = animationProperties->getInt("frameCount");
         if (frameCount <= 0)
@@ -382,30 +396,66 @@ void AnimationTarget::destroyAnimation(const std::string& id)
     if (channel == nullptr) return;
 
     // Remove this target's channel from animation, and from the target's list of channels.
-    assert(channel->_animation);
-    channel->_animation->removeChannel(channel);
+    auto animation = channel->getAnimation();
+    if (animation)
+    {
+        animation->removeChannel(channel);
+    }
     removeChannel(channel);
 
     SAFE_DELETE(channel);
+    
+    // Remove from stored animations map
+    if (id.empty())
+    {
+        // Remove first animation if id is empty
+        if (!_animations.empty())
+        {
+            _animations.erase(_animations.begin());
+        }
+    }
+    else
+    {
+        _animations.erase(id);
+    }
 }
 
 //----------------------------------------------------------------------------
 Animation* AnimationTarget::getAnimation(const std::string& id) const
 {
+    // First check the stored animations map
+    if (!_animations.empty())
+    {
+        if (id.empty())
+        {
+            // Return the first animation if id is empty
+            return _animations.begin()->second.get();
+        }
+        
+        auto it = _animations.find(id);
+        if (it != _animations.end())
+        {
+            return it->second.get();
+        }
+    }
+    
+    // Fallback: check animation channels for animations not stored in our map
+    // (e.g., animations created externally and added via channels)
     if (_animationChannels)
     {
-        std::vector<Animation::Channel*>::iterator itr = _animationChannels->begin();
-        assert(*itr);
-
-        if (id.empty()) return (*itr)->_animation;
+        if (id.empty() && !_animationChannels->empty())
+        {
+            auto animation = (*_animationChannels->begin())->getAnimation();
+            return animation.get();
+        }
 
         for (auto& channel : *_animationChannels)
         {
             assert(channel);
-            assert(channel->_animation);
-            if (channel->_animation->_id.compare(id) == 0)
+            auto animation = channel->getAnimation();
+            if (animation && animation->_id.compare(id) == 0)
             {
-                return channel->_animation;
+                return animation.get();
             }
         }
     }
@@ -519,8 +569,8 @@ Animation::Channel* AnimationTarget::getChannel(const std::string& id) const
         for (const auto& channelPtr : *_animationChannels)
         {
             assert(channelPtr);
-
-            if (channelPtr->_animation->_id.compare(id) == 0)
+            auto animation = channelPtr->getAnimation();
+            if (animation && animation->_id.compare(id) == 0)
             {
                 // Found!
                 return channelPtr;
@@ -539,19 +589,20 @@ void AnimationTarget::cloneInto(AnimationTarget* target, NodeCloneContext& conte
         for (Animation::Channel* channel : *_animationChannels)
         {
             assert(channel);
-            assert(channel->_animation);
+            auto srcAnimation = channel->getAnimation();
+            if (!srcAnimation) continue;
 
-            Animation* animation = context.findClonedAnimation(channel->_animation);
-            if (animation != nullptr)
+            AnimationPtr clonedAnimation = context.findClonedAnimation(srcAnimation.get());
+            if (clonedAnimation)
             {
-                Animation::Channel* channelCopy = new Animation::Channel(*channel, animation, target);
-                animation->addChannel(channelCopy);
+                Animation::Channel* channelCopy = new Animation::Channel(*channel, clonedAnimation, target);
+                clonedAnimation->addChannel(channelCopy);
             }
             else
             {
                 // Clone the animation and register it with the context so that it only gets cloned once.
-                animation = channel->_animation->clone(channel, target);
-                context.registerClonedAnimation(channel->_animation, animation);
+                clonedAnimation = srcAnimation->clone(channel, target);
+                context.registerClonedAnimation(srcAnimation.get(), clonedAnimation);
             }
         }
     }

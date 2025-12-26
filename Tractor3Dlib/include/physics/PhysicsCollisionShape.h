@@ -13,6 +13,8 @@
  */
 #pragma once
 
+#include <memory>
+
 #include "graphics/HeightField.h"
 #include "graphics/Mesh.h"
 #include "math/Vector3.h"
@@ -21,19 +23,25 @@ namespace tractor
 {
 class Node;
 class Properties;
+class PhysicsCollisionShape;
+
+/** Shared pointer type for PhysicsCollisionShape. */
+using PhysicsCollisionShapePtr = std::shared_ptr<PhysicsCollisionShape>;
+
+/** Weak pointer type for PhysicsCollisionShape. */
+using PhysicsCollisionShapeWeakPtr = std::weak_ptr<PhysicsCollisionShape>;
 
 /**
  * Defines the physics collision shape class that all supported shapes derive from.
+ * 
+ * @note PhysicsCollisionShape uses std::shared_ptr for memory management.
  */
-class PhysicsCollisionShape : public Ref
+class PhysicsCollisionShape : public std::enable_shared_from_this<PhysicsCollisionShape>
 {
     friend class PhysicsController;
     friend class PhysicsRigidBody;
 
   public:
-    /**
-     * Defines the supported collision shape types.
-     */
     enum Type
     {
         SHAPE_NONE,
@@ -44,13 +52,6 @@ class PhysicsCollisionShape : public Ref
         SHAPE_HEIGHTFIELD
     };
 
-    /**
-     * Structure representing the definition of a collision shape, which is used
-     * during collision shape construction time.
-     *
-     * Use the static methods on the PhysicsCollisionShape class to return
-     *
-     */
     struct Definition
     {
         friend class PhysicsCollisionShape;
@@ -60,49 +61,18 @@ class PhysicsCollisionShape : public Ref
         friend class PhysicsGhostObject;
 
       public:
-        /**
-         * Constructor.
-         */
         Definition();
-
-        /**
-         * Constructs a new Definition that is a copy of the specified Definition.
-         *
-         * @param definition The Definition to copy.
-         */
         Definition(const Definition& definition);
-
-        /**
-         * Assigns the specified Definition as the Definition.
-         *
-         * @param definition The Definition to assign to the Definition.
-         */
         Definition& operator=(const Definition& definition);
-
-        /**
-         * Destructor.
-         */
         ~Definition();
 
-        /**
-         * Determines if this is an empty/undefined collision shape definition.
-         */
         bool isEmpty() const noexcept { return type == SHAPE_NONE; }
 
       private:
-        /**
-         * Creates a PhysicsCollisionShape::Definition object from the given properties object (for the given node).
-         *
-         * @param node The node to create the PhysicsCollisionShape::Definition object for.
-         * @param properties The properties object to create the PhysicsCollisionShape::Definition object from.
-         * @return A PhysicsCollisionShape::Definition object.
-         */
         static Definition create(Node* node, Properties* properties);
 
-        // Shape type.
         PhysicsCollisionShape::Type type{ SHAPE_NONE };
 
-        // Shape data.
         struct BoxData
         {
             float center[3], extents[3];
@@ -127,136 +97,39 @@ class PhysicsCollisionShape : public Ref
             /** @script{ignore} */
             CapsuleData capsule;
             /** @script{ignore} */
-            HeightField* heightfield;
-            /** @script{ignore} */
             Mesh* mesh;
         } data;
 
-        // Whether the shape definition is explicit, or if it is inherited from node bounds.
-        bool isExplicit{ false };
+        // HeightField stored separately as shared_ptr (can't be in union)
+        HeightFieldPtr heightfieldData;
 
-        // Whether the center position is absolute or relative to the node position.
+        bool isExplicit{ false };
         bool centerAbsolute{ false };
     };
 
     /**
-     * Returns the type of this collision shape.
-     *
-     * @return The collision shape type.
+     * Destructor.
      */
-    PhysicsCollisionShape::Type getType() const noexcept { return _type; }
+    ~PhysicsCollisionShape();
 
-    /**
-     * Returns the internal bullet physics shape object.
-     *
-     * @return The bullet shape object.
-     * @script{ignore}
-     */
+    PhysicsCollisionShape::Type getType() const noexcept { return _type; }
     btCollisionShape* getShape() const noexcept { return _shape; }
 
-    /**
-     * Defines a box shape, using the bounding volume of the node it is attached to.
-     *
-     * @return Definition of a box shape.
-     */
     static PhysicsCollisionShape::Definition box();
-
-    /**
-     * Defines a box shape, using the specified shape information and center.
-     *
-     * @param extents Extents of the box shape along the x, y and z axes.
-     * @param center Center point of the box.
-     * @param absolute True to specify that the given center point is an absolute position.
-     *        By default the center point is treated as relative to the location of the node
-     *        that the shape is attached to.
-     *
-     * @return Definition of a box shape.
-     */
     static PhysicsCollisionShape::Definition box(const Vector3& extents,
                                                  const Vector3& center = Vector3::zero(),
                                                  bool absolute = false);
-
-    /**
-     * Defines a sphere shape, using the bounding volume of the node it is attached to.
-     *
-     * @return Definition of a sphere shape.
-     */
     static PhysicsCollisionShape::Definition sphere();
-
-    /**
-     * Defines a sphere shape, using the specified shape information and center.
-     *
-     * @param radius Radius of the sphere.
-     * @param center Center point of the sphere.
-     * @param absolute True to specify that the given center point is an absolute position.
-     *        By default the center point is treated as relative to the location of the node
-     *        that the shape is attached to.
-     *
-     * @return Definition of a sphere shape.
-     */
     static PhysicsCollisionShape::Definition sphere(float radius,
                                                     const Vector3& center = Vector3::zero(),
                                                     bool absolute = false);
-
-    /**
-     * Defines a capsule shape, using the bounding volume of the node it is attached to.
-     *
-     * @return Definition of a capsule shape.
-     */
     static PhysicsCollisionShape::Definition capsule();
-
-    /**
-     * Defines a capsule shape, using the specified shape information and center.
-     *
-     * @param radius Radius of the capsule.
-     * @param height Height of the capsule.
-     * @param center Center point of the capsule.
-     * @param absolute True to specify that the given center point is an absolute position.
-     *        By default the center point is treated as relative to the location of the node
-     *        that the shape is attached to.
-     *
-     * @return Definition of a capsule shape.
-     */
     static PhysicsCollisionShape::Definition capsule(float radius,
                                                      float height,
                                                      const Vector3& center = Vector3::zero(),
                                                      bool absolute = false);
-
-    /**
-     * Defines a heightfield shape, using the height data of a terrain on the node that is attached to.
-     *
-     * This method only results in a valid heightfield collision object when the shape is used
-     * to create a collision object on a node that has a Terrain attached to it. If there is no
-     * Terrain attached to the node, the collision object creation will fail.
-     *
-     * @return Definition of a heightfield shape.
-     */
     static PhysicsCollisionShape::Definition heightfield();
-
-    /**
-     * Defines a heightfield shape using the specified array of height values.
-     *
-     * The dimensions of the heightfield will be (width, maxHeight, height), where width and
-     * height are the dimensions of the passed in height array and maxHeight is the maximum
-     * height value in the height array.
-     *
-     * Heightfield rigid bodies are always assumed be Y-up (height value on the Y axis) and
-     * be centered around the X and Z axes.
-     *
-     * The heightfield can be scaled once a PhysicsRigidBody has been created for it, using the
-     * PhysicsRigidBody::setLocalScaling method.
-     *
-     * @param heightfield HeightField object containing the array of height values representing the heightfield.
-     *
-     * @return Definition of a heightfield shape.
-     */
     static PhysicsCollisionShape::Definition heightfield(HeightField* heightfield);
-
-    /**
-     * Defines a mesh shape using the specified mesh.
-     *
-     * @return Definition of a mesh shape.
-     */
     static PhysicsCollisionShape::Definition mesh(Mesh* mesh);
 
   private:
@@ -268,40 +141,34 @@ class PhysicsCollisionShape : public Ref
 
     struct HeightfieldData
     {
-        HeightField* heightfield;
+        HeightFieldPtr heightfield;
         bool inverseIsDirty;
         Matrix inverse;
         float minHeight;
         float maxHeight;
     };
 
-    /**
-     * Constructor.
-     */
-    PhysicsCollisionShape(Type type,
-                          btCollisionShape* shape,
-                          btStridingMeshInterface* meshInterface = nullptr);
+    // Private struct to allow make_shared while keeping constructor effectively private
+    struct PrivateTag {};
 
+  public:
     /**
-     * Hidden copy constructor.
+     * Constructor (use PhysicsController to create shapes).
+     * @internal This constructor is public to enable std::make_shared but should not be called directly.
      */
-    PhysicsCollisionShape(const PhysicsCollisionShape& copy);
+    explicit PhysicsCollisionShape(PrivateTag,
+                                   Type type,
+                                   btCollisionShape* shape,
+                                   btStridingMeshInterface* meshInterface = nullptr);
 
-    /**
-     * Destructor.
-     */
-    ~PhysicsCollisionShape();
+  private:
+    PhysicsCollisionShape(const PhysicsCollisionShape& copy) = delete;
+    PhysicsCollisionShape& operator=(const PhysicsCollisionShape&) = delete;
 
-    // Shape type
     Type _type;
-
-    // Bullet shape object
     btCollisionShape* _shape;
-
-    // Bullet mesh interface for mesh types (nullptr otherwise)
     btStridingMeshInterface* _meshInterface;
 
-    // Shape specific cached data
     union
     {
         /** @script{ignore} */

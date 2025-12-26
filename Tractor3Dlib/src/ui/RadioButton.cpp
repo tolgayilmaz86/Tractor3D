@@ -32,9 +32,10 @@ RadioButton::~RadioButton()
 }
 
 //----------------------------------------------------------------
-RadioButton* RadioButton::create(const std::string& id, Theme::Style* style)
+RadioButtonPtr RadioButton::create(const std::string& id, Theme::Style* style)
 {
-    auto& rb = __radioButtons.emplace_back(new RadioButton());
+    auto rb = std::make_shared<RadioButton>();
+    __radioButtons.push_back(rb.get());
     rb->_id = id;
     rb->initialize("RadioButton", style, nullptr);
 
@@ -42,9 +43,10 @@ RadioButton* RadioButton::create(const std::string& id, Theme::Style* style)
 }
 
 //----------------------------------------------------------------
-Control* RadioButton::create(Theme::Style* style, Properties* properties)
+ControlPtr RadioButton::create(Theme::Style* style, Properties* properties)
 {
-    auto& rb = __radioButtons.emplace_back(new RadioButton());
+    auto rb = std::make_shared<RadioButton>();
+    __radioButtons.push_back(rb.get());
     rb->initialize("RadioButton", style, properties);
 
     return rb;

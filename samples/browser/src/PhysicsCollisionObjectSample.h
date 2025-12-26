@@ -60,10 +60,10 @@ class PhysicsCollisionObjectSample : public Sample, Control::Listener
         DUCK = 3
     };
 
-    Font* _font;
+    FontPtr _font;
     ScenePtr _scene;
     Node* _lightNode;
-    Form* _form;
+    FormPtr _form;
     int _objectType;
     bool _throw;
     int _drawDebug;

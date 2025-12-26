@@ -76,7 +76,7 @@ SpaceshipGame game;
 
 SpaceshipGame::SpaceshipGame()
     : _scene(nullptr), _cameraNode(nullptr), _shipGroupNode(nullptr), _shipNode(nullptr),
-      _propulsionNode(nullptr), _glowNode(nullptr), _stateBlock(nullptr), _font(nullptr),
+      _propulsionNode(nullptr), _glowNode(nullptr), _stateBlock(nullptr),
       _throttle(0), _shipTilt(0), _finished(true), _finishedTime(0), _pushing(false), _time(0),
       _glowDiffuseParameter(nullptr), _shipSpecularParameter(nullptr), _spaceshipSound(NULL)
 {
@@ -270,7 +270,7 @@ void SpaceshipGame::initializeMaterial(Material* material, bool lighting, bool s
 
 void SpaceshipGame::finalize()
 {
-    SAFE_RELEASE(_font);
+    _font.reset();
     _stateBlock.reset();
     _scene.reset();
 }

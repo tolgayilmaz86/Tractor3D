@@ -98,7 +98,7 @@ class CharacterGame : public tractor::Game,
     float _floorLevel{ 0.0f };
     float _kickDelay{ 0.0f };
 
-    tractor::Font* _font{ nullptr };
+    tractor::FontPtr _font{ nullptr };
     tractor::ScenePtr _scene;
     tractor::PhysicsCharacter* _character{ nullptr };
     tractor::Node* _characterNode{ nullptr };

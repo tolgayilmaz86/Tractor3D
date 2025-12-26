@@ -32,15 +32,15 @@ Pass::Pass(const std::string& id, Technique* technique)
 //----------------------------------------------------------------------------
 Pass::~Pass()
 {
-    SAFE_RELEASE(_effect);
-    SAFE_RELEASE(_vaBinding);
+    _effect.reset();
+    _vaBinding.reset();
 }
 
 //----------------------------------------------------------------------------
 bool Pass::initialize(const std::string& vshPath, const std::string& fshPath, const std::string& defines)
 {
-    SAFE_RELEASE(_effect);
-    SAFE_RELEASE(_vaBinding);
+    _effect.reset();
+    _vaBinding.reset();
 
     // Attempt to create/load the effect.
     _effect = Effect::createFromFile(vshPath, fshPath, defines);
@@ -58,15 +58,9 @@ bool Pass::initialize(const std::string& vshPath, const std::string& fshPath, co
 }
 
 //----------------------------------------------------------------------------
-void Pass::setVertexAttributeBinding(VertexAttributeBinding* binding)
+void Pass::setVertexAttributeBinding(VertexAttributeBindingPtr binding)
 {
-    SAFE_RELEASE(_vaBinding);
-
-    if (binding)
-    {
-        _vaBinding = binding;
-        binding->addRef();
-    }
+    _vaBinding = binding;
 }
 
 //----------------------------------------------------------------------------
@@ -101,10 +95,9 @@ void Pass::unbind()
 Pass* Pass::clone(Technique* technique, NodeCloneContext& context) const
 {
     assert(_effect);
-    _effect->addRef();
 
     Pass* pass = new Pass(getId(), technique);
-    pass->_effect = _effect;
+    pass->_effect = _effect;  // shared_ptr copy increments ref count automatically
 
     RenderState::cloneInto(pass, context);
     pass->_parent = technique;

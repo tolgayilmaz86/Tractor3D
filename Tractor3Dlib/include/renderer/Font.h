@@ -13,19 +13,33 @@
  */
 #pragma once
 
+#include <memory>
+
 #include "graphics/SpriteBatch.h"
 
 namespace tractor
 {
 
+class Font;
+
+/** Shared pointer type for Font. */
+using FontPtr = std::shared_ptr<Font>;
+
+/** Weak pointer type for Font. */
+using FontWeakPtr = std::weak_ptr<Font>;
+
 /**
  * Defines a font for text rendering.
+ * 
+ * @note Font uses std::shared_ptr for memory management.
  */
-class Font : public Ref
+class Font : public std::enable_shared_from_this<Font>
 {
     friend class Bundle;
     friend class Text;
     friend class TextBox;
+
+    struct PrivateToken {}; // Private constructor token
 
   public:
     /**
@@ -71,6 +85,16 @@ class Font : public Ref
     };
 
     /**
+     * Destructor.
+     */
+    ~Font();
+
+    /**
+     * Constructor - use create() factory methods instead.
+     */
+    explicit Font(PrivateToken) : Font() {}
+
+    /**
      * Creates a font from the given bundle.
      *
      * If the 'id' parameter is nullptr, it is assumed that the Bundle at 'path'
@@ -86,7 +110,7 @@ class Font : public Ref
      * @return The specified Font or nullptr if there was an error.
      * @script{create}
      */
-    static Font* create(const std::string& path, const std::string& id = EMPTY_STRING);
+    static FontPtr create(const std::string& path, const std::string& id = EMPTY_STRING);
 
     /**
      * Gets the font size (max height of glyphs) in pixels, at the specified index.
@@ -330,12 +354,7 @@ class Font : public Ref
     /**
      * Constructor.
      */
-    Font(const Font& copy);
-
-    /**
-     * Destructor.
-     */
-    ~Font();
+    Font(const Font& copy) = delete;
 
     /**
      * Hidden copy assignment operator.
@@ -358,13 +377,13 @@ class Font : public Ref
      *
      * @return The new Font or nullptr if there was an error.
      */
-    static Font* create(const std::string& family,
-                        Style style,
-                        unsigned int size,
-                        Glyph* glyphs,
-                        int glyphCount,
-                        Texture* texture,
-                        Font::Format format);
+    static FontPtr create(const std::string& family,
+                          Style style,
+                          unsigned int size,
+                          Glyph* glyphs,
+                          int glyphCount,
+                          Texture* texture,
+                          Font::Format format);
 
     void getMeasurementInfo(const std::string& text,
                             const Rectangle& area,
@@ -422,7 +441,7 @@ class Font : public Ref
     std::string _family{};
     Style _style{ PLAIN };
     unsigned int _size{0};
-    std::vector<Font*> _sizes{}; // stores additional font sizes of the same family
+    std::vector<FontPtr> _sizes{}; // stores additional font sizes of the same family
     float _spacing{0.0f};
     std::unique_ptr<Glyph[]> _glyphs;
     unsigned int _glyphCount{0};

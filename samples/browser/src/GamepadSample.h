@@ -41,6 +41,6 @@ class GamepadSample : public Sample
     const std::string& getStringFromButtonMapping(Gamepad::ButtonMapping mapping);
 
     Gamepad* _gamepad{ nullptr };
-    Font* _font{ nullptr };
+    FontPtr _font{ nullptr };
     std::string _status{};
 };

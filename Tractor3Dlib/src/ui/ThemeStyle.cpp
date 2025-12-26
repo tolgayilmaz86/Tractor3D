@@ -28,11 +28,11 @@ Theme::Style::Style(Theme* theme,
                     float th,
                     const Theme::Margin& margin,
                     const Theme::Padding& padding,
-                    Theme::Style::Overlay* normal,
-                    Theme::Style::Overlay* focus,
-                    Theme::Style::Overlay* active,
-                    Theme::Style::Overlay* disabled,
-                    Theme::Style::Overlay* hover)
+                    OverlayPtr normal,
+                    OverlayPtr focus,
+                    OverlayPtr active,
+                    OverlayPtr disabled,
+                    OverlayPtr hover)
     : _theme(theme), _id(id), _tw(tw), _th(th), _margin(margin), _padding(padding)
 {
     _overlays[OVERLAY_NORMAL] = normal;
@@ -55,7 +55,7 @@ Theme::Style::Style(const Style& copy)
     for (size_t i = 0; i < OVERLAY_MAX; i++)
     {
         if (copy._overlays[i])
-            _overlays[i] = new Theme::Style::Overlay(*copy._overlays[i]);
+            _overlays[i] = std::shared_ptr<Overlay>(new Theme::Style::Overlay(*copy._overlays[i]));
         else
             _overlays[i] = nullptr;
     }
@@ -64,59 +64,35 @@ Theme::Style::Style(const Style& copy)
 //----------------------------------------------------------------
 Theme::Style::~Style()
 {
-    for (size_t i = 0; i < OVERLAY_MAX; i++)
-    {
-        SAFE_RELEASE(_overlays[i]);
-    }
+    // shared_ptr handles cleanup automatically
 }
 
 //----------------------------------------------------------------
 /*************************
  * Theme::Style::Overlay *
  *************************/
-Theme::Style::Overlay* Theme::Style::Overlay::create()
+Theme::Style::OverlayPtr Theme::Style::Overlay::create()
 {
-    Overlay* overlay = new Overlay();
-    return overlay;
+    return std::shared_ptr<Overlay>(new Overlay());
 }
 
 //----------------------------------------------------------------
 Theme::Style::Overlay::Overlay(const Overlay& copy)
-    : _skin(nullptr), _cursor(nullptr), _imageList(nullptr), _font(nullptr)
+    : _skin(copy._skin), _cursor(copy._cursor), _imageList(copy._imageList), _font(copy._font)
 {
-    if (copy._skin)
-    {
-        _skin = new Skin(*copy._skin);
-    }
-    if (copy._cursor)
-    {
-        _cursor = new ThemeImage(*copy._cursor);
-    }
-    if (copy._imageList)
-    {
-        _imageList = new ImageList(*copy._imageList);
-    }
-
-    _font = copy._font;
+    // Note: _skin, _cursor, _imageList are non-owning pointers to Theme-owned objects
     _fontSize = copy._fontSize;
     _alignment = copy._alignment;
     _textRightToLeft = copy._textRightToLeft;
     _textColor = Vector4(copy._textColor);
     _opacity = copy._opacity;
-
-    if (_font)
-    {
-        _font->addRef();
-    }
 }
 
 //----------------------------------------------------------------
 Theme::Style::Overlay::~Overlay()
 {
-    SAFE_RELEASE(_skin);
-    SAFE_RELEASE(_imageList);
-    SAFE_RELEASE(_cursor);
-    SAFE_RELEASE(_font);
+    // _skin, _cursor, _imageList are non-owning pointers - Theme owns them
+    // _font is a shared_ptr and handles its own cleanup
 }
 
 //----------------------------------------------------------------
@@ -196,16 +172,9 @@ const Theme::UVs& Theme::Style::Overlay::getSkinUVs(Theme::Skin::SkinArea area) 
 //----------------------------------------------------------------
 void Theme::Style::Overlay::setFont(Font* font)
 {
-    if (_font != font)
+    if (_font.get() != font)
     {
-        SAFE_RELEASE(_font);
-
-        _font = font;
-
-        if (_font)
-        {
-            _font->addRef();
-        }
+        _font = font ? font->shared_from_this() : nullptr;
     }
 }
 
@@ -337,46 +306,22 @@ const Theme::UVs& Theme::Style::Overlay::getCursorUVs() const
 //----------------------------------------------------------------
 void Theme::Style::Overlay::setSkin(Skin* skin)
 {
-    if (_skin != skin)
-    {
-        SAFE_RELEASE(_skin);
-        _skin = skin;
-
-        if (skin)
-        {
-            skin->addRef();
-        }
-    }
+    // Non-owning pointer - Theme owns the Skin
+    _skin = skin;
 }
 
 //----------------------------------------------------------------
 void Theme::Style::Overlay::setCursor(ThemeImage* cursor)
 {
-    if (_cursor != cursor)
-    {
-        SAFE_RELEASE(_cursor);
-        _cursor = cursor;
-
-        if (cursor)
-        {
-            cursor->addRef();
-        }
-    }
+    // Non-owning pointer - Theme owns the ThemeImage
+    _cursor = cursor;
 }
 
 //----------------------------------------------------------------
 void Theme::Style::Overlay::setImageList(ImageList* imageList)
 {
-    if (_imageList != imageList)
-    {
-        SAFE_RELEASE(_imageList);
-        _imageList = imageList;
-
-        if (imageList)
-        {
-            imageList->addRef();
-        }
-    }
+    // Non-owning pointer - Theme owns the ImageList
+    _imageList = imageList;
 }
 
 //----------------------------------------------------------------

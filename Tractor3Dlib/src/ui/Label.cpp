@@ -19,18 +19,18 @@ namespace tractor
 {
 
 //----------------------------------------------------------------
-Label* Label::create(const std::string& id, Theme::Style* style)
+LabelPtr Label::create(const std::string& id, Theme::Style* style)
 {
-    Label* label = new Label();
+    auto label = std::make_shared<Label>();
     label->_id = id;
     label->initialize("Label", style, nullptr);
     return label;
 }
 
 //----------------------------------------------------------------
-Control* Label::create(Theme::Style* style, Properties* properties)
+ControlPtr Label::create(Theme::Style* style, Properties* properties)
 {
-    Label* label = new Label();
+    auto label = std::make_shared<Label>();
     label->initialize("Label", style, properties);
     return label;
 }

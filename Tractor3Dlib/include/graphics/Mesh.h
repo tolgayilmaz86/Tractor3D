@@ -21,7 +21,6 @@
 #include "graphics/BoundingSphere.h"
 #include "math/Vector3.h"
 #include "renderer/VertexFormat.h"
-#include "utils/Ref.h"
 
 namespace tractor
 {

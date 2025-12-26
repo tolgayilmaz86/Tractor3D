@@ -32,9 +32,9 @@ HeightField::HeightField(unsigned int columns, unsigned int rows)
 HeightField::~HeightField() { SAFE_DELETE_ARRAY(_array); }
 
 //----------------------------------------------------------------------------
-HeightField* HeightField::create(unsigned int columns, unsigned int rows)
+HeightFieldPtr HeightField::create(unsigned int columns, unsigned int rows)
 {
-    return new HeightField(columns, rows);
+    return HeightFieldPtr(new HeightField(columns, rows));
 }
 
 //----------------------------------------------------------------------------
@@ -52,33 +52,33 @@ float normalizedHeightPacked(float r, float g, float b)
 }
 
 //----------------------------------------------------------------------------
-HeightField* HeightField::createFromImage(const std::string& path, float heightMin, float heightMax)
+HeightFieldPtr HeightField::createFromImage(const std::string& path, float heightMin, float heightMax)
 {
     return create(path, 0, 0, heightMin, heightMax);
 }
 
 //----------------------------------------------------------------------------
-HeightField* HeightField::createFromRAW(const std::string& path,
-                                        unsigned int width,
-                                        unsigned int height,
-                                        float heightMin,
-                                        float heightMax)
+HeightFieldPtr HeightField::createFromRAW(const std::string& path,
+                                          unsigned int width,
+                                          unsigned int height,
+                                          float heightMin,
+                                          float heightMax)
 {
     return create(path, width, height, heightMin, heightMax);
 }
 
 //----------------------------------------------------------------------------
-HeightField* HeightField::create(const std::string& path,
-                                 unsigned int width,
-                                 unsigned int height,
-                                 float heightMin,
-                                 float heightMax)
+HeightFieldPtr HeightField::create(const std::string& path,
+                                   unsigned int width,
+                                   unsigned int height,
+                                   float heightMin,
+                                   float heightMax)
 {
     assert(heightMax >= heightMin);
 
     float heightScale = heightMax - heightMin;
 
-    HeightField* heightfield = nullptr;
+    HeightFieldPtr heightfield = nullptr;
 
     // Load height data from image
     std::string ext = FileSystem::getExtension(path);

@@ -43,7 +43,7 @@ constexpr auto SPRITE_FSH = "res/shaders/sprite.frag";
 namespace tractor
 {
 
-static Effect* __spriteEffect = nullptr;
+static EffectPtr __spriteEffect = nullptr;
 
 //----------------------------------------------------------------------------
 SpriteBatch::~SpriteBatch()
@@ -52,16 +52,10 @@ SpriteBatch::~SpriteBatch()
 
     if (!_customEffect)
     {
-        if (__spriteEffect && __spriteEffect->getRefCount() == 1)
-        {
-            __spriteEffect->release();
-            __spriteEffect = nullptr;
-        }
-        else
-        {
-            __spriteEffect->release();
-        }
+        // Just reset our reference - shared_ptr handles cleanup automatically
+        // Effect will be cleaned up when last reference goes away
     }
+    // __spriteEffect will be released when all SpriteBatch instances are destroyed
 }
 
 //----------------------------------------------------------------------------
@@ -93,13 +87,8 @@ SpriteBatch* SpriteBatch::create(Texture* texture, Effect* effect, unsigned int 
                 GP_ERROR("Unable to load sprite effect.");
                 return nullptr;
             }
-            effect = __spriteEffect;
         }
-        else
-        {
-            effect = __spriteEffect;
-            __spriteEffect->addRef();
-        }
+        effect = __spriteEffect.get();
     }
 
     // Search for the first sampler uniform in the effect.

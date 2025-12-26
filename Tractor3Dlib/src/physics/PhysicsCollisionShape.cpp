@@ -26,7 +26,8 @@ namespace tractor
 {
 
 //----------------------------------------------------------------------------
-PhysicsCollisionShape::PhysicsCollisionShape(Type type,
+PhysicsCollisionShape::PhysicsCollisionShape(PrivateTag,
+                                             Type type,
                                              btCollisionShape* shape,
                                              btStridingMeshInterface* meshInterface)
     : _type(type), _shape(shape), _meshInterface(meshInterface)
@@ -39,7 +40,6 @@ PhysicsCollisionShape::~PhysicsCollisionShape()
 {
     if (_shape)
     {
-        // Cleanup shape-specific cached data.
         switch (_type)
         {
             case SHAPE_MESH:
@@ -52,21 +52,18 @@ PhysicsCollisionShape::~PhysicsCollisionShape()
                     }
                     SAFE_DELETE(_shapeData.meshData);
                 }
-
-                // Also need to delete the btTriangleIndexVertexArray, if it exists.
                 SAFE_DELETE(_meshInterface);
                 break;
 
             case SHAPE_HEIGHTFIELD:
                 if (_shapeData.heightfieldData)
                 {
-                    SAFE_RELEASE(_shapeData.heightfieldData->heightfield);
+                    _shapeData.heightfieldData->heightfield.reset();  // shared_ptr cleanup
                     SAFE_DELETE(_shapeData.heightfieldData);
                 }
                 break;
         }
 
-        // Free the bullet shape.
         SAFE_DELETE(_shape);
     }
 }
@@ -79,21 +76,17 @@ PhysicsCollisionShape::Definition::Definition()
 
 //----------------------------------------------------------------------------
 PhysicsCollisionShape::Definition::Definition(const Definition& definition)
+    : type(definition.type),
+      data(definition.data),
+      heightfieldData(definition.heightfieldData),  // shared_ptr copy
+      isExplicit(definition.isExplicit),
+      centerAbsolute(definition.centerAbsolute)
 {
-    // Bitwise-copy the definition object (equivalent to default copy constructor).
-    memcpy(this, &definition, sizeof(PhysicsCollisionShape::Definition));
-
-    // Handle the types that have reference-counted members.
-    switch (type)
+    // Handle mesh type
+    if (type == PhysicsCollisionShape::SHAPE_MESH)
     {
-        case PhysicsCollisionShape::SHAPE_HEIGHTFIELD:
-            if (data.heightfield) data.heightfield->addRef();
-            break;
-
-        case PhysicsCollisionShape::SHAPE_MESH:
-            assert(data.mesh);
-            // data.mesh->addRef();
-            break;
+        assert(data.mesh);
+        // data.mesh->addRef();
     }
 }
 
@@ -103,7 +96,7 @@ PhysicsCollisionShape::Definition::~Definition()
     switch (type)
     {
         case PhysicsCollisionShape::SHAPE_HEIGHTFIELD:
-            SAFE_RELEASE(data.heightfield);
+            heightfieldData.reset();  // shared_ptr cleanup
             break;
 
         case PhysicsCollisionShape::SHAPE_MESH:
@@ -118,20 +111,17 @@ PhysicsCollisionShape::Definition& PhysicsCollisionShape::Definition::operator=(
 {
     if (this != &definition)
     {
-        // Bitwise-copy the definition object (equivalent to default copy constructor).
-        memcpy(this, &definition, sizeof(PhysicsCollisionShape::Definition));
+        type = definition.type;
+        data = definition.data;
+        heightfieldData = definition.heightfieldData;  // shared_ptr copy
+        isExplicit = definition.isExplicit;
+        centerAbsolute = definition.centerAbsolute;
 
-        // Handle the types that have reference-counted members.
-        switch (type)
+        // Handle mesh type
+        if (type == PhysicsCollisionShape::SHAPE_MESH)
         {
-            case PhysicsCollisionShape::SHAPE_HEIGHTFIELD:
-                if (data.heightfield) data.heightfield->addRef();
-                break;
-
-            case PhysicsCollisionShape::SHAPE_MESH:
-                assert(data.mesh);
-                // data.mesh->addRef();
-                break;
+            assert(data.mesh);
+            // data.mesh->addRef();
         }
     }
 
@@ -144,7 +134,6 @@ PhysicsCollisionShape::Definition PhysicsCollisionShape::Definition::create(Node
 {
     assert(node);
 
-    // Check if the properties is valid and has a valid namespace.
     if (!properties || properties->getNamespace() != "collisionObject")
     {
         GP_ERROR("Failed to load physics collision shape from properties object: must be non-null "
@@ -152,7 +141,6 @@ PhysicsCollisionShape::Definition PhysicsCollisionShape::Definition::create(Node
         return Definition();
     }
 
-    // Set values to their defaults.
     PhysicsCollisionShape::Type type = PhysicsCollisionShape::SHAPE_BOX;
     Vector3 extents, center;
     bool extentsSpecified = false;
@@ -166,7 +154,6 @@ PhysicsCollisionShape::Definition PhysicsCollisionShape::Definition::create(Node
     float minHeight = 0;
     bool shapeSpecified = false;
 
-    // Load the defined properties.
     properties->rewind();
     std::string name;
 
@@ -235,11 +222,6 @@ PhysicsCollisionShape::Definition PhysicsCollisionShape::Definition::create(Node
         {
             centerIsAbsolute = properties->getBool();
         }
-        else
-        {
-            // Ignore this case (these are the properties for the rigid body, character, or ghost
-            // object that this collision shape is for).
-        }
     }
 
     if (!shapeSpecified)
@@ -248,7 +230,6 @@ PhysicsCollisionShape::Definition PhysicsCollisionShape::Definition::create(Node
         return Definition();
     }
 
-    // Create the collision shape.
     Definition shape;
     switch (type)
     {
@@ -256,13 +237,9 @@ PhysicsCollisionShape::Definition PhysicsCollisionShape::Definition::create(Node
             if (extentsSpecified)
             {
                 if (centerSpecified)
-                {
                     shape = box(extents, center, centerIsAbsolute);
-                }
                 else
-                {
                     shape = box(extents);
-                }
             }
             else
             {
@@ -274,13 +251,9 @@ PhysicsCollisionShape::Definition PhysicsCollisionShape::Definition::create(Node
             if (radius != -1.0f)
             {
                 if (centerSpecified)
-                {
                     shape = sphere(radius, center, centerIsAbsolute);
-                }
                 else
-                {
                     shape = sphere(radius);
-                }
             }
             else
             {
@@ -292,13 +265,9 @@ PhysicsCollisionShape::Definition PhysicsCollisionShape::Definition::create(Node
             if (radius != -1.0f && height != -1.0f)
             {
                 if (centerSpecified)
-                {
                     shape = capsule(radius, height, center, centerIsAbsolute);
-                }
                 else
-                {
                     shape = capsule(radius, height);
-                }
             }
             else
             {
@@ -308,7 +277,6 @@ PhysicsCollisionShape::Definition PhysicsCollisionShape::Definition::create(Node
 
         case SHAPE_MESH:
         {
-            // Mesh is required on node.
             Mesh* nodeMesh =
                 node->getDrawable() ? dynamic_cast<Model*>(node->getDrawable())->getMesh() : nullptr;
             if (nodeMesh == nullptr)
@@ -317,7 +285,6 @@ PhysicsCollisionShape::Definition PhysicsCollisionShape::Definition::create(Node
             }
             else
             {
-                // Check that the node's mesh's primitive type is supported.
                 switch (nodeMesh->getPrimitiveType())
                 {
                     case Mesh::TRIANGLES:
@@ -339,7 +306,6 @@ PhysicsCollisionShape::Definition PhysicsCollisionShape::Definition::create(Node
         {
             if (imagePath.empty())
             {
-                // Node requires a valid terrain
                 if (dynamic_cast<Terrain*>(node->getDrawable()) == nullptr)
                 {
                     GP_ERROR("Heightfield collision objects can only be specified on nodes that "
@@ -353,7 +319,7 @@ PhysicsCollisionShape::Definition PhysicsCollisionShape::Definition::create(Node
             else
             {
                 std::string ext = FileSystem::getExtension(imagePath);
-                HeightField* heightfield = nullptr;
+                HeightFieldPtr heightfield = nullptr;
                 if (ext == ".PNG")
                     heightfield = HeightField::createFromImage(imagePath, minHeight, maxHeight);
                 else if (ext == ".RAW" || ext == ".R16")
@@ -365,8 +331,8 @@ PhysicsCollisionShape::Definition PhysicsCollisionShape::Definition::create(Node
 
                 if (heightfield)
                 {
-                    shape = PhysicsCollisionShape::heightfield(heightfield);
-                    SAFE_RELEASE(heightfield);
+                    shape = PhysicsCollisionShape::heightfield(heightfield.get());
+                    // No need to release - shared_ptr handles it
                 }
             }
         }
@@ -469,11 +435,9 @@ PhysicsCollisionShape::Definition PhysicsCollisionShape::heightfield(HeightField
 {
     assert(heightfield);
 
-    heightfield->addRef();
-
     Definition d;
     d.type = SHAPE_HEIGHTFIELD;
-    d.data.heightfield = heightfield;
+    d.heightfieldData = heightfield->shared_from_this();  // Get shared_ptr
     d.isExplicit = true;
     d.centerAbsolute = false;
     return d;
@@ -483,7 +447,6 @@ PhysicsCollisionShape::Definition PhysicsCollisionShape::heightfield(HeightField
 PhysicsCollisionShape::Definition PhysicsCollisionShape::mesh(Mesh* mesh)
 {
     assert(mesh);
-    // mesh->addRef();
 
     Definition d;
     d.type = SHAPE_MESH;

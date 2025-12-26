@@ -13,15 +13,23 @@
  */
 #pragma once
 
+#include <memory>
+
 #include "input/Touch.h"
 #include "math/Vector2.h"
-#include "utils/Ref.h"
 
 namespace tractor
 {
 
 class Container;
 class Control;
+class Layout;
+
+/** Shared pointer type for Layout. */
+using LayoutPtr = std::shared_ptr<Layout>;
+
+/** Weak pointer type for Layout. */
+using LayoutWeakPtr = std::weak_ptr<Layout>;
 
 /**
  * Defines the layout for containers.
@@ -29,7 +37,7 @@ class Control;
  * Implementations are responsible for positioning, resizing and
  * calling update on all the controls within a container.
  */
-class Layout : public Ref
+class Layout : public std::enable_shared_from_this<Layout>
 {
     friend class Container;
     friend class Form;
@@ -61,6 +69,11 @@ class Layout : public Ref
     };
 
     /**
+     * Virtual destructor.
+     */
+    virtual ~Layout() = default;
+
+    /**
      * Get the type of this layout.
      *
      * @return The type of this layout.
@@ -68,6 +81,11 @@ class Layout : public Ref
     virtual Type getType() const noexcept = 0;
 
   protected:
+    /**
+     * Default constructor.
+     */
+    Layout() = default;
+
     /**
      * Position, resize, and update the controls within a container.
      *

@@ -43,22 +43,20 @@ void SamplesGame::initialize()
 
     for (size_t i = 0; i < size; ++i)
     {
-        auto* categoryLabel = Label::create((*_categories)[i]);
+        auto categoryLabel = Label::create((*_categories)[i]);
         categoryLabel->setFontSize(22);
         categoryLabel->setText((*_categories)[i]);
         _sampleSelectForm->addControl(categoryLabel);
-        categoryLabel->release();
 
         SampleRecordList list = (*_samples)[i];
         for (const auto& sampleRecord : list)
         {
-            auto* sampleButton = Button::create(sampleRecord.title);
+            auto sampleButton = Button::create(sampleRecord.title);
             sampleButton->setText(sampleRecord.title);
             sampleButton->setWidth(1, true);
             sampleButton->setHeight(50);
             sampleButton->addListener(this, Control::Listener::CLICK);
             _sampleSelectForm->addControl(sampleButton);
-            sampleButton->release();
         }
     }
 
@@ -79,12 +77,11 @@ void SamplesGame::initialize()
 
 void SamplesGame::finalize()
 {
-    SAFE_RELEASE(_font);
     if (_activeSample) _activeSample->finalize();
     SAFE_DELETE(_activeSample);
     SAFE_DELETE(_categories);
     SAFE_DELETE(_samples);
-    SAFE_RELEASE(_sampleSelectForm);
+    _sampleSelectForm.reset();
 }
 
 void SamplesGame::update(float elapsedTime)

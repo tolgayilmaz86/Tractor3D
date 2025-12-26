@@ -13,17 +13,25 @@
  */
 #pragma once
 
+#include <memory>
+
 #include "math/Matrix.h"
 #include "math/Vector2.h"
 #include "math/Vector3.h"
 #include "math/Vector4.h"
 #include "renderer/Texture.h"
-#include "utils/Ref.h"
 
 namespace tractor
 {
 
 class Uniform;
+class Effect;
+
+/** Shared pointer type for Effect. */
+using EffectPtr = std::shared_ptr<Effect>;
+
+/** Weak pointer type for Effect. */
+using EffectWeakPtr = std::weak_ptr<Effect>;
 
 /**
  * Defines an effect which can be applied during rendering.
@@ -35,16 +43,16 @@ class Uniform;
  * typical effect systems support, such as GPU render state management,
  * techniques and passes.
  */
-class Effect : public Ref
+class Effect : public std::enable_shared_from_this<Effect>
 {
   public:
     /**
-     * Hidden constructor (use createEffect instead).
+     * Constructor.
      */
     Effect() = default;
 
     /**
-     * Hidden destructor (use destroyEffect instead).
+     * Destructor.
      */
     ~Effect();
 
@@ -57,9 +65,9 @@ class Effect : public Ref
      *
      * @return The created effect.
      */
-    static Effect* createFromFile(const std::string& vshPath,
-                                  const std::string& fshPath,
-                                  const std::string& defines = EMPTY_STRING);
+    static EffectPtr createFromFile(const std::string& vshPath,
+                                    const std::string& fshPath,
+                                    const std::string& defines = EMPTY_STRING);
 
     /**
      * Creates an effect from the given vertex and fragment shader source code.
@@ -70,9 +78,9 @@ class Effect : public Ref
      *
      * @return The created effect.
      */
-    static Effect* createFromSource(const std::string& vshSource,
-                                    const std::string& fshSource,
-                                    const std::string& defines = EMPTY_STRING);
+    static EffectPtr createFromSource(const std::string& vshSource,
+                                      const std::string& fshSource,
+                                      const std::string& defines = EMPTY_STRING);
 
     /**
      * Returns the unique string identifier for the effect, which is a concatenation of
@@ -116,121 +124,71 @@ class Effect : public Ref
 
     /**
      * Sets a float uniform value.
-     *
-     * @param uniform The uniform to set.
-     * @param value The float value to set.
      */
     void setValue(Uniform* uniform, float value);
 
     /**
      * Sets a float array uniform value.
-     *
-     * @param uniform The uniform to set.
-     * @param values The array to set.
-     * @param count The number of elements in the array.
      */
     void setValue(Uniform* uniform, const float* values, unsigned int count = 1);
 
     /**
      * Sets an integer uniform value.
-     *
-     * @param uniform The uniform to set.
-     * @param value The value to set.
      */
     void setValue(Uniform* uniform, int value);
 
     /**
      * Sets an integer array uniform value.
-     *
-     * @param uniform The uniform to set.
-     * @param values The array to set.
-     * @param count The number of elements in the array.
      */
     void setValue(Uniform* uniform, const int* values, unsigned int count = 1);
 
     /**
      * Sets a matrix uniform value.
-     *
-     * @param uniform The uniform to set.
-     * @param value The value to set.
      */
     void setValue(Uniform* uniform, const Matrix& value);
 
     /**
      * Sets a matrix array uniform value.
-     *
-     * @param uniform The uniform to set.
-     * @param values The array to set.
-     * @param count The number of elements in the array.
      */
     void setValue(Uniform* uniform, const Matrix* values, unsigned int count = 1);
 
     /**
      * Sets a vector uniform value.
-     *
-     * @param uniform The uniform to set.
-     * @param value The value to set.
      */
     void setValue(Uniform* uniform, const Vector2& value);
 
     /**
      * Sets a vector array uniform value.
-     *
-     * @param uniform The uniform to set.
-     * @param values The array to set.
-     * @param count The number of elements in the array.
      */
     void setValue(Uniform* uniform, const Vector2* values, unsigned int count = 1);
 
     /**
      * Sets a vector uniform value.
-     *
-     * @param uniform The uniform to set.
-     * @param value The value to set.
      */
     void setValue(Uniform* uniform, const Vector3& value);
 
     /**
      * Sets a vector array uniform value.
-     *
-     * @param uniform The uniform to set.
-     * @param values The array to set.
-     * @param count The number of elements in the array.
      */
     void setValue(Uniform* uniform, const Vector3* values, unsigned int count = 1);
 
     /**
      * Sets a vector uniform value.
-     *
-     * @param uniform The uniform to set.
-     * @param value The value to set.
      */
     void setValue(Uniform* uniform, const Vector4& value);
 
     /**
      * Sets a vector array uniform value.
-     *
-     * @param uniform The uniform to set.
-     * @param values The array to set.
-     * @param count The number of elements in the array.
      */
     void setValue(Uniform* uniform, const Vector4* values, unsigned int count = 1);
 
     /**
      * Sets a sampler uniform value.
-     *
-     * @param uniform The uniform to set.
-     * @param sampler The sampler to set.
      */
     void setValue(Uniform* uniform, const Texture::Sampler* sampler);
 
     /**
      * Sets a sampler array uniform value.
-     *
-     * @param uniform The uniform to set.
-     * @param values The sampler array to set.
-     * @param count The number of elements in the array.
-     *
      * @script{ignore}
      */
     void setValue(Uniform* uniform, const Texture::Sampler** values, unsigned int count);
@@ -248,16 +206,13 @@ class Effect : public Ref
     static Effect* getCurrentEffect();
 
   private:
-    /**
-     * Hidden copy assignment operator.
-     */
     Effect& operator=(const Effect&) = delete;
 
-    static Effect* createFromSource(const std::string& vshPath,
-                                    const std::string& vshSource,
-                                    const std::string& fshPath,
-                                    const std::string& fshSource,
-                                    const std::string& defines = EMPTY_STRING);
+    static EffectPtr createFromSource(const std::string& vshPath,
+                                      const std::string& vshSource,
+                                      const std::string& fshPath,
+                                      const std::string& fshSource,
+                                      const std::string& defines = EMPTY_STRING);
 
     GLuint _program{ 0 };
     std::string _id{};
@@ -276,44 +231,23 @@ class Uniform
   public:
     /**
      * Returns the name of this uniform.
-     *
-     * @return The name of the uniform.
      */
     const std::string& getName() const noexcept;
 
     /**
      * Returns the OpenGL uniform type.
-     *
-     * @return The OpenGL uniform type.
      */
     const GLenum getType() const noexcept;
 
     /**
      * Returns the effect for this uniform.
-     *
-     * @return The uniform's effect.
      */
     Effect* getEffect() const noexcept;
 
   private:
-    /**
-     * Constructor.
-     */
     Uniform();
-
-    /**
-     * Copy constructor.
-     */
     Uniform(const Uniform& copy);
-
-    /**
-     * Destructor.
-     */
     ~Uniform();
-
-    /**
-     * Hidden copy assignment operator.
-     */
     Uniform& operator=(const Uniform&) = delete;
 
     std::string _name;

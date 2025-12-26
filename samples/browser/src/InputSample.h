@@ -64,8 +64,8 @@ class InputSample : public Sample, Control::Listener
     std::string _keyboardString;
     std::string _symbolsString;
     std::string _mouseString;
-    Font* _font;
-    Form* _inputSampleControls;
+    FontPtr _font;
+    FormPtr _inputSampleControls;
     int _mouseWheel;
     bool _keyboardState;
     SpriteBatch* _crosshair;

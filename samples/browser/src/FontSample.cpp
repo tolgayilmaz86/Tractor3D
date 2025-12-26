@@ -39,12 +39,8 @@ FontSample::FontSample()
 void FontSample::finalize()
 {
     _stateBlock.reset();
-
-    for (size_t i = 0; i < _fonts.size(); i++)
-    {
-        SAFE_RELEASE(_fonts[i]);
-    }
-
+    _fonts.clear();
+    _font = nullptr;
     SAFE_RELEASE(_form);
 }
 
@@ -62,7 +58,7 @@ void FontSample::initialize()
     {
         _fonts.emplace_back(Font::create(_fontFiles[i]));
     }
-    _font = _fonts[0];
+    _font = _fonts[0].get();
 
     _sampleString = std::string("Lorem ipsum dolor sit amet, \n"
                                 "consectetur adipisicing elit, sed do eiusmod tempor incididunt ut "
@@ -118,7 +114,7 @@ void FontSample::render(float elapsedTime)
 
     _fonts[0]->drawText(fps, 245, 5, Vector4(0, 0.5f, 1, 1), _size);
 
-    if (_font != _fonts[0]) _font->start();
+    if (_font != _fonts[0].get()) _font->start();
 
     if (_simple)
     {
@@ -177,7 +173,7 @@ void FontSample::render(float elapsedTime)
                         _size);
     }
 
-    if (_font != _fonts[0])
+    if (_font != _fonts[0].get())
     {
         _font->finish();
     }
@@ -203,7 +199,7 @@ void FontSample::controlEvent(Control* control, EventType evt)
         {
             _fontIndex = 0;
         }
-        _font = _fonts[_fontIndex];
+        _font = _fonts[_fontIndex].get();
         std::string s = "Font (" + _fontNames[_fontIndex] + ")";
         static_cast<Button*>(control)->setText(s);
     }

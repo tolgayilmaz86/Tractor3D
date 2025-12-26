@@ -19,6 +19,14 @@ namespace tractor
 {
 
 /**
+ * JoystickControl forward declaration.
+ */
+class JoystickControl;
+
+/** Shared pointer type for JoystickControl. */
+using JoystickControlPtr = std::shared_ptr<JoystickControl>;
+
+/**
  * Defines a control representing a joystick (axis).
  *
  * This is used in virtual Gamepad instances.
@@ -39,7 +47,7 @@ class JoystickControl : public Control
      * @return The new joystick.
      * @script{create}
      */
-    static JoystickControl* create(const std::string& id, Theme::Style* style = nullptr);
+    static JoystickControlPtr create(const std::string& id, Theme::Style* style = nullptr);
 
     /**
      * Extends ScriptTarget::getTypeName() to return the type name of this class.
@@ -173,8 +181,6 @@ class JoystickControl : public Control
      */
     bool isRadiusPercentage() const noexcept { return _boundsBits & BOUNDS_RADIUS_PERCENTAGE_BIT; }
 
-
-  protected:
     /**
      * Default Constructor.
      */
@@ -185,15 +191,16 @@ class JoystickControl : public Control
      */
     virtual ~JoystickControl();
 
+  protected:
     /**
      * Create a joystick control with a given style and properties.
      *
      * @param style The style to apply to this joystick.
      * @param properties A properties object containing a definition of the joystick.
      *
-     * @return The new joystick.
+     * @return The new joystick as a shared_ptr.
      */
-    static Control* create(Theme::Style* style, Properties* properties = nullptr);
+    static ControlPtr create(Theme::Style* style, Properties* properties = nullptr);
 
     /**
      * @see Control::initialize

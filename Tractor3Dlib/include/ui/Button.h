@@ -22,6 +22,11 @@
 namespace tractor
 {
 
+class Button;
+
+/** Shared pointer type for Button. */
+using ButtonPtr = std::shared_ptr<Button>;
+
 /**
  * Defines a button control.
  */
@@ -41,9 +46,8 @@ class Button : public Label
      * @return The new button.
      * @script{create}
      */
-    static Button* create(const std::string& id, Theme::Style* style = nullptr);
+    static ButtonPtr create(const std::string& id, Theme::Style* style = nullptr);
 
-  protected:
     /**
      * Constructor.
      */
@@ -54,15 +58,16 @@ class Button : public Label
      */
     virtual ~Button() = default;
 
+  protected:
     /**
      * Create a button with a given style and properties.
      *
      * @param style The style to apply to this button.
      * @param properties A properties object containing a definition of the button (optional).
      *
-     * @return The new button.
+     * @return The new button as a shared_ptr.
      */
-    static Control* create(Theme::Style* style, Properties* properties = nullptr);
+    static ControlPtr create(Theme::Style* style, Properties* properties = nullptr);
 
     /**
      * @see Control::initialize

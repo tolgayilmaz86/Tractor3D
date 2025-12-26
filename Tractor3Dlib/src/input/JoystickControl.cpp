@@ -28,18 +28,18 @@ JoystickControl::~JoystickControl()
 }
 
 //-----------------------------------------------------------------------------
-JoystickControl* JoystickControl::create(const std::string& id, Theme::Style* style)
+JoystickControlPtr JoystickControl::create(const std::string& id, Theme::Style* style)
 {
-    JoystickControl* joystickControl = new JoystickControl();
+    auto joystickControl = std::make_shared<JoystickControl>();
     joystickControl->_id = id;
     joystickControl->initialize("Joystick", style, nullptr);
     return joystickControl;
 }
 
 //-----------------------------------------------------------------------------
-Control* JoystickControl::create(Theme::Style* style, Properties* properties)
+ControlPtr JoystickControl::create(Theme::Style* style, Properties* properties)
 {
-    JoystickControl* joystickControl = new JoystickControl();
+    auto joystickControl = std::make_shared<JoystickControl>();
     joystickControl->initialize("Joystick", style, properties);
     return joystickControl;
 }

@@ -93,7 +93,7 @@ class PostProcessSample : public Sample
     void drawTechniqueId(const std::string& techniqueId);
 
   private:
-    Font* _font{nullptr};
+    FontPtr _font{nullptr};
     ScenePtr _scene;
     Node* _modelNode{nullptr};
     FrameBuffer* _frameBuffer{nullptr};

@@ -21,24 +21,19 @@
 namespace tractor
 {
 
-static AbsoluteLayout* __instance;
+static std::weak_ptr<AbsoluteLayout> __instance;
 
 //----------------------------------------------------------------------------
-AbsoluteLayout::~AbsoluteLayout() { __instance = nullptr; }
-
-//----------------------------------------------------------------------------
-AbsoluteLayout* AbsoluteLayout::create()
+std::shared_ptr<AbsoluteLayout> AbsoluteLayout::create()
 {
-    if (!__instance)
+    auto instance = __instance.lock();
+    if (!instance)
     {
-        __instance = new AbsoluteLayout();
-    }
-    else
-    {
-        __instance->addRef();
+        instance = std::shared_ptr<AbsoluteLayout>(new AbsoluteLayout());
+        __instance = instance;
     }
 
-    return __instance;
+    return instance;
 }
 
 //----------------------------------------------------------------------------

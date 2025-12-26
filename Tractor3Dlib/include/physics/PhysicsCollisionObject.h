@@ -182,7 +182,7 @@ class PhysicsCollisionObject
      *
      * @return The collision shape.
      */
-    PhysicsCollisionShape* getCollisionShape() const noexcept { return _collisionShape; }
+    PhysicsCollisionShape* getCollisionShape() const noexcept { return _collisionShape.get(); }
 
     /**
      * Returns whether this collision object is kinematic.
@@ -338,7 +338,7 @@ class PhysicsCollisionObject
     /**
      * The PhysicsCollisionObject's collision shape.
      */
-    PhysicsCollisionShape* _collisionShape{ nullptr };
+    PhysicsCollisionShapePtr _collisionShape;
 
     /**
      * If the collision object is enabled or not.

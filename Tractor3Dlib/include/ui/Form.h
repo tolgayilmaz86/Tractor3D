@@ -13,6 +13,8 @@
  */
 #pragma once
 
+#include <memory>
+
 #include "graphics/Drawable.h"
 #include "graphics/Mesh.h"
 #include "input/Gamepad.h"
@@ -28,6 +30,13 @@ namespace tractor
 {
 
 class Theme;
+class Form;
+
+/** Shared pointer type for Form. */
+using FormPtr = std::shared_ptr<Form>;
+
+/** Weak pointer type for Form. */
+using FormWeakPtr = std::weak_ptr<Form>;
 
 /**
  * Defines a form that is a root container that contains zero or more controls.
@@ -51,7 +60,7 @@ class Form : public Drawable, public Container
      * @return The new form or nullptr if there was an error.
      * @script{create}
      */
-    static Form* create(const std::string& url);
+    static FormPtr create(const std::string& url);
 
     /**
      * Create a new Form.
@@ -67,7 +76,7 @@ class Form : public Drawable, public Container
      * @return The new Form.
      * @script{create}
      */
-    static Form* create(const std::string& id,
+    static FormPtr create(const std::string& id,
                         Theme::Style* style,
                         Layout::Type layoutType = Layout::LAYOUT_ABSOLUTE);
 
@@ -151,21 +160,26 @@ class Form : public Drawable, public Container
      */
     void setBatchingEnabled(bool enabled) { _batched = enabled; }
 
-  private:
     /**
-     * Constructor.
+     * Destructor.
+     */
+    virtual ~Form();
+
+  public:
+    /**
+     * Constructor. Use Form::create() instead.
+     * @internal
      */
     Form() = default;
 
+  private:
     /**
      * Constructor.
      */
     Form(const Form& copy);
 
-    /**
-     * Destructor.
-     */
-    virtual ~Form();
+    // Allow std::make_shared to access the private constructor
+    friend struct std::_Ref_count_obj2<Form>;
 
     /**
      * @see Drawable::clone

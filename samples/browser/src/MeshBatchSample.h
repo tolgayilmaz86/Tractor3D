@@ -50,7 +50,7 @@ class MeshBatchSample : public Sample
         Vertex(const Vector3& position, const Vector3& color) : position(position), color(color) {}
     };
 
-    Font* _font;
+    FontPtr _font;
     MeshBatch* _meshBatch;
     Matrix _worldViewProjectionMatrix;
     std::vector<Vertex> _vertices;

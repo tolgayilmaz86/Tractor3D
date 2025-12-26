@@ -30,11 +30,18 @@ class FlowLayout : public Layout
 
   public:
     /**
+     * Create a FlowLayout.
+     *
+     * @return A FlowLayout object.
+     */
+    static std::shared_ptr<FlowLayout> create();
+
+    /**
      * Get the type of this Layout.
      *
      * @return Layout::LAYOUT_FLOW
      */
-    Layout::Type getType() const noexcept { return Layout::LAYOUT_FLOW; }
+    Layout::Type getType() const noexcept override { return Layout::LAYOUT_FLOW; }
 
     /**
      * Returns the horizontal spacing between controls in the layout.
@@ -64,7 +71,7 @@ class FlowLayout : public Layout
      *
      * @param container The container to update.
      */
-    void update(const Container* container);
+    void update(const Container* container) override;
 
     /**
      * Horizontal spacing between controls.
@@ -85,19 +92,7 @@ class FlowLayout : public Layout
     /**
      * Constructor.
      */
-    FlowLayout(const FlowLayout& copy) = default;
-
-    /**
-     * Destructor.
-     */
-    virtual ~FlowLayout();
-
-    /**
-     * Create a FlowLayout.
-     *
-     * @return A FlowLayout object.
-     */
-    static FlowLayout* create();
+    FlowLayout(const FlowLayout& copy) = delete;
 };
 
 } // namespace tractor

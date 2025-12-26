@@ -359,7 +359,7 @@ class Terrain : public Drawable, public Transform::Listener
     BoundingBox getBoundingBox(bool worldSpace) const;
 
     std::string _materialPath{};
-    HeightField* _heightfield{nullptr};
+    HeightFieldPtr _heightfield;
     Vector3 _localScale{};
     std::vector<TerrainPatch*> _patches{};
     Texture::Sampler* _normalMap{nullptr};

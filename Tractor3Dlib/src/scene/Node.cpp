@@ -1194,16 +1194,16 @@ void Node::setAgent(const AIAgentPtr& agent)
 }
 
 //----------------------------------------------------------------------------
-Animation* NodeCloneContext::findClonedAnimation(const Animation* animation)
+AnimationPtr NodeCloneContext::findClonedAnimation(const Animation* animation)
 {
     assert(animation);
 
-    std::map<const Animation*, Animation*>::iterator it = _clonedAnimations.find(animation);
+    auto it = _clonedAnimations.find(animation);
     return it != _clonedAnimations.end() ? it->second : nullptr;
 }
 
 //----------------------------------------------------------------------------
-void NodeCloneContext::registerClonedAnimation(const Animation* original, Animation* clone)
+void NodeCloneContext::registerClonedAnimation(const Animation* original, const AnimationPtr& clone)
 {
     assert(original);
     assert(clone);

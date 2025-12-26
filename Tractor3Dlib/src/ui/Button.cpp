@@ -21,18 +21,18 @@ namespace tractor
 {
 
 //----------------------------------------------------------------------------
-Button* Button::create(const std::string& id, Theme::Style* style)
+ButtonPtr Button::create(const std::string& id, Theme::Style* style)
 {
-    Button* button = new Button();
+    auto button = std::make_shared<Button>();
     button->_id = id;
     button->initialize("Button", style, nullptr);
     return button;
 }
 
 //----------------------------------------------------------------------------
-Control* Button::create(Theme::Style* style, Properties* properties)
+ControlPtr Button::create(Theme::Style* style, Properties* properties)
 {
-    Button* button = new Button();
+    auto button = std::make_shared<Button>();
     button->initialize("Button", style, properties);
     return button;
 }

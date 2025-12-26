@@ -20,6 +20,11 @@
 namespace tractor
 {
 
+class RadioButton;
+
+/** Shared pointer type for RadioButton. */
+using RadioButtonPtr = std::shared_ptr<RadioButton>;
+
 /**
  * Defines a radio button control.
  *
@@ -42,7 +47,7 @@ class RadioButton : public Button
      * @return The new radio button.
      * @script{create}
      */
-    static RadioButton* create(const std::string& id, Theme::Style* style = nullptr);
+    static RadioButtonPtr create(const std::string& id, Theme::Style* style = nullptr);
 
     /**
      * Extends ScriptTarget::getTypeName() to return the type name of this class.
@@ -92,7 +97,6 @@ class RadioButton : public Button
      */
     const std::string& getGroupId() const noexcept { return _groupId; }
 
-  protected:
     /**
      * Constructor.
      */
@@ -103,15 +107,16 @@ class RadioButton : public Button
      */
     virtual ~RadioButton();
 
+  protected:
     /**
      * Create a radio button with a given style and properties.
      *
      * @param style The style to apply to this radio button.
      * @param properties A properties object containing a definition of the radio button (optional).
      *
-     * @return The new radio button.
+     * @return The new radio button as a shared_ptr.
      */
-    static Control* create(Theme::Style* style, Properties* properties = nullptr);
+    static ControlPtr create(Theme::Style* style, Properties* properties = nullptr);
 
     /**
      * @see Control::initialize

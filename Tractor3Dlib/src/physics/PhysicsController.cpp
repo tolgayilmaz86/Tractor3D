@@ -886,14 +886,14 @@ static void computeCenterOfMass(const Vector3& center, const Vector3& scale, Vec
 }
 
 //----------------------------------------------------------------------------
-PhysicsCollisionShape* PhysicsController::createShape(Node* node,
-                                                      const PhysicsCollisionShape::Definition& shape,
-                                                      Vector3* centerOfMassOffset,
-                                                      bool dynamic)
+PhysicsCollisionShapePtr PhysicsController::createShape(Node* node,
+                                                        const PhysicsCollisionShape::Definition& shape,
+                                                        Vector3* centerOfMassOffset,
+                                                        bool dynamic)
 {
     assert(node);
 
-    PhysicsCollisionShape* collisionShape = nullptr;
+    PhysicsCollisionShapePtr collisionShape = nullptr;
 
     // Get the node's world scale (we need to apply this during creation since rigid bodies don't scale dynamically).
     Vector3 scale;
@@ -1016,7 +1016,7 @@ PhysicsCollisionShape* PhysicsController::createShape(Node* node,
             if (shape.isExplicit)
             {
                 // Build heightfield rigid body from the passed in shape.
-                collisionShape = createHeightfield(node, shape.data.heightfield, centerOfMassOffset);
+                collisionShape = createHeightfield(node, shape.heightfieldData, centerOfMassOffset);
             }
             else
             {
@@ -1049,40 +1049,38 @@ PhysicsCollisionShape* PhysicsController::createShape(Node* node,
 }
 
 //----------------------------------------------------------------------------
-PhysicsCollisionShape* PhysicsController::createBox(const Vector3& extents, const Vector3& scale)
+PhysicsCollisionShapePtr PhysicsController::createBox(const Vector3& extents, const Vector3& scale)
 {
     btVector3 halfExtents(scale.x * 0.5 * extents.x,
                           scale.y * 0.5 * extents.y,
                           scale.z * 0.5 * extents.z);
 
-    PhysicsCollisionShape* shape;
-
     // Return the box shape from the cache if it already exists.
-    for (size_t i = 0; i < _shapes.size(); ++i)
+    for (auto& shape : _shapes)
     {
-        shape = _shapes[i];
         assert(shape);
         if (shape->getType() == PhysicsCollisionShape::SHAPE_BOX)
         {
             btBoxShape* box = static_cast<btBoxShape*>(shape->_shape);
             if (box && box->getHalfExtentsWithMargin() == halfExtents)
             {
-                shape->addRef();
                 return shape;
             }
         }
     }
 
     // Create the box shape and add it to the cache.
-    shape = new PhysicsCollisionShape(PhysicsCollisionShape::SHAPE_BOX,
-                                      bullet_new<btBoxShape>(halfExtents));
+    auto shape = std::make_shared<PhysicsCollisionShape>(
+        PhysicsCollisionShape::PrivateTag{},
+        PhysicsCollisionShape::SHAPE_BOX,
+        bullet_new<btBoxShape>(halfExtents));
     _shapes.push_back(shape);
 
     return shape;
 }
 
 //----------------------------------------------------------------------------
-PhysicsCollisionShape* PhysicsController::createSphere(float radius, const Vector3& scale)
+PhysicsCollisionShapePtr PhysicsController::createSphere(float radius, const Vector3& scale)
 {
     // Since sphere shapes depend only on the radius, the best we can do is take
     // the largest dimension and apply that as the uniform scale to the rigid body.
@@ -1092,43 +1090,40 @@ PhysicsCollisionShape* PhysicsController::createSphere(float radius, const Vecto
 
     float scaledRadius = radius * uniformScale;
 
-    PhysicsCollisionShape* shape;
-
     // Return the sphere shape from the cache if it already exists.
-    for (size_t i = 0; i < _shapes.size(); ++i)
+    for (auto& shape : _shapes)
     {
-        shape = _shapes[i];
         assert(shape);
         if (shape->getType() == PhysicsCollisionShape::SHAPE_SPHERE)
         {
             btSphereShape* sphere = static_cast<btSphereShape*>(shape->_shape);
             if (sphere && sphere->getRadius() == scaledRadius)
             {
-                shape->addRef();
                 return shape;
             }
         }
     }
 
     // Create the sphere shape and add it to the cache.
-    return _shapes.emplace_back(new PhysicsCollisionShape(PhysicsCollisionShape::SHAPE_SPHERE,
-                                                          bullet_new<btSphereShape>(scaledRadius)));
+    auto shape = std::make_shared<PhysicsCollisionShape>(
+        PhysicsCollisionShape::PrivateTag{},
+        PhysicsCollisionShape::SHAPE_SPHERE,
+        bullet_new<btSphereShape>(scaledRadius));
+    _shapes.push_back(shape);
+    return shape;
 }
 
 //----------------------------------------------------------------------------
-PhysicsCollisionShape* PhysicsController::createCapsule(float radius, float height, const Vector3& scale)
+PhysicsCollisionShapePtr PhysicsController::createCapsule(float radius, float height, const Vector3& scale)
 {
     float girthScale = scale.x;
     if (girthScale < scale.z) girthScale = scale.z;
     float scaledRadius = radius * girthScale;
     float scaledHeight = height * scale.y - radius * 2;
 
-    PhysicsCollisionShape* shape;
-
     // Return the capsule shape from the cache if it already exists.
-    for (size_t i = 0; i < _shapes.size(); i++)
+    for (auto& shape : _shapes)
     {
-        shape = _shapes[i];
         assert(shape);
         if (shape->getType() == PhysicsCollisionShape::SHAPE_CAPSULE)
         {
@@ -1136,22 +1131,24 @@ PhysicsCollisionShape* PhysicsController::createCapsule(float radius, float heig
             if (capsule && capsule->getRadius() == scaledRadius
                 && capsule->getHalfHeight() == 0.5f * scaledHeight)
             {
-                shape->addRef();
                 return shape;
             }
         }
     }
 
     // Create the capsule shape and add it to the cache.
-    return _shapes.emplace_back(
-        new PhysicsCollisionShape(PhysicsCollisionShape::SHAPE_CAPSULE,
-                                  bullet_new<btCapsuleShape>(scaledRadius, scaledHeight)));
+    auto shape = std::make_shared<PhysicsCollisionShape>(
+        PhysicsCollisionShape::PrivateTag{},
+        PhysicsCollisionShape::SHAPE_CAPSULE,
+        bullet_new<btCapsuleShape>(scaledRadius, scaledHeight));
+    _shapes.push_back(shape);
+    return shape;
 }
 
 //----------------------------------------------------------------------------
-PhysicsCollisionShape* PhysicsController::createHeightfield(Node* node,
-                                                            HeightField* heightfield,
-                                                            Vector3* centerOfMassOffset)
+PhysicsCollisionShapePtr PhysicsController::createHeightfield(Node* node,
+                                                              const HeightFieldPtr& heightfield,
+                                                              Vector3* centerOfMassOffset)
 {
     assert(node);
     assert(heightfield);
@@ -1187,8 +1184,7 @@ PhysicsCollisionShape* PhysicsController::createHeightfield(Node* node,
     // Create our heightfield data to be stored in the collision shape
     PhysicsCollisionShape::HeightfieldData* heightfieldData =
         new PhysicsCollisionShape::HeightfieldData();
-    heightfieldData->heightfield = heightfield;
-    heightfieldData->heightfield->addRef();
+    heightfieldData->heightfield = heightfield;  // shared_ptr copy
     heightfieldData->inverseIsDirty = true;
     heightfieldData->minHeight = minHeight;
     heightfieldData->maxHeight = maxHeight;
@@ -1209,15 +1205,18 @@ PhysicsCollisionShape* PhysicsController::createHeightfield(Node* node,
     terrainShape->setLocalScaling(BV(scale));
 
     // Create our collision shape object and store heightfieldData in it.
-    _shapes.emplace_back(
-        new PhysicsCollisionShape(PhysicsCollisionShape::SHAPE_HEIGHTFIELD, terrainShape));
-    _shapes.back()->_shapeData.heightfieldData = heightfieldData;
+    auto shape = std::make_shared<PhysicsCollisionShape>(
+        PhysicsCollisionShape::PrivateTag{},
+        PhysicsCollisionShape::SHAPE_HEIGHTFIELD,
+        terrainShape);
+    shape->_shapeData.heightfieldData = heightfieldData;
+    _shapes.push_back(shape);
 
-    return _shapes.back();
+    return shape;
 }
 
 //----------------------------------------------------------------------------
-PhysicsCollisionShape* PhysicsController::createMesh(Mesh* mesh, const Vector3& scale, bool dynamic)
+PhysicsCollisionShapePtr PhysicsController::createMesh(Mesh* mesh, const Vector3& scale, bool dynamic)
 {
     assert(mesh);
 
@@ -1398,14 +1397,16 @@ PhysicsCollisionShape* PhysicsController::createMesh(Mesh* mesh, const Vector3& 
     }
 
     // Create our collision shape object and store shapeMeshData in it.
-    PhysicsCollisionShape* shape =
-        new PhysicsCollisionShape(PhysicsCollisionShape::SHAPE_MESH, collisionShape, meshInterface);
+    auto shape = std::make_shared<PhysicsCollisionShape>(
+        PhysicsCollisionShape::PrivateTag{},
+        PhysicsCollisionShape::SHAPE_MESH,
+        collisionShape,
+        meshInterface);
     shape->_shapeData.meshData = shapeMeshData;
 
     _shapes.push_back(shape);
 
     // Free the temporary mesh data now that it's stored in physics system.
-    // SAFE_DELETE(data);
     data.release();
 
     return shape;
@@ -1416,16 +1417,14 @@ void PhysicsController::destroyShape(PhysicsCollisionShape* shape)
 {
     if (shape)
     {
-        if (shape->getRefCount() == 1)
+        // Remove shape from shape cache.
+        auto shapeItr = std::find_if(_shapes.begin(), _shapes.end(),
+            [shape](const PhysicsCollisionShapePtr& ptr) { return ptr.get() == shape; });
+        if (shapeItr != _shapes.end())
         {
-            // Remove shape from shape cache.
-            std::vector<PhysicsCollisionShape*>::iterator shapeItr =
-                std::find(_shapes.begin(), _shapes.end(), shape);
-            if (shapeItr != _shapes.end()) _shapes.erase(shapeItr);
+            _shapes.erase(shapeItr);
         }
-
-        // Release the shape.
-        shape->release();
+        // shared_ptr will automatically destroy the shape when no more references exist
     }
 }
 
@@ -1517,8 +1516,8 @@ PhysicsController::DebugDrawer::DebugDrawer()
         "}"
     };
 
-    Effect* effect = Effect::createFromSource(vs_str, fs_str);
-    Material* material = Material::create(effect);
+    EffectPtr effect = Effect::createFromSource(vs_str, fs_str);
+    Material* material = Material::create(effect.get());
     assert(material && material->getStateBlock());
     material->getStateBlock()->setDepthTest(true);
     material->getStateBlock()->setDepthFunction(RenderState::DEPTH_LEQUAL);
@@ -1530,7 +1529,6 @@ PhysicsController::DebugDrawer::DebugDrawer()
     _meshBatch =
         MeshBatch::create(VertexFormat(elements, 2), Mesh::LINES, material, false, 4096, 4096);
     SAFE_RELEASE(material);
-    SAFE_RELEASE(effect);
 }
 
 //----------------------------------------------------------------------------

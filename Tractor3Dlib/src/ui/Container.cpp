@@ -55,7 +55,7 @@ static constexpr float FOCUS_CHANGE_REPEAT_DELAY = 300.0f;
  * @param c2 The second control
  * return true if the first controls z index is less than the second.
  */
-static bool sortControlsByZOrder(Control* c1, Control* c2)
+static bool sortControlsByZOrder(const ControlPtr& c1, const ControlPtr& c2)
 {
     if (c1->getZIndex() < c2->getZIndex()) return true;
 
@@ -75,19 +75,20 @@ Container::Container() { clearContacts(); }
 //----------------------------------------------------------------------------
 Container::~Container()
 {
-    std::vector<Control*>::iterator it;
-    for (it = _controls.begin(); it < _controls.end(); it++)
+    for (auto& control : _controls)
     {
-        (*it)->_parent = nullptr;
-        SAFE_RELEASE((*it));
+        if (control)
+        {
+            control->_parent = nullptr;
+        }
     }
-    SAFE_RELEASE(_layout);
+    _controls.clear();
 }
 
 //----------------------------------------------------------------------------
-Container* Container::create(const std::string& id, Theme::Style* style, Layout::Type layout)
+ContainerPtr Container::create(const std::string& id, Theme::Style* style, Layout::Type layout)
 {
-    Container* container = new Container();
+    auto container = std::make_shared<Container>();
     container->_id = id;
     container->_layout = createLayout(layout);
     container->initialize("Container", style, nullptr);
@@ -95,9 +96,9 @@ Container* Container::create(const std::string& id, Theme::Style* style, Layout:
 }
 
 //----------------------------------------------------------------------------
-Control* Container::create(Theme::Style* style, Properties* properties)
+ControlPtr Container::create(Theme::Style* style, Properties* properties)
 {
-    Container* container = new Container();
+    auto container = std::make_shared<Container>();
     container->initialize("Container", style, properties);
     return container;
 }
@@ -117,12 +118,12 @@ void Container::initialize(const std::string& typeName, Theme::Style* style, Pro
             switch (_layout->getType())
             {
                 case Layout::LAYOUT_FLOW:
-                    static_cast<FlowLayout*>(_layout)
+                    static_cast<FlowLayout*>(_layout.get())
                         ->setSpacing(layoutNS->getInt("horizontalSpacing"),
                                      layoutNS->getInt("verticalSpacing"));
                     break;
                 case Layout::LAYOUT_VERTICAL:
-                    static_cast<VerticalLayout*>(_layout)->setSpacing(layoutNS->getInt("spacing"));
+                    static_cast<VerticalLayout*>(_layout.get())->setSpacing(layoutNS->getInt("spacing"));
                     break;
             }
         }
@@ -147,13 +148,13 @@ void Container::initialize(const std::string& typeName, Theme::Style* style, Pro
         addControls(properties);
 
         auto activeControl = properties->getString("activeControl");
-        if (activeControl.empty())
+        if (!activeControl.empty())
         {
             for (size_t i = 0, count = _controls.size(); i < count; ++i)
             {
                 if (_controls[i]->_id == activeControl)
                 {
-                    _activeControl = _controls[i];
+                    _activeControl = _controls[i].get();
                     break;
                 }
             }
@@ -177,14 +178,13 @@ void Container::addControls(Properties* properties)
 
         // Pass our own style into the creation of the child control.
         // The child control's style will be looked up using the passed in style's theme.
-        Control* control =
+        ControlPtr control =
             ControlFactory::getInstance()->createControl(controlName, _style, controlSpace);
 
         // Add the new control to the form.
         if (control)
         {
             addControl(control);
-            control->release();
         }
 
         // Get the next control.
@@ -200,11 +200,60 @@ void Container::setLayout(Layout::Type type)
 {
     if (_layout == nullptr || _layout->getType() != type)
     {
-        SAFE_RELEASE(_layout);
-
         _layout = createLayout(type);
         setDirty(Control::DIRTY_BOUNDS);
     }
+}
+
+//----------------------------------------------------------------------------
+unsigned int Container::addControl(const ControlPtr& controlPtr)
+{
+    assert(controlPtr);
+    Control* control = controlPtr.get();
+
+    if (control->_parent == this)
+    {
+        auto it = std::ranges::find_if(_controls, [control](const ControlPtr& c) { return c.get() == control; });
+        if (it != _controls.end())
+        {
+            return static_cast<unsigned int>(std::distance(_controls.begin(), it));
+        }
+
+        // Should never reach this.
+        assert(false);
+        return 0;
+    }
+
+    if (control->getZIndex() == -1)
+    {
+        control->setZIndex(_zIndexDefault++);
+    }
+
+    if (control->getFocusIndex() == -1)
+    {
+        int maxFocusIndex = 0;
+        if (!_controls.empty())
+            maxFocusIndex = std::ranges::max(
+                _controls
+                | std::views::transform([](const ControlPtr& c) { return c->getFocusIndex(); }));
+
+        control->setFocusIndex(maxFocusIndex + 1);
+    }
+
+    _controls.push_back(controlPtr);
+
+    // Remove the control from its current parent
+    if (control->_parent)
+    {
+        control->_parent->removeControl(control);
+    }
+
+    control->_parent = this;
+
+    sortControls();
+    setDirty(Control::DIRTY_BOUNDS);
+
+    return (unsigned int)(_controls.size() - 1);
 }
 
 //----------------------------------------------------------------------------
@@ -214,7 +263,7 @@ unsigned int Container::addControl(Control* control)
 
     if (control->_parent == this)
     {
-        auto it = std::ranges::find(_controls, control);
+        auto it = std::ranges::find_if(_controls, [control](const ControlPtr& c) { return c.get() == control; });
         if (it != _controls.end())
         {
             return static_cast<unsigned int>(std::distance(_controls.begin(), it));
@@ -241,13 +290,25 @@ unsigned int Container::addControl(Control* control)
         if (!_controls.empty())
             maxFocusIndex = std::ranges::max(
                 _controls
-                | std::views::transform([](const Control* c) { return c->getFocusIndex(); }));
+                | std::views::transform([](const ControlPtr& c) { return c->getFocusIndex(); }));
 
         control->setFocusIndex(maxFocusIndex + 1);
     }
 
-    _controls.push_back(control);
-    control->addRef();
+    // Try to get shared_ptr from the control if it's already managed by shared_ptr
+    // Otherwise create a new shared_ptr that takes ownership
+    ControlPtr controlPtr;
+    try
+    {
+        controlPtr = control->shared_from_this();
+    }
+    catch (const std::bad_weak_ptr&)
+    {
+        // Control is not yet managed by shared_ptr, wrap it
+        controlPtr = ControlPtr(control);
+    }
+
+    _controls.push_back(controlPtr);
 
     // Remove the control from its current parent
     if (control->_parent)
@@ -275,9 +336,20 @@ void Container::insertControl(Control* control, unsigned int index)
 
     if (control->_parent != this)
     {
-        std::vector<Control*>::iterator it = _controls.begin() + index;
-        _controls.insert(it, control);
-        control->addRef();
+        // Try to get shared_ptr from the control if it's already managed by shared_ptr
+        ControlPtr controlPtr;
+        try
+        {
+            controlPtr = control->shared_from_this();
+        }
+        catch (const std::bad_weak_ptr&)
+        {
+            // Control is not yet managed by shared_ptr, wrap it
+            controlPtr = ControlPtr(control);
+        }
+
+        auto it = _controls.begin() + index;
+        _controls.insert(it, controlPtr);
         control->_parent = this;
         setDirty(Control::DIRTY_BOUNDS);
     }
@@ -288,8 +360,9 @@ void Container::removeControl(unsigned int index)
 {
     assert(index < _controls.size());
 
-    std::vector<Control*>::iterator it = _controls.begin() + index;
-    Control* control = *it;
+    auto it = _controls.begin() + index;
+    ControlPtr controlPtr = *it;
+    Control* control = controlPtr.get();
     _controls.erase(it);
     control->_parent = nullptr;
     setDirty(Control::DIRTY_BOUNDS);
@@ -297,8 +370,7 @@ void Container::removeControl(unsigned int index)
     if (_activeControl == control) _activeControl = nullptr;
 
     Form::verifyRemovedControlState(control);
-
-    SAFE_RELEASE(control);
+    // shared_ptr automatically handles cleanup when controlPtr goes out of scope
 }
 
 //----------------------------------------------------------------------------
@@ -306,7 +378,7 @@ void Container::removeControl(const std::string& id)
 {
     for (size_t i = 0, size = _controls.size(); i < size; ++i)
     {
-        Control* c = _controls[i];
+        Control* c = _controls[i].get();
         if (id == c->getId())
         {
             removeControl((unsigned int)i);
@@ -322,7 +394,7 @@ void Container::removeControl(Control* control)
 
     for (size_t i = 0, size = _controls.size(); i < size; ++i)
     {
-        Control* c = _controls[i];
+        Control* c = _controls[i].get();
         if (c == control)
         {
             removeControl((unsigned int)i);
@@ -335,7 +407,7 @@ void Container::removeControl(Control* control)
 Control* Container::getControl(unsigned int index) const
 {
     assert(index < _controls.size());
-    return _controls[index];
+    return _controls[index].get();
 }
 
 //----------------------------------------------------------------------------
@@ -343,18 +415,18 @@ Control* Container::getControl(const std::string& id) const
 {
     std::string_view targetId(id);
 
-    for (Control* control : _controls)
+    for (const ControlPtr& control : _controls)
     {
         assert(control);
 
         if (control->getId() == targetId)
         {
-            return control;
+            return control.get();
         }
 
         if (control->isContainer())
         {
-            if (auto* container = dynamic_cast<Container*>(control))
+            if (auto* container = dynamic_cast<Container*>(control.get()))
             {
                 if (Control* foundControl = container->getControl(id); foundControl)
                 {
@@ -423,12 +495,9 @@ void Container::setScrollPosition(const Vector2& scrollPosition)
 //----------------------------------------------------------------------------
 Animation* Container::getAnimation(const std::string& id) const
 {
-    std::vector<Control*>::const_iterator itr = _controls.begin();
-    std::vector<Control*>::const_iterator end = _controls.end();
-    Control* control = nullptr;
-    for (; itr != end; itr++)
+    for (const auto& controlPtr : _controls)
     {
-        control = *itr;
+        Control* control = controlPtr.get();
         assert(control);
         Animation* animation = control->getAnimation(id);
         if (animation) return animation;
@@ -469,7 +538,8 @@ bool Container::setFocus()
 //----------------------------------------------------------------------------
 void Container::setActiveControl(Control* control)
 {
-    if (std::find(_controls.begin(), _controls.end(), control) != _controls.end())
+    auto it = std::ranges::find_if(_controls, [control](const ControlPtr& c) { return c.get() == control; });
+    if (it != _controls.end())
     {
         _activeControl = control;
 
@@ -485,7 +555,7 @@ void Container::setChildrenDirty(int bits, bool recursive)
 {
     for (size_t i = 0, count = _controls.size(); i < count; ++i)
     {
-        Control* ctrl = _controls[i];
+        Control* ctrl = _controls[i].get();
         ctrl->setDirty(bits);
         if (recursive && ctrl->isContainer())
             static_cast<Container*>(ctrl)->setChildrenDirty(bits, true);
@@ -534,7 +604,7 @@ void Container::updateBounds()
             float width = 0;
             for (size_t i = 0, count = _controls.size(); i < count; ++i)
             {
-                Control* ctrl = _controls[i];
+                Control* ctrl = _controls[i].get();
                 if (ctrl->isVisible() && !ctrl->isWidthPercentage())
                 {
                     float w = ctrl->getWidth() + ctrl->getMargin().right;
@@ -553,7 +623,7 @@ void Container::updateBounds()
             float height = 0;
             for (size_t i = 0, count = _controls.size(); i < count; ++i)
             {
-                Control* ctrl = _controls[i];
+                Control* ctrl = _controls[i].get();
                 if (ctrl->isVisible() && !ctrl->isHeightPercentage())
                 {
                     float h = ctrl->getHeight() + ctrl->getMargin().bottom;
@@ -607,7 +677,7 @@ bool Container::updateChildBounds()
 
     for (size_t i = 0, count = _controls.size(); i < count; ++i)
     {
-        Control* ctrl = _controls[i];
+        Control* ctrl = _controls[i].get();
         assert(ctrl);
 
         if (ctrl->isVisible())
@@ -647,7 +717,7 @@ unsigned int Container::draw(Form* form, const Rectangle& clip)
     // Draw child controls
     for (size_t i = 0, count = _controls.size(); i < count; ++i)
     {
-        Control* control = _controls[i];
+        Control* control = _controls[i].get();
         if (control && control->_absoluteClipBounds.intersects(_absoluteClipBounds))
         {
             drawCalls += control->draw(form, _viewportClipBounds);
@@ -857,9 +927,9 @@ bool Container::moveFocusNextPrevious(Direction direction)
             // Currently focused control is a child of one of our child containers
             for (size_t i = 0, count = _controls.size(); i < count; ++i)
             {
-                if (currentFocus->isChild(_controls[i]))
+                if (currentFocus->isChild(_controls[i].get()))
                 {
-                    current = _controls[i];
+                    current = _controls[i].get();
                     break;
                 }
             }
@@ -879,7 +949,7 @@ bool Container::moveFocusNextPrevious(Direction direction)
 
         for (size_t i = 0, count = _controls.size(); i < count; ++i)
         {
-            Control* ctrl = _controls[i];
+            Control* ctrl = _controls[i].get();
             if (!canReceiveFocus(ctrl)) continue;
 
             if ((direction == NEXT && ctrl->_focusIndex > current->_focusIndex
@@ -922,7 +992,7 @@ bool Container::moveFocusNextPrevious(Direction direction)
         nextCtrl = nullptr;
         for (size_t i = 0, count = _controls.size(); i < count; ++i)
         {
-            Control* ctrl = _controls[i];
+            Control* ctrl = _controls[i].get();
             if (!canReceiveFocus(ctrl)) continue;
             if ((direction == NEXT && ctrl->_focusIndex < nextIndex)
                 || (direction == PREVIOUS && ctrl->_focusIndex > nextIndex))
@@ -973,7 +1043,7 @@ bool Container::moveFocusDirectional(Direction direction)
 
     for (size_t i = 0, count = _controls.size(); i < count; ++i)
     {
-        Control* ctrl = _controls[i];
+        Control* ctrl = _controls[i].get();
         if (!canReceiveFocus(ctrl)) continue;
 
         const Rectangle& nextBounds = ctrl->getAbsoluteBounds();
@@ -1084,7 +1154,7 @@ Layout::Type Container::getLayoutType(const std::string& layoutString)
 }
 
 //----------------------------------------------------------------------------
-Layout* Container::createLayout(Layout::Type type)
+LayoutPtr Container::createLayout(Layout::Type type)
 {
     switch (type)
     {
@@ -1120,10 +1190,10 @@ void Container::updateScroll()
 
     // Calculate total width and height.
     _totalWidth = _totalHeight = 0.0f;
-    std::vector<Control*> controls = getControls();
+    const std::vector<ControlPtr>& controls = getControls();
     for (size_t i = 0, count = controls.size(); i < count; ++i)
     {
-        Control* control = _controls[i];
+        Control* control = _controls[i].get();
 
         if (!control->isVisible()) continue;
 
@@ -1221,7 +1291,7 @@ void Container::updateScroll()
         _scrollBarOpacity = 0.99f;
         if (!_scrollBarOpacityClip)
         {
-            Animation* animation = createAnimationFromTo("scrollbar-fade-out",
+            auto animation = createAnimationFromTo("scrollbar-fade-out",
                                                          ANIMATE_SCROLLBAR_OPACITY,
                                                          &_scrollBarOpacity,
                                                          &to,

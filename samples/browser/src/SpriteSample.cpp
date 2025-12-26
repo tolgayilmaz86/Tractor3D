@@ -83,10 +83,10 @@ void SpriteSample::initialize()
     SAFE_RELEASE(playerTextNode);
 
     // Custom Effect in sprite
-    Effect* waterEffect =
+    EffectPtr waterEffect =
         Effect::createFromFile("res/shaders/sprite.vert", "res/common/sprites/water2d.frag");
     SpritePtr waterSprite =
-        Sprite::create("res/common/sprites/water2d.png", getWidth() * 5, getHeight() / 3, waterEffect);
+        Sprite::create("res/common/sprites/water2d.png", getWidth() * 5, getHeight() / 3, waterEffect.get());
 
     waterSprite->setAnchor(Vector2::zero());
     waterSprite->setOpacity(0.5f);
@@ -102,7 +102,7 @@ void SpriteSample::initialize()
 void SpriteSample::finalize()
 {
     _scene.reset();
-    SAFE_RELEASE(_font);
+    _font.reset();
 }
 
 void SpriteSample::update(float elapsedTime)

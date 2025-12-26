@@ -834,9 +834,9 @@ void ParticlesSample::updateFrames()
 
 void ParticlesSample::finalize()
 {
-    SAFE_RELEASE(_font);
+    _font.reset();
     SAFE_RELEASE(_form);
-    SAFE_RELEASE(_scene);
+    _scene.reset();
 }
 
 void ParticlesSample::update(float elapsedTime)
@@ -1181,19 +1181,12 @@ void ParticlesSample::emitterChanged()
     emitter->start();
 }
 
-void ParticlesSample::drawFrameRate(Font* font,
-                                    const Vector4& color,
-                                    unsigned int x,
-                                    unsigned int y,
-                                    unsigned int fps)
+void ParticlesSample::drawFrameRate(const FontPtr& font, const Vector4& color, unsigned int x, unsigned int y, unsigned int fps)
 {
     char buffer[30];
-    sprintf(buffer,
-            "FPS: %u\nParticles: %u",
-            fps,
-            dynamic_cast<ParticleEmitter*>(_particleEmitterNode->getDrawable())->getParticlesCount());
+    sprintf(buffer, "%u / %u", fps, _particleEmitter->getParticlesCount());
     font->start();
-    font->drawText(buffer, x, y, color, 22);
+    font->drawText(buffer, x, y, color, 18);
     font->finish();
 }
 

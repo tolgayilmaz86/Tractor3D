@@ -31,38 +31,15 @@ namespace tractor
 {
 
 //----------------------------------------------------------------------------
-Animation::Animation(const std::string& id,
-                     AnimationTarget* target,
-                     int propertyId,
-                     unsigned int keyCount,
-                     unsigned int* keyTimes,
-                     float* keyValues,
-                     unsigned int type)
-    : _controller(Game::getInstance()->getAnimationController()), _id(id)
+AnimationPtr Animation::create(const std::string& id)
 {
-    createChannel(target, propertyId, keyCount, keyTimes, keyValues, type);
-
-    // Release the animation because a newly created animation has a ref count of 1 and the channels hold the ref to animation.
-    release();
-    assert(getRefCount() == 1);
+    return std::make_shared<Animation>(PrivateKey{}, id);
 }
 
 //----------------------------------------------------------------------------
-Animation::Animation(const std::string& id,
-                     AnimationTarget* target,
-                     int propertyId,
-                     unsigned int keyCount,
-                     unsigned int* keyTimes,
-                     float* keyValues,
-                     float* keyInValue,
-                     float* keyOutValue,
-                     unsigned int type)
+Animation::Animation(PrivateKey, const std::string& id)
     : _controller(Game::getInstance()->getAnimationController()), _id(id)
 {
-    createChannel(target, propertyId, keyCount, keyTimes, keyValues, keyInValue, keyOutValue, type);
-    // Release the animation because a newly created animation has a ref count of 1 and the channels hold the ref to animation.
-    release();
-    assert(getRefCount() == 1);
 }
 
 //----------------------------------------------------------------------------
@@ -74,6 +51,15 @@ Animation::Animation(const std::string& id)
 //----------------------------------------------------------------------------
 Animation::~Animation()
 {
+    // Clean up channels - remove from targets before deleting to prevent dangling pointers
+    for (auto* channel : _channels)
+    {
+        if (channel && channel->_target)
+        {
+            channel->_target->removeChannel(channel);
+        }
+        SAFE_DELETE(channel);
+    }
     _channels.clear();
 
     if (_defaultClip)
@@ -97,7 +83,7 @@ Animation::~Animation()
 }
 
 //----------------------------------------------------------------------------
-Animation::Channel::Channel(Animation* animation,
+Animation::Channel::Channel(const std::shared_ptr<Animation>& animation,
                             AnimationTarget* target,
                             int propertyId,
                             std::shared_ptr<Curve> curve,
@@ -105,7 +91,7 @@ Animation::Channel::Channel(Animation* animation,
     : _animation(animation), _target(target), _propertyId(propertyId), _curve(std::move(curve)),
       _duration(duration)
 {
-    assert(_animation);
+    assert(!_animation.expired());
     assert(_target);
     assert(_curve);
 
@@ -113,27 +99,25 @@ Animation::Channel::Channel(Animation* animation,
     // getting the property component count.
     assert(_target->getAnimationPropertyComponentCount(propertyId));
     _target->addChannel(this);
-    _animation->addRef();
 }
 
 //----------------------------------------------------------------------------
-Animation::Channel::Channel(const Channel& copy, Animation* animation, AnimationTarget* target)
+Animation::Channel::Channel(const Channel& copy, const std::shared_ptr<Animation>& animation, AnimationTarget* target)
     : _animation(animation), _target(target), _propertyId(copy._propertyId), _curve(copy._curve),
       _duration(copy._duration)
 {
     assert(_curve);
     assert(_target);
-    assert(_animation);
+    assert(!_animation.expired());
 
     _target->addChannel(this);
-    _animation->addRef();
 }
 
 //----------------------------------------------------------------------------
 Animation::Channel::~Channel()
 {
     // _curve is a shared_ptr and will be released automatically
-    SAFE_RELEASE(_animation);
+    // _animation is a weak_ptr and doesn't need explicit cleanup
 }
 
 //----------------------------------------------------------------------------
@@ -351,7 +335,7 @@ Animation::Channel* Animation::createChannel(AnimationTarget* target,
                         (Curve::InterpolationType)type);
     }
 
-    Channel* channel = new Channel(this, target, propertyId, curve, duration);
+    Channel* channel = new Channel(shared_from_this(), target, propertyId, curve, duration);
     addChannel(channel);
     return channel;
 }
@@ -415,7 +399,7 @@ Animation::Channel* Animation::createChannel(AnimationTarget* target,
 
     SAFE_DELETE_ARRAY(normalizedKeyTimes);
 
-    Channel* channel = new Channel(this, target, propertyId, curve, duration);
+    Channel* channel = new Channel(shared_from_this(), target, propertyId, curve, duration);
     addChannel(channel);
     return channel;
 }
@@ -469,24 +453,20 @@ void Animation::setTransformRotationOffset(Curve* curve, unsigned int propertyId
 }
 
 //----------------------------------------------------------------------------
-Animation* Animation::clone(Channel* channel, AnimationTarget* target)
+AnimationPtr Animation::clone(Channel* channel, AnimationTarget* target)
 {
     assert(channel);
 
-    Animation* animation = new Animation(getId());
+    auto animation = Animation::create(getId());
 
     Animation::Channel* channelCopy = new Animation::Channel(*channel, animation, target);
     animation->addChannel(channelCopy);
-    // Release the animation because a newly created animation has a ref count of 1 and the channels hold the ref to animation.
-    animation->release();
-    assert(animation->getRefCount() == 1);
 
     // Clone the clips
-
-    if (_defaultClip) animation->_defaultClip = _defaultClip->clone(animation);
+    if (_defaultClip) animation->_defaultClip = _defaultClip->clone(animation.get());
 
     for (const auto& [clipId, clipPtr] : _clipsMap)
-        animation->addClip(clipPtr->clone(animation));
+        animation->addClip(clipPtr->clone(animation.get()));
 
     return animation;
 }

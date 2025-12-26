@@ -40,7 +40,7 @@ class TextureSample : public Sample
   private:
     bool drawScene(Node* node);
 
-    Font* _font;
+    FontPtr _font;
     ScenePtr _scene;
     float _zOffset;
 };

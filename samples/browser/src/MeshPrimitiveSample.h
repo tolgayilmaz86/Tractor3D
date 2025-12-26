@@ -42,7 +42,7 @@ class MeshPrimitiveSample : public Sample
 
     static MeshBatch* createMeshBatch(Mesh::PrimitiveType primitiveType);
 
-    Font* _font;
+    FontPtr _font;
     Model* _triangles;
     Model* _triangleStrip;
     Model* _lineStrip;

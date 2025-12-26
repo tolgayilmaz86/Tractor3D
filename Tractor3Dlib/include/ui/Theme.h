@@ -15,14 +15,23 @@
 
 #include "pch.h"
 
+#include <memory>
+
 #include "graphics/Rectangle.h"
 #include "renderer/Font.h"
 #include "renderer/Texture.h"
 #include "scene/Properties.h"
-#include "utils/Ref.h"
 
 namespace tractor
 {
+
+class Theme;
+
+/** Shared pointer type for Theme. */
+using ThemePtr = std::shared_ptr<Theme>;
+
+/** Weak pointer type for Theme. */
+using ThemeWeakPtr = std::weak_ptr<Theme>;
 
 /**
  * Defines a theme used to represent the look or appearance of controls.
@@ -34,7 +43,7 @@ namespace tractor
  * A Style describes the border, margin, and padding of a Control, what images, skins, and cursors
  * are associated with a Control, and Font properties to apply to a Control's text.
  */
-class Theme : public Ref
+class Theme : public std::enable_shared_from_this<Theme>
 {
     friend class Control;
     friend class Form;
@@ -159,12 +168,18 @@ class Theme : public Ref
      * An image has a region and a blend color in addition to an ID.
      * UV coordinates are calculated from the region and can be retrieved.
      */
-    class ThemeImage : public Ref
+    class ThemeImage
     {
         friend class Theme;
         friend class Control;
+        friend class Style;
 
       public:
+        /**
+         * Virtual destructor.
+         */
+        virtual ~ThemeImage() = default;
+
         /**
          * Gets the ID of the ThemeImage.
          */
@@ -188,18 +203,24 @@ class Theme : public Ref
       private:
         ThemeImage(float tw, float th, const Rectangle& region, const Vector4& color);
 
-        ~ThemeImage() = default;
-
-        static ThemeImage* create(float tw,
-                                  float th,
-                                  Properties* properties,
-                                  const Vector4& defaultColor);
+        static std::shared_ptr<ThemeImage> create(float tw,
+                                                  float th,
+                                                  Properties* properties,
+                                                  const Vector4& defaultColor);
 
         std::string _id;
         UVs _uvs;
         Rectangle _region;
         Vector4 _color;
     };
+
+    /** Shared pointer type for ThemeImage. */
+    using ThemeImagePtr = std::shared_ptr<ThemeImage>;
+
+    /**
+     * Virtual destructor.
+     */
+    virtual ~Theme();
 
     /**
      * Creates a theme using the data from the Properties object defined at the specified URL,
@@ -209,14 +230,14 @@ class Theme : public Ref
      * @param url The URL pointing to the Properties object defining the theme.
      * @script{create}
      */
-    static Theme* create(const std::string& url);
+    static ThemePtr create(const std::string& url);
 
     /**
      * Returns the default theme.
      *
      * @return The default theme.
      */
-    static Theme* getDefault();
+    static ThemePtr getDefault();
 
     /**
      * Get a style by its ID.
@@ -251,12 +272,15 @@ class Theme : public Ref
      * can be assigned to each overlay of a style, and controls
      * using the style can then retrieve images by ID in order to draw themselves.
      */
-    class ImageList : public Ref
+    class ImageList
     {
         friend class Theme;
         friend class Control;
+        friend class Style;
 
       public:
+        virtual ~ImageList();
+
         const std::string& getId() const noexcept { return _id; }
 
         ThemeImage* getImage(const std::string& imageId) const;
@@ -266,26 +290,28 @@ class Theme : public Ref
 
         ImageList(const ImageList& copy);
 
-        ~ImageList();
-
         /**
          * Hidden copy assignment operator.
          */
         ImageList& operator=(const ImageList&) = delete;
 
-        static ImageList* create(float tw, float th, Properties* properties);
+        static std::shared_ptr<ImageList> create(float tw, float th, Properties* properties);
 
         std::string _id;
-        std::vector<ThemeImage*> _images;
+        std::vector<ThemeImagePtr> _images;
         Vector4 _color;
     };
+
+    /** Shared pointer type for ImageList. */
+    using ImageListPtr = std::shared_ptr<ImageList>;
 
     /**
      * A skin defines the border and background of a control.
      */
-    class Skin : public Ref
+    class Skin
     {
         friend class Theme;
+        friend class Style;
 
       public:
         enum SkinArea
@@ -300,6 +326,11 @@ class Theme : public Ref
             BOTTOM,
             BOTTOM_RIGHT
         };
+
+        /**
+         * Virtual destructor.
+         */
+        virtual ~Skin() = default;
 
         /**
          * Gets this skin's ID.
@@ -343,19 +374,17 @@ class Theme : public Ref
              const Theme::Border& border,
              const Vector4& color);
 
-        ~Skin() = default;
-
         /**
          * Hidden copy assignment operator.
          */
         Skin& operator=(const Skin&) = delete;
 
-        static Skin* create(const std::string& id,
-                            float tw,
-                            float th,
-                            const Rectangle& region,
-                            const Theme::Border& border,
-                            const Vector4& color);
+        static std::shared_ptr<Skin> create(const std::string& id,
+                                            float tw,
+                                            float th,
+                                            const Rectangle& region,
+                                            const Theme::Border& border,
+                                            const Vector4& color);
 
         void setRegion(const Rectangle& region, float tw, float th);
 
@@ -367,6 +396,9 @@ class Theme : public Ref
         float _tw, _th;
     };
 
+    /** Shared pointer type for Skin. */
+    using SkinPtr = std::shared_ptr<Skin>;
+
     /**
      * Constructor.
      */
@@ -375,12 +407,7 @@ class Theme : public Ref
     /**
      * Constructor.
      */
-    Theme(const Theme& theme);
-
-    /**
-     * Destructor.
-     */
-    ~Theme();
+    Theme(const Theme& theme) = delete;
 
     /**
      * Cleans up any theme related resources when the game shuts down.
@@ -404,12 +431,12 @@ class Theme : public Ref
     std::string _url;
     Texture* _texture{ nullptr };
     SpriteBatch* _spriteBatch{ nullptr };
-    Theme::ThemeImage* _emptyImage{ nullptr };
+    ThemeImagePtr _emptyImage{ nullptr };
     std::vector<Style*> _styles{};
-    std::vector<ThemeImage*> _images{};
-    std::vector<ImageList*> _imageLists{};
-    std::vector<Skin*> _skins{};
-    std::set<Font*> _fonts{};
+    std::vector<ThemeImagePtr> _images{};
+    std::vector<ImageListPtr> _imageLists{};
+    std::vector<SkinPtr> _skins{};
+    std::set<FontPtr> _fonts{};
 };
 
 } // namespace tractor

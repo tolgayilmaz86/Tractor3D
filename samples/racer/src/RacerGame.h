@@ -111,9 +111,9 @@ class RacerGame : public Game, Control::Listener
     bool isUpset() const;
 
     ScenePtr _scene;
-    Font* _font{ nullptr };
-    Form* _menu{ nullptr };
-    Form* _overlay{ nullptr };
+    FontPtr _font{ nullptr };
+    FormPtr _menu{ nullptr };
+    FormPtr _overlay{ nullptr };
     std::vector<Node*> _renderQueues[2];
     unsigned int _keyFlags{ 0 };
     unsigned int _mouseFlags{ 0 };

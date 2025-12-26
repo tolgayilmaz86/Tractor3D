@@ -13,6 +13,8 @@
  */
 #pragma once
 
+#include <memory>
+
 #include "renderer/RenderState.h"
 #include "renderer/Technique.h"
 #include "scene/Properties.h"
@@ -21,6 +23,13 @@ namespace tractor
 {
 
 class NodeCloneContext;
+class Material;
+
+/** Shared pointer type for Material. */
+using MaterialPtr = std::shared_ptr<Material>;
+
+/** Weak pointer type for Material. */
+using MaterialWeakPtr = std::weak_ptr<Material>;
 
 /**
  * Defines a material for an object to be rendered.
@@ -116,6 +125,11 @@ class Material : public RenderState
                             const std::string& defines = EMPTY_STRING);
 
     /**
+     * Destructor.
+     */
+    ~Material();
+
+    /**
      * Returns the number of techniques in the material.
      *
      * @return The technique count.
@@ -169,11 +183,6 @@ class Material : public RenderState
      * Constructor.
      */
     Material(const Material& m);
-
-    /**
-     * Destructor.
-     */
-    ~Material();
 
     /**
      * Clones this material.

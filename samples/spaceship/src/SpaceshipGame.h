@@ -113,7 +113,7 @@ class SpaceshipGame : public Game
     Vector3 _initialCameraPos;
 
     // Font for text rendering
-    Font* _font;
+    FontPtr _font;
 
     // Ship physics variables
     Vector2 _velocity;

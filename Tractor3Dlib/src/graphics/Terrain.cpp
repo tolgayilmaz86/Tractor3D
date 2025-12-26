@@ -48,7 +48,7 @@ Terrain::~Terrain()
         SAFE_DELETE(_patches[i]);
     }
     SAFE_RELEASE(_normalMap);
-    SAFE_RELEASE(_heightfield);
+    _heightfield.reset();  // shared_ptr handles cleanup
 }
 
 //----------------------------------------------------------------------------
@@ -67,7 +67,7 @@ TerrainPtr Terrain::create(const std::string& path, Properties* properties)
     Properties* p = properties;
     Properties* pTerrain = nullptr;
     bool externalProperties = (p != nullptr);
-    HeightField* heightfield = nullptr;
+    HeightFieldPtr heightfield = nullptr;
     Vector3 terrainSize;
     int patchSize = 0;
     int detailLevels = 1;
@@ -244,7 +244,7 @@ TerrainPtr Terrain::create(const std::string& path, Properties* properties)
                   terrainSize.z / (heightfield->getRowCount() - 1));
 
     // Create terrain
-    TerrainPtr terrain = create(heightfield,
+    TerrainPtr terrain = create(heightfield.get(),
                                 scale,
                                 (unsigned int)patchSize,
                                 (unsigned int)detailLevels,
@@ -294,7 +294,7 @@ TerrainPtr Terrain::create(HeightField* heightfield,
 
     // Create the terrain object
     TerrainPtr terrain(new Terrain());
-    terrain->_heightfield = heightfield;
+    terrain->_heightfield = heightfield->shared_from_this();
     terrain->_materialPath = materialPath.empty() ? TERRAIN_MATERIAL : materialPath;
 
     // Store terrain local scaling so it can be applied to the heightfield

@@ -14,6 +14,7 @@
 #pragma once
 
 #include "tractor.h"
+#include <memory>
 
 using namespace tractor;
 

@@ -539,7 +539,7 @@ void RacerGame::gamepadEvent(Gamepad::GamepadEvent evt, Gamepad* gamepad)
             {
                 float from = 0.0f;
                 float to = getHeight();
-                Animation* virtualGamepadAnimation =
+                AnimationPtr virtualGamepadAnimation =
                     gamepad->getForm()->createAnimationFromTo("gamepad_transition",
                                                               Form::ANIMATE_POSITION_Y,
                                                               &from,

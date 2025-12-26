@@ -15,12 +15,13 @@
 
 #include "pch.h"
 
+#include <memory>
+
 #include "graphics/Rectangle.h"
 #include "renderer/Font.h"
 #include "renderer/Texture.h"
 #include "scene/Properties.h"
 #include "ui/Theme.h"
-#include "utils/Ref.h"
 
 namespace tractor
 {
@@ -49,7 +50,6 @@ class Theme::Style
      */
     Theme* getTheme() const noexcept { return _theme; }
 
-  private:
     /**
      * A style has one overlay for each possible control state.
      */
@@ -66,13 +66,19 @@ class Theme::Style
     /**
      * This class represents a control's overlay for one of its states.
      */
-    class Overlay : public Ref, public AnimationTarget
+    class Overlay : public std::enable_shared_from_this<Overlay>, public AnimationTarget
     {
         friend class Theme;
         friend class Theme::Style;
         friend class Control;
         friend class Container;
         friend class Form;
+
+      public:
+        /**
+         * Virtual destructor.
+         */
+        virtual ~Overlay();
 
       private:
         static const int ANIMATE_OPACITY = 1;
@@ -81,14 +87,12 @@ class Theme::Style
 
         Overlay(const Overlay& copy);
 
-        virtual ~Overlay();
-
         /**
          * Hidden copy assignment operator.
          */
         Overlay& operator=(const Overlay&) = delete;
 
-        static Overlay* create();
+        static std::shared_ptr<Overlay> create();
 
         OverlayType getType() const noexcept { return OVERLAY_NORMAL; }
 
@@ -110,7 +114,7 @@ class Theme::Style
 
         const Theme::UVs& getSkinUVs(Theme::Skin::SkinArea area) const;
 
-        Font* getFont() const noexcept { return _font; }
+        Font* getFont() const noexcept { return _font.get(); }
 
         void setFont(Font* font);
 
@@ -186,9 +190,13 @@ class Theme::Style
         Skin* _skin{ nullptr };
         Theme::ThemeImage* _cursor{ nullptr };
         Theme::ImageList* _imageList{ nullptr };
-        Font* _font{ nullptr };
+        FontPtr _font{ nullptr };
     };
 
+    /** Shared pointer type for Overlay. */
+    using OverlayPtr = std::shared_ptr<Overlay>;
+
+  private:
     /**
      * Constructor.
      */
@@ -198,11 +206,11 @@ class Theme::Style
           float th,
           const Theme::Margin& margin,
           const Theme::Padding& padding,
-          Overlay* normal,
-          Overlay* focus,
-          Overlay* active,
-          Overlay* disabled,
-          Overlay* hover);
+          OverlayPtr normal,
+          OverlayPtr focus,
+          OverlayPtr active,
+          OverlayPtr disabled,
+          OverlayPtr hover);
 
     /**
      * Constructor.
@@ -229,7 +237,7 @@ class Theme::Style
      */
     Theme::Style::Overlay* getOverlay(OverlayType overlayType) const noexcept
     {
-        return _overlays[overlayType];
+        return _overlays[overlayType].get();
     }
 
     /**
@@ -274,7 +282,7 @@ class Theme::Style
     float _th{ 0 };
     Theme::Margin _margin{};
     Theme::Padding _padding{};
-    Overlay* _overlays[OVERLAY_MAX]{ nullptr };
+    OverlayPtr _overlays[OVERLAY_MAX]{ nullptr };
 };
 
 } // namespace tractor

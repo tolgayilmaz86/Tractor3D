@@ -32,6 +32,13 @@ class VerticalLayout : public Layout
 
   public:
     /**
+     * Create a VerticalLayout.
+     *
+     * @return a VerticalLayout object.
+     */
+    static std::shared_ptr<VerticalLayout> create();
+
+    /**
      * Set whether this layout will start laying out controls from the bottom of the container.
      * This setting defaults to 'false', meaning controls will start at the top.
      *
@@ -51,7 +58,7 @@ class VerticalLayout : public Layout
      *
      * @return Layout::LAYOUT_VERTICAL
      */
-    Layout::Type getType() const noexcept { return Layout::LAYOUT_VERTICAL; }
+    Layout::Type getType() const noexcept override { return Layout::LAYOUT_VERTICAL; }
 
     /**
      * Returns the vertical spacing between controls in the layout.
@@ -74,11 +81,6 @@ class VerticalLayout : public Layout
     VerticalLayout() = default;
 
     /**
-     * Destructor.
-     */
-    virtual ~VerticalLayout() = default;
-
-    /**
      * Update the controls contained by the specified container.
      *
      * Controls are placed next to one another vertically until
@@ -86,7 +88,7 @@ class VerticalLayout : public Layout
      *
      * @param container The container to update.
      */
-    void update(const Container* container);
+    void update(const Container* container) override;
 
     /**
      * Flag determining whether this layout will start laying out controls from the bottom of the
@@ -103,14 +105,7 @@ class VerticalLayout : public Layout
     /**
      * Constructor.
      */
-    VerticalLayout(const VerticalLayout& copy);
-
-    /**
-     * Create a VerticalLayout.
-     *
-     * @return a VerticalLayout object.
-     */
-    static VerticalLayout* create();
+    VerticalLayout(const VerticalLayout& copy) = delete;
 };
 
 } // namespace tractor

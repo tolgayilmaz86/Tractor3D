@@ -22,6 +22,11 @@
 namespace tractor
 {
 
+class ImageControl;
+
+/** Shared pointer type for ImageControl. */
+using ImageControlPtr = std::shared_ptr<ImageControl>;
+
 /**
  * Defines an image control.
  *
@@ -42,7 +47,7 @@ class ImageControl : public Control
      * @return The new image control.
      * @script{create}
      */
-    static ImageControl* create(const char* id, Theme::Style* style = nullptr);
+    static ImageControlPtr create(const char* id, Theme::Style* style = nullptr);
 
     /**
      * Extends ScriptTarget::getTypeName() to return the type name of this class.
@@ -121,22 +126,22 @@ class ImageControl : public Control
      */
     const Rectangle& getRegionDst() const noexcept { return _dstRegion; }
 
-  protected:
     ImageControl() = default;
 
     virtual ~ImageControl();
 
+  protected:
     /**
      * Creates a new ImageControl.
      *
      * @param style The control's custom style.
      * @param properties A properties object containing a definition of the ImageControl (optional).
      *
-     * @return The new ImageControl.
+     * @return The new ImageControl as a shared_ptr.
      * @script{create}
      *
      */
-    static Control* create(Theme::Style* style, Properties* properties = nullptr);
+    static ControlPtr create(Theme::Style* style, Properties* properties = nullptr);
 
     void initialize(const std::string& typeName, Theme::Style* style, Properties* properties);
 

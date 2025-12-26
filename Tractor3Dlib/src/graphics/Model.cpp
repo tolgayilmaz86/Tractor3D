@@ -162,9 +162,8 @@ void Model::setMaterial(Material* material, int partIndex)
             {
                 Pass* p = t->getPassByIndex(j);
                 assert(p);
-                VertexAttributeBinding* b = VertexAttributeBinding::create(_mesh, p->getEffect());
+                VertexAttributeBindingPtr b = VertexAttributeBinding::create(_mesh, p->getEffect());
                 p->setVertexAttributeBinding(b);
-                SAFE_RELEASE(b);
             }
         }
         // Apply node binding for the new material.

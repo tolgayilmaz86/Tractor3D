@@ -468,27 +468,27 @@ class PhysicsController : public ScriptTarget
 
     // Creates a collision shape for the given node and Tractor3D shape definition.
     // Populates 'centerOfMassOffset' with the correct calculated center of mass offset.
-    PhysicsCollisionShape* createShape(Node* node,
-                                       const PhysicsCollisionShape::Definition& shape,
-                                       Vector3* centerOfMassOffset,
-                                       bool dynamic);
+    PhysicsCollisionShapePtr createShape(Node* node,
+                                         const PhysicsCollisionShape::Definition& shape,
+                                         Vector3* centerOfMassOffset,
+                                         bool dynamic);
 
     // Creates a box collision shape.
-    PhysicsCollisionShape* createBox(const Vector3& extents, const Vector3& scale);
+    PhysicsCollisionShapePtr createBox(const Vector3& extents, const Vector3& scale);
 
     // Creates a sphere collision shape.
-    PhysicsCollisionShape* createSphere(float radius, const Vector3& scale);
+    PhysicsCollisionShapePtr createSphere(float radius, const Vector3& scale);
 
     // Creates a capsule collision shape.
-    PhysicsCollisionShape* createCapsule(float radius, float height, const Vector3& scale);
+    PhysicsCollisionShapePtr createCapsule(float radius, float height, const Vector3& scale);
 
     // Creates a heightfield collision shape.
-    PhysicsCollisionShape* createHeightfield(Node* node,
-                                             HeightField* heightfield,
-                                             Vector3* centerOfMassOffset);
+    PhysicsCollisionShapePtr createHeightfield(Node* node,
+                                               const HeightFieldPtr& heightfield,
+                                               Vector3* centerOfMassOffset);
 
     // Creates a triangle mesh collision shape.
-    PhysicsCollisionShape* createMesh(Mesh* mesh, const Vector3& scale, bool dynamic);
+    PhysicsCollisionShapePtr createMesh(Mesh* mesh, const Vector3& scale, bool dynamic);
 
     // Destroys a collision shape created through PhysicsController
     void destroyShape(PhysicsCollisionShape* shape);
@@ -595,7 +595,7 @@ class PhysicsController : public ScriptTarget
     btSequentialImpulseConstraintSolver* _solver{ nullptr };
     btDynamicsWorld* _world{ nullptr };
     btGhostPairCallback* _ghostPairCallback{ nullptr };
-    std::vector<PhysicsCollisionShape*> _shapes;
+    std::vector<PhysicsCollisionShapePtr> _shapes;
     DebugDrawer* _debugDrawer{ nullptr };
     Listener::EventType _status{ PhysicsController::Listener::DEACTIVATED };
     std::vector<Listener*>* _listeners{ nullptr };

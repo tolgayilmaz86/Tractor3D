@@ -14,6 +14,7 @@
 #pragma once
 
 #include <cstdint>
+#include <memory>
 #include <string>
 
 #include "math/Vector2.h"
@@ -25,6 +26,9 @@ class Container;
 class Form;
 class JoystickControl;
 class Platform;
+
+/** Forward declaration of FormPtr */
+using FormPtr = std::shared_ptr<Form>;
 
 /**
  * Defines a gamepad interface for handling input from joysticks and buttons.
@@ -140,14 +144,14 @@ class Gamepad
      * @return true if the gamepad is currently represented by a UI form; false if the gamepad is
      *         not represented by a UI form.
      */
-    bool isVirtual() const noexcept { return _form; }
+    bool isVirtual() const noexcept { return _form != nullptr; }
 
     /**
      * Gets the Form used to represent this gamepad.
      *
      * @return the Form used to represent this gamepad. nullptr if the gamepad is not represented with a Form.
      */
-    Form* getForm() const noexcept { return _form; }
+    Form* getForm() const noexcept { return _form.get(); }
 
     /**
      * Updates the gamepad's state.  For a virtual gamepad, this results in calling update()
@@ -278,12 +282,14 @@ class Gamepad
      */
     void bindGamepadControls(Container* container);
 
+    static bool pollGamepad(Gamepad* gamepad);
+
     GamepadHandle _handle;
     size_t _buttonCount{ 0 };
     size_t _joystickCount{ 0 };
     size_t _triggerCount{ 0 };
     std::string _name{};
-    Form* _form{ nullptr };
+    FormPtr _form{ nullptr };
     JoystickControl* _uiJoysticks[2]{ nullptr, nullptr };
     Button* _uiButtons[20]{ nullptr };
     unsigned int _buttons{ 0 };

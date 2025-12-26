@@ -68,9 +68,9 @@ Form::~Form()
 }
 
 //----------------------------------------------------------------
-Form* Form::create(const std::string& url)
+FormPtr Form::create(const std::string& url)
 {
-    Form* form = new Form();
+    auto form = std::make_shared<Form>();
 
     // Load Form from .form file.
     auto properties = std::unique_ptr<Properties>(Properties::create(url));
@@ -89,7 +89,7 @@ Form* Form::create(const std::string& url)
     }
 
     // Load the form's theme style.
-    Theme* theme = nullptr;
+    ThemePtr theme = nullptr;
     Theme::Style* style = nullptr;
     if (formProperties->exists("theme"))
     {
@@ -116,19 +116,13 @@ Form* Form::create(const std::string& url)
     // Initialize the form and all of its child controls
     form->initialize("Form", style, formProperties);
 
-    // Release the theme: its lifetime is controlled by addRef() and release() calls in initialize (above) and ~Control.
-    if (theme != Theme::getDefault())
-    {
-        SAFE_RELEASE(theme);
-    }
-
     return form;
 }
 
 //----------------------------------------------------------------
-Form* Form::create(const std::string& id, Theme::Style* style, Layout::Type layoutType)
+FormPtr Form::create(const std::string& id, Theme::Style* style, Layout::Type layoutType)
 {
-    Form* form = new Form();
+    auto form = std::make_shared<Form>();
     form->_id = id;
     form->_layout = createLayout(layoutType);
     form->initialize("Form", style, nullptr);
@@ -427,7 +421,17 @@ Control* Form::handlePointerPressRelease(int* x, int* y, bool pressed, unsigned 
 
         if (active)
         {
-            active->addRef(); // protect against event-hanlder evil
+            // Use shared_from_this to protect against event-handler destruction
+            ControlPtr activeRef;
+            try
+            {
+                activeRef = active->shared_from_this();
+            }
+            catch (const std::bad_weak_ptr&)
+            {
+                // If not managed by shared_ptr, continue without protection
+                // (shouldn't happen in normal usage)
+            }
 
             // Release happened for an active control (that was pressed)
             ctrl = active;
@@ -439,6 +443,20 @@ Control* Form::handlePointerPressRelease(int* x, int* y, bool pressed, unsigned 
             active->setDirty(DIRTY_STATE);
             active->_state = NORMAL;
             __activeControl[contactIndex] = nullptr;
+
+            // Fire release event for the previously active control
+            active->notifyListeners(Control::Listener::RELEASE);
+
+            // If the release event was received on the same control that was
+            // originally pressed, fire a click event
+            if (active->_absoluteClipBounds.contains(newX, newY))
+            {
+                if (!active->_parent || !active->_parent->isScrolling())
+                {
+                    active->notifyListeners(Control::Listener::CLICK);
+                }
+            }
+            // activeRef goes out of scope here, releasing the reference if needed
         }
         else
         {
@@ -471,24 +489,6 @@ Control* Form::handlePointerPressRelease(int* x, int* y, bool pressed, unsigned 
                     __activeControl[contactIndex] = nullptr;
                 }
             }
-        }
-
-        if (active)
-        {
-            // Fire release event for the previously active control
-            active->notifyListeners(Control::Listener::RELEASE);
-
-            // If the release event was received on the same control that was
-            // originally pressed, fire a click event
-            if (active->_absoluteClipBounds.contains(newX, newY))
-            {
-                if (!active->_parent || !active->_parent->isScrolling())
-                {
-                    active->notifyListeners(Control::Listener::CLICK);
-                }
-            }
-
-            active->release();
         }
     }
 

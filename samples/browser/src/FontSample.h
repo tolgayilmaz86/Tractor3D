@@ -38,7 +38,7 @@ class FontSample : public Sample, public Control::Listener
     void renderToTexture();
     void buildQuad(Texture* texture);
 
-    Form* _form;
+    FormPtr _form;
     RenderState::StateBlock::Ptr _stateBlock;
     unsigned int _size;
     bool _wrap;
@@ -47,10 +47,10 @@ class FontSample : public Sample, public Control::Listener
     bool _rightToLeft;
     bool _simple;
     Font::Justify _alignment;
-    std::vector<Font*> _fonts;
+    std::vector<FontPtr> _fonts;
     unsigned int _fontsCount;
     unsigned int _fontIndex;
-    Font* _font;
+    Font* _font;  // raw pointer to active font (non-owning)
     Rectangle _viewport;
     std::string _sampleString;
 };

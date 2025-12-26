@@ -37,11 +37,8 @@ void FormsSample::finalize()
 {
     _scene.reset();
     SAFE_RELEASE(_formNode);
-    SAFE_RELEASE(_formSelect);
-    for (size_t i = 0; i < _forms.size(); i++)
-    {
-        SAFE_RELEASE(_forms[i]);
-    }
+    _formSelect.reset();
+    _forms.clear();
 }
 
 static void printProperties(Properties* properties, unsigned int tabCount)
@@ -103,7 +100,7 @@ void FormsSample::initialize()
 
     for (size_t i = 0; i < _formFiles.size(); i++)
     {
-        Form* form = Form::create(_formFiles[i]);
+        FormPtr form = Form::create(_formFiles[i]);
         form->setEnabled(false);
         _forms.push_back(form);
     }
@@ -137,7 +134,7 @@ void FormsSample::initialize()
 void FormsSample::formChanged()
 {
     if (_activeForm) _activeForm->setEnabled(false);
-    _activeForm = _forms[_formIndex];
+    _activeForm = _forms[_formIndex].get();
     _activeForm->setEnabled(true);
     _activeForm->setFocus();
 
@@ -149,28 +146,27 @@ void FormsSample::formChanged()
     _formNode->setScale(scale, scale, 1.0f);
     _formNodeParent->setTranslation(0, 0, -1.5f);
     _formNode->setTranslation(-0.5f, -0.5f, 0);
-    _formNode->setDrawable(_activeForm);
+    // Use shared_ptr overload to properly track ownership and avoid double-free
+    _formNode->setDrawable(_forms[_formIndex]);
 }
 
 void FormsSample::createSampleForm()
 {
-    Form* form = Form::create("testForm", nullptr);
+    FormPtr form = Form::create("testForm", nullptr);
     form->setSize(600, 600);
 
-    Label* label = Label::create("testLabel");
+    auto label = Label::create("testLabel");
     label->setPosition(50, 50);
     label->setSize(200, 50);
     label->setText("Label:");
     form->addControl(label);
-    label->release();
 
-    Button* button = Button::create("opacityButton");
+    auto button = Button::create("opacityButton");
     button->setPosition(45, 100);
     button->setSize(200, 100);
     button->setText("This is a button.  Click to change its opacity.");
     button->addListener(this, Control::Listener::CLICK);
     form->addControl(button);
-    button->release();
 
     form->setEnabled(false);
     _forms.push_back(form);

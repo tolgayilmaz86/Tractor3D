@@ -24,13 +24,14 @@
 namespace tractor
 {
 
-static std::vector<Font*> __fontCache;
+static std::vector<FontPtr> __fontCache;
 
 //----------------------------------------------------------------------------
 Font::~Font()
 {
     // Remove this Font from the font cache.
-    std::vector<Font*>::iterator itr = std::find(__fontCache.begin(), __fontCache.end(), this);
+    auto itr = std::find_if(__fontCache.begin(), __fontCache.end(),
+        [this](const FontPtr& f) { return f.get() == this; });
     if (itr != __fontCache.end())
     {
         __fontCache.erase(itr);
@@ -38,23 +39,20 @@ Font::~Font()
 
     SAFE_RELEASE(_texture);
 
-    // Free child fonts
-    std::ranges::for_each(_sizes, [](auto* font) { SAFE_RELEASE(font); });
+    // _sizes is now vector<FontPtr>, will clean up automatically
     _sizes.clear();
 }
 
 //----------------------------------------------------------------------------
-Font* Font::create(const std::string& path, const std::string& id)
+FontPtr Font::create(const std::string& path, const std::string& id)
 {
     // Search the font cache for a font with the given path and ID.
-    for (size_t i = 0, count = __fontCache.size(); i < count; ++i)
+    for (const auto& f : __fontCache)
     {
-        Font* f = __fontCache[i];
         assert(f);
         if (f->_path == path && (id.empty() || f->_id == id))
         {
             // Found a match.
-            f->addRef();
             return f;
         }
     }
@@ -67,7 +65,7 @@ Font* Font::create(const std::string& path, const std::string& id)
         return nullptr;
     }
 
-    Font* font = nullptr;
+    FontPtr font = nullptr;
     if (id.empty())
     {
         // Get the ID of the first object in the bundle (assume it's a Font).
@@ -100,13 +98,13 @@ Font* Font::create(const std::string& path, const std::string& id)
 }
 
 //----------------------------------------------------------------------------
-Font* Font::create(const std::string& family,
-                   Style style,
-                   unsigned int size,
-                   Glyph* glyphs,
-                   int glyphCount,
-                   Texture* texture,
-                   Font::Format format)
+FontPtr Font::create(const std::string& family,
+                     Style style,
+                     unsigned int size,
+                     Glyph* glyphs,
+                     int glyphCount,
+                     Texture* texture,
+                     Font::Format format)
 {
     assert(glyphs);
     assert(texture);
@@ -119,7 +117,7 @@ Font* Font::create(const std::string& family,
     constexpr auto FONT_FSH = "res/shaders/font.frag";
 
     // Create the effect for the font's sprite batch.
-    Effect* fontEffect = std::move(Effect::createFromFile(FONT_VSH, FONT_FSH, defines));
+    EffectPtr fontEffect = Effect::createFromFile(FONT_VSH, FONT_FSH, defines);
     if (fontEffect == nullptr)
     {
         GP_WARN("Failed to create effect for font.");
@@ -128,7 +126,7 @@ Font* Font::create(const std::string& family,
     }
 
     // Create batch for the font.
-    auto batch = std::unique_ptr<SpriteBatch>(SpriteBatch::create(texture, fontEffect, 128));
+    auto batch = std::unique_ptr<SpriteBatch>(SpriteBatch::create(texture, fontEffect.get(), 128));
 
     if (batch == nullptr)
     {
@@ -144,7 +142,7 @@ Font* Font::create(const std::string& family,
     // Increase the ref count of the texture to retain it.
     texture->addRef();
 
-    Font* font = new Font();
+    auto font = std::make_shared<Font>(Font::PrivateToken{});
     font->_format = format;
     font->_family = family;
     font->_style = style;
@@ -226,7 +224,7 @@ Font* Font::findClosestSize(int size)
     Font* closest = this;
     for (size_t i = 0, count = _sizes.size(); i < count; ++i)
     {
-        Font* f = _sizes[i];
+        Font* f = _sizes[i].get();
         int d = abs(size - (int)f->_size);
         if (d < diff || (d == diff && f->_size > closest->_size)) // prefer scaling down instead of up
         {

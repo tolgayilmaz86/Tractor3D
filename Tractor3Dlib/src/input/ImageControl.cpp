@@ -21,18 +21,18 @@ namespace tractor
 ImageControl::~ImageControl() { SAFE_DELETE(_batch); }
 
 //-----------------------------------------------------------------------------
-ImageControl* ImageControl::create(const char* id, Theme::Style* style)
+ImageControlPtr ImageControl::create(const char* id, Theme::Style* style)
 {
-    ImageControl* imageControl = new ImageControl();
+    auto imageControl = std::make_shared<ImageControl>();
     imageControl->_id = id ? id : "";
     imageControl->initialize("Image", style, nullptr);
     return imageControl;
 }
 
 //-----------------------------------------------------------------------------
-Control* ImageControl::create(Theme::Style* style, Properties* properties)
+ControlPtr ImageControl::create(Theme::Style* style, Properties* properties)
 {
-    ImageControl* imageControl = new ImageControl();
+    auto imageControl = std::make_shared<ImageControl>();
     imageControl->initialize("Image", style, properties);
     return imageControl;
 }

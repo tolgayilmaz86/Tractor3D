@@ -18,8 +18,20 @@
 namespace tractor
 {
 
+static std::weak_ptr<VerticalLayout> __instance;
+
 //----------------------------------------------------------------
-VerticalLayout* VerticalLayout::create() { return new VerticalLayout(); }
+std::shared_ptr<VerticalLayout> VerticalLayout::create()
+{
+    auto instance = __instance.lock();
+    if (!instance)
+    {
+        instance = std::shared_ptr<VerticalLayout>(new VerticalLayout());
+        __instance = instance;
+    }
+
+    return instance;
+}
 
 //----------------------------------------------------------------
 void VerticalLayout::update(const Container* container)
@@ -32,7 +44,7 @@ void VerticalLayout::update(const Container* container)
 
     float yPosition = 0;
 
-    const std::vector<Control*>& controls = container->getControls();
+    const std::vector<ControlPtr>& controls = container->getControls();
 
     int i, end, iter;
     if (_bottomToTop)
@@ -50,7 +62,7 @@ void VerticalLayout::update(const Container* container)
 
     while (i != end)
     {
-        Control* control = controls.at(i);
+        Control* control = controls.at(i).get();
         assert(control);
 
         if (control->isVisible())

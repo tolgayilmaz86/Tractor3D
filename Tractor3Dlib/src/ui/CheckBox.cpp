@@ -21,17 +21,18 @@ namespace tractor
 {
 
 //----------------------------------------------------------------------------
-CheckBox* CheckBox::create(const std::string& id, Theme::Style* style)
+CheckBoxPtr CheckBox::create(const std::string& id, Theme::Style* style)
 {
-    CheckBox* cb = new CheckBox();
+    auto cb = std::make_shared<CheckBox>();
+    cb->_id = id;
     cb->initialize("CheckBox", style, nullptr);
     return cb;
 }
 
 //----------------------------------------------------------------------------
-Control* CheckBox::create(Theme::Style* style, Properties* properties)
+ControlPtr CheckBox::create(Theme::Style* style, Properties* properties)
 {
-    CheckBox* cb = new CheckBox();
+    auto cb = std::make_shared<CheckBox>();
     cb->initialize("CheckBox", style, properties);
     return cb;
 }

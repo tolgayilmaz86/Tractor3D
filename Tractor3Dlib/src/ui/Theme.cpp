@@ -26,54 +26,37 @@
 namespace tractor
 {
 
-static std::vector<Theme*> __themeCache;
-static Theme* __defaultTheme = nullptr;
+static std::vector<ThemePtr> __themeCache;
+static ThemePtr __defaultTheme = nullptr;
 
 //----------------------------------------------------------------
 Theme::~Theme()
 {
-    // Destroy all the cursors, styles and , fonts.
+    // Destroy all the styles
     for (size_t i = 0, count = _styles.size(); i < count; ++i)
     {
         Style* style = _styles[i];
         SAFE_DELETE(style);
     }
 
-    for (size_t i = 0, count = _images.size(); i < count; ++i)
-    {
-        ThemeImage* image = _images[i];
-        SAFE_RELEASE(image);
-    }
-
-    for (size_t i = 0, count = _imageLists.size(); i < count; ++i)
-    {
-        ImageList* imageList = _imageLists[i];
-        SAFE_RELEASE(imageList);
-    }
-
-    for (size_t i = 0, count = _skins.size(); i < count; ++i)
-    {
-        Skin* skin = _skins[i];
-        SAFE_RELEASE(skin);
-    }
+    // shared_ptr handles cleanup for _images, _imageLists, _skins, _emptyImage
 
     SAFE_DELETE(_spriteBatch);
     SAFE_RELEASE(_texture);
 
     // Remove ourself from the theme cache.
-    std::vector<Theme*>::iterator itr = std::find(__themeCache.begin(), __themeCache.end(), this);
+    auto itr = std::find_if(__themeCache.begin(), __themeCache.end(),
+                            [this](const ThemePtr& t) { return t.get() == this; });
     if (itr != __themeCache.end())
     {
         __themeCache.erase(itr);
     }
 
-    SAFE_RELEASE(_emptyImage);
-
-    if (__defaultTheme == this) __defaultTheme = nullptr;
+    if (__defaultTheme.get() == this) __defaultTheme = nullptr;
 }
 
 //----------------------------------------------------------------
-Theme* Theme::getDefault()
+ThemePtr Theme::getDefault()
 {
     if (!__defaultTheme)
     {
@@ -90,12 +73,12 @@ Theme* Theme::getDefault()
         {
             // Create an empty theme so that UI's with no theme don't just crash
             GP_WARN("Creating default (empty) UI Theme.");
-            __defaultTheme = new Theme();
+            __defaultTheme = ThemePtr(new Theme());
             unsigned int color = 0x00000000;
             __defaultTheme->_texture =
                 Texture::create(Texture::RGBA, 1, 1, (unsigned char*)&color, false);
             __defaultTheme->_emptyImage =
-                new Theme::ThemeImage(1.0f, 1.0f, Rectangle::empty(), Vector4::zero());
+                ThemeImagePtr(new Theme::ThemeImage(1.0f, 1.0f, Rectangle::empty(), Vector4::zero()));
             __defaultTheme->_spriteBatch = SpriteBatch::create(__defaultTheme->_texture);
             __defaultTheme->_spriteBatch->getSampler()->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR,
                                                                       Texture::LINEAR);
@@ -110,17 +93,16 @@ Theme* Theme::getDefault()
 }
 
 //----------------------------------------------------------------
-void Theme::finalize() { SAFE_RELEASE(__defaultTheme); }
+void Theme::finalize() { __defaultTheme.reset(); }
 
 //----------------------------------------------------------------
-Theme* Theme::create(const std::string& url)
+ThemePtr Theme::create(const std::string& url)
 {
     // Search theme cache first.
-    auto it = std::ranges::find_if(__themeCache, [url](Theme* t) { return t->_url == url; });
+    auto it = std::ranges::find_if(__themeCache, [url](const ThemePtr& t) { return t->_url == url; });
 
     if (it != __themeCache.end())
     {
-        (*it)->addRef();
         return *it;
     }
 
@@ -143,7 +125,8 @@ Theme* Theme::create(const std::string& url)
 
     // Create a new theme.
     // Add this theme to the cache.
-    auto& theme = __themeCache.emplace_back(new Theme());
+    auto theme = ThemePtr(new Theme());
+    __themeCache.push_back(theme);
 
     theme->_url = url;
 
@@ -160,7 +143,7 @@ Theme* Theme::create(const std::string& url)
     float tw = 1.0f / theme->_texture->getWidth();
     float th = 1.0f / theme->_texture->getHeight();
 
-    theme->_emptyImage = new Theme::ThemeImage(tw, th, Rectangle::empty(), Vector4::zero());
+    theme->_emptyImage = ThemeImagePtr(new Theme::ThemeImage(tw, th, Rectangle::empty(), Vector4::zero()));
 
     // themeProperties->rewind();
     Properties* space = themeProperties->getNextNamespace();
@@ -203,7 +186,7 @@ Theme* Theme::create(const std::string& url)
                 space->getColor("color", &color);
             }
 
-            Skin* skin = Skin::create(space->getId(), tw, th, region, border, color);
+            auto skin = Skin::create(space->getId(), tw, th, region, border, color);
             assert(skin);
             theme->_skins.push_back(skin);
         }
@@ -222,11 +205,11 @@ Theme* Theme::create(const std::string& url)
             // as well as Border and Padding namespaces.
             Theme::Margin margin;
             Theme::Padding padding;
-            Theme::Style::Overlay* normal = nullptr;
-            Theme::Style::Overlay* focus = nullptr;
-            Theme::Style::Overlay* active = nullptr;
-            Theme::Style::Overlay* disabled = nullptr;
-            Theme::Style::Overlay* hover = nullptr;
+            Theme::Style::OverlayPtr normal = nullptr;
+            Theme::Style::OverlayPtr focus = nullptr;
+            Theme::Style::OverlayPtr active = nullptr;
+            Theme::Style::OverlayPtr disabled = nullptr;
+            Theme::Style::OverlayPtr hover = nullptr;
 
             // Need to load OVERLAY_NORMAL first so that the other overlays can inherit from it.
             Properties* innerSpace = space->getNextNamespace();
@@ -242,7 +225,7 @@ Theme* Theme::create(const std::string& url)
                         innerSpace->getColor("textColor", &textColor);
                     }
 
-                    Font* font = nullptr;
+                    FontPtr font = nullptr;
                     std::string fontPath;
                     if (innerSpace->getPath("font", fontPath))
                     {
@@ -274,7 +257,7 @@ Theme* Theme::create(const std::string& url)
                     normal->setCursor(cursor);
                     normal->setImageList(imageList);
                     normal->setTextColor(textColor);
-                    normal->setFont(font);
+                    normal->setFont(font.get());
                     normal->setFontSize(fontSize);
                     normal->setTextAlignment(textAlignment);
                     normal->setTextRightToLeft(rightToLeft);
@@ -283,7 +266,6 @@ Theme* Theme::create(const std::string& url)
                     if (font)
                     {
                         theme->_fonts.insert(font);
-                        font->release();
                     }
 
                     // Done with this pass.
@@ -328,17 +310,13 @@ Theme* Theme::create(const std::string& url)
                         textColor.set(normal->getTextColor());
                     }
 
-                    Font* font = nullptr;
+                    FontPtr font = nullptr;
                     std::string fontPath;
                     if (innerSpace->getPath("font", fontPath))
                     {
                         font = Font::create(fontPath);
                     }
-                    if (!font)
-                    {
-                        font = normal->getFont();
-                        if (font) font->addRef();
-                    }
+                    Font* fontPtr = font ? font.get() : normal->getFont();
 
                     unsigned int fontSize;
                     if (innerSpace->exists("fontSize"))
@@ -409,7 +387,7 @@ Theme* Theme::create(const std::string& url)
                         focus->setCursor(cursor);
                         focus->setImageList(imageList);
                         focus->setTextColor(textColor);
-                        focus->setFont(font);
+                        focus->setFont(fontPtr);
                         focus->setFontSize(fontSize);
                         focus->setTextAlignment(textAlignment);
                         focus->setTextRightToLeft(rightToLeft);
@@ -418,7 +396,6 @@ Theme* Theme::create(const std::string& url)
                         if (font)
                         {
                             theme->_fonts.insert(font);
-                            font->release();
                         }
                     }
                     else if (compareNoCase(innerSpacename, "stateActive"))
@@ -429,7 +406,7 @@ Theme* Theme::create(const std::string& url)
                         active->setCursor(cursor);
                         active->setImageList(imageList);
                         active->setTextColor(textColor);
-                        active->setFont(font);
+                        active->setFont(fontPtr);
                         active->setFontSize(fontSize);
                         active->setTextAlignment(textAlignment);
                         active->setTextRightToLeft(rightToLeft);
@@ -438,7 +415,6 @@ Theme* Theme::create(const std::string& url)
                         if (font)
                         {
                             theme->_fonts.insert(font);
-                            font->release();
                         }
                     }
                     else if (compareNoCase(innerSpacename, "stateDisabled"))
@@ -449,7 +425,7 @@ Theme* Theme::create(const std::string& url)
                         disabled->setCursor(cursor);
                         disabled->setImageList(imageList);
                         disabled->setTextColor(textColor);
-                        disabled->setFont(font);
+                        disabled->setFont(fontPtr);
                         disabled->setFontSize(fontSize);
                         disabled->setTextAlignment(textAlignment);
                         disabled->setTextRightToLeft(rightToLeft);
@@ -458,7 +434,6 @@ Theme* Theme::create(const std::string& url)
                         if (font)
                         {
                             theme->_fonts.insert(font);
-                            font->release();
                         }
                     }
                     else if (compareNoCase(innerSpacename, "stateHover"))
@@ -469,7 +444,7 @@ Theme* Theme::create(const std::string& url)
                         hover->setCursor(cursor);
                         hover->setImageList(imageList);
                         hover->setTextColor(textColor);
-                        hover->setFont(font);
+                        hover->setFont(fontPtr);
                         hover->setFontSize(fontSize);
                         hover->setTextAlignment(textAlignment);
                         hover->setTextRightToLeft(rightToLeft);
@@ -478,7 +453,6 @@ Theme* Theme::create(const std::string& url)
                         if (font)
                         {
                             theme->_fonts.insert(font);
-                            font->release();
                         }
                     }
                 }
@@ -489,18 +463,16 @@ Theme* Theme::create(const std::string& url)
             if (!focus)
             {
                 focus = normal;
-                focus->addRef();
             }
 
             if (!disabled)
             {
                 disabled = normal;
-                disabled->addRef();
             }
 
             // Note: The hover and active states have their overlay left nullptr if unspecified.
             // Events will still be triggered, but a control's overlay will not be changed.
-            theme->_styles.emplace_back(new Theme::Style(theme,
+            theme->_styles.emplace_back(new Theme::Style(theme.get(),
                                                          space->getId(),
                                                          tw,
                                                          th,
@@ -536,10 +508,8 @@ Theme::Style* Theme::getEmptyStyle()
 
     if (!emptyStyle)
     {
-        Theme::Style::Overlay* overlay = Theme::Style::Overlay::create();
-        overlay->addRef();
-        overlay->addRef();
-        emptyStyle = new Theme::Style(const_cast<Theme*>(this),
+        auto overlay = Theme::Style::Overlay::create();
+        emptyStyle = new Theme::Style(this,
                                       "EMPTY_STYLE",
                                       1.0f / _texture->getWidth(),
                                       1.0f / _texture->getHeight(),
@@ -608,10 +578,10 @@ Theme::ThemeImage::ThemeImage(float tw, float th, const Rectangle& region, const
 }
 
 //----------------------------------------------------------------
-Theme::ThemeImage* Theme::ThemeImage::create(float tw,
-                                             float th,
-                                             Properties* properties,
-                                             const Vector4& defaultColor)
+Theme::ThemeImagePtr Theme::ThemeImage::create(float tw,
+                                               float th,
+                                               Properties* properties,
+                                               const Vector4& defaultColor)
 {
     assert(properties);
 
@@ -629,7 +599,7 @@ Theme::ThemeImage* Theme::ThemeImage::create(float tw,
         color.set(defaultColor);
     }
 
-    ThemeImage* image = new ThemeImage(tw, th, region, color);
+    auto image = ThemeImagePtr(new ThemeImage(tw, th, region, color));
     const auto& id = properties->getId();
     if (!id.empty())
     {
@@ -651,23 +621,18 @@ Theme::ImageList::ImageList(const ImageList& copy) : _id(copy._id), _color(copy.
     for (const auto& image : copy._images)
     {
         assert(image);
-        _images.emplace_back(new ThemeImage(*image));
+        _images.emplace_back(ThemeImagePtr(new ThemeImage(*image)));
     }
 }
 
 //----------------------------------------------------------------
 Theme::ImageList::~ImageList()
 {
-    std::vector<ThemeImage*>::const_iterator it;
-    for (it = _images.begin(); it != _images.end(); ++it)
-    {
-        ThemeImage* image = *it;
-        SAFE_RELEASE(image);
-    }
+    // shared_ptr handles cleanup
 }
 
 //----------------------------------------------------------------
-Theme::ImageList* Theme::ImageList::create(float tw, float th, Properties* properties)
+Theme::ImageListPtr Theme::ImageList::create(float tw, float th, Properties* properties)
 {
     assert(properties);
 
@@ -677,7 +642,7 @@ Theme::ImageList* Theme::ImageList::create(float tw, float th, Properties* prope
         properties->getColor("color", &color);
     }
 
-    ImageList* imageList = new ImageList(color);
+    auto imageList = ImageListPtr(new ImageList(color));
 
     auto id = properties->getId();
     if (!id.empty())
@@ -688,9 +653,9 @@ Theme::ImageList* Theme::ImageList::create(float tw, float th, Properties* prope
     Properties* space = properties->getNextNamespace();
     while (space != nullptr)
     {
-        auto& image = imageList->_images.emplace_back(ThemeImage::create(tw, th, space, color));
-
+        auto image = ThemeImage::create(tw, th, space, color);
         assert(image);
+        imageList->_images.emplace_back(image);
 
         space = properties->getNextNamespace();
     }
@@ -703,12 +668,12 @@ Theme::ThemeImage* Theme::ImageList::getImage(const std::string& imageId) const
 {
     auto it =
         std::ranges::find_if(_images,
-                             [imageId](ThemeImage* image)
+                             [imageId](const ThemeImagePtr& image)
                              { return image && compareNoCase(imageId, image->getId()); });
 
     if (it != _images.end())
     {
-        return *it;
+        return it->get();
     }
 
     return nullptr;
@@ -718,14 +683,14 @@ Theme::ThemeImage* Theme::ImageList::getImage(const std::string& imageId) const
 /***************
  * Theme::Skin *
  ***************/
-Theme::Skin* Theme::Skin::create(const std::string& id,
-                                 float tw,
-                                 float th,
-                                 const Rectangle& region,
-                                 const Theme::Border& border,
-                                 const Vector4& color)
+Theme::SkinPtr Theme::Skin::create(const std::string& id,
+                                   float tw,
+                                   float th,
+                                   const Rectangle& region,
+                                   const Theme::Border& border,
+                                   const Vector4& color)
 {
-    Skin* skin = new Skin(tw, th, region, border, color);
+    auto skin = SkinPtr(new Skin(tw, th, region, border, color));
 
     if (!id.empty())
     {
@@ -833,7 +798,7 @@ void Theme::lookUpSprites(const Properties* overlaySpace,
     {
         auto it =
             std::ranges::find_if(_imageLists,
-                                 [imageListString](ImageList* imgList)
+                                 [imageListString](const ImageListPtr& imgList)
                                  {
                                      assert(imgList);
                                      return compareNoCase(imgList->getId(), imageListString);
@@ -841,7 +806,7 @@ void Theme::lookUpSprites(const Properties* overlaySpace,
 
         if (it != _imageLists.end())
         {
-            *imageList = *it;
+            *imageList = it->get();
         }
     }
 
@@ -849,7 +814,7 @@ void Theme::lookUpSprites(const Properties* overlaySpace,
     if (!cursorString.empty())
     {
         auto it = std::ranges::find_if(_images,
-                                       [cursorString](ThemeImage* image)
+                                       [cursorString](const ThemeImagePtr& image)
                                        {
                                            assert(image);
                                            return compareNoCase(image->getId(), cursorString);
@@ -857,7 +822,7 @@ void Theme::lookUpSprites(const Properties* overlaySpace,
 
         if (it != _images.end())
         {
-            *cursor = *it;
+            *cursor = it->get();
         }
     }
 
@@ -865,7 +830,7 @@ void Theme::lookUpSprites(const Properties* overlaySpace,
     if (!skinString.empty())
     {
         auto it = std::ranges::find_if(_skins,
-                                       [skinString](Skin* skin)
+                                       [skinString](const SkinPtr& skin)
                                        {
                                            assert(skin);
                                            return compareNoCase(skin->getId(), skinString);
@@ -874,7 +839,7 @@ void Theme::lookUpSprites(const Properties* overlaySpace,
         if (it != _skins.end())
         {
             assert(skin);
-            *skin = *it;
+            *skin = it->get();
         }
     }
 }

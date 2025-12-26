@@ -69,9 +69,9 @@ void ControlFactory::unregisterCustomControl(const std::string& typeName)
 }
 
 //----------------------------------------------------------------
-Control* ControlFactory::createControl(const std::string& typeName,
-                                       Theme::Style* style,
-                                       Properties* properties)
+ControlPtr ControlFactory::createControl(const std::string& typeName,
+                                         Theme::Style* style,
+                                         Properties* properties)
 {
     std::string upper(typeName);
     std::transform(upper.begin(), upper.end(), upper.begin(), (int (*)(int))toupper);

@@ -16,6 +16,7 @@
 #include <any>
 
 #include "ai/AIAgent.h"
+#include "animation/Animation.h"
 #include "audio/AudioSource.h"
 #include "graphics/BoundingBox.h"
 #include "graphics/Light.h"
@@ -823,15 +824,15 @@ class NodeCloneContext
      *
      * @return The cloned animation or nullptr if not found.
      */
-    Animation* findClonedAnimation(const Animation* animation);
+    AnimationPtr findClonedAnimation(const Animation* animation);
 
     /**
      * Registers the cloned animation with this context so that it doesn't get cloned twice.
      *
      * @param original The pointer to the original animation.
-     * @param clone The pointer to the cloned animation.
+     * @param clone The cloned animation shared pointer.
      */
-    void registerClonedAnimation(const Animation* original, Animation* clone);
+    void registerClonedAnimation(const Animation* original, const AnimationPtr& clone);
 
     /**
      * Finds the cloned node of the given node or nullptr if this node was not registered with this context.
@@ -861,7 +862,7 @@ class NodeCloneContext
      */
     NodeCloneContext& operator=(const NodeCloneContext&) = delete;
 
-    std::map<const Animation*, Animation*> _clonedAnimations{};
+    std::map<const Animation*, AnimationPtr> _clonedAnimations{};
     std::map<const Node*, Node*> _clonedNodes{};
 };
 

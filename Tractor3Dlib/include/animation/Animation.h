@@ -17,7 +17,6 @@
 
 #include "graphics/Curve.h"
 #include "scene/Properties.h"
-#include "utils/Ref.h"
 
 namespace tractor
 {
@@ -25,9 +24,19 @@ namespace tractor
 class AnimationTarget;
 class AnimationController;
 class AnimationClip;
+class Animation;
 
-/** Forward declare AnimationClipPtr */
+/** Shared pointer type for AnimationClip. */
 using AnimationClipPtr = std::shared_ptr<AnimationClip>;
+
+/** Weak pointer type for AnimationClip. */
+using AnimationClipWeakPtr = std::weak_ptr<AnimationClip>;
+
+/** Shared pointer type for Animation. */
+using AnimationPtr = std::shared_ptr<Animation>;
+
+/** Weak pointer type for Animation. */
+using AnimationWeakPtr = std::weak_ptr<Animation>;
 
 /**
  * Defines a generic property animation.
@@ -36,14 +45,30 @@ using AnimationClipPtr = std::shared_ptr<AnimationClip>;
  * Every Animation has the default clip which will run from begin-end time.
  * You can create additional clips to run only parts of an animation and control
  * various runtime characteristics, such as repeat count, etc.
+ * 
+ * @note Animation uses std::shared_ptr for lifetime management. Use AnimationPtr
+ * (std::shared_ptr<Animation>) for ownership and raw pointers for non-owning references.
  */
-class Animation : public Ref
+class Animation : public std::enable_shared_from_this<Animation>
 {
     friend class AnimationClip;
     friend class AnimationTarget;
     friend class Bundle;
 
   public:
+    /**
+     * Creates a new Animation with the specified ID.
+     *
+     * @param id The ID for the animation.
+     * @return A shared pointer to the new Animation.
+     */
+    static AnimationPtr create(const std::string& id);
+
+    /**
+     * Destructor.
+     */
+    ~Animation();
+
     /**
      * Gets the Animation's ID.
      *
@@ -134,18 +159,24 @@ class Animation : public Ref
         friend class AnimationTarget;
 
       private:
-        Channel(Animation* animation,
+        Channel(const AnimationPtr& animation,
                 AnimationTarget* target,
                 int propertyId,
                 std::shared_ptr<Curve> curve,
                 unsigned long duration);
-        Channel(const Channel& copy, Animation* animation, AnimationTarget* target);
+        Channel(const Channel& copy, const AnimationPtr& animation, AnimationTarget* target);
         Channel(const Channel&); // Hidden copy constructor.
         ~Channel();
         Channel& operator=(const Channel&) = delete;
         Curve* getCurve() const noexcept { return _curve.get(); }
+        
+        /**
+         * Gets the animation that owns this channel.
+         * @return Shared pointer to Animation, or nullptr if animation was destroyed.
+         */
+        AnimationPtr getAnimation() const { return _animation.lock(); }
 
-        Animation* _animation;    // Reference to the animation this channel belongs to.
+        AnimationWeakPtr _animation; // Weak reference to the animation this channel belongs to.
         AnimationTarget* _target; // The target of this channel.
         int _propertyId;          // The target property this channel targets.
         std::shared_ptr<Curve> _curve; // The curve used to represent the animation data.
@@ -160,36 +191,7 @@ class Animation : public Ref
     /**
      * Constructor.
      */
-    Animation(const std::string& id,
-              AnimationTarget* target,
-              int propertyId,
-              unsigned int keyCount,
-              unsigned int* keyTimes,
-              float* keyValues,
-              float* keyInValue,
-              float* keyOutValue,
-              unsigned int type);
-
-    /**
-     * Constructor.
-     */
-    Animation(const std::string& id,
-              AnimationTarget* target,
-              int propertyId,
-              unsigned int keyCount,
-              unsigned int* keyTimes,
-              float* keyValues,
-              unsigned int type);
-
-    /**
-     * Constructor.
-     */
-    Animation(const std::string& id);
-
-    /**
-     * Destructor.
-     */
-    ~Animation();
+    explicit Animation(const std::string& id);
 
     /**
      * Hidden copy assignment operator.
@@ -261,8 +263,21 @@ class Animation : public Ref
      *
      * @return The newly created animation.
      */
-    Animation* clone(Channel* channel, AnimationTarget* target);
+    AnimationPtr clone(Channel* channel, AnimationTarget* target);
 
+    /**
+     * Private struct for passkey idiom to allow std::make_shared to access private constructor.
+     */
+    struct PrivateKey { explicit PrivateKey() = default; };
+
+  public:
+    /**
+     * Constructor (public for make_shared, but requires PrivateKey).
+     * Use Animation::create() instead.
+     */
+    Animation(PrivateKey, const std::string& id);
+
+  private:
     AnimationController* _controller{
         nullptr
     }; // The AnimationController that this Animation will run on.

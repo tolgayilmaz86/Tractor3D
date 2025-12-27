@@ -56,7 +56,7 @@ void BillboardSample::initialize()
     _camera.initialize(0.1f, 100, 45);
     _camera.setPosition(Vector3(0, BILLBOARD_HEIGHT * 1.5f, GROUND_WIDTH / 2.0f));
     _camera.rotate(0.0f, -MATH_DEG_TO_RAD(10));
-    _scene->addNode(_camera.getRootNode());
+    _scene->addNode(_camera.getRootNodePtr());
     _scene->setActiveCamera(_camera.getCamera());
 
     // Load the ground
@@ -74,10 +74,9 @@ void BillboardSample::initialize()
 void BillboardSample::finalize()
 {
     // Clear drawable references first to avoid dangling pointers
-    for (auto* node : _billboards)
+    for (auto& node : _billboards)
     {
         node->setDrawable(nullptr);
-        node->release();
     }
     _billboards.clear();
     
@@ -91,7 +90,7 @@ void BillboardSample::finalize()
     }
     
     _scene.reset();
-    SAFE_RELEASE(_font);
+    _font.reset();
 }
 
 void BillboardSample::update(float elapsedTime)
@@ -173,7 +172,7 @@ void BillboardSample::render(float elapsedTime)
 
     for (size_t i = 0; i < BILLBOARD_COUNT; i++)
     {
-        Node* node = _billboards[i];
+        Node* node = _billboards[i].get();
 
         // Rotate the node x/z to face the camera
         Matrix m = Matrix::createBillboard(node->getTranslationWorld(),
@@ -303,7 +302,7 @@ void BillboardSample::loadGround()
     // Just a basic plane for this sample
     auto mesh =
         Mesh::createQuad(-(GROUND_WIDTH / 2.0f), -(GROUND_HEIGHT / 2.0f), GROUND_WIDTH, GROUND_HEIGHT);
-    Node* node = Node::create();
+    NodePtr node = Node::create();
     _ground = Model::createRaw(mesh);
 
     node->setDrawable(_ground);
@@ -312,7 +311,7 @@ void BillboardSample::loadGround()
     EffectPtr effect = Effect::createFromFile("res/shaders/textured.vert",
                                               "res/shaders/textured.frag",
                                               "TEXTURE_REPEAT");
-    Material* material = Material::create(effect.get());
+    auto material = Material::create(effect.get());
     material->getStateBlock()->setDepthTest(true);
     material->getStateBlock()->setBlend(false);
     Texture::Sampler* sampler =
@@ -323,9 +322,6 @@ void BillboardSample::loadGround()
     material->setParameterAutoBinding("u_worldViewProjectionMatrix",
                                       RenderState::WORLD_VIEW_PROJECTION_MATRIX);
     _ground->setMaterial(material);
-    SAFE_RELEASE(material);
-    // effect is managed by shared_ptr
-    SAFE_RELEASE(node);
 }
 
 void BillboardSample::loadBillboards()
@@ -343,7 +339,8 @@ void BillboardSample::loadBillboards()
     // Create the model and node and bind the material
     for (size_t i = 0; i < BILLBOARD_COUNT; i++)
     {
-        auto& node = _billboards.emplace_back(Node::create());
+        NodePtr node = Node::create();
+        _billboards.push_back(node);
 
         Model* model = Model::createRaw(mesh);
         _billboardModels.push_back(model);  // Store for later cleanup
@@ -351,22 +348,19 @@ void BillboardSample::loadBillboards()
         node->setDrawable(model);
         _scene->addNode(node);
 
-        Material* material = Material::create(effect.get());
+        auto material = Material::create(effect.get());
         material->getStateBlock()->setDepthTest(true);
         material->getStateBlock()->setBlend(false);
         material->getParameter("u_diffuseTexture")->setValue("res/png/grass.png", true);
         material->setParameterAutoBinding("u_worldViewProjectionMatrix",
                                           RenderState::WORLD_VIEW_PROJECTION_MATRIX);
         model->setMaterial(material);
-        // Don't release model here - we keep it in _billboardModels
-        SAFE_RELEASE(material);
 
         // Randomly position within the domain
         float tx = MATH_RANDOM_0_1() * GROUND_WIDTH - (GROUND_WIDTH / 2.0f);
         float tz = MATH_RANDOM_0_1() * GROUND_HEIGHT - (GROUND_HEIGHT / 2.0f);
         node->translate(tx, (BILLBOARD_HEIGHT / 2.0f), tz);
     }
-    // effect is managed by shared_ptr
 }
 
 void BillboardSample::gamepadEvent(Gamepad::GamepadEvent evt, Gamepad* gamepad)

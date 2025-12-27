@@ -429,7 +429,7 @@ class Theme : public std::enable_shared_from_this<Theme>
                        Skin** skin);
 
     std::string _url;
-    Texture* _texture{ nullptr };
+    TexturePtr _texture;
     SpriteBatch* _spriteBatch{ nullptr };
     ThemeImagePtr _emptyImage{ nullptr };
     std::vector<Style*> _styles{};

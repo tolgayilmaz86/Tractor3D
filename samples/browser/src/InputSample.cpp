@@ -67,7 +67,7 @@ void InputSample::initialize()
     auto camera =
         Camera::createPerspective(45.0f, (float)getWidth() / (float)getHeight(), 0.25f, 100.0f);
     _scene = Scene::create();
-    Node* cameraNode = _scene->addNode("Camera");
+    NodePtr cameraNode = _scene->addNode("Camera");
     cameraNode->setCamera(camera);
     _scene->setActiveCamera(camera.get());
     _formNodeParent = _scene->addNode("FormParent");
@@ -86,8 +86,7 @@ void InputSample::initialize()
     _formNodeRestPosition.set(0, 0, -1.5f);
     _formNodeParent->setTranslation(_formNodeRestPosition);
     _formNode->setTranslation(-0.2f, -0.2f, 0);
-    _formNode->setDrawable(form.get());
-    // No need to release form - setDrawable takes ownership
+    _formNode->setDrawable(form);
 }
 
 void InputSample::finalize()
@@ -98,8 +97,9 @@ void InputSample::finalize()
         displayKeyboard(false);
     }
 
+    _formNode.reset();
+    _formNodeParent.reset();
     _scene.reset();
-    SAFE_RELEASE(_formNode);
     _inputSampleControls.reset();
     SAFE_DELETE(_crosshair);
 }

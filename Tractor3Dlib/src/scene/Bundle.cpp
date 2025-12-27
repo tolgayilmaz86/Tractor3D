@@ -48,7 +48,7 @@ constexpr auto BUNDLE_VERSION_MINOR_FONT_FORMAT = 5;
 namespace tractor
 {
 
-static std::vector<Bundle*> __bundleCache;
+// Remove the static bundle cache - no longer needed with unique_ptr
 
 //----------------------------------------------------------------------------
 Bundle::Bundle(const std::string& path) : _path(path) {}
@@ -57,13 +57,6 @@ Bundle::Bundle(const std::string& path) : _path(path) {}
 Bundle::~Bundle()
 {
     clearLoadSession();
-
-    // Remove this Bundle from the cache.
-    std::vector<Bundle*>::iterator itr = std::find(__bundleCache.begin(), __bundleCache.end(), this);
-    if (itr != __bundleCache.end())
-    {
-        __bundleCache.erase(itr);
-    }
 }
 
 //----------------------------------------------------------------------------
@@ -170,21 +163,8 @@ static std::string readString(Stream* stream)
 }
 
 //----------------------------------------------------------------------------
-Bundle* Bundle::create(const std::string& path)
+BundlePtr Bundle::create(const std::string& path)
 {
-    // Search the cache for this bundle.
-    for (size_t i = 0, count = __bundleCache.size(); i < count; ++i)
-    {
-        Bundle* p = __bundleCache[i];
-        assert(p);
-        if (p->_path == path)
-        {
-            // Found a match
-            p->addRef();
-            return p;
-        }
-    }
-
     // Open the bundle.
     auto stream = FileSystem::open(path);
     if (!stream)
@@ -243,7 +223,7 @@ Bundle* Bundle::create(const std::string& path)
     }
 
     // Keep file open for faster reading later.
-    Bundle* bundle = new Bundle(path);
+    BundlePtr bundle(new Bundle(path));
     bundle->_version[0] = version[0];
     bundle->_version[1] = version[1];
     bundle->_references = std::unique_ptr<Reference[]>(refs);
@@ -414,11 +394,10 @@ ScenePtr Bundle::loadScene(const std::string& id)
         // Read each child directly into the scene.
         for (size_t i = 0; i < childrenCount; i++)
         {
-            Node* node = readNode(scene.get(), nullptr);
+            NodePtr node = readNodePtr(scene.get(), nullptr);
             if (node)
             {
                 scene->addNode(node);
-                node->release(); // scene now owns node
             }
         }
     }
@@ -480,7 +459,7 @@ ScenePtr Bundle::loadScene(const std::string& id)
 }
 
 //----------------------------------------------------------------------------
-Node* Bundle::loadNode(const std::string& id, Scene* sceneContext)
+NodePtr Bundle::loadNode(const std::string& id, Scene* sceneContext)
 {
     assert(_references);
     assert(_stream);
@@ -489,8 +468,9 @@ Node* Bundle::loadNode(const std::string& id, Scene* sceneContext)
 
     // Load the node and any referenced joints with node tracking enabled.
     _trackedNodes = new std::map<std::string, Node*>();
-    Node* node = loadNode(id, sceneContext, nullptr);
-    if (node) resolveJointReferences(sceneContext, node);
+    _trackedNodesPtr = new std::map<std::string, NodePtr>();
+    NodePtr node = loadNode(id, sceneContext, nullptr);
+    if (node) resolveJointReferences(sceneContext, node.get());
 
     // Load all animations targeting any nodes or mesh skins under this node's hierarchy.
     for (auto& ref : _referencesSpan)
@@ -503,6 +483,7 @@ Node* Bundle::loadNode(const std::string& id, Scene* sceneContext)
                          ref.id.c_str(),
                          _path.c_str());
                 SAFE_DELETE(_trackedNodes);
+                SAFE_DELETE(_trackedNodesPtr);
                 return nullptr;
             }
 
@@ -512,6 +493,7 @@ Node* Bundle::loadNode(const std::string& id, Scene* sceneContext)
             {
                 GP_ERROR("Failed to read the number of animations for object '%s'.", ref.id.c_str());
                 SAFE_DELETE(_trackedNodes);
+                SAFE_DELETE(_trackedNodesPtr);
                 return nullptr;
             }
 
@@ -527,6 +509,7 @@ Node* Bundle::loadNode(const std::string& id, Scene* sceneContext)
                              "animationChannelCount",
                              id.c_str());
                     SAFE_DELETE(_trackedNodes);
+                    SAFE_DELETE(_trackedNodesPtr);
                     return nullptr;
                 }
 
@@ -539,6 +522,7 @@ Node* Bundle::loadNode(const std::string& id, Scene* sceneContext)
                     {
                         GP_ERROR("Failed to read target id for animation '%s'.", id.c_str());
                         SAFE_DELETE(_trackedNodes);
+                        SAFE_DELETE(_trackedNodesPtr);
                         return nullptr;
                     }
 
@@ -553,6 +537,7 @@ Node* Bundle::loadNode(const std::string& id, Scene* sceneContext)
                             GP_ERROR("Failed to read target attribute for animation '%s'.",
                                      id.c_str());
                             SAFE_DELETE(_trackedNodes);
+                            SAFE_DELETE(_trackedNodesPtr);
                             return nullptr;
                         }
 
@@ -564,6 +549,7 @@ Node* Bundle::loadNode(const std::string& id, Scene* sceneContext)
                                      targetId.c_str(),
                                      id.c_str());
                             SAFE_DELETE(_trackedNodes);
+                            SAFE_DELETE(_trackedNodesPtr);
                             return nullptr;
                         }
 
@@ -578,6 +564,7 @@ Node* Bundle::loadNode(const std::string& id, Scene* sceneContext)
                             GP_ERROR("Failed to skip over target attribute for animation '%s'.",
                                      id.c_str());
                             SAFE_DELETE(_trackedNodes);
+                            SAFE_DELETE(_trackedNodesPtr);
                             return nullptr;
                         }
 
@@ -591,25 +578,25 @@ Node* Bundle::loadNode(const std::string& id, Scene* sceneContext)
     }
 
     SAFE_DELETE(_trackedNodes);
+    SAFE_DELETE(_trackedNodesPtr);
     return node;
 }
 
 //----------------------------------------------------------------------------
-Node* Bundle::loadNode(const std::string& id, Scene* sceneContext, Node* nodeContext)
+NodePtr Bundle::loadNode(const std::string& id, Scene* sceneContext, Node* nodeContext)
 {
-    Node* node = nullptr;
+    NodePtr nodePtr = nullptr;
 
     // Search the passed in loading contexts (scene/node) first to see
     // if we've already loaded this node during this load session.
+    Node* node = nullptr;
     if (sceneContext)
     {
         node = sceneContext->findNode(id, true);
-        if (node) node->addRef();
     }
     if (node == nullptr && nodeContext)
     {
         node = nodeContext->findNode(id, true);
-        if (node) node->addRef();
     }
 
     if (node == nullptr)
@@ -621,9 +608,178 @@ Node* Bundle::loadNode(const std::string& id, Scene* sceneContext, Node* nodeCon
             return nullptr;
         }
 
-        node = readNode(sceneContext, nodeContext);
+        nodePtr = readNodePtr(sceneContext, nodeContext);
+        if (nodePtr)
+        {
+            // Store in tracked nodes to keep alive
+            if (_trackedNodesPtr)
+            {
+                (*_trackedNodesPtr)[id] = nodePtr;
+            }
+            return nodePtr;
+        }
+        return nullptr;
     }
 
+    // Node was found in context, get shared_ptr if available
+    if (_trackedNodesPtr)
+    {
+        auto iter = _trackedNodesPtr->find(id);
+        if (iter != _trackedNodesPtr->end())
+        {
+            return iter->second;
+        }
+    }
+    
+    // Fallback: use shared_from_this for nodes already in a scene
+    return node->shared_from_this();
+}
+
+//----------------------------------------------------------------------------
+Node* Bundle::readNode(Scene* sceneContext, Node* nodeContext)
+{
+    NodePtr nodePtr = readNodePtr(sceneContext, nodeContext);
+    return nodePtr.get();
+}
+
+//----------------------------------------------------------------------------
+NodePtr Bundle::readNodePtr(Scene* sceneContext, Node* nodeContext)
+{
+    const auto& id = getIdFromOffset();
+    assert(_stream);
+
+    // If we are tracking nodes and it's not in the set yet, add it.
+    if (_trackedNodes)
+    {
+        std::map<std::string, Node*>::iterator iter = _trackedNodes->find(id);
+        if (iter != _trackedNodes->end())
+        {
+            // Skip over this node since we previously read it
+            if (!skipNode()) return nullptr;
+
+            // Return the existing node (caller should look it up for proper shared_ptr)
+            if (_trackedNodesPtr)
+            {
+                auto ptrIter = _trackedNodesPtr->find(id);
+                if (ptrIter != _trackedNodesPtr->end())
+                    return ptrIter->second;
+            }
+            // Fallback - return nullptr and let caller find the node
+            return nullptr;
+        }
+    }
+
+    // Read node type.
+    unsigned int nodeType;
+    if (!read(&nodeType))
+    {
+        GP_ERROR("Failed to read node type for node '%s'.", id);
+        return nullptr;
+    }
+
+    NodePtr node = nullptr;
+    switch (nodeType)
+    {
+        case Node::NODE:
+            node = Node::create(id);
+            break;
+        case Node::JOINT:
+            node = Joint::create(id);
+            break;
+        default:
+            return nullptr;
+    }
+
+    if (_trackedNodes)
+    {
+        // Add the new node to the list of tracked nodes
+        _trackedNodes->insert(std::make_pair(id, node.get()));
+        if (_trackedNodesPtr)
+        {
+            (*_trackedNodesPtr)[id] = node;
+        }
+    }
+
+    // If no loading context is set, set this node as the loading context.
+    if (sceneContext == nullptr && nodeContext == nullptr)
+    {
+        nodeContext = node.get();
+    }
+
+    // Read transform.
+    float transform[16];
+    if (_stream->read(transform, sizeof(float), 16) != 16)
+    {
+        GP_ERROR("Failed to read transform for node '%s'.", id);
+        return nullptr;
+    }
+    setTransform(*transform, node.get());
+
+    // Skip the parent ID.
+    readString(_stream.get());
+
+    // Read children.
+    unsigned int childrenCount;
+    if (!read(&childrenCount))
+    {
+        GP_ERROR("Failed to read children count for node '%s'.", id);
+        return nullptr;
+    }
+    if (childrenCount > 0)
+    {
+        // Read each child.
+        for (size_t i = 0; i < childrenCount; i++)
+        {
+            // Search the passed in loading contexts (scene/node) first to see
+            // if we've already loaded this child node during this load session.
+            Node* child = nullptr;
+            const auto& childId = getIdFromOffset();
+
+            if (sceneContext)
+            {
+                child = sceneContext->findNode(childId, true);
+            }
+            if (child == nullptr && nodeContext)
+            {
+                child = nodeContext->findNode(childId, true);
+            }
+
+            // If the child was already loaded, skip it, otherwise read it
+            if (child)
+            {
+                skipNode();
+            }
+            else
+            {
+                NodePtr childPtr = readNodePtr(sceneContext, nodeContext);
+                if (childPtr)
+                {
+                    node->addChild(childPtr);
+                }
+            }
+        }
+    }
+
+    // Read camera.
+    auto camera = readCamera();
+    if (camera)
+    {
+        node->setCamera(camera);
+    }
+
+    // Read light.
+    LightPtr light = readLight();
+    if (light)
+    {
+        node->setLight(light);
+    }
+
+    // Read model.
+    Model* model = readModel(node->getId());
+    if (model)
+    {
+        node->setDrawable(model);
+    }
     return node;
 }
 
@@ -671,140 +827,6 @@ bool Bundle::skipNode()
     SAFE_RELEASE(model);
 
     return true;
-}
-
-//----------------------------------------------------------------------------
-Node* Bundle::readNode(Scene* sceneContext, Node* nodeContext)
-{
-    const auto& id = getIdFromOffset();
-    assert(_stream);
-
-    // If we are tracking nodes and it's not in the set yet, add it.
-    if (_trackedNodes)
-    {
-        std::map<std::string, Node*>::iterator iter = _trackedNodes->find(id);
-        if (iter != _trackedNodes->end())
-        {
-            // Skip over this node since we previously read it
-            if (!skipNode()) return nullptr;
-
-            iter->second->addRef();
-            return iter->second;
-        }
-    }
-
-    // Read node type.
-    unsigned int nodeType;
-    if (!read(&nodeType))
-    {
-        GP_ERROR("Failed to read node type for node '%s'.", id);
-        return nullptr;
-    }
-
-    Node* node = nullptr;
-    switch (nodeType)
-    {
-        case Node::NODE:
-            node = Node::create(id);
-            break;
-        case Node::JOINT:
-            node = Joint::create(id);
-            break;
-        default:
-            return nullptr;
-    }
-
-    if (_trackedNodes)
-    {
-        // Add the new node to the list of tracked nodes
-        _trackedNodes->insert(std::make_pair(id, node));
-    }
-
-    // If no loading context is set, set this node as the loading context.
-    if (sceneContext == nullptr && nodeContext == nullptr)
-    {
-        nodeContext = node;
-    }
-
-    // Read transform.
-    float transform[16];
-    if (_stream->read(transform, sizeof(float), 16) != 16)
-    {
-        GP_ERROR("Failed to read transform for node '%s'.", id);
-        SAFE_RELEASE(node);
-        return nullptr;
-    }
-    setTransform(*transform, node);
-
-    // Skip the parent ID.
-    readString(_stream.get());
-
-    // Read children.
-    unsigned int childrenCount;
-    if (!read(&childrenCount))
-    {
-        GP_ERROR("Failed to read children count for node '%s'.", id);
-        SAFE_RELEASE(node);
-        return nullptr;
-    }
-    if (childrenCount > 0)
-    {
-        // Read each child.
-        for (size_t i = 0; i < childrenCount; i++)
-        {
-            // Search the passed in loading contexts (scene/node) first to see
-            // if we've already loaded this child node during this load session.
-            Node* child = nullptr;
-            const auto& id = getIdFromOffset();
-
-            if (sceneContext)
-            {
-                child = sceneContext->findNode(id, true);
-            }
-            if (child == nullptr && nodeContext)
-            {
-                child = nodeContext->findNode(id, true);
-            }
-
-            // If the child was already loaded, skip it, otherwise read it
-            if (child)
-            {
-                skipNode();
-            }
-            else
-            {
-                child = readNode(sceneContext, nodeContext);
-            }
-
-            if (child)
-            {
-                node->addChild(child);
-                child->release(); // 'node' now owns this child
-            }
-        }
-    }
-
-    // Read camera.
-    auto camera = readCamera();
-    if (camera)
-    {
-        node->setCamera(camera);
-    }
-
-    // Read light.
-    LightPtr light = readLight();
-    if (light)
-    {
-        node->setLight(light);
-    }
-
-    // Read model.
-    Model* model = readModel(node->getId());
-    if (model)
-    {
-        node->setDrawable(model);
-    }
-    return node;
 }
 
 //----------------------------------------------------------------------------
@@ -998,12 +1020,11 @@ Model* Bundle::readModel(const std::string& nodeId)
                     {
                         materialPath.append("#");
                         materialPath.append(materialName);
-                        Material* material = Material::create(materialPath);
+                        MaterialPtr material = Material::create(materialPath);
                         if (material)
                         {
                             int partIndex = model->getMesh()->getPartCount() > 0 ? i : -1;
                             model->setMaterial(material, partIndex);
-                            SAFE_RELEASE(material);
                         }
                     }
                 }
@@ -1112,13 +1133,28 @@ void Bundle::resolveJointReferences(Scene* sceneContext, Node* nodeContext)
             {
                 jointId = jointId.substr(1);
 
-                Node* n = loadNode(jointId, sceneContext, nodeContext);
+                NodePtr nodePtr = loadNode(jointId, sceneContext, nodeContext);
+                Node* n = nodePtr.get();
                 if (n && n->getType() == Node::JOINT)
                 {
                     Joint* joint = static_cast<Joint*>(n);
                     joint->setInverseBindPose(skinData->inverseBindPoseMatrices[j]);
-                    skinData->skin->setJoint(joint, (unsigned int)j);
-                    SAFE_RELEASE(joint);
+                    // Get the JointPtr from tracked nodes if available
+                    JointPtr jointPtr = nullptr;
+                    if (_trackedNodesPtr)
+                    {
+                        auto iter = _trackedNodesPtr->find(jointId);
+                        if (iter != _trackedNodesPtr->end())
+                        {
+                            jointPtr = std::dynamic_pointer_cast<Joint>(iter->second);
+                        }
+                    }
+                    if (!jointPtr)
+                    {
+                        // Fallback: use the nodePtr we already have
+                        jointPtr = std::dynamic_pointer_cast<Joint>(nodePtr);
+                    }
+                    skinData->skin->setJoint(jointPtr, (unsigned int)j);
                 }
             }
         }
@@ -1131,7 +1167,7 @@ void Bundle::resolveJointReferences(Scene* sceneContext, Node* nodeContext)
             assert(node);
             Node* parent = node->getParent();
 
-            std::vector<Node*> loadedNodes;
+            std::vector<NodePtr> loadedNodes;
             while (true)
             {
                 if (parent)
@@ -1194,15 +1230,11 @@ void Bundle::resolveJointReferences(Scene* sceneContext, Node* nodeContext)
 
             skinData->skin->setRootJoint(rootJoint);
 
-            // Release all the nodes that we loaded since the nodes are now owned by the mesh skin/joints.
-            for (size_t i = 0; i < loadedNodes.size(); i++)
-            {
-                SAFE_RELEASE(loadedNodes[i]);
-            }
+            // Nodes are now managed by shared_ptr, no need to release
         }
 
         // Remove the joint hierarchy from the scene since it is owned by the mesh skin.
-        if (sceneContext) sceneContext->removeNode(skinData->skin->_rootNode);
+        if (sceneContext) sceneContext->removeNode(skinData->skin->_rootNode.get());
 
         // Done with this MeshSkinData entry.
         SAFE_DELETE(_meshSkins[i]);
@@ -1623,7 +1655,7 @@ std::unique_ptr<Bundle::MeshData> Bundle::readMeshData(const std::string& url)
     std::string id = urlstring.substr(pos + 1);
 
     // Load bundle.
-    Bundle* bundle = Bundle::create(file);
+    BundlePtr bundle = Bundle::create(file);
     if (bundle == nullptr)
     {
         GP_ERROR("Failed to load bundle '%s'.", file.c_str());
@@ -1642,9 +1674,8 @@ std::unique_ptr<Bundle::MeshData> Bundle::readMeshData(const std::string& url)
 
     // Read mesh data from current file position.
     auto meshData = bundle->readMeshData();
-
-    SAFE_RELEASE(bundle);
-
+    
+    // bundle is automatically cleaned up when BundlePtr goes out of scope
     return meshData;
 }
 
@@ -1812,7 +1843,7 @@ FontPtr Bundle::loadFont(const std::string& id)
         }
 
         // Create the texture for the font.
-        Texture* texture = Texture::create(Texture::ALPHA, width, height, textureData, true);
+        TexturePtr texture = Texture::create(Texture::ALPHA, width, height, textureData, true);
 
         // Free the texture data (no longer needed).
         SAFE_DELETE_ARRAY(textureData);
@@ -1826,13 +1857,12 @@ FontPtr Bundle::loadFont(const std::string& id)
 
         // Create the font for this size
         FontPtr font =
-            Font::create(family, Font::PLAIN, size, glyphs, glyphCount, texture, (Font::Format)format);
+            Font::create(family, Font::PLAIN, size, glyphs, glyphCount, texture.get(), (Font::Format)format);
 
         // Free the glyph array.
         SAFE_DELETE_ARRAY(glyphs);
 
-        // Release the texture since the Font now owns it.
-        SAFE_RELEASE(texture);
+        // Texture is now managed by shared_ptr, no need to release
 
         if (font)
         {

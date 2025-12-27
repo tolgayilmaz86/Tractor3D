@@ -28,12 +28,7 @@ RenderTarget::RenderTarget(const std::string& id) : _id(id) {}
 //----------------------------------------------------------------------------
 RenderTarget::~RenderTarget()
 {
-    SAFE_RELEASE(_texture);
-
-    // Remove expired weak_ptrs from the cache
-    std::erase_if(__renderTargets, [](const std::weak_ptr<RenderTarget>& wp) {
-        return wp.expired();
-    });
+    _texture.reset();
 }
 
 //----------------------------------------------------------------------------
@@ -43,17 +38,20 @@ std::shared_ptr<RenderTarget> RenderTarget::create(const std::string& id,
                                                    Texture::Format format)
 {
     // Create a new texture with the given width.
-    Texture* texture = Texture::create(format, width, height, nullptr, false);
+    TexturePtr texture = Texture::create(format, width, height, nullptr, false);
     if (texture == nullptr)
     {
         GP_ERROR("Failed to create texture for render target.");
         return nullptr;
     }
 
-    auto rt = create(id, texture);
-    texture->release();
+    auto renderTarget = std::shared_ptr<RenderTarget>(new RenderTarget(id));
+    renderTarget->_texture = texture;
 
-    return rt;
+    // Add to cache as weak_ptr
+    __renderTargets.push_back(renderTarget);
+
+    return renderTarget;
 }
 
 //----------------------------------------------------------------------------
@@ -61,8 +59,17 @@ std::shared_ptr<RenderTarget> RenderTarget::create(const std::string& id, Textur
 {
     auto renderTarget = std::shared_ptr<RenderTarget>(new RenderTarget(id));
 
-    renderTarget->_texture = texture;
-    renderTarget->_texture->addRef();
+    // Try to get shared_ptr from the texture if it was created with shared_ptr
+    try
+    {
+        renderTarget->_texture = texture->shared_from_this();
+    }
+    catch (const std::bad_weak_ptr&)
+    {
+        // If texture is not managed by shared_ptr, create a non-owning shared_ptr
+        // This is for backward compatibility only
+        renderTarget->_texture = TexturePtr(texture, [](Texture*) {});
+    }
 
     // Add to cache as weak_ptr
     __renderTargets.push_back(renderTarget);

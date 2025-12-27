@@ -362,7 +362,7 @@ class Terrain : public Drawable, public Transform::Listener
     HeightFieldPtr _heightfield;
     Vector3 _localScale{};
     std::vector<TerrainPatch*> _patches{};
-    Texture::Sampler* _normalMap{nullptr};
+    SamplerPtr _normalMap;
     unsigned int _flags{ FRUSTUM_CULLING | LEVEL_OF_DETAIL };
     mutable Matrix _inverseWorldMatrix;
 

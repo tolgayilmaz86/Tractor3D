@@ -25,16 +25,16 @@ namespace tractor
 Joint::Joint(const std::string& id) : Node(id) {}
 
 //----------------------------------------------------------------------------
-Joint* Joint::create(const std::string& id) { return new Joint(id); }
+JointPtr Joint::create(const std::string& id) { return JointPtr(new Joint(id)); }
 
 //----------------------------------------------------------------------------
-Node* Joint::cloneSingleNode(NodeCloneContext& context) const
+NodePtr Joint::cloneSingleNode(NodeCloneContext& context) const
 {
-    Joint* copy = Joint::create(getId());
+    JointPtr copy = Joint::create(getId());
     assert(copy);
     context.registerClonedNode(this, copy);
     copy->_bindPose = _bindPose;
-    Node::cloneInto(copy, context);
+    Node::cloneInto(copy.get(), context);
     return copy;
 }
 

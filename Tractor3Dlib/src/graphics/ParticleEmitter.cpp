@@ -44,7 +44,7 @@ ParticleEmitterPtr ParticleEmitter::create(const std::string& textureFile,
                                            BlendMode blendMode,
                                            unsigned int particleCountMax)
 {
-    Texture* texture = Texture::create(textureFile, true);
+    TexturePtr texture = Texture::create(textureFile, true);
 
     if (!texture)
     {
@@ -54,8 +54,7 @@ ParticleEmitterPtr ParticleEmitter::create(const std::string& textureFile,
     assert(texture->getWidth());
     assert(texture->getHeight());
 
-    ParticleEmitterPtr emitter = ParticleEmitter::create(texture, blendMode, particleCountMax);
-    SAFE_RELEASE(texture);
+    ParticleEmitterPtr emitter = ParticleEmitter::create(texture.get(), blendMode, particleCountMax);
     return emitter;
 }
 
@@ -213,15 +212,14 @@ ParticleEmitterPtr ParticleEmitter::create(Properties* properties)
 //----------------------------------------------------------------------------
 void ParticleEmitter::setTexture(const std::string& texturePath, BlendMode blendMode)
 {
-    Texture* texture = Texture::create(texturePath, true);
+    TexturePtr texture = Texture::create(texturePath, true);
     if (texture)
     {
-        setTexture(texture, blendMode);
-        texture->release();
+        setTexture(texture.get(), blendMode);
     }
     else
     {
-        GP_WARN("Failed set new texture on particle emitter: %s", texturePath);
+        GP_WARN("Failed set new texture on particle emitter: %s", texturePath.c_str());
     }
 }
 

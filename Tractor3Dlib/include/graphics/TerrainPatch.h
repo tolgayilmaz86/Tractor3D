@@ -180,7 +180,7 @@ class TerrainPatch : public Camera::Listener
     unsigned int _column{ 0 };
     std::vector<Level*> _levels{};
     std::set<Layer*, LayerCompare> _layers{};
-    std::vector<Texture::Sampler*> _samplers{};
+    std::vector<SamplerPtr> _samplers{};
     mutable BoundingBox _boundingBox{};
     mutable BoundingBox _boundingBoxWorld{};
     mutable CameraWeakPtr _camera;

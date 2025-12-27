@@ -41,8 +41,8 @@ TerrainSample::TerrainSample()
 
 TerrainSample::~TerrainSample()
 {
-    SAFE_RELEASE(_box);
-    SAFE_RELEASE(_sphere);
+    _box.reset();
+    _sphere.reset();
     SAFE_RELEASE(_form);
     SAFE_RELEASE(_font);
     _scene.reset();
@@ -57,17 +57,15 @@ void TerrainSample::initialize()
     _sky->setTag("lighting", "none");
 
     // Load shapes
-    Bundle* bundle;
+    BundlePtr bundle;
     bundle = Bundle::create("res/common/sphere.gpb");
     _sphere = bundle->loadNode("sphere");
     dynamic_cast<Model*>(_sphere->getDrawable())
         ->setMaterial("res/common/terrain/shapes.material#sphere", 0);
-    SAFE_RELEASE(bundle);
 
     bundle = Bundle::create("res/common/box.gpb");
     _box = bundle->loadNode("box");
     dynamic_cast<Model*>(_box->getDrawable())->setMaterial("res/common/terrain/shapes.material#box", 0);
-    SAFE_RELEASE(bundle);
 
     // Load font
     _font = Font::create("res/ui/arial.gpb");
@@ -125,13 +123,13 @@ void TerrainSample::update(float elapsedTime)
     _sky->setTranslationZ(camera->getTranslationZ());
 
     // Prune dropped physics shapes that fall off the terrain
-    for (std::list<Node*>::iterator itr = _shapes.begin(); itr != _shapes.end();)
+    for (auto itr = _shapes.begin(); itr != _shapes.end();)
     {
-        Node* shape = *itr;
+        NodePtr shape = *itr;
         if (shape->getTranslation().y < 0)
         {
-            _scene->removeNode(shape);
-            std::list<Node*>::iterator oldItr = itr;
+            _scene->removeNode(shape.get());
+            std::list<NodePtr>::iterator oldItr = itr;
             ++itr;
             _shapes.erase(oldItr);
         }
@@ -251,7 +249,7 @@ void TerrainSample::touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int
             if (Game::getInstance()->getPhysicsController()->rayTest(pickRay, 1000000, &hitResult, &hitFilter)
                 && hitResult.object == _terrain->getNode()->getCollisionObject())
             {
-                Node* clone = nullptr;
+                NodePtr clone = nullptr;
                 PhysicsCollisionShape::Definition rbShape;
 
                 switch (_mode)
@@ -280,7 +278,6 @@ void TerrainSample::touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int
                     PhysicsRigidBody::Parameters rbParams(1);
                     clone->setCollisionObject(PhysicsCollisionObject::RIGID_BODY, rbShape, &rbParams);
                     _scene->addNode(clone);
-                    clone->release();
 
                     _shapes.push_back(clone);
 
@@ -369,8 +366,8 @@ void TerrainSample::controlEvent(Control* control, EventType evt)
     }
     else if (control->getId() == "clearAll")
     {
-        for (std::list<Node*>::iterator itr = _shapes.begin(); itr != _shapes.end(); ++itr)
-            _scene->removeNode(*itr);
+        for (auto itr = _shapes.begin(); itr != _shapes.end(); ++itr)
+            _scene->removeNode(itr->get());
         _shapes.clear();
     }
 }

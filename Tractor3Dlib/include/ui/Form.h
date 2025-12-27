@@ -165,21 +165,27 @@ class Form : public Drawable, public Container
      */
     virtual ~Form();
 
+  private:
+    // Private struct to allow make_shared while keeping constructor effectively private
+    struct PrivateTag {};
+
   public:
     /**
-     * Constructor. Use Form::create() instead.
-     * @internal
+     * Constructor (use Form::create() instead).
+     * @internal This constructor is public to enable std::make_shared but should not be called directly.
      */
-    Form() = default;
+    explicit Form(PrivateTag) {}
 
   private:
     /**
-     * Constructor.
+     * Default constructor.
+     */
+    Form() = default;
+
+    /**
+     * Copy constructor.
      */
     Form(const Form& copy);
-
-    // Allow std::make_shared to access the private constructor
-    friend struct std::_Ref_count_obj2<Form>;
 
     /**
      * @see Drawable::clone

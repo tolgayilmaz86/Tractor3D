@@ -54,8 +54,8 @@ class WaterSample : public Sample
 
     FontPtr _font;
     ScenePtr _scene;
-    Node* _cameraNode;
-    Node* _reflectCameraNode;
+    NodePtr _cameraNode;
+    NodePtr _reflectCameraNode;
 
     Vector3 _cameraAcceleration;
     float _waterHeight;
@@ -63,9 +63,9 @@ class WaterSample : public Sample
     unsigned _inputMask;
     int _prevX, _prevY;
 
-    FrameBuffer* _refractBuffer;
+    FrameBufferPtr _refractBuffer;
     SpriteBatch* _refractBatch;
-    FrameBuffer* _reflectBuffer;
+    FrameBufferPtr _reflectBuffer;
     SpriteBatch* _reflectBatch;
 
     bool _showBuffers;

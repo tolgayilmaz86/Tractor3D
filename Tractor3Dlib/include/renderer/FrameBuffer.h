@@ -22,6 +22,14 @@
 namespace tractor
 {
 
+class FrameBuffer;
+
+/** Shared pointer type for FrameBuffer. */
+using FrameBufferPtr = std::shared_ptr<FrameBuffer>;
+
+/** Weak pointer type for FrameBuffer. */
+using FrameBufferWeakPtr = std::weak_ptr<FrameBuffer>;
+
 /**
  * Defines a frame buffer object that may contain one or more render targets and optionally
  * a depth-stencil target.
@@ -35,7 +43,7 @@ namespace tractor
  *
  * To bind the default frame buffer, call FrameBuffer::bindDefault.
  */
-class FrameBuffer : public Ref
+class FrameBuffer : public std::enable_shared_from_this<FrameBuffer>
 {
     friend class Game;
 
@@ -52,7 +60,7 @@ class FrameBuffer : public Ref
      * @return A newly created FrameBuffer.
      * @script{create}
      */
-    static FrameBuffer* create(const std::string& id);
+    static FrameBufferPtr create(const std::string& id);
 
     /**
      * Creates a new FrameBuffer with a single RenderTarget of the specified width and height,
@@ -71,10 +79,15 @@ class FrameBuffer : public Ref
      * @return A newly created FrameBuffer.
      * @script{create}
      */
-    static FrameBuffer* create(const std::string& id,
-                               unsigned int width,
-                               unsigned int height,
-                               Texture::Format format = Texture::RGBA);
+    static FrameBufferPtr create(const std::string& id,
+                                 unsigned int width,
+                                 unsigned int height,
+                                 Texture::Format format = Texture::RGBA);
+
+    /**
+     * Destructor.
+     */
+    ~FrameBuffer();
 
     /**
      * Get a named FrameBuffer from its ID.
@@ -83,7 +96,7 @@ class FrameBuffer : public Ref
      *
      * @return The FrameBuffer with the specified ID, or nullptr if one was not found.
      */
-    static FrameBuffer* getFrameBuffer(const std::string& id);
+    static FrameBufferPtr getFrameBuffer(const std::string& id);
 
     /**
      * Get the ID of this FrameBuffer.
@@ -165,7 +178,7 @@ class FrameBuffer : public Ref
      *
      * @return true if this is the default frame buffer, false otherwise.
      */
-    bool isDefault() const noexcept { return (this == _defaultFrameBuffer); }
+    bool isDefault() const noexcept { return (this == _defaultFrameBuffer.get()); }
 
     /**
      * Binds this FrameBuffer for off-screen rendering and return you the currently bound one.
@@ -174,7 +187,7 @@ class FrameBuffer : public Ref
      *
      * @ return The currently bound framebuffer.
      */
-    FrameBuffer* bind(GLenum type = GL_FRAMEBUFFER);
+    FrameBufferPtr bind(GLenum type = GL_FRAMEBUFFER);
 
     /**
      * Records a screenshot of what is stored on the current FrameBuffer.
@@ -198,14 +211,21 @@ class FrameBuffer : public Ref
      *
      * @ return The default framebuffer.
      */
-    static FrameBuffer* bindDefault(GLenum type = GL_FRAMEBUFFER);
+    static FrameBufferPtr bindDefault(GLenum type = GL_FRAMEBUFFER);
 
     /**
      * Gets the currently bound FrameBuffer.
      *
      * @return The currently bound FrameBuffer.
      */
-    FrameBuffer* getCurrent() { return _currentFrameBuffer; }
+    static FrameBufferPtr getCurrent() { return _currentFrameBuffer; }
+
+    /**
+     * Gets the default FrameBuffer.
+     *
+     * @return The default FrameBuffer.
+     */
+    static FrameBufferPtr getDefault() { return _defaultFrameBuffer; }
 
   private:
     /**
@@ -215,11 +235,6 @@ class FrameBuffer : public Ref
                 unsigned int width,
                 unsigned int height,
                 FrameBufferHandle handle);
-
-    /**
-     * Destructor.
-     */
-    ~FrameBuffer();
 
     /**
      * Hidden copy assignment operator.
@@ -241,9 +256,9 @@ class FrameBuffer : public Ref
     std::shared_ptr<DepthStencilTarget> _depthStencilTarget{ nullptr };
 
     static unsigned int _maxRenderTargets;
-    static std::vector<FrameBuffer*> _frameBuffers;
-    static FrameBuffer* _defaultFrameBuffer;
-    static FrameBuffer* _currentFrameBuffer;
+    static std::vector<FrameBufferPtr> _frameBuffers;
+    static FrameBufferPtr _defaultFrameBuffer;
+    static FrameBufferPtr _currentFrameBuffer;
 };
 
 } // namespace tractor

@@ -31,18 +31,21 @@ Technique::Technique(const std::string& id, Material* material) : _id(id), _mate
 //----------------------------------------------------------------------------
 Technique::~Technique()
 {
-    // Destroy all the passes.
-    for (size_t i = 0, count = _passes.size(); i < count; ++i)
-    {
-        SAFE_RELEASE(_passes[i]);
-    }
+    // shared_ptr handles cleanup automatically
+    _passes.clear();
+}
+
+//----------------------------------------------------------------------------
+std::shared_ptr<Technique> Technique::create(const std::string& id, Material* material)
+{
+    return std::shared_ptr<Technique>(new Technique(id, material));
 }
 
 //----------------------------------------------------------------------------
 Pass* Technique::getPassByIndex(unsigned int index) const
 {
     assert(index < _passes.size());
-    return _passes[index];
+    return _passes[index].get();
 }
 
 //----------------------------------------------------------------------------
@@ -50,7 +53,7 @@ Pass* Technique::getPass(const std::string& id) const
 {
     for (size_t i = 0, count = _passes.size(); i < count; ++i)
     {
-        Pass* pass = _passes[i];
+        Pass* pass = _passes[i].get();
         assert(pass);
         if (pass->getId() == id)
         {
@@ -72,16 +75,16 @@ void Technique::setNodeBinding(Node* node)
 }
 
 //----------------------------------------------------------------------------
-Technique* Technique::clone(Material* material, NodeCloneContext& context) const
+std::shared_ptr<Technique> Technique::clone(Material* material, NodeCloneContext& context) const
 {
-    Technique* technique = new Technique(getId(), material);
+    auto technique = Technique::create(getId(), material);
     for (const auto& pass : _passes)
     {
         assert(pass);
-        technique->_passes.emplace_back(pass->clone(technique, context));
+        technique->_passes.emplace_back(pass->clone(technique.get(), context));
     }
 
-    RenderState::cloneInto(technique, context);
+    RenderState::cloneInto(technique.get(), context);
     technique->_parent = material;
     return technique;
 }

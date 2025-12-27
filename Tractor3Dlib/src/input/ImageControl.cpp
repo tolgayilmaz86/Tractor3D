@@ -70,11 +70,10 @@ void ImageControl::initialize(const std::string& typeName, Theme::Style* style, 
 void ImageControl::setImage(const std::string& path)
 {
     SAFE_DELETE(_batch);
-    Texture* texture = Texture::create(path);
-    _batch = SpriteBatch::create(texture);
+    TexturePtr texture = Texture::create(path);
+    _batch = SpriteBatch::create(texture.get());
     _tw = 1.0f / texture->getWidth();
     _th = 1.0f / texture->getHeight();
-    texture->release();
 
     if (_autoSize != AUTO_SIZE_NONE) setDirty(DIRTY_BOUNDS);
 }

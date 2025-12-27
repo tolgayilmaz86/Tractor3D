@@ -179,7 +179,7 @@ bool PhysicsCollisionObjectSample::bindLights(Node* node)
 
 void PhysicsCollisionObjectSample::fireProjectile(const Ray& ray)
 {
-    Node* clone = _scene->findNode(_nodeIds[_objectType])->clone();
+    NodePtr clone = _scene->findNode(_nodeIds[_objectType])->clone();
     clone->setRotation(Quaternion::identity());
     if (_throw)
     {
@@ -210,8 +210,6 @@ void PhysicsCollisionObjectSample::fireProjectile(const Ray& ray)
         impulse.scale(50.0f * rigidBody->getMass());
         rigidBody->applyImpulse(impulse);
     }
-    // Release the new cloned node because the scene now holds the reference to it.
-    clone->release();
 }
 
 void PhysicsCollisionObjectSample::incrementDebugDraw()

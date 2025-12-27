@@ -42,7 +42,7 @@ Theme::~Theme()
     // shared_ptr handles cleanup for _images, _imageLists, _skins, _emptyImage
 
     SAFE_DELETE(_spriteBatch);
-    SAFE_RELEASE(_texture);
+    _texture.reset();  // shared_ptr handles cleanup
 
     // Remove ourself from the theme cache.
     auto itr = std::find_if(__themeCache.begin(), __themeCache.end(),
@@ -79,7 +79,7 @@ ThemePtr Theme::getDefault()
                 Texture::create(Texture::RGBA, 1, 1, (unsigned char*)&color, false);
             __defaultTheme->_emptyImage =
                 ThemeImagePtr(new Theme::ThemeImage(1.0f, 1.0f, Rectangle::empty(), Vector4::zero()));
-            __defaultTheme->_spriteBatch = SpriteBatch::create(__defaultTheme->_texture);
+            __defaultTheme->_spriteBatch = SpriteBatch::create(__defaultTheme->_texture.get());
             __defaultTheme->_spriteBatch->getSampler()->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR,
                                                                       Texture::LINEAR);
             __defaultTheme->_spriteBatch->getSampler()->setWrapMode(Texture::CLAMP, Texture::CLAMP);
@@ -135,7 +135,7 @@ ThemePtr Theme::create(const std::string& url)
     themeProperties->getPath("texture", textureFile);
     theme->_texture = Texture::create(textureFile, true);
     assert(theme->_texture);
-    theme->_spriteBatch = SpriteBatch::create(theme->_texture);
+    theme->_spriteBatch = SpriteBatch::create(theme->_texture.get());
     assert(theme->_spriteBatch);
     theme->_spriteBatch->getSampler()->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
     theme->_spriteBatch->getSampler()->setWrapMode(Texture::CLAMP, Texture::CLAMP);

@@ -70,7 +70,7 @@ Form::~Form()
 //----------------------------------------------------------------
 FormPtr Form::create(const std::string& url)
 {
-    auto form = std::make_shared<Form>();
+    auto form = std::make_shared<Form>(PrivateTag{});
 
     // Load Form from .form file.
     auto properties = std::unique_ptr<Properties>(Properties::create(url));
@@ -122,7 +122,7 @@ FormPtr Form::create(const std::string& url)
 //----------------------------------------------------------------
 FormPtr Form::create(const std::string& id, Theme::Style* style, Layout::Type layoutType)
 {
-    auto form = std::make_shared<Form>();
+    auto form = std::make_shared<Form>(PrivateTag{});
     form->_id = id;
     form->_layout = createLayout(layoutType);
     form->initialize("Form", style, nullptr);

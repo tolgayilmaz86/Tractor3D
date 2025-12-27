@@ -48,7 +48,7 @@ static EffectPtr __spriteEffect = nullptr;
 //----------------------------------------------------------------------------
 SpriteBatch::~SpriteBatch()
 {
-    SAFE_RELEASE(_sampler);
+    _sampler.reset();  // shared_ptr handles cleanup
 
     if (!_customEffect)
     {
@@ -63,9 +63,8 @@ SpriteBatch* SpriteBatch::create(const std::string& texturePath,
                                  Effect* effect,
                                  unsigned int initialCapacity)
 {
-    Texture* texture = Texture::create(texturePath);
-    SpriteBatch* batch = SpriteBatch::create(texture, effect, initialCapacity);
-    SAFE_RELEASE(texture);
+    TexturePtr texture = Texture::create(texturePath);
+    SpriteBatch* batch = SpriteBatch::create(texture.get(), effect, initialCapacity);
     return batch;
 }
 
@@ -110,7 +109,7 @@ SpriteBatch* SpriteBatch::create(Texture* texture, Effect* effect, unsigned int 
     }
 
     // Wrap the effect in a material
-    Material* material = Material::create(effect);
+    MaterialPtr material = Material::create(effect);
 
     // Set initial material state
     material->getStateBlock()->setBlend(true);
@@ -118,8 +117,8 @@ SpriteBatch* SpriteBatch::create(Texture* texture, Effect* effect, unsigned int 
     material->getStateBlock()->setBlendDst(RenderState::BLEND_ONE_MINUS_SRC_ALPHA);
 
     // Bind the texture to the material as a sampler
-    Texture::Sampler* sampler = Texture::Sampler::create(texture);
-    material->getParameter(samplerUniform->getName())->setValue(sampler);
+    SamplerPtr sampler = Texture::Sampler::create(texture);
+    material->getParameter(samplerUniform->getName())->setValue(sampler.get());
 
     // Define the vertex format for the batch
     VertexFormat::Element vertexElements[] = { VertexFormat::Element(VertexFormat::POSITION, 3),
@@ -134,7 +133,6 @@ SpriteBatch* SpriteBatch::create(Texture* texture, Effect* effect, unsigned int 
                           material,
                           true,
                           initialCapacity > 0 ? initialCapacity : SPRITE_BATCH_DEFAULT_SIZE));
-    material->release(); // don't call SAFE_RELEASE since material is used below
 
     // Create the batch
     SpriteBatch* batch = new SpriteBatch();

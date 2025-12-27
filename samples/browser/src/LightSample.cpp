@@ -46,8 +46,9 @@ void LightSample::initialize()
 
     // Create a directional light and a reference icon for the light
     auto directionalLight = Light::createDirectional(Vector3::one());
-    _directionalLightNode = Node::create("directionalLight");
-    _directionalLightNode->setLight(directionalLight);
+    NodePtr directionalLightNode = Node::create("directionalLight");
+    directionalLightNode->setLight(directionalLight);
+    _directionalLightNode = directionalLightNode.get();
 
     auto directionalLightQuadMesh = Mesh::createQuad(-0.3f, -0.3f, 0.6f, 0.6f);
     _directionalLightQuadModel = Model::createRaw(directionalLightQuadMesh);
@@ -55,13 +56,14 @@ void LightSample::initialize()
     setUnlitMaterialTexture(_directionalLightQuadModel, "res/png/light-directional.png");
     _directionalLightNode->setDrawable(_directionalLightQuadModel);
     _directionalLightNode->setTranslation(0.0f, 0.0f, 7.0f);
-    _scene->addNode(_directionalLightNode);
+    _scene->addNode(directionalLightNode);
 
     // Create a spotlight and create a reference icon for the light
     auto spotLight =
         Light::createSpot(Vector3::one(), 100.0f, MATH_DEG_TO_RAD(30.0f), MATH_DEG_TO_RAD(40.0f));
-    _spotLightNode = Node::create("spotLight");
-    _spotLightNode->setLight(spotLight);
+    NodePtr spotLightNode = Node::create("spotLight");
+    spotLightNode->setLight(spotLight);
+    _spotLightNode = spotLightNode.get();
 
     auto spotLightQuadMesh = Mesh::createQuad(-0.3f, -0.3f, 0.6f, 0.6f);
     _spotLightQuadModel = Model::createRaw(spotLightQuadMesh);
@@ -69,12 +71,13 @@ void LightSample::initialize()
     setUnlitMaterialTexture(_spotLightQuadModel, "res/png/light-spot.png");
     _spotLightNode->setDrawable(_spotLightQuadModel);
     _spotLightNode->setTranslation(0.0f, 0.0f, 8.0f);
-    _scene->addNode(_spotLightNode);
+    _scene->addNode(spotLightNode);
 
     // Create a point light and create a reference icon for the light
     auto pointLight = Light::createPoint(Vector3::one(), 16.0f);
-    _pointLightNode = Node::create("pointLight");
-    _pointLightNode->setLight(pointLight);
+    NodePtr pointLightNode = Node::create("pointLight");
+    pointLightNode->setLight(pointLight);
+    _pointLightNode = pointLightNode.get();
 
     auto pointLightQuadMesh = Mesh::createQuad(-0.3f, -0.3f, 0.6f, 0.6f);
     _pointLightQuadModel = Model::createRaw(pointLightQuadMesh);
@@ -82,7 +85,7 @@ void LightSample::initialize()
     setUnlitMaterialTexture(_pointLightQuadModel, "res/png/light-point.png");
     _pointLightNode->setDrawable(_pointLightQuadModel);
     _pointLightNode->setTranslation(0.0f, 0.0f, 8.0f);
-    _scene->addNode(_pointLightNode);
+    _scene->addNode(pointLightNode);
 
     // Create and initialize lights and materials for lights
     _lighting = Material::create("res/common/light.material");
@@ -135,33 +138,14 @@ void LightSample::initialize()
 
 void LightSample::finalize()
 {
-    // Clear drawable references - Node::setDrawable(nullptr) will delete the Models
-    // since Model doesn't inherit from Ref. We must NOT call SAFE_RELEASE on the
-    // model pointers afterward since they've already been deleted by setDrawable.
-    if (_directionalLightNode)
-    {
-        _directionalLightNode->setDrawable(nullptr);
-        _directionalLightQuadModel = nullptr;  // Already deleted by setDrawable
-    }
-    if (_spotLightNode)
-    {
-        _spotLightNode->setDrawable(nullptr);
-        _spotLightQuadModel = nullptr;  // Already deleted by setDrawable
-    }
-    if (_pointLightNode)
-    {
-        _pointLightNode->setDrawable(nullptr);
-        _pointLightQuadModel = nullptr;  // Already deleted by setDrawable
-    }
-    
-    // Release nodes and other resources
-    SAFE_RELEASE(_directionalLightNode);
-    SAFE_RELEASE(_spotLightNode);
-    SAFE_RELEASE(_pointLightNode);
-    SAFE_RELEASE(_lighting);
-    SAFE_RELEASE(_font);
+    // Nodes are now owned by scene, just clear pointers
+    _directionalLightNode = nullptr;
+    _spotLightNode = nullptr;
+    _pointLightNode = nullptr;
+    _lighting.reset();
+    _font.reset();
     _scene.reset();
-    SAFE_RELEASE(_form);
+    _form.reset();
 }
 
 void LightSample::update(float elapsedTime) {}

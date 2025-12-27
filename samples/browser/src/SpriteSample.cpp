@@ -71,16 +71,15 @@ void SpriteSample::initialize()
 
     // Setup player text
     Node* playerTextNode = _scene->findNode("text");
-    playerTextNode->addRef();
+    NodePtr playerTextNodePtr = playerTextNode->shared_from_this();
     _scene->removeNode(playerTextNode);
     // XXX This is because SceneLoader doesn't support loading child nodes for other nodes
-    _playerNode->addChild(playerTextNode);
+    _playerNode->addChild(playerTextNodePtr);
 
     playerTextNode->translateY(_playerSprite->getHeight());
     Text* playerText = dynamic_cast<Text*>(playerTextNode->getDrawable());
     playerText->setJustify(Font::ALIGN_TOP_HCENTER);
     playerText->setWidth(_playerSprite->getWidth());
-    SAFE_RELEASE(playerTextNode);
 
     // Custom Effect in sprite
     EffectPtr waterEffect =
@@ -92,9 +91,9 @@ void SpriteSample::initialize()
     waterSprite->setOpacity(0.5f);
     _scene->findNode("water")->setDrawable(waterSprite);
     Material* waterMaterial = waterSprite->getMaterial();
-    Texture::Sampler* noiseSampler =
+    SamplerPtr noiseSampler =
         Texture::Sampler::create("res/common/sprites/water2d-noise.png");
-    waterMaterial->getParameter("u_texture_noise")->setValue(noiseSampler);
+    waterMaterial->getParameter("u_texture_noise")->setValue(noiseSampler.get());
     SAFE_RELEASE(noiseSampler);
     waterMaterial->getParameter("u_time")->bindValue(this, &SpriteSample::getTime);
 }
@@ -166,10 +165,12 @@ void SpriteSample::keyEvent(Keyboard::KeyEvent evt, int key)
                 _playerMovement |= WALK_FORWARD;
                 break;
             case Keyboard::KEY_C:
-                Node* clone = _playerNode->clone();
+            {
+                NodePtr clone = _playerNode->clone();
                 _scene->addNode(clone);
                 clone->translateZ(-1);
                 break;
+            }
         }
     }
     else if (evt == Keyboard::KEY_RELEASE)

@@ -23,46 +23,45 @@ ADD_SAMPLE("Graphics", "Post Process", PostProcessSample, 14);
 #define FRAMEBUFFER_WIDTH 1024
 #define FRAMEBUFFER_HEIGHT 1024
 
-Model* PostProcessSample::_quadModel = nullptr;
-Material* PostProcessSample::_compositorMaterial = nullptr;
+ModelPtr PostProcessSample::_quadModel = nullptr;
+MaterialPtr PostProcessSample::_compositorMaterial = nullptr;
 
-PostProcessSample::Compositor* PostProcessSample::Compositor::create(FrameBuffer* srcBuffer,
-                                                                     FrameBuffer* dstBuffer,
+PostProcessSample::Compositor* PostProcessSample::Compositor::create(FrameBufferPtr srcBuffer,
+                                                                     FrameBufferPtr dstBuffer,
                                                                      const std::string& materialPath,
                                                                      const std::string& techniqueId)
 {
     assert(srcBuffer);
 
-    Material* material = Material::create(materialPath);
-    Texture::Sampler* sampler = Texture::Sampler::create(srcBuffer->getRenderTarget()->getTexture());
-    material->getParameter("u_texture")->setValue(sampler);
-    SAFE_RELEASE(sampler);
+    auto material = Material::create(materialPath);
+    SamplerPtr sampler = Texture::Sampler::create(srcBuffer->getRenderTarget()->getTexture());
+    material->getParameter("u_texture")->setValue(sampler.get());
     if (_quadModel == nullptr)
     {
         auto mesh = Mesh::createQuadFullscreen();
-        _quadModel = Model::createRaw(mesh);
+        _quadModel = Model::create(mesh);
     }
 
     return new Compositor(srcBuffer, dstBuffer, material, techniqueId);
 }
 
-PostProcessSample::Compositor::Compositor(FrameBuffer* srcBuffer,
-                                          FrameBuffer* dstBuffer,
-                                          Material* material,
+PostProcessSample::Compositor::Compositor(FrameBufferPtr srcBuffer,
+                                          FrameBufferPtr dstBuffer,
+                                          MaterialPtr material,
                                           const std::string& techniqueId)
     : _srcBuffer(srcBuffer), _dstBuffer(dstBuffer), _material(material), _techniqueId(techniqueId)
 {
 }
 
-PostProcessSample::Compositor::~Compositor() { SAFE_RELEASE(_material); }
+PostProcessSample::Compositor::~Compositor() { _material.reset(); }
 
-FrameBuffer* PostProcessSample::Compositor::getSrcFrameBuffer() const { return _srcBuffer; }
+FrameBufferPtr PostProcessSample::Compositor::getSrcFrameBuffer() const { return _srcBuffer; }
 
-FrameBuffer* PostProcessSample::Compositor::getDstFrameBuffer() const { return _dstBuffer; }
+FrameBufferPtr PostProcessSample::Compositor::getDstFrameBuffer() const { return _dstBuffer; }
 
 const std::string& PostProcessSample::Compositor::getTechniqueId() const { return _techniqueId; }
 
-Material* PostProcessSample::Compositor::getMaterial() const { return _material; }
+Material* PostProcessSample::Compositor::getMaterial() const { return _material.get(); }
 
 void PostProcessSample::Compositor::blit(const Rectangle& dst)
 {
@@ -169,7 +168,7 @@ void PostProcessSample::finalize()
     }
     _compositors.clear();
     SAFE_RELEASE(_quadModel);
-    SAFE_RELEASE(_frameBuffer);
+    _frameBuffer.reset();
 }
 
 void PostProcessSample::update(float elapsedTime)
@@ -193,7 +192,7 @@ void PostProcessSample::render(float elapsedTime)
 
     // Draw into the framebuffer
     Game::getInstance()->setViewport(Rectangle(FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT));
-    FrameBuffer* previousFrameBuffer = _frameBuffer->bind();
+    FrameBufferPtr previousFrameBuffer = _frameBuffer->bind();
     clear(CLEAR_COLOR_DEPTH, Vector4::zero(), 1.0f, 0);
     _scene->visit(this, &PostProcessSample::drawScene);
 
@@ -201,8 +200,8 @@ void PostProcessSample::render(float elapsedTime)
     Game::getInstance()->setViewport(defaultViewport);
     Compositor* compositor = _compositors[_compositorIndex];
 
-    FrameBuffer* compositorDstFrameBuffer = compositor->getDstFrameBuffer();
-    FrameBuffer* prevToCompositeFrameBuffer = nullptr;
+    FrameBufferPtr compositorDstFrameBuffer = compositor->getDstFrameBuffer();
+    FrameBufferPtr prevToCompositeFrameBuffer;
     if (compositorDstFrameBuffer)
     {
         prevToCompositeFrameBuffer = compositorDstFrameBuffer->bind();

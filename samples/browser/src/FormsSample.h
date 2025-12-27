@@ -43,8 +43,8 @@ class FormsSample : public Sample, Control::Listener
     void createSampleForm();
 
     ScenePtr _scene;
-    Node* _formNode{ nullptr };
-    Node* _formNodeParent{ nullptr };
+    NodePtr _formNode;
+    NodePtr _formNodeParent;
     FormPtr _formSelect{ nullptr };
     Form* _activeForm{ nullptr };
     std::vector<FormPtr> _forms;

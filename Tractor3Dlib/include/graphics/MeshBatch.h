@@ -13,7 +13,10 @@
  */
 #pragma once
 
+#include <memory>
+
 #include "graphics/Mesh.h"
+#include "renderer/Material.h"
 
 namespace tractor
 {
@@ -61,7 +64,7 @@ class MeshBatch
      */
     static MeshBatch* create(const VertexFormat& vertexFormat,
                              Mesh::PrimitiveType primitiveType,
-                             Material* material,
+                             MaterialPtr material,
                              bool indexed,
                              unsigned int initialCapacity = 1024,
                              unsigned int growSize = 1024);
@@ -90,7 +93,7 @@ class MeshBatch
      *
      * @return The material used to draw the batch.
      */
-    constexpr Material* getMaterial() const noexcept { return _material; }
+    Material* getMaterial() const noexcept { return _material.get(); }
 
 
     /**
@@ -178,7 +181,7 @@ class MeshBatch
      */
     MeshBatch(const VertexFormat& vertexFormat,
               Mesh::PrimitiveType primitiveType,
-              Material* material,
+              MaterialPtr material,
               bool indexed,
               unsigned int initialCapacity,
               unsigned int growSize);
@@ -205,7 +208,7 @@ class MeshBatch
 
     const VertexFormat _vertexFormat;
     Mesh::PrimitiveType _primitiveType;
-    Material* _material;
+    MaterialPtr _material;
     bool _indexed;
     unsigned int _capacity;
     unsigned int _growSize;

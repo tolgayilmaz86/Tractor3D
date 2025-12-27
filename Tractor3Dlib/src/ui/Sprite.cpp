@@ -584,10 +584,10 @@ Drawable* Sprite::clone(NodeCloneContext& context)
     // Get copied node if it exists
     if (Node* node = getNode())
     {
-        Node* clonedNode = context.findClonedNode(node);
+        NodePtr clonedNode = context.findClonedNode(node);
         if (clonedNode)
         {
-            spriteClone->setNode(clonedNode);
+            spriteClone->setNode(clonedNode.get());
         }
     }
 

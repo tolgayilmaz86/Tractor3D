@@ -128,14 +128,14 @@ class Scene : public std::enable_shared_from_this<Scene>
      *
      * @return The new node.
      */
-    Node* addNode(const std::string& id = EMPTY_STRING);
+    NodePtr addNode(const std::string& id = EMPTY_STRING);
 
     /**
      * Adds the specified node to the scene.
      *
      * @param node The node to be added to the scene.
      */
-    void addNode(Node* node);
+    void addNode(const NodePtr& node);
 
     /**
      * Removes the specified node from the scene.
@@ -161,7 +161,14 @@ class Scene : public std::enable_shared_from_this<Scene>
      *
      * @return The first node in the scene.
      */
-    Node* getFirstNode() const noexcept { return _firstNode; }
+    Node* getFirstNode() const noexcept { return _firstNode.get(); }
+
+    /**
+     * Returns the first node in the scene as shared_ptr.
+     *
+     * @return The first node in the scene as shared_ptr.
+     */
+    NodePtr getFirstNodePtr() const noexcept { return _firstNode; }
 
     /**
      * Gets the active camera for the scene.
@@ -317,8 +324,8 @@ class Scene : public std::enable_shared_from_this<Scene>
 
     std::string _id{};
     CameraPtr _activeCamera;
-    Node* _firstNode{ nullptr };
-    Node* _lastNode{ nullptr };
+    NodePtr _firstNode;
+    NodePtr _lastNode;
     unsigned int _nodeCount{ 0 };
     Vector3 _ambientColor{ Vector3 ::zero() };
     bool _bindAudioListenerToCamera{ true };
@@ -363,7 +370,7 @@ template <class T> void Scene::visitNode(Node* node, T* instance, bool (T::*visi
     Model* model = dynamic_cast<Model*>(node->getDrawable());
     if (model && model->_skin && model->_skin->_rootNode)
     {
-        visitNode(model->_skin->_rootNode, instance, visitMethod);
+        visitNode(model->_skin->_rootNode.get(), instance, visitMethod);
     }
 
     // Recurse for all children.
@@ -386,7 +393,7 @@ void Scene::visitNode(Node* node, T* instance, bool (T::*visitMethod)(Node*, C),
     Model* model = dynamic_cast<Model*>(node->getDrawable());
     if (model && model->_skin && model->_skin->_rootNode)
     {
-        visitNode(model->_skin->_rootNode, instance, visitMethod, cookie);
+        visitNode(model->_skin->_rootNode.get(), instance, visitMethod, cookie);
     }
 
     // Recurse for all children.

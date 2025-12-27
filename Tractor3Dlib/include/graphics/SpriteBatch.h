@@ -409,7 +409,7 @@ class SpriteBatch
      * effect. This can be modified for controlling sampler setting such as
      * filtering modes.
      */
-    Texture::Sampler* getSampler() const noexcept { return _sampler; }
+    Texture::Sampler* getSampler() const noexcept { return _sampler.get(); }
 
     /**
      * Gets the StateBlock for the SpriteBatch.
@@ -525,7 +525,7 @@ class SpriteBatch
 
   private:
     std::unique_ptr<MeshBatch> _batch;
-    Texture::Sampler* _sampler{ nullptr };
+    SamplerPtr _sampler;
     bool _customEffect{ false };
     float _textureWidthRatio{ 0.0f };
     float _textureHeightRatio{ 0.0f };

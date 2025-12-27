@@ -20,6 +20,34 @@
 namespace tractor
 {
 
+// Storage for sampler ownership - MaterialParameter stores raw pointers in union,
+// but we need to keep the SamplerPtr alive for proper lifetime management
+// Using function-local static to avoid static initialization/destruction order issues
+static std::vector<SamplerPtr>& getSamplerStorage()
+{
+    static std::vector<SamplerPtr> storage;
+    return storage;
+}
+
+// Helper to add a sampler to storage and return raw pointer
+static Texture::Sampler* storeSampler(SamplerPtr sampler)
+{
+    if (!sampler) return nullptr;
+    getSamplerStorage().push_back(sampler);
+    return sampler.get();
+}
+
+// Helper to remove a sampler from storage
+static void releaseSampler(const Texture::Sampler* sampler)
+{
+    if (!sampler) return;
+    auto& storage = getSamplerStorage();
+    if (storage.empty()) return;  // Storage already destroyed or empty during static destruction
+    std::erase_if(storage, [sampler](const SamplerPtr& sp) {
+        return sp.get() == sampler;
+    });
+}
+
 //-----------------------------------------------------------------------------
 MaterialParameter::MaterialParameter(const std::string& name)
     : _type(MaterialParameter::NONE), _name(name)
@@ -40,14 +68,17 @@ void MaterialParameter::clearValue()
     switch (_type)
     {
         case MaterialParameter::SAMPLER:
-            if (_value.samplerValue) const_cast<Texture::Sampler*>(_value.samplerValue)->release();
+            if (_value.samplerValue)
+            {
+                releaseSampler(_value.samplerValue);
+            }
             break;
         case MaterialParameter::SAMPLER_ARRAY:
             if (_value.samplerArrayValue)
             {
                 for (size_t i = 0; i < _count; ++i)
                 {
-                    const_cast<Texture::Sampler*>(_value.samplerArrayValue[i])->release();
+                    releaseSampler(_value.samplerArrayValue[i]);
                 }
             }
             break;
@@ -74,7 +105,7 @@ void MaterialParameter::clearValue()
                 SAFE_DELETE_ARRAY(_value.intPtrValue);
                 break;
             case MaterialParameter::METHOD:
-                SAFE_RELEASE(_value.method);
+                _methodBinding.reset();  // Release the shared_ptr
                 break;
             case MaterialParameter::SAMPLER_ARRAY:
                 SAFE_DELETE_ARRAY(_value.samplerArrayValue);
@@ -255,8 +286,36 @@ void MaterialParameter::setValue(const Texture::Sampler* sampler)
     assert(sampler);
     clearValue();
 
-    const_cast<Texture::Sampler*>(sampler)->addRef();
+    // Try to get the shared_ptr from sampler storage or create a non-owning one
+    // For external samplers, we keep them in storage to ensure they stay alive
     _value.samplerValue = sampler;
+    
+    // Check if this sampler is already in storage
+    auto& storage = getSamplerStorage();
+    bool found = false;
+    for (const auto& sp : storage)
+    {
+        if (sp.get() == sampler)
+        {
+            found = true;
+            break;
+        }
+    }
+    
+    if (!found)
+    {
+        // Sampler is not in storage - try to get shared_from_this
+        try
+        {
+            storage.push_back(const_cast<Texture::Sampler*>(sampler)->shared_from_this());
+        }
+        catch (const std::bad_weak_ptr&)
+        {
+            // Sampler is not managed by shared_ptr - store with non-owning deleter
+            storage.push_back(SamplerPtr(const_cast<Texture::Sampler*>(sampler), [](Texture::Sampler*) {}));
+        }
+    }
+    
     _type = MaterialParameter::SAMPLER;
 }
 
@@ -266,8 +325,33 @@ void MaterialParameter::setValue(const Texture::Sampler** samplers, unsigned int
     assert(samplers);
     clearValue();
 
+    auto& storage = getSamplerStorage();
     for (size_t i = 0; i < count; ++i)
-        const_cast<Texture::Sampler*>(samplers[i])->addRef();
+    {
+        // Check if this sampler is already in storage
+        bool found = false;
+        for (const auto& sp : storage)
+        {
+            if (sp.get() == samplers[i])
+            {
+                found = true;
+                break;
+            }
+        }
+        
+        if (!found)
+        {
+            // Try to get shared_from_this
+            try
+            {
+                storage.push_back(const_cast<Texture::Sampler*>(samplers[i])->shared_from_this());
+            }
+            catch (const std::bad_weak_ptr&)
+            {
+                storage.push_back(SamplerPtr(const_cast<Texture::Sampler*>(samplers[i]), [](Texture::Sampler*) {}));
+            }
+        }
+    }
 
     _value.samplerArrayValue = samplers;
     _count = count;
@@ -279,13 +363,13 @@ Texture::Sampler* MaterialParameter::setValue(const std::string& texturePath, bo
 {
     clearValue();
 
-    Texture::Sampler* sampler = Texture::Sampler::create(texturePath, generateMipmaps);
+    SamplerPtr sampler = Texture::Sampler::create(texturePath, generateMipmaps);
     if (sampler)
     {
-        _value.samplerValue = sampler;
+        _value.samplerValue = storeSampler(sampler);
         _type = MaterialParameter::SAMPLER;
     }
-    return sampler;
+    return const_cast<Texture::Sampler*>(_value.samplerValue);
 }
 
 //-----------------------------------------------------------------------------
@@ -418,14 +502,38 @@ void MaterialParameter::setSamplerArray(const Texture::Sampler** values, unsigne
     if (copy)
     {
         _value.samplerArrayValue = new const Texture::Sampler*[count];
-        memcpy(_value.samplerArrayValue, values, sizeof(Texture::Sampler*) * count);
+        memcpy(const_cast<const Texture::Sampler**>(_value.samplerArrayValue), values, sizeof(Texture::Sampler*) * count);
         _dynamic = true;
     }
     else
         _value.samplerArrayValue = values;
 
+    auto& storage = getSamplerStorage();
     for (size_t i = 0; i < count; ++i)
-        const_cast<Texture::Sampler*>(_value.samplerArrayValue[i])->addRef();
+    {
+        // Check if this sampler is already in storage
+        bool found = false;
+        for (const auto& sp : storage)
+        {
+            if (sp.get() == _value.samplerArrayValue[i])
+            {
+                found = true;
+                break;
+            }
+        }
+        
+        if (!found)
+        {
+            try
+            {
+                storage.push_back(const_cast<Texture::Sampler*>(_value.samplerArrayValue[i])->shared_from_this());
+            }
+            catch (const std::bad_weak_ptr&)
+            {
+                storage.push_back(SamplerPtr(const_cast<Texture::Sampler*>(_value.samplerArrayValue[i]), [](Texture::Sampler*) {}));
+            }
+        }
+    }
 
     _count = count;
     _type = MaterialParameter::SAMPLER_ARRAY;
@@ -489,7 +597,7 @@ void MaterialParameter::bind(Effect* effect)
             effect->setValue(_uniform, _value.samplerArrayValue, _count);
             break;
         case MaterialParameter::METHOD:
-            if (_value.method) _value.method->setValue(effect);
+            if (_methodBinding) _methodBinding->setValue(effect);
             break;
         default:
         {
@@ -820,9 +928,7 @@ void MaterialParameter::cloneInto(MaterialParameter* materialParameter) const
             materialParameter->setValue(_value.samplerArrayValue, _count);
             break;
         case METHOD:
-            materialParameter->_value.method = _value.method;
-            assert(materialParameter->_value.method);
-            materialParameter->_value.method->addRef();
+            materialParameter->_methodBinding = _methodBinding;  // shared_ptr copy
             break;
         default:
             GP_ERROR("Unsupported material parameter type(%d).", _type);

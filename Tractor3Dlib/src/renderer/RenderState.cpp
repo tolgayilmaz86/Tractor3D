@@ -47,11 +47,8 @@ RenderState::~RenderState()
 {
     _state.reset();
 
-    // Destroy all the material parameters
-    for (size_t i = 0, count = _parameters.size(); i < count; ++i)
-    {
-        SAFE_RELEASE(_parameters[i]);
-    }
+    // Destroy all the material parameters - now using shared_ptr
+    _parameters.clear();
 }
 
 //----------------------------------------------------------------------------
@@ -70,32 +67,42 @@ MaterialParameter* RenderState::getParameter(const std::string& name) const
     auto param = std::ranges::find_if(_parameters,
                                       [name](const auto& param) { return param->getName() == name; });
 
-    if (param != _parameters.end()) return *param;
+    if (param != _parameters.end()) return param->get();
 
     // Create a new parameter and store it in our list.
-    return _parameters.emplace_back(new MaterialParameter(name));
+    auto newParam = MaterialParameterPtr(new MaterialParameter(name));
+    _parameters.push_back(newParam);
+    return newParam.get();
 }
 
 //----------------------------------------------------------------------------
 MaterialParameter* RenderState::getParameterByIndex(unsigned int index)
 {
-    return _parameters[index];
+    return _parameters[index].get();
 }
 
 //----------------------------------------------------------------------------
 void RenderState::addParameter(MaterialParameter* param)
 {
-    _parameters.push_back(param);
-    param->addRef();
+    // Try to get the shared_ptr from the parameter
+    try
+    {
+        _parameters.push_back(param->shared_from_this());
+    }
+    catch (const std::bad_weak_ptr&)
+    {
+        // Parameter is not managed by shared_ptr - wrap with non-owning deleter
+        _parameters.push_back(MaterialParameterPtr(param, [](MaterialParameter*) {}));
+    }
 }
 
 //----------------------------------------------------------------------------
 void RenderState::removeParameter(const std::string& name)
 {
-    auto it = std::ranges::find(_parameters, name, &MaterialParameter::_name);
+    auto it = std::ranges::find_if(_parameters, 
+        [&name](const auto& param) { return param->_name == name; });
     if (it != _parameters.end())
     {
-        SAFE_RELEASE(*it);
         _parameters.erase(it);
     }
 }
@@ -293,13 +300,13 @@ void RenderState::applyAutoBinding(const std::string& uniformName, const std::st
         else
         {
             bound = false;
-            GP_WARN("Unsupported auto binding type (%s).", autoBinding);
+            GP_WARN("Unsupported auto binding type (%s).", autoBinding.c_str());
         }
     }
 
     // Mark parameter as an auto binding
-    if (bound && param->_type == MaterialParameter::METHOD && param->_value.method)
-        param->_value.method->_autoBinding = true;
+    if (bound && param->_type == MaterialParameter::METHOD && param->_methodBinding)
+        param->_methodBinding->_autoBinding = true;
 }
 
 //----------------------------------------------------------------------------
@@ -458,28 +465,15 @@ void RenderState::cloneInto(RenderState* renderState, NodeCloneContext& context)
                                    // If this parameter is a method binding auto binding, don't clone
                                    // it - it will get setup automatically via the cloned auto bindings instead.
                                    return !(param->_type == MaterialParameter::METHOD
-                                            && param->_value.method
-                                            && param->_value.method->_autoBinding);
+                                            && param->_methodBinding
+                                            && param->_methodBinding->_autoBinding);
                                }))
     {
         assert(param);
-        auto& paramCopy =
-            renderState->_parameters.emplace_back(new MaterialParameter(param->getName()));
-        param->cloneInto(paramCopy);
+        auto paramCopy = MaterialParameterPtr(new MaterialParameter(param->getName()));
+        param->cloneInto(paramCopy.get());
+        renderState->_parameters.push_back(paramCopy);
     }
-
-    // for (auto& param : _parameters)
-    //{
-    //   assert(param);
-
-    //  // If this parameter is a method binding auto binding, don't clone it - it will get setup automatically
-    //  // via the cloned auto bindings instead.
-    //  if (param->_type == MaterialParameter::METHOD && param->_value.method && param->_value.method->_autoBinding)
-    //    continue;
-
-    //  auto& paramCopy = renderState->_parameters.emplace_back(new
-    //  MaterialParameter(param->getName())); param->cloneInto(paramCopy);
-    //}
 
     // Clone our state block
     if (_state)

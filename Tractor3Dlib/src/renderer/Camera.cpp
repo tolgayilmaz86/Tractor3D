@@ -490,9 +490,9 @@ CameraPtr Camera::clone(NodeCloneContext& context) const
     }
     assert(cameraClone);
 
-    if (Node* node = context.findClonedNode(getNode()))
+    if (NodePtr node = context.findClonedNode(getNode()))
     {
-        cameraClone->setNode(node);
+        cameraClone->setNode(node.get());
     }
     return cameraClone;
 }

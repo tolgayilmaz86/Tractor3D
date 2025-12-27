@@ -53,7 +53,7 @@ class BillboardSample : public Sample
 
   private:
     FirstPersonCamera _camera;
-    std::vector<Node*> _billboards;
+    std::vector<NodePtr> _billboards;
     std::vector<Model*> _billboardModels;
     FontPtr _font;
     ScenePtr _scene;

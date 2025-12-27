@@ -360,28 +360,22 @@ void TerrainPatch::addLOD(float* heights,
 //----------------------------------------------------------------------------
 void TerrainPatch::deleteLayer(Layer* layer)
 {
-    // Release layer samplers
-    if (layer->textureIndex != -1)
+    // Release layer samplers - with shared_ptr, just reset the entry
+    if (layer->textureIndex != -1 && layer->textureIndex < (int)_samplers.size())
     {
-        if (_samplers[layer->textureIndex]->getRefCount() == 1)
+        // Check if this sampler is only referenced by this layer (use_count == 1)
+        if (_samplers[layer->textureIndex].use_count() == 1)
         {
-            SAFE_RELEASE(_samplers[layer->textureIndex]);
+            _samplers[layer->textureIndex].reset();
         }
-        else
-        {
-            _samplers[layer->textureIndex]->release();
-        }
+        // Note: If use_count > 1, other layers share this sampler, so we don't reset
     }
 
-    if (layer->blendIndex != -1)
+    if (layer->blendIndex != -1 && layer->blendIndex < (int)_samplers.size())
     {
-        if (_samplers[layer->blendIndex]->getRefCount() == 1)
+        if (_samplers[layer->blendIndex].use_count() == 1)
         {
-            SAFE_RELEASE(_samplers[layer->blendIndex]);
-        }
-        else
-        {
-            _samplers[layer->blendIndex]->release();
+            _samplers[layer->blendIndex].reset();
         }
     }
 
@@ -397,39 +391,34 @@ int TerrainPatch::addSampler(const std::string& path)
 
     // Load the texture. If this texture is already loaded, it will return
     // a pointer to the same one, with its ref count incremented.
-    Texture* texture = Texture::create(path, true);
+    TexturePtr texture = Texture::create(path, true);
     if (!texture) return -1;
 
     // Textures should only be 2D
     if (texture->getType() != Texture::TEXTURE_2D)
     {
-        SAFE_RELEASE(texture);
         return -1;
     }
 
     int firstAvailableIndex = -1;
     for (size_t i = 0, count = _samplers.size(); i < count; ++i)
     {
-        Texture::Sampler* sampler = _samplers[i];
+        SamplerPtr& sampler = _samplers[i];
 
-        if (sampler == nullptr && firstAvailableIndex == -1)
+        if (!sampler && firstAvailableIndex == -1)
         {
             firstAvailableIndex = (int)i;
         }
-        else if (sampler->getTexture() == texture)
+        else if (sampler && sampler->getTexture() == texture.get())
         {
             // A sampler was already added for this texture.
-            // Increase the ref count for the sampler to indicate that a new
-            // layer will be referencing it.
-            texture->release();
-            sampler->addRef();
+            // With shared_ptr, it's already reference counted.
             return (int)i;
         }
     }
 
     // Add a new sampler to the list
-    Texture::Sampler* sampler = Texture::Sampler::create(texture);
-    texture->release();
+    SamplerPtr sampler = Texture::Sampler::create(texture);
 
     // This may need to be clamp in some cases to prevent edge bleeding?  Possibly a
     // configuration variable in the future.
@@ -554,7 +543,7 @@ bool TerrainPatch::updateMaterial()
 
     for (size_t i = 0, count = _levels.size(); i < count; ++i)
     {
-        Material* material = Material::create(_terrain->_materialPath, &passCallback, this);
+        MaterialPtr material = Material::create(_terrain->_materialPath, &passCallback, this);
         assert(material);
         if (!material)
         {
@@ -567,8 +556,6 @@ bool TerrainPatch::updateMaterial()
 
         // Set material on this lod level
         _levels[i]->model->setMaterial(material);
-
-        material->release();
     }
 
     __currentPatchIndex = -1;
@@ -737,14 +724,23 @@ bool TerrainAutoBindingResolver::resolveAutoBinding(const std::string& autoBindi
     {
         TerrainPatch* patch = HelperFunctions::getPatch(node);
         if (patch && patch->_layers.size() > 0)
-            parameter->setValue((const Texture::Sampler**)&patch->_samplers[0],
-                                (unsigned int)patch->_samplers.size());
+        {
+            // Build a temporary array of raw pointers from SamplerPtr vector
+            std::vector<const Texture::Sampler*> rawSamplers;
+            rawSamplers.reserve(patch->_samplers.size());
+            for (const auto& sampler : patch->_samplers)
+            {
+                rawSamplers.push_back(sampler.get());
+            }
+            // Use setSamplerArray with copy=true to avoid dangling pointer to temporary vector
+            parameter->setSamplerArray(rawSamplers.data(), (unsigned int)rawSamplers.size(), true);
+        }
         return true;
     }
     else if (autoBinding == "TERRAIN_NORMAL_MAP")
     {
         Terrain* terrain = dynamic_cast<Terrain*>(node->getDrawable());
-        if (terrain && terrain->_normalMap) parameter->setValue(terrain->_normalMap);
+        if (terrain && terrain->_normalMap) parameter->setValue(terrain->_normalMap.get());
         return true;
     }
     else if (autoBinding == "TERRAIN_ROW")

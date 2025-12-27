@@ -37,6 +37,12 @@ Pass::~Pass()
 }
 
 //----------------------------------------------------------------------------
+std::shared_ptr<Pass> Pass::create(const std::string& id, Technique* technique)
+{
+    return std::shared_ptr<Pass>(new Pass(id, technique));
+}
+
+//----------------------------------------------------------------------------
 bool Pass::initialize(const std::string& vshPath, const std::string& fshPath, const std::string& defines)
 {
     _effect.reset();
@@ -92,14 +98,14 @@ void Pass::unbind()
 }
 
 //----------------------------------------------------------------------------
-Pass* Pass::clone(Technique* technique, NodeCloneContext& context) const
+std::shared_ptr<Pass> Pass::clone(Technique* technique, NodeCloneContext& context) const
 {
     assert(_effect);
 
-    Pass* pass = new Pass(getId(), technique);
+    auto pass = Pass::create(getId(), technique);
     pass->_effect = _effect;  // shared_ptr copy increments ref count automatically
 
-    RenderState::cloneInto(pass, context);
+    RenderState::cloneInto(pass.get(), context);
     pass->_parent = technique;
     return pass;
 }

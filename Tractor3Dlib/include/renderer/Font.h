@@ -445,7 +445,7 @@ class Font : public std::enable_shared_from_this<Font>
     float _spacing{0.0f};
     std::unique_ptr<Glyph[]> _glyphs;
     unsigned int _glyphCount{0};
-    Texture* _texture{ nullptr };
+    TexturePtr _texture;
     std::unique_ptr<SpriteBatch> _batch;
     Rectangle _viewport{};
     MaterialParameter* _cutoffParam{ nullptr };

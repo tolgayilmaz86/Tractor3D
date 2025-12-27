@@ -57,9 +57,8 @@ void Audio3DSample::initialize()
         ->setValue(lightNode->getForwardVectorView());
 
     // Remove the cube from the scene but keep a reference to it.
-    _cubeNode = boxNode;
-    _cubeNode->addRef();
-    _scene->removeNode(_cubeNode);
+    _cubeNode = boxNode->shared_from_this();
+    _scene->removeNode(_cubeNode.get());
 
     loadGrid(_scene.get());
 
@@ -72,7 +71,7 @@ void Audio3DSample::initialize()
 
     _fpCamera.initialize();
     _fpCamera.setPosition(cameraPosition);
-    _scene->addNode(_fpCamera.getRootNode());
+    _scene->addNode(_fpCamera.getRootNode()->shared_from_this());
     _scene->setActiveCamera(_fpCamera.getCamera());
 
     _gamepad = getGamepad(0);
@@ -85,12 +84,7 @@ void Audio3DSample::finalize()
 {
     _scene.reset();
     SAFE_RELEASE(_font);
-    SAFE_RELEASE(_cubeNode);
-    for (std::map<std::string, Node*>::iterator it = _audioNodes.begin(); it != _audioNodes.end();
-         ++it)
-    {
-        it->second->release();
-    }
+    _cubeNode.reset();
     _audioNodes.clear();
 }
 
@@ -294,8 +288,8 @@ void Audio3DSample::addSound(const std::string& file)
     std::string path("res/common/");
     path.append(file);
 
-    Node* node = nullptr;
-    std::map<std::string, Node*>::iterator it = _audioNodes.find(path);
+    NodePtr node = nullptr;
+    auto it = _audioNodes.find(path);
     if (it != _audioNodes.end())
     {
         node = it->second->clone();
@@ -311,7 +305,6 @@ void Audio3DSample::addSound(const std::string& file)
         node->setAudioSource(audioSource);
 
         _audioNodes[path] = node;
-        node->addRef();
     }
     assert(node);
     Node* cameraNode = _scene->getActiveCamera()->getNode();
@@ -322,7 +315,6 @@ void Audio3DSample::addSound(const std::string& file)
     node->translate(dir);
     _scene->addNode(node);
     node->getAudioSource()->play();
-    node->release();
 }
 
 void Audio3DSample::drawDebugText(int x, int y, unsigned int fontSize)
@@ -350,7 +342,7 @@ void Audio3DSample::loadGrid(Scene* scene)
     Model* gridModel = createGridModel();
     assert(gridModel);
     gridModel->setMaterial("res/common/grid.material");
-    Node* node = scene->addNode("grid");
+    NodePtr node = scene->addNode("grid");
     node->setDrawable(gridModel);
 }
 

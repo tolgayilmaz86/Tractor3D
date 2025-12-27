@@ -64,7 +64,8 @@
 namespace tractor
 {
 
-static std::vector<Texture*> __textureCache;
+// Texture cache using weak_ptr to allow textures to be freed when no longer used
+static std::vector<TextureWeakPtr> __textureCache;
 static TextureHandle __currentTextureId = 0;
 static Texture::Type __currentTextureType = Texture::TEXTURE_2D;
 
@@ -77,43 +78,45 @@ Texture::~Texture()
         _handle = 0;
     }
 
-    // Remove ourself from the texture cache.
+    // Remove expired weak_ptrs from the cache
     if (_cached)
     {
-        std::vector<Texture*>::iterator itr =
-            std::find(__textureCache.begin(), __textureCache.end(), this);
-        if (itr != __textureCache.end())
-        {
-            __textureCache.erase(itr);
-        }
+        std::erase_if(__textureCache, [](const TextureWeakPtr& wp) {
+            return wp.expired();
+        });
     }
 }
 
 //----------------------------------------------------------------------------
-Texture* Texture::create(const std::string& path, bool generateMipmaps)
+TexturePtr Texture::create(const std::string& path, bool generateMipmaps)
 {
-    // Search texture cache first.
-    for (size_t i = 0, count = __textureCache.size(); i < count; ++i)
+    // Search texture cache first and clean up expired entries
+    for (auto it = __textureCache.begin(); it != __textureCache.end(); )
     {
-        Texture* t = __textureCache[i];
-        assert(t);
-        if (t->_path == path)
+        if (auto t = it->lock())
         {
-            // If 'generateMipmaps' is true, call Texture::generateMipamps() to force the
-            // texture to generate its mipmap chain if it hasn't already done so.
-            if (generateMipmaps)
+            if (t->_path == path)
             {
-                t->generateMipmaps();
+                // If 'generateMipmaps' is true, call Texture::generateMipamps() to force the
+                // texture to generate its mipmap chain if it hasn't already done so.
+                if (generateMipmaps)
+                {
+                    t->generateMipmaps();
+                }
+
+                // Found a match - return the existing shared_ptr
+                return t;
             }
-
-            // Found a match.
-            t->addRef();
-
-            return t;
+            ++it;
+        }
+        else
+        {
+            // Remove expired entry
+            it = __textureCache.erase(it);
         }
     }
 
-    Texture* texture = nullptr;
+    TexturePtr texture = nullptr;
 
     // Filter loading based on file extension.
     std::filesystem::path filePath(FileSystem::resolvePath(path));
@@ -142,7 +145,7 @@ Texture* Texture::create(const std::string& path, bool generateMipmaps)
         texture->_path = path;
         texture->_cached = true;
 
-        // Add to texture cache.
+        // Add to texture cache as weak_ptr
         __textureCache.push_back(texture);
 
         return texture;
@@ -153,7 +156,7 @@ Texture* Texture::create(const std::string& path, bool generateMipmaps)
 }
 
 //----------------------------------------------------------------------------
-Texture* Texture::create(Image* image, bool generateMipmaps)
+TexturePtr Texture::create(Image* image, bool generateMipmaps)
 {
     assert(image);
 
@@ -249,12 +252,12 @@ size_t Texture::getFormatBPP(Format format)
 }
 
 //----------------------------------------------------------------------------
-Texture* Texture::create(Format format,
-                         unsigned int width,
-                         unsigned int height,
-                         const unsigned char* data,
-                         bool generateMipmaps,
-                         Texture::Type type)
+TexturePtr Texture::create(Format format,
+                           unsigned int width,
+                           unsigned int height,
+                           const unsigned char* data,
+                           bool generateMipmaps,
+                           Texture::Type type)
 {
     assert(type == Texture::TEXTURE_2D || type == Texture::TEXTURE_CUBE);
 
@@ -328,7 +331,7 @@ Texture* Texture::create(Format format,
         GL_ASSERT(glTexParameteri(target, GL_TEXTURE_MIN_FILTER, minFilter));
     }
 
-    Texture* texture = new Texture();
+    auto texture = TexturePtr(new Texture());
     texture->_handle = textureId;
     texture->_format = format;
     texture->_type = type;
@@ -347,11 +350,11 @@ Texture* Texture::create(Format format,
 }
 
 //----------------------------------------------------------------------------
-Texture* Texture::create(TextureHandle handle, int width, int height, Format format)
+TexturePtr Texture::create(TextureHandle handle, int width, int height, Format format)
 {
     assert(handle);
 
-    Texture* texture = new Texture();
+    auto texture = TexturePtr(new Texture());
     if (glIsTexture(handle))
     {
         // There is no real way to query for texture type, but an error will be returned if a cube
@@ -450,7 +453,7 @@ static unsigned int computePVRTCDataSize(int width, int height, int bpp)
 }
 
 //----------------------------------------------------------------------------
-Texture* Texture::createCompressedPVRTC(const std::string& path)
+TexturePtr Texture::createCompressedPVRTC(const std::string& path)
 {
     std::unique_ptr<Stream> stream(FileSystem::open(path));
     if (stream.get() == nullptr || !stream->canRead())
@@ -529,7 +532,7 @@ Texture* Texture::createCompressedPVRTC(const std::string& path)
     Filter minFilter = mipMapCount > 1 ? NEAREST_MIPMAP_LINEAR : LINEAR;
     GL_ASSERT(glTexParameteri(target, GL_TEXTURE_MIN_FILTER, minFilter));
 
-    Texture* texture = new Texture();
+    auto texture = TexturePtr(new Texture());
     texture->_handle = textureId;
     texture->_type = faceCount > 1 ? TEXTURE_CUBE : TEXTURE_2D;
     texture->_width = width;
@@ -881,7 +884,7 @@ int Texture::getMaskByteIndex(unsigned int mask)
 }
 
 //----------------------------------------------------------------------------
-Texture* Texture::createCompressedDDS(const std::string& path)
+TexturePtr Texture::createCompressedDDS(const std::string& path)
 {
     // DDS file structures.
     struct dds_pixel_format
@@ -922,7 +925,7 @@ Texture* Texture::createCompressedDDS(const std::string& path)
         GLsizei size;
     };
 
-    Texture* texture = nullptr;
+    TexturePtr texture = nullptr;
 
     // Read DDS file.
     std::unique_ptr<Stream> stream(FileSystem::open(path));
@@ -1147,13 +1150,6 @@ Texture* Texture::createCompressedDDS(const std::string& path)
         // Perform color conversion.
         if (colorConvert)
         {
-            // Note: While it's possible to use BGRA_EXT texture formats here and avoid CPU color
-            // conversion below, there seems to be different flavors of the BGRA extension, with
-            // some vendors requiring an internal format of RGBA and others requiring an internal
-            // format of BGRA. We could be smarter here later and skip color conversion in favor of
-            // GL_BGRA_EXT (for format and/or internal format) based on which GL extensions are
-            // available. Tip: Using A8B8G8R8 and X8B8G8R8 DDS format maps directly to GL RGBA and
-            // requires on no color conversion.
             GLubyte *pixel, r, g, b, a;
             if (format == GL_RGB)
             {
@@ -1221,7 +1217,7 @@ Texture* Texture::createCompressedDDS(const std::string& path)
     GL_ASSERT(glTexParameteri(target, GL_TEXTURE_MIN_FILTER, minFilter));
 
     // Create gameplay texture.
-    texture = new Texture();
+    texture = TexturePtr(new Texture());
     texture->_handle = textureId;
     texture->_type = (Type)target;
     texture->_width = header.dwWidth;
@@ -1293,7 +1289,7 @@ void Texture::generateMipmaps()
 }
 
 //----------------------------------------------------------------------------
-Texture::Sampler::Sampler(Texture* texture)
+Texture::Sampler::Sampler(const TexturePtr& texture)
     : _texture(texture), _wrapS(Texture::REPEAT), _wrapT(Texture::REPEAT), _wrapR(Texture::REPEAT)
 {
     assert(texture);
@@ -1302,22 +1298,40 @@ Texture::Sampler::Sampler(Texture* texture)
 }
 
 //----------------------------------------------------------------------------
-Texture::Sampler::~Sampler() { SAFE_RELEASE(_texture); }
+Texture::Sampler::~Sampler() = default;
 
 //----------------------------------------------------------------------------
-Texture::Sampler* Texture::Sampler::create(Texture* texture)
+Texture::SamplerPtr Texture::Sampler::create(const TexturePtr& texture)
 {
     assert(texture);
     assert(texture->_type == Texture::TEXTURE_2D || texture->_type == Texture::TEXTURE_CUBE);
-    texture->addRef();
-    return new Sampler(texture);
+    return SamplerPtr(new Sampler(texture));
 }
 
 //----------------------------------------------------------------------------
-Texture::Sampler* Texture::Sampler::create(const std::string& path, bool generateMipmaps)
+Texture::SamplerPtr Texture::Sampler::create(const std::string& path, bool generateMipmaps)
 {
-    Texture* texture = Texture::create(path, generateMipmaps);
-    return texture ? new Sampler(texture) : nullptr;
+    TexturePtr texture = Texture::create(path, generateMipmaps);
+    return texture ? SamplerPtr(new Sampler(texture)) : nullptr;
+}
+
+//----------------------------------------------------------------------------
+Texture::SamplerPtr Texture::Sampler::create(Texture* texture)
+{
+    assert(texture);
+    assert(texture->_type == Texture::TEXTURE_2D || texture->_type == Texture::TEXTURE_CUBE);
+    // Create a temporary shared_ptr to the texture - the sampler will hold a copy
+    // For backward compatibility with raw pointers, we try to get shared_from_this
+    try
+    {
+        return SamplerPtr(new Sampler(texture->shared_from_this()));
+    }
+    catch (const std::bad_weak_ptr&)
+    {
+        // If texture is not managed by shared_ptr, create a non-owning shared_ptr
+        // This is dangerous and only for backward compatibility
+        return SamplerPtr(new Sampler(TexturePtr(texture, [](Texture*) {})));
+    }
 }
 
 //----------------------------------------------------------------------------

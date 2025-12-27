@@ -25,7 +25,7 @@ namespace tractor
 //----------------------------------------------------------------------------
 MeshBatch::MeshBatch(const VertexFormat& vertexFormat,
                      Mesh::PrimitiveType primitiveType,
-                     Material* material,
+                     MaterialPtr material,
                      bool indexed,
                      unsigned int initialCapacity,
                      unsigned int growSize)
@@ -40,7 +40,7 @@ MeshBatch::MeshBatch(const VertexFormat& vertexFormat,
 //----------------------------------------------------------------------------
 MeshBatch::~MeshBatch()
 {
-    SAFE_RELEASE(_material);
+    _material.reset();
     SAFE_DELETE_ARRAY(_vertices);
     SAFE_DELETE_ARRAY(_indices);
 }
@@ -53,7 +53,7 @@ MeshBatch* MeshBatch::create(const VertexFormat& vertexFormat,
                              unsigned int initialCapacity,
                              unsigned int growSize)
 {
-    Material* material = Material::create(materialPath);
+    MaterialPtr material = Material::create(materialPath);
     if (material == nullptr)
     {
         GP_ERROR("Failed to create material for mesh batch from file '%s'.", materialPath);
@@ -61,14 +61,13 @@ MeshBatch* MeshBatch::create(const VertexFormat& vertexFormat,
     }
     MeshBatch* batch =
         create(vertexFormat, primitiveType, material, indexed, initialCapacity, growSize);
-    SAFE_RELEASE(material); // batch now owns the material
     return batch;
 }
 
 //----------------------------------------------------------------------------
 MeshBatch* MeshBatch::create(const VertexFormat& vertexFormat,
                              Mesh::PrimitiveType primitiveType,
-                             Material* material,
+                             MaterialPtr material,
                              bool indexed,
                              unsigned int initialCapacity,
                              unsigned int growSize)
@@ -77,8 +76,6 @@ MeshBatch* MeshBatch::create(const VertexFormat& vertexFormat,
 
     MeshBatch* batch =
         new MeshBatch(vertexFormat, primitiveType, material, indexed, initialCapacity, growSize);
-
-    material->addRef();
 
     return batch;
 }

@@ -17,7 +17,6 @@
 
 #include "math/Vector3.h"
 #include "math/Vector4.h"
-#include "utils/Ref.h"
 
 namespace tractor
 {
@@ -30,10 +29,16 @@ class Pass;
 // Forward declaration for smart pointer types
 class RenderState;
 
+/** Shared pointer type for MaterialParameter. */
+using MaterialParameterPtr = std::shared_ptr<MaterialParameter>;
+
+/** Weak pointer type for MaterialParameter. */
+using MaterialParameterWeakPtr = std::weak_ptr<MaterialParameter>;
+
 /**
  * Defines the rendering state of the graphics device.
  */
-class RenderState : public Ref
+class RenderState
 {
     friend class Game;
     friend class Material;
@@ -674,7 +679,7 @@ class RenderState : public Ref
     /**
      * Collection of MaterialParameter's to be applied to the tractor::Effect.
      */
-    mutable std::vector<MaterialParameter*> _parameters{};
+    mutable std::vector<MaterialParameterPtr> _parameters{};
 
     /**
      * Map of parameter names to auto binding strings.

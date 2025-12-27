@@ -307,10 +307,10 @@ AudioSourcePtr AudioSource::clone(NodeCloneContext& context)
     audioClone->setVelocity(getVelocity());
     if (Node* node = getNode())
     {
-        Node* clonedNode = context.findClonedNode(node);
+        NodePtr clonedNode = context.findClonedNode(node);
         if (clonedNode)
         {
-            audioClone->setNode(clonedNode);
+            audioClone->setNode(clonedNode.get());
         }
     }
     return audioClone;

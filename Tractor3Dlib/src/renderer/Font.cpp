@@ -37,7 +37,7 @@ Font::~Font()
         __fontCache.erase(itr);
     }
 
-    SAFE_RELEASE(_texture);
+    _texture.reset();  // shared_ptr handles cleanup
 
     // _sizes is now vector<FontPtr>, will clean up automatically
     _sizes.clear();
@@ -58,7 +58,7 @@ FontPtr Font::create(const std::string& path, const std::string& id)
     }
 
     // Load the bundle.
-    Bundle* bundle = Bundle::create(path);
+    BundlePtr bundle = Bundle::create(path);
     if (bundle == nullptr)
     {
         GP_WARN("Failed to load font bundle '%s'.", path);
@@ -92,8 +92,6 @@ FontPtr Font::create(const std::string& path, const std::string& id)
         __fontCache.push_back(font);
     }
 
-    SAFE_RELEASE(bundle);
-
     return font;
 }
 
@@ -121,7 +119,6 @@ FontPtr Font::create(const std::string& family,
     if (fontEffect == nullptr)
     {
         GP_WARN("Failed to create effect for font.");
-        SAFE_RELEASE(texture);
         return nullptr;
     }
 
@@ -139,15 +136,24 @@ FontPtr Font::create(const std::string& family,
     sampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
     sampler->setWrapMode(Texture::CLAMP, Texture::CLAMP);
 
-    // Increase the ref count of the texture to retain it.
-    texture->addRef();
+    // Keep a reference to the texture - try to get the shared_ptr
+    TexturePtr texturePtr;
+    try
+    {
+        texturePtr = texture->shared_from_this();
+    }
+    catch (const std::bad_weak_ptr&)
+    {
+        // If texture is not managed by shared_ptr, create a non-owning shared_ptr
+        texturePtr = TexturePtr(texture, [](Texture*) {});
+    }
 
     auto font = std::make_shared<Font>(Font::PrivateToken{});
     font->_format = format;
     font->_family = family;
     font->_style = style;
     font->_size = size;
-    font->_texture = texture;
+    font->_texture = texturePtr;
     font->_batch = std::move(batch);
 
     // Copy the glyphs array.

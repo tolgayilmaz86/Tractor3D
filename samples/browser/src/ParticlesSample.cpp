@@ -124,7 +124,7 @@ void ParticlesSample::initialize()
     // The camera node is offset from its parent, looking straight at it.
     // That way, when we rotate the parent node, the camera stays aimed at the particle emitter.
     _scene = Scene::create();
-    Node* cameraNode = _scene->addNode("Camera");
+    NodePtr cameraNode = _scene->addNode("Camera");
     _cameraParent = _scene->addNode("CameraParent");
     _cameraParent->addChild(cameraNode);
     auto camera =

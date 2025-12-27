@@ -69,7 +69,7 @@ void SceneCreateSample::initialize()
 
     // Create the camera.
     auto camera = Camera::createPerspective(45.0f, getAspectRatio(), 1.0f, 10.0f);
-    Node* cameraNode = _scene->addNode("camera");
+    NodePtr cameraNode = _scene->addNode("camera");
 
     // Attach the camera to a node. This determines the position of the camera.
     cameraNode->setCamera(camera);
@@ -83,7 +83,7 @@ void SceneCreateSample::initialize()
 
     // Create a white light.
     auto light = Light::createDirectional(0.75f, 0.75f, 0.75f);
-    Node* lightNode = _scene->addNode("light");
+    NodePtr lightNode = _scene->addNode("light");
     lightNode->setLight(light);
     lightNode->rotateX(MATH_DEG_TO_RAD(-45.0f));
 
@@ -108,7 +108,7 @@ void SceneCreateSample::initialize()
     // Bind the light's color and direction to the material.
     material->getParameter("u_directionalLightColor[0]")->setValue(lightNode->getLight()->getColor());
     material->getParameter("u_directionalLightDirection[0]")
-        ->bindValue(lightNode, &Node::getForwardVectorWorld);
+        ->bindValue(lightNode.get(), &Node::getForwardVectorWorld);
 
     // Load the texture from file.
     Texture::Sampler* sampler =
@@ -129,6 +129,7 @@ void SceneCreateSample::finalize()
     if (_cubeNode) _cubeNode->setDrawable(nullptr);
     
     SAFE_RELEASE(_font);
+    _cubeNode.reset();
     _scene.reset();
 }
 

@@ -22,9 +22,9 @@ ADD_SAMPLE("Graphics", "Textures", TextureSample, 4);
 Node* addQuadModelAndNode(Scene* scene, std::shared_ptr<Mesh> mesh)
 {
     auto model = Model::create(mesh);
-    Node* node = scene->addNode();
+    NodePtr node = scene->addNode();
     node->setDrawable(model);
-    return node;
+    return node.get();
 }
 
 Node* addQuadModelAndNode(Scene* scene,
@@ -73,7 +73,7 @@ void TextureSample::initialize()
 
     // Create a camera and add it to the scene as the active camera.
     auto camera = Camera::createPerspective(45.0f, getAspectRatio(), 1, 1000);
-    Node* cameraNode = _scene->addNode("camera");
+    auto cameraNode = _scene->addNode("camera");
     cameraNode->setCamera(camera);
     _scene->setActiveCamera(camera.get());
     cameraNode->translate(0, 0, 50);

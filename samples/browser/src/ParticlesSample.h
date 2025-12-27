@@ -113,8 +113,8 @@ class ParticlesSample : public Sample, Control::Listener
     std::string toString(ParticleEmitter::BlendMode blendMode);
 
     ScenePtr _scene{ nullptr };
-    Node* _cameraParent{ nullptr };
-    Node* _particleEmitterNode{ nullptr };
+    NodePtr _cameraParent;
+    NodePtr _particleEmitterNode;
     ParticleEmitterPtr _particleEmitter;
     bool _wDown{ false }, _sDown{ false }, _aDown{ false }, _dDown{ false };
     bool _touched{ false };

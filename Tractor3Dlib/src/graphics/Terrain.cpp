@@ -47,7 +47,7 @@ Terrain::~Terrain()
     {
         SAFE_DELETE(_patches[i]);
     }
-    SAFE_RELEASE(_normalMap);
+    _normalMap.reset();  // shared_ptr handles cleanup
     _heightfield.reset();  // shared_ptr handles cleanup
 }
 

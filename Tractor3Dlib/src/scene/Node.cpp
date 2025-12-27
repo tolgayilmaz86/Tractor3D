@@ -40,6 +40,12 @@ namespace tractor
 {
 
 //----------------------------------------------------------------------------
+NodePtr Node::create(const std::string& id)
+{
+    return NodePtr(new Node(id));
+}
+
+//----------------------------------------------------------------------------
 Node::Node(const std::string& id) : _id(id), _dirtyBits(NODE_DIRTY_ALL)
 {
     GP_REGISTER_SCRIPT_EVENTS();
@@ -67,6 +73,9 @@ Node::~Node()
                 delete _drawable;
             }
         }
+        // Clear the drawable holder to release the shared_ptr
+        _drawableHolder.reset();
+        _drawable = nullptr;
     }
     if (_audioSource) _audioSource->setNode(nullptr);
     if (_camera) _camera->setNode(nullptr);
@@ -76,7 +85,7 @@ Node::~Node()
 }
 
 //----------------------------------------------------------------------------
-void Node::addChild(Node* child)
+void Node::addChild(const NodePtr& child)
 {
     assert(child);
 
@@ -85,17 +94,17 @@ void Node::addChild(Node* child)
         // This node is already present in our hierarchy
         return;
     }
-    child->addRef();
 
     // If the item belongs to another hierarchy, remove it first.
     if (child->_parent)
     {
-        child->_parent->removeChild(child);
+        child->_parent->removeChild(child.get());
     }
     else if (child->_scene)
     {
-        child->_scene->removeNode(child);
+        child->_scene->removeNode(child.get());
     }
+
     // Add child to the end of the list.
     // NOTE: This is different than the original behavior which inserted nodes
     // into the beginning of the list. Although slightly slower to add to the
@@ -103,11 +112,11 @@ void Node::addChild(Node* child)
     // predictable, so I've changed it.
     if (_firstChild)
     {
-        Node* n = _firstChild;
+        NodePtr n = _firstChild;
         while (n->_nextSibling)
             n = n->_nextSibling;
         n->_nextSibling = child;
-        child->_prevSibling = n;
+        child->_prevSibling = n.get();
     }
     else
     {
@@ -124,6 +133,15 @@ void Node::addChild(Node* child)
 }
 
 //----------------------------------------------------------------------------
+void Node::addChild(Node* child)
+{
+    if (child == nullptr) return;
+    // Convert raw pointer to shared_ptr and delegate to the main implementation
+    // This requires the child to already be managed by a shared_ptr (from enable_shared_from_this)
+    addChild(child->shared_from_this());
+}
+
+//----------------------------------------------------------------------------
 void Node::removeChild(Node* child)
 {
     if (child == nullptr || child->_parent != this)
@@ -131,9 +149,31 @@ void Node::removeChild(Node* child)
         // The child is not in our hierarchy.
         return;
     }
+    
+    // Find the shared_ptr for this child
+    NodePtr childPtr;
+    if (_firstChild.get() == child)
+    {
+        childPtr = _firstChild;
+    }
+    else
+    {
+        for (NodePtr n = _firstChild; n != nullptr; n = n->_nextSibling)
+        {
+            if (n->_nextSibling.get() == child)
+            {
+                childPtr = n->_nextSibling;
+                break;
+            }
+        }
+    }
+    
+    if (!childPtr)
+        return;
+    
     // Call remove on the child.
     child->remove();
-    SAFE_RELEASE(child);
+    // childPtr will be released when it goes out of scope
 }
 
 //----------------------------------------------------------------------------
@@ -142,7 +182,7 @@ void Node::removeAllChildren()
     _dirtyBits &= ~NODE_DIRTY_HIERARCHY;
     while (_firstChild)
     {
-        removeChild(_firstChild);
+        removeChild(_firstChild.get());
     }
     _dirtyBits |= NODE_DIRTY_HIERARCHY;
     hierarchyChanged();
@@ -164,13 +204,17 @@ void Node::remove()
     Node* parent = _parent;
     if (parent)
     {
-        if (this == parent->_firstChild)
+        if (_firstChild && parent->_firstChild.get() == this)
+        {
+            // This shouldn't happen - we're checking _firstChild which is wrong
+        }
+        if (parent->_firstChild.get() == this)
         {
             parent->_firstChild = _nextSibling;
         }
         --parent->_childCount;
     }
-    _nextSibling = nullptr;
+    _nextSibling.reset();
     _prevSibling = nullptr;
     _parent = nullptr;
 
@@ -208,7 +252,8 @@ Node* Node::findNode(const std::string& id, bool recursive, bool exactMatch, boo
         Model* model = dynamic_cast<Model*>(_drawable);
         if (model)
         {
-            if (model->getSkin() != nullptr && (rootNode = model->getSkin()->_rootNode) != nullptr)
+            // Check the branchNode of the model's skin.
+            if (model->getSkin() != nullptr && (rootNode = model->getSkin()->_rootNode.get()) != nullptr)
             {
                 if ((exactMatch && rootNode->_id == id)
                     || (!exactMatch && rootNode->_id.find(id) == 0))
@@ -271,7 +316,8 @@ unsigned int Node::findNodes(const std::string& id,
         Model* model = dynamic_cast<Model*>(_drawable);
         if (model)
         {
-            if (model->getSkin() != nullptr && (rootNode = model->getSkin()->_rootNode) != nullptr)
+            // Check the branchNode of the model's skin.
+            if (model->getSkin() != nullptr && (rootNode = model->getSkin()->_rootNode.get()) != nullptr)
             {
                 if ((exactMatch && rootNode->_id == id)
                     || (!exactMatch && rootNode->_id.find(id) == 0))
@@ -393,7 +439,7 @@ bool Node::isEnabledInHierarchy() const
 //----------------------------------------------------------------------------
 void Node::update(float elapsedTime)
 {
-    for (Node* node = _firstChild; node != nullptr; node = node->_nextSibling)
+    for (Node* node = getFirstChild(); node != nullptr; node = node->getNextSibling())
     {
         if (node->isEnabled())
         {
@@ -669,7 +715,7 @@ Animation* Node::getAnimation(const std::string& id) const
         MeshSkin* skin = model->getSkin();
         if (skin)
         {
-            Node* rootNode = skin->_rootNode;
+            Node* rootNode = skin->_rootNode.get();
             if (rootNode)
             {
                 animation = rootNode->getAnimation(id);
@@ -684,7 +730,7 @@ Animation* Node::getAnimation(const std::string& id) const
         {
             // How to access material parameters? hidden on the Material::RenderState.
             auto itr = std::ranges::find_if(material->_parameters,
-                                            [&](MaterialParameter* param)
+                                            [&](const MaterialParameterPtr& param)
                                             {
                                                 assert(param);
                                                 animation = param->getAnimation(id);
@@ -914,34 +960,33 @@ const BoundingSphere& Node::getBoundingSphere() const
 }
 
 //----------------------------------------------------------------------------
-Node* Node::clone() const
+NodePtr Node::clone() const
 {
     NodeCloneContext context;
     return cloneRecursive(context);
 }
 
 //----------------------------------------------------------------------------
-Node* Node::cloneSingleNode(NodeCloneContext& context) const
+NodePtr Node::cloneSingleNode(NodeCloneContext& context) const
 {
-    Node* copy = Node::create(getId());
+    NodePtr copy = Node::create(getId());
     context.registerClonedNode(this, copy);
-    cloneInto(copy, context);
+    cloneInto(copy.get(), context);
     return copy;
 }
 
 //----------------------------------------------------------------------------
-Node* Node::cloneRecursive(NodeCloneContext& context) const
+NodePtr Node::cloneRecursive(NodeCloneContext& context) const
 {
-    Node* copy = cloneSingleNode(context);
+    NodePtr copy = cloneSingleNode(context);
     assert(copy);
 
     // Add child nodes
     for (Node* child = getFirstChild(); child != nullptr; child = child->getNextSibling())
     {
-        Node* childCopy = child->cloneRecursive(context);
+        NodePtr childCopy = child->cloneRecursive(context);
         assert(childCopy);
         copy->addChild(childCopy);
-        childCopy->release();
     }
 
     return copy;
@@ -1054,17 +1099,6 @@ PhysicsCollisionObject* Node::setCollisionObject(PhysicsCollisionObject::Type ty
 
         case PhysicsCollisionObject::VEHICLE_WHEEL:
         {
-            //
-            // PhysicsVehicleWheel is special because this call will traverse up the scene graph
-            // for the first ancestor node that is shared with another node of collision type
-            // VEHICLE, and then proceed to add itself as a wheel onto that vehicle. This is by
-            // design, and allows the visual scene hierarchy to be the sole representation of
-            // the relationship between physics objects rather than forcing that upon the
-            // otherwise-flat ".physics" (properties) file.
-            //
-            // IMPORTANT: The VEHICLE must come before the VEHICLE_WHEEL in the ".scene"
-            // (properties) file!
-            //
             _collisionObject.reset(
                 new PhysicsVehicleWheel(this,
                                         shape,
@@ -1128,17 +1162,6 @@ PhysicsCollisionObject* Node::setCollisionObject(Properties* properties)
         }
         else if (type == "VEHICLE_WHEEL")
         {
-            //
-            // PhysicsVehicleWheel is special because this call will traverse up the scene graph
-            // for the first ancestor node that is shared with another node of collision type
-            // VEHICLE, and then proceed to add itself as a wheel onto that vehicle. This is by
-            // design, and allows the visual scene hierarchy to be the sole representation of
-            // the relationship between physics objects rather than forcing that upon the
-            // otherwise-flat ".physics" (properties) file.
-            //
-            // IMPORTANT: The VEHICLE must come before the VEHICLE_WHEEL in the ".scene"
-            // (properties) file!
-            //
             _collisionObject.reset(PhysicsVehicleWheel::create(this, properties));
         }
         else
@@ -1212,16 +1235,16 @@ void NodeCloneContext::registerClonedAnimation(const Animation* original, const 
 }
 
 //----------------------------------------------------------------------------
-Node* NodeCloneContext::findClonedNode(const Node* node)
+NodePtr NodeCloneContext::findClonedNode(const Node* node)
 {
     assert(node);
 
-    std::map<const Node*, Node*>::iterator it = _clonedNodes.find(node);
+    auto it = _clonedNodes.find(node);
     return it != _clonedNodes.end() ? it->second : nullptr;
 }
 
 //----------------------------------------------------------------------------
-void NodeCloneContext::registerClonedNode(const Node* original, Node* clone)
+void NodeCloneContext::registerClonedNode(const Node* original, const NodePtr& clone)
 {
     assert(original);
     assert(clone);

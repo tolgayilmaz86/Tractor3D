@@ -49,7 +49,7 @@ void WaterSample::initialize()
     _cameraNode = Node::create("cameraNode");
     _cameraNode->setTranslation(camStartPosition);
 
-    Node* camPitchNode = Node::create();
+    NodePtr camPitchNode = Node::create();
     Matrix m = Matrix::createLookAt(_cameraNode->getTranslation(), Vector3::zero(), Vector3::unitY());
     camPitchNode->rotate(m);
     _cameraNode->addChild(camPitchNode);
@@ -58,7 +58,6 @@ void WaterSample::initialize()
         Camera::createPerspective(45.f, Game::getInstance()->getAspectRatio(), 0.1f, 150.f);
     camPitchNode->setCamera(camera);
     _scene->setActiveCamera(camera.get());
-    SAFE_RELEASE(camPitchNode);
 
     // Add a second camera do draw the reflections
     _reflectCameraNode = Node::create("reflectCamNode");
@@ -69,7 +68,6 @@ void WaterSample::initialize()
     _reflectCameraNode->addChild(camPitchNode);
     auto reflectCamera = Camera::createPerspective(45.f, Game::getInstance()->getAspectRatio(), 0.1f, 150.f);
     camPitchNode->setCamera(reflectCamera);
-    SAFE_RELEASE(camPitchNode);
 
     // Render buffer and preview for refraction
     _refractBuffer = FrameBuffer::create("refractBuffer", BUFFER_SIZE, BUFFER_SIZE);
@@ -86,7 +84,7 @@ void WaterSample::initialize()
     _reflectBatch = SpriteBatch::create(_reflectBuffer->getRenderTarget()->getTexture());
 
     // Add a node to provide light direction
-    Node* lightNode = Node::create("lightNode");
+    NodePtr lightNode = Node::create("lightNode");
     lightNode->rotateX(-MATH_DEG_TO_RAD(90));
     _scene->addNode(lightNode);
 
@@ -95,7 +93,7 @@ void WaterSample::initialize()
         dynamic_cast<Model*>(_scene->findNode("Ground")->getDrawable())->getMaterial();
     groundMaterial->getParameter("u_clipPlane")->bindValue(this, &WaterSample::getClipPlane);
     groundMaterial->getParameter("u_directionalLightDirection[0]")
-        ->bindValue(lightNode, &Node::getForwardVectorView);
+        ->bindValue(lightNode.get(), &Node::getForwardVectorView);
     auto waterMaterial =
         dynamic_cast<Model*>(_scene->findNode("Water")->getDrawable())->getMaterial();
     auto refractSampler = Texture::Sampler::create(_refractBuffer->getRenderTarget()->getTexture());
@@ -107,7 +105,6 @@ void WaterSample::initialize()
     waterMaterial->getParameter("u_worldViewProjectionReflectionMatrix")
         ->bindValue(this, &WaterSample::getReflectionMatrix);
     waterMaterial->getParameter("u_time")->bindValue(this, &WaterSample::getTime);
-    SAFE_RELEASE(lightNode);
 
     setMouseCaptured(true);
 
@@ -120,11 +117,11 @@ void WaterSample::finalize()
 {
     setMouseCaptured(false);
     SAFE_DELETE(_reflectBatch);
-    SAFE_RELEASE(_reflectBuffer);
+    _reflectBuffer.reset();
     SAFE_DELETE(_refractBatch);
-    SAFE_RELEASE(_refractBuffer);
-    SAFE_RELEASE(_reflectCameraNode);
-    SAFE_RELEASE(_cameraNode);
+    _refractBuffer.reset();
+    _reflectCameraNode.reset();
+    _cameraNode.reset();
     _scene.reset();
     SAFE_RELEASE(_font);
 }
@@ -161,7 +158,7 @@ void WaterSample::render(float elapsedTime)
     const Vector4 clearColour(0.84f, 0.89f, 1.f, 1.f);
 
     // Update the refract buffer
-    FrameBuffer* defaultBuffer = _refractBuffer->bind();
+    FrameBufferPtr defaultBuffer = _refractBuffer->bind();
     Rectangle defaultViewport = getViewport();
     setViewport(Rectangle(BUFFER_SIZE, BUFFER_SIZE));
     _clipPlane.y = -1.f;

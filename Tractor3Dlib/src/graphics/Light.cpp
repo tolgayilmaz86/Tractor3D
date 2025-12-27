@@ -356,9 +356,9 @@ LightPtr Light::clone(NodeCloneContext& context)
     }
     assert(lightClone);
 
-    if (Node* node = context.findClonedNode(getNode()))
+    if (NodePtr node = context.findClonedNode(getNode()))
     {
-        lightClone->setNode(node);
+        lightClone->setNode(node.get());
     }
     return lightClone;
 }

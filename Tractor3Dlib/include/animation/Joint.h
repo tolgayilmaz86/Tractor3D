@@ -20,6 +20,12 @@ namespace tractor
 
 class MeshSkin;
 class Bundle;
+class Joint;
+
+/**
+ * Shared pointer type for Joint.
+ */
+using JointPtr = std::shared_ptr<Joint>;
 
 /**
  * Defines a joint node.
@@ -35,6 +41,15 @@ class Joint : public Node
     friend class Bundle;
 
   public:
+    /**
+     * Creates a new joint with the given id.
+     *
+     * @param id ID string.
+     *
+     * @return Newly created joint.
+     */
+    static JointPtr create(const std::string& id);
+
     /**
      * @see Node::getType()
      */
@@ -60,25 +75,16 @@ class Joint : public Node
      */
     const Matrix& getInverseBindPose() const noexcept { return _bindPose; }
 
-  protected:
-    /**
-     * Constructor.
-     */
-    Joint(const std::string& id);
-
     /**
      * Destructor.
      */
     virtual ~Joint() = default;
 
+  protected:
     /**
-     * Creates a new joint with the given id.
-     *
-     * @param id ID string.
-     *
-     * @return Newly created joint.
+     * Constructor.
      */
-    static Joint* create(const std::string& id);
+    Joint(const std::string& id);
 
     /**
      * Clones a single node and its data but not its children.
@@ -88,7 +94,7 @@ class Joint : public Node
      *
      * @return Pointer to the newly created joint.
      */
-    virtual Node* cloneSingleNode(NodeCloneContext& context) const;
+    virtual NodePtr cloneSingleNode(NodeCloneContext& context) const override;
 
     /**
      * Sets the inverse bind pose matrix.

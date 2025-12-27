@@ -46,6 +46,13 @@ class FirstPersonCamera
     Node* getRootNode();
 
     /**
+     * Gets root node as shared_ptr. May be nullptr if not initialized.
+     *
+     * @return Root node as shared_ptr or nullptr.
+     */
+    NodePtr getRootNodePtr();
+
+    /**
      * Gets the camera. May be nullptr.
      *
      * @return Camera or nullptr.
@@ -92,6 +99,6 @@ class FirstPersonCamera
     void rotate(float yaw, float pitch);
 
   private:
-    Node* _pitchNode;
-    Node* _rootNode;
+    NodePtr _pitchNode;
+    NodePtr _rootNode;
 };

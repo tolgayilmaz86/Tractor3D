@@ -47,16 +47,16 @@ class PostProcessSample : public Sample
     class Compositor
     {
       public:
-        static Compositor* create(FrameBuffer* srcBuffer,
-                                  FrameBuffer* dstBuffer,
+        static Compositor* create(FrameBufferPtr srcBuffer,
+                                  FrameBufferPtr dstBuffer,
                                   const std::string& materialPath,
                                   const std::string& techniqueId);
 
         ~Compositor();
 
-        FrameBuffer* getSrcFrameBuffer() const;
+        FrameBufferPtr getSrcFrameBuffer() const;
 
-        FrameBuffer* getDstFrameBuffer() const;
+        FrameBufferPtr getDstFrameBuffer() const;
 
         const std::string& getTechniqueId() const;
 
@@ -67,14 +67,14 @@ class PostProcessSample : public Sample
       private:
         Compositor();
 
-        Compositor(FrameBuffer* srcBuffer,
-                   FrameBuffer* dstBuffer,
-                   Material* material,
+        Compositor(FrameBufferPtr srcBuffer,
+                   FrameBufferPtr dstBuffer,
+                   MaterialPtr material,
                    const std::string& techniqueId);
 
-        FrameBuffer* _srcBuffer;
-        FrameBuffer* _dstBuffer;
-        Material* _material;
+        FrameBufferPtr _srcBuffer;
+        FrameBufferPtr _dstBuffer;
+        MaterialPtr _material;
         const std::string _techniqueId;
     };
 
@@ -96,9 +96,9 @@ class PostProcessSample : public Sample
     FontPtr _font{nullptr};
     ScenePtr _scene;
     Node* _modelNode{nullptr};
-    FrameBuffer* _frameBuffer{nullptr};
+    FrameBufferPtr _frameBuffer;
     unsigned int _compositorIndex{0};
     std::vector<Compositor*> _compositors;
-    static Model* _quadModel;
-    static Material* _compositorMaterial;
+    static ModelPtr _quadModel;
+    static MaterialPtr _compositorMaterial;
 };

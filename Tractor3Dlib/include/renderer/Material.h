@@ -24,12 +24,19 @@ namespace tractor
 
 class NodeCloneContext;
 class Material;
+class Technique;
 
 /** Shared pointer type for Material. */
 using MaterialPtr = std::shared_ptr<Material>;
 
 /** Weak pointer type for Material. */
 using MaterialWeakPtr = std::weak_ptr<Material>;
+
+/** Shared pointer type for Technique. */
+using TechniquePtr = std::shared_ptr<Technique>;
+
+/** Weak pointer type for Technique. */
+using TechniqueWeakPtr = std::weak_ptr<Technique>;
 
 /**
  * Defines a material for an object to be rendered.
@@ -39,7 +46,7 @@ using MaterialWeakPtr = std::weak_ptr<Material>;
  * material files (.material). When multiple techniques are loaded using a material file,
  * the current technique for an object can be set at runtime.
  */
-class Material : public RenderState
+class Material : public RenderState, public std::enable_shared_from_this<Material>
 {
     friend class Technique;
     friend class Pass;
@@ -63,7 +70,7 @@ class Material : public RenderState
      * @return A new Material or nullptr if there was an error.
      * @script{create}
      */
-    static Material* create(const std::string& url);
+    static MaterialPtr create(const std::string& url);
 
     /**
      * Creates a material from a Properties file.
@@ -82,7 +89,7 @@ class Material : public RenderState
      * @return A new Material or nullptr if there was an error.
      * @script{ignore}
      */
-    static Material* create(const std::string& url, PassCallback callback, void* cookie = nullptr);
+    static MaterialPtr create(const std::string& url, PassCallback callback, void* cookie = nullptr);
 
     /**
      * Creates a material from the specified properties object.
@@ -92,7 +99,7 @@ class Material : public RenderState
      * @return A new Material.
      * @script{create}
      */
-    static Material* create(Properties* materialProperties);
+    static MaterialPtr create(Properties* materialProperties);
 
     /**
      * Creates a material from the specified effect.
@@ -105,7 +112,7 @@ class Material : public RenderState
      * @return A new Material.
      * @script{create}
      */
-    static Material* create(Effect* effect);
+    static MaterialPtr create(Effect* effect);
 
     /**
      * Creates a material using the specified vertex and fragment shader.
@@ -120,9 +127,9 @@ class Material : public RenderState
      * @return A new Material.
      * @script{create}
      */
-    static Material* create(const std::string& vshPath,
-                            const std::string& fshPath,
-                            const std::string& defines = EMPTY_STRING);
+    static MaterialPtr create(const std::string& vshPath,
+                              const std::string& fshPath,
+                              const std::string& defines = EMPTY_STRING);
 
     /**
      * Destructor.
@@ -173,6 +180,16 @@ class Material : public RenderState
      */
     void setNodeBinding(Node* node);
 
+    /**
+     * Clones this material.
+     *
+     * @param context The clone context.
+     *
+     * @return The newly created material.
+     * @script{create}
+     */
+    MaterialPtr clone(NodeCloneContext& context) const;
+
   private:
     /**
      * Constructor.
@@ -185,19 +202,9 @@ class Material : public RenderState
     Material(const Material& m);
 
     /**
-     * Clones this material.
-     *
-     * @param context The clone context.
-     *
-     * @return The newly created material.
-     * @script{create}
-     */
-    Material* clone(NodeCloneContext& context) const;
-
-    /**
      * Creates a new material with optional pass callback function.
      */
-    static Material* create(Properties* materialProperties, PassCallback callback, void* cookie);
+    static MaterialPtr create(Properties* materialProperties, PassCallback callback, void* cookie);
 
     /**
      * Loads a technique from the given properties object into the specified material.
@@ -221,7 +228,7 @@ class Material : public RenderState
     static void loadRenderState(RenderState* renderState, Properties* properties);
 
     Technique* _currentTechnique{ nullptr };
-    std::vector<Technique*> _techniques{};
+    std::vector<TechniquePtr> _techniques{};
 };
 
 } // namespace tractor

@@ -80,7 +80,7 @@ class LightSample : public Sample, Control::Listener
     Material* _bumpedMaterial;
     Material* _bumpedSpecularMaterial;
 
-    Material* _lighting;
+    MaterialPtr _lighting;
 
     RadioButton* _noLight;
     RadioButton* _directional;

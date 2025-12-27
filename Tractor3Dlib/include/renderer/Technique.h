@@ -13,6 +13,8 @@
  */
 #pragma once
 
+#include <memory>
+
 #include "renderer/RenderState.h"
 
 namespace tractor
@@ -20,6 +22,13 @@ namespace tractor
 class Pass;
 class Material;
 class NodeCloneContext;
+class Technique;
+
+/** Shared pointer type for Pass. */
+using PassPtr = std::shared_ptr<Pass>;
+
+/** Weak pointer type for Pass. */
+using PassWeakPtr = std::weak_ptr<Pass>;
 
 /**
  * Defines a technique for how an object to be rendered.
@@ -31,13 +40,18 @@ class NodeCloneContext;
  *
  * A technique has one or more passes for supporting multi pass rendering.
  */
-class Technique : public RenderState
+class Technique : public RenderState, public std::enable_shared_from_this<Technique>
 {
     friend class Material;
     friend class Pass;
     friend class RenderState;
 
   public:
+    /**
+     * Destructor.
+     */
+    ~Technique();
+
     /**
      * Gets the id of this technique.
      *
@@ -83,20 +97,23 @@ class Technique : public RenderState
     Technique(const Technique&);
 
     /**
-     * Destructor.
-     */
-    ~Technique();
-
-    /**
      * Hidden copy assignment operator.
      */
     Technique& operator=(const Technique&) = delete;
 
-    Technique* clone(Material* material, NodeCloneContext& context) const;
+    /**
+     * Creates a new Technique (factory method for internal use).
+     */
+    static std::shared_ptr<Technique> create(const std::string& id, Material* material);
+
+    /**
+     * Clones this technique.
+     */
+    std::shared_ptr<Technique> clone(Material* material, NodeCloneContext& context) const;
 
     std::string _id;
     Material* _material;
-    std::vector<Pass*> _passes;
+    std::vector<PassPtr> _passes{};
 };
 
 } // namespace tractor

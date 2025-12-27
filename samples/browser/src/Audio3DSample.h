@@ -60,8 +60,8 @@ class Audio3DSample : public Sample
     FirstPersonCamera _fpCamera;
     FontPtr _font;
     ScenePtr _scene;
-    Node* _cubeNode;
-    std::map<std::string, Node*> _audioNodes;
+    NodePtr _cubeNode;
+    std::map<std::string, NodePtr> _audioNodes;
     Gamepad* _gamepad;
     unsigned int _moveFlags;
     int _prevX;

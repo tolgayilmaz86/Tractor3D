@@ -42,6 +42,6 @@ class SceneCreateSample : public Sample
 
     FontPtr _font;
     ScenePtr _scene;
-    Node* _cubeNode;
+    NodePtr _cubeNode;
     Model* _cubeModel;
 };

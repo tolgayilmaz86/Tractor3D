@@ -13,6 +13,9 @@
  */
 #pragma once
 
+#include <memory>
+#include <vector>
+
 #include "math/Matrix.h"
 #include "math/Transform.h"
 
@@ -23,6 +26,11 @@ class Bundle;
 class Model;
 class Node;
 class Joint;
+class NodeCloneContext;
+
+// Forward declare the pointer types
+using NodePtr = std::shared_ptr<Node>;
+using JointPtr = std::shared_ptr<Joint>;
 
 /**
  * Defines the skin for a mesh.
@@ -171,14 +179,14 @@ class MeshSkin : public Transform::Listener
      * @param joint The joint to be set.
      * @param index The index in the joints vector.
      */
-    void setJoint(Joint* joint, unsigned int index);
+    void setJoint(const JointPtr& joint, unsigned int index);
 
     /**
      * Sets the root node of this mesh skin.
      *
      * @param node The node to set as the root node, may be nullptr.
      */
-    void setRootNode(Node* node);
+    void setRootNode(const NodePtr& node);
 
     /**
      * Clears the list of joints and releases each joint.
@@ -187,13 +195,13 @@ class MeshSkin : public Transform::Listener
 
   private:
     Matrix _bindShape{};
-    std::vector<Joint*> _joints{};
+    std::vector<JointPtr> _joints{};
     Joint* _rootJoint{ nullptr };
 
     // Pointer to the root node of the mesh skin.
     // The purpose is so that the joint hierarchy doesn't need to be in the scene.
     // If the joints are not in the scene then something has to hold a reference to it.
-    Node* _rootNode{ nullptr };
+    NodePtr _rootNode;
 
     // Pointer to the array of palette matrices.
     // This array is passed to the vertex shader as a uniform.

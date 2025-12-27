@@ -23,9 +23,9 @@ namespace tractor
 {
 
 unsigned int FrameBuffer::_maxRenderTargets = 0;
-std::vector<FrameBuffer*> FrameBuffer::_frameBuffers;
-FrameBuffer* FrameBuffer::_defaultFrameBuffer = nullptr;
-FrameBuffer* FrameBuffer::_currentFrameBuffer = nullptr;
+std::vector<FrameBufferPtr> FrameBuffer::_frameBuffers;
+FrameBufferPtr FrameBuffer::_defaultFrameBuffer;
+FrameBufferPtr FrameBuffer::_currentFrameBuffer;
 
 //----------------------------------------------------------------------------
 FrameBuffer::FrameBuffer(const std::string& id,
@@ -49,8 +49,8 @@ FrameBuffer::~FrameBuffer()
     if (_handle) GL_ASSERT(glDeleteFramebuffers(1, &_handle));
 
     // Remove self from vector.
-    std::vector<FrameBuffer*>::iterator it =
-        std::find(_frameBuffers.begin(), _frameBuffers.end(), this);
+    auto it = std::find_if(_frameBuffers.begin(), _frameBuffers.end(),
+        [this](const FrameBufferPtr& fb) { return fb.get() == this; });
     if (it != _frameBuffers.end())
     {
         _frameBuffers.erase(it);
@@ -64,7 +64,7 @@ void FrameBuffer::initialize()
     // On many platforms this will simply be the zero (0) handle, but this is not always the case.
     GLint fbo;
     glGetIntegerv(GL_FRAMEBUFFER_BINDING, &fbo);
-    _defaultFrameBuffer = new FrameBuffer(FRAMEBUFFER_ID_DEFAULT, 0, 0, (FrameBufferHandle)fbo);
+    _defaultFrameBuffer = FrameBufferPtr(new FrameBuffer(FRAMEBUFFER_ID_DEFAULT, 0, 0, (FrameBufferHandle)fbo));
     _currentFrameBuffer = _defaultFrameBuffer;
 
     // Query the max supported color attachments. This glGet operation is not supported
@@ -79,15 +79,20 @@ void FrameBuffer::initialize()
 }
 
 //----------------------------------------------------------------------------
-void FrameBuffer::finalize() { SAFE_RELEASE(_defaultFrameBuffer); }
+void FrameBuffer::finalize()
+{
+    _currentFrameBuffer.reset();
+    _defaultFrameBuffer.reset();
+    _frameBuffers.clear();
+}
 
 //----------------------------------------------------------------------------
-FrameBuffer* FrameBuffer::create(const std::string& id) { return create(id, 0, 0); }
+FrameBufferPtr FrameBuffer::create(const std::string& id) { return create(id, 0, 0); }
 
-FrameBuffer* FrameBuffer::create(const std::string& id,
-                                 unsigned int width,
-                                 unsigned int height,
-                                 Texture::Format format)
+FrameBufferPtr FrameBuffer::create(const std::string& id,
+                                   unsigned int width,
+                                   unsigned int height,
+                                   Texture::Format format)
 {
     std::shared_ptr<RenderTarget> renderTarget = nullptr;
     if (width > 0 && height > 0)
@@ -105,7 +110,8 @@ FrameBuffer* FrameBuffer::create(const std::string& id,
     GLuint handle = 0;
     GL_ASSERT(glGenFramebuffers(1, &handle));
 
-    const auto& frameBuffer = _frameBuffers.emplace_back(new FrameBuffer(id, width, height, handle));
+    auto frameBuffer = FrameBufferPtr(new FrameBuffer(id, width, height, handle));
+    _frameBuffers.push_back(frameBuffer);
 
     // Initialize the render target vector with the correct size
     frameBuffer->_renderTargets.resize(_maxRenderTargets);
@@ -119,7 +125,7 @@ FrameBuffer* FrameBuffer::create(const std::string& id,
 }
 
 //----------------------------------------------------------------------------
-FrameBuffer* FrameBuffer::getFrameBuffer(const std::string& id)
+FrameBufferPtr FrameBuffer::getFrameBuffer(const std::string& id)
 {
     // Search the vector for a matching ID.
     if (auto it =
@@ -282,11 +288,11 @@ void FrameBuffer::setDepthStencilTarget(std::shared_ptr<DepthStencilTarget> targ
 }
 
 //----------------------------------------------------------------------------
-FrameBuffer* FrameBuffer::bind(GLenum type)
+FrameBufferPtr FrameBuffer::bind(GLenum type)
 {
     GL_ASSERT(glBindFramebuffer(type, _handle));
-    FrameBuffer* previousFrameBuffer = _currentFrameBuffer;
-    _currentFrameBuffer = this;
+    FrameBufferPtr previousFrameBuffer = _currentFrameBuffer;
+    _currentFrameBuffer = shared_from_this();
     return previousFrameBuffer;
 }
 
@@ -318,7 +324,7 @@ std::shared_ptr<Image> FrameBuffer::createScreenshot(Image::Format format)
 }
 
 //----------------------------------------------------------------------------
-FrameBuffer* FrameBuffer::bindDefault(GLenum type)
+FrameBufferPtr FrameBuffer::bindDefault(GLenum type)
 {
     GL_ASSERT(glBindFramebuffer(type, _defaultFrameBuffer->_handle));
     _currentFrameBuffer = _defaultFrameBuffer;

@@ -14,6 +14,7 @@
 #pragma once
 
 #include <any>
+#include <memory>
 
 #include "ai/AIAgent.h"
 #include "animation/Animation.h"
@@ -41,14 +42,29 @@ class Light;
 class AudioSource;
 class AIAgent;
 class Drawable;
+class Node;
+
+/**
+ * Shared pointer type for Node.
+ */
+using NodePtr = std::shared_ptr<Node>;
+
+/**
+ * Weak pointer type for Node (use for non-owning references to avoid cycles).
+ */
+using NodeWeakPtr = std::weak_ptr<Node>;
 
 /**
  * Defines a hierarchical structure of objects in 3D transformation spaces.
  *
  * This object allow you to attach components to a scene such as:
  * Drawable's(Model, Camera, Light, PhysicsCollisionObject, AudioSource, etc.
+ *
+ * Node lifetime is managed by std::shared_ptr. Use Node::create() to create nodes.
+ * Parent-child relationships use shared_ptr for children (parent owns children).
+ * Child-to-parent references use raw pointers to avoid reference cycles.
  */
-class Node : public Transform, public Ref
+class Node : public Transform, public std::enable_shared_from_this<Node>
 {
     friend class Scene;
     friend class SceneLoader;
@@ -80,9 +96,15 @@ class Node : public Transform, public Ref
      * Creates a new node with the specified ID.
      *
      * @param id The ID for the new node.
+     * @return A shared pointer to the newly created node.
      * @script{create}
      */
-    static Node* create(const std::string& id = EMPTY_STRING) { return new Node(id); }
+    static NodePtr create(const std::string& id = EMPTY_STRING);
+
+    /**
+     * Destructor.
+     */
+    virtual ~Node();
 
     /**
      * Extends ScriptTarget::getTypeName() to return the type name of this class.
@@ -114,7 +136,16 @@ class Node : public Transform, public Ref
     /**
      * Adds a child node.
      *
+     * @param child The child to add (as shared_ptr).
+     */
+    virtual void addChild(const NodePtr& child);
+
+    /**
+     * Adds a child node (raw pointer version for compatibility).
+     * Note: Ownership is taken - the node should not be manually deleted after this call.
+     *
      * @param child The child to add.
+     * @deprecated Use addChild(const NodePtr&) instead.
      */
     virtual void addChild(Node* child);
 
@@ -135,14 +166,28 @@ class Node : public Transform, public Ref
      *
      * @return The first child.
      */
-    Node* getFirstChild() const noexcept { return _firstChild; }
+    Node* getFirstChild() const noexcept { return _firstChild.get(); }
+
+    /**
+     * Returns the first child for this node as a shared_ptr.
+     *
+     * @return The first child as shared_ptr.
+     */
+    NodePtr getFirstChildPtr() const noexcept { return _firstChild; }
 
     /**
      * Returns the first sibling of this node.
      *
      * @return The first sibling.
      */
-    Node* getNextSibling() const noexcept { return _nextSibling; }
+    Node* getNextSibling() const noexcept { return _nextSibling.get(); }
+
+    /**
+     * Returns the first sibling of this node as a shared_ptr.
+     *
+     * @return The first sibling as shared_ptr.
+     */
+    NodePtr getNextSiblingPtr() const noexcept { return _nextSibling; }
 
     /**
      * Returns the previous sibling to this node.
@@ -154,7 +199,7 @@ class Node : public Transform, public Ref
     /**
      * Returns the parent of this node.
      *
-     * @return The parent.
+     * @return The parent (raw pointer, does not affect lifetime).
      */
     Node* getParent() const noexcept { return _parent; }
 
@@ -578,6 +623,7 @@ class Node : public Transform, public Ref
         PhysicsRigidBody::Parameters* rigidBodyParameters = nullptr,
         int group = PHYSICS_COLLISION_GROUP_DEFAULT,
         int mask = PHYSICS_COLLISION_MASK_DEFAULT);
+
     /**
      * Sets the physics collision object for this node using the data from the Properties object
      * defined at the specified URL, where the URL is of the format
@@ -640,10 +686,10 @@ class Node : public Transform, public Ref
     /**
      * Clones the node and all of its child nodes.
      *
-     * @return A new node.
+     * @return A new node as shared_ptr.
      * @script{create}
      */
-    Node* clone() const;
+    NodePtr clone() const;
 
   protected:
     /**
@@ -652,18 +698,13 @@ class Node : public Transform, public Ref
     Node(const std::string& id);
 
     /**
-     * Destructor.
-     */
-    virtual ~Node();
-
-    /**
      * Clones a single node and its data but not its children.
      *
      * @param context The clone context.
      *
      * @return Pointer to the newly created node.
      */
-    virtual Node* cloneSingleNode(NodeCloneContext& context) const;
+    virtual NodePtr cloneSingleNode(NodeCloneContext& context) const;
 
     /**
      * Recursively clones this node and its children.
@@ -672,7 +713,7 @@ class Node : public Transform, public Ref
      *
      * @return The newly created node.
      */
-    Node* cloneRecursive(NodeCloneContext& context) const;
+    NodePtr cloneRecursive(NodeCloneContext& context) const;
 
     /**
      * Copies the data from this node into the given node.
@@ -761,13 +802,13 @@ class Node : public Transform, public Ref
     Scene* _scene{ nullptr };
     /** The nodes id. */
     std::string _id{};
-    /** The nodes first child. */
-    Node* _firstChild{ nullptr };
-    /** The nodes next sibiling. */
-    Node* _nextSibling{ nullptr };
-    /** The nodes previous sibiling. */
+    /** The nodes first child (owned). */
+    NodePtr _firstChild;
+    /** The nodes next sibling (owned by parent). */
+    NodePtr _nextSibling;
+    /** The nodes previous sibling (weak reference to avoid cycles). */
     Node* _prevSibling{ nullptr };
-    /** The nodes parent. */
+    /** The nodes parent (weak reference to avoid cycles). */
     Node* _parent{ nullptr };
     /** The number of child nodes. */
     unsigned int _childCount{ 0 };
@@ -841,7 +882,7 @@ class NodeCloneContext
      *
      * @return The cloned node or nullptr if not found.
      */
-    Node* findClonedNode(const Node* node);
+    NodePtr findClonedNode(const Node* node);
 
     /**
      * Registers the cloned node with this context so that it doens't get cloned twice.
@@ -849,7 +890,7 @@ class NodeCloneContext
      * @param original The pointer to the original node.
      * @param clone The pointer to the cloned node.
      */
-    void registerClonedNode(const Node* original, Node* clone);
+    void registerClonedNode(const Node* original, const NodePtr& clone);
 
   private:
     /**
@@ -863,7 +904,7 @@ class NodeCloneContext
     NodeCloneContext& operator=(const NodeCloneContext&) = delete;
 
     std::map<const Animation*, AnimationPtr> _clonedAnimations{};
-    std::map<const Node*, Node*> _clonedNodes{};
+    std::map<const Node*, NodePtr> _clonedNodes{};
 };
 
 } // namespace tractor

@@ -74,7 +74,7 @@ class InputSample : public Sample, Control::Listener
     Vector2 _crosshairLowerLimit;
     Vector2 _crosshairUpperLimit;
     ScenePtr _scene;
-    Node* _formNode;
-    Node* _formNodeParent;
+    NodePtr _formNode;
+    NodePtr _formNodeParent;
     Vector3 _formNodeRestPosition;
 };

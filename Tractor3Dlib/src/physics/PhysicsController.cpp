@@ -1517,7 +1517,7 @@ PhysicsController::DebugDrawer::DebugDrawer()
     };
 
     EffectPtr effect = Effect::createFromSource(vs_str, fs_str);
-    Material* material = Material::create(effect.get());
+    auto material = Material::create(effect.get());
     assert(material && material->getStateBlock());
     material->getStateBlock()->setDepthTest(true);
     material->getStateBlock()->setDepthFunction(RenderState::DEPTH_LEQUAL);
@@ -1528,7 +1528,6 @@ PhysicsController::DebugDrawer::DebugDrawer()
     };
     _meshBatch =
         MeshBatch::create(VertexFormat(elements, 2), Mesh::LINES, material, false, 4096, 4096);
-    SAFE_RELEASE(material);
 }
 
 //----------------------------------------------------------------------------

@@ -24,6 +24,7 @@
 namespace tractor
 {
 class Node;
+class MaterialParameter;
 
 /**
  * Defines a material parameter.
@@ -46,7 +47,7 @@ class Node;
  * you pass in are valid for the lifetime of the MaterialParameter
  * object.
  */
-class MaterialParameter : public AnimationTarget, public Ref
+class MaterialParameter : public AnimationTarget, public std::enable_shared_from_this<MaterialParameter>
 {
     friend class RenderState;
 
@@ -55,6 +56,11 @@ class MaterialParameter : public AnimationTarget, public Ref
      * Animates the uniform.
      */
     static const int ANIMATE_UNIFORM = 1;
+
+    /**
+     * Destructor.
+     */
+    ~MaterialParameter();
 
     /**
      * Returns the name of this material parameter.
@@ -267,6 +273,13 @@ class MaterialParameter : public AnimationTarget, public Ref
     void setSampler(const Texture::Sampler* value) { setValue(value); }
 
     /**
+     * Stores a Sampler shared_ptr value in this parameter.
+     *
+     * @param value The value to set.
+     */
+    void setSampler(const SamplerPtr& value) { if (value) setValue(value.get()); }
+
+    /**
      * Stores an array of Sampler values in this parameter.
      *
      * @param values The array of values.
@@ -367,11 +380,6 @@ class MaterialParameter : public AnimationTarget, public Ref
     MaterialParameter(const std::string& name);
 
     /**
-     * Destructor.
-     */
-    ~MaterialParameter();
-
-    /**
      * Hidden copy assignment operator.
      */
     MaterialParameter& operator=(const MaterialParameter&) = delete;
@@ -379,11 +387,14 @@ class MaterialParameter : public AnimationTarget, public Ref
     /**
      * Interface implemented by templated method bindings for simple storage and iteration.
      */
-    class MethodBinding : public Ref
+    class MethodBinding : public std::enable_shared_from_this<MethodBinding>
     {
         friend class RenderState;
+        friend class MaterialParameter;
 
       public:
+        using Ptr = std::shared_ptr<MethodBinding>;
+
         virtual void setValue(Effect* effect) = 0;
 
       protected:
@@ -405,6 +416,9 @@ class MaterialParameter : public AnimationTarget, public Ref
         MaterialParameter* _parameter{ nullptr };
         bool _autoBinding{ false };
     };
+
+    /** Shared pointer type for MethodBinding. */
+    using MethodBindingPtr = MethodBinding::Ptr;
 
     /**
      * Defines a method parameter binding for a single value.
@@ -471,8 +485,6 @@ class MaterialParameter : public AnimationTarget, public Ref
         const Texture::Sampler* samplerValue;
         /** @script{ignore} */
         const Texture::Sampler** samplerArrayValue;
-        /** @script{ignore} */
-        MethodBinding* method;
     } _value;
 
     enum
@@ -491,6 +503,7 @@ class MaterialParameter : public AnimationTarget, public Ref
         METHOD
     } _type;
 
+    MethodBindingPtr _methodBinding;  // Stored separately since it's a shared_ptr
     unsigned int _count{ 1 };
     bool _dynamic{ false };
     std::string _name{ "" };
@@ -504,8 +517,7 @@ void MaterialParameter::bindValue(ClassType* classInstance,
 {
     clearValue();
 
-    _value.method =
-        new MethodValueBinding<ClassType, ParameterType>(this, classInstance, valueMethod);
+    _methodBinding = std::make_shared<MethodValueBinding<ClassType, ParameterType>>(this, classInstance, valueMethod);
     _dynamic = true;
     _type = MaterialParameter::METHOD;
 }
@@ -517,8 +529,7 @@ void MaterialParameter::bindValue(ClassType* classInstance,
 {
     clearValue();
 
-    _value.method =
-        new MethodArrayBinding<ClassType, ParameterType>(this, classInstance, valueMethod, countMethod);
+    _methodBinding = std::make_shared<MethodArrayBinding<ClassType, ParameterType>>(this, classInstance, valueMethod, countMethod);
     _dynamic = true;
     _type = MaterialParameter::METHOD;
 }

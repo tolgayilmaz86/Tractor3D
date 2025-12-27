@@ -113,7 +113,7 @@ class Model : public Drawable
      * @param material The new material.
      * @param partIndex The index of the mesh part to set the material for (-1 for shared material).
      */
-    void setMaterial(Material* material, int partIndex = -1);
+    void setMaterial(MaterialPtr material, int partIndex = -1);
 
     /**
      * Sets a material to be used for drawing this Model.
@@ -219,9 +219,9 @@ class Model : public Drawable
     void validatePartCount();
 
     std::shared_ptr<Mesh> _mesh;
-    Material* _material{ nullptr };
+    MaterialPtr _material;
     unsigned int _partCount{ 0 };
-    Material** _partMaterials{ nullptr };
+    MaterialPtr* _partMaterials{ nullptr };
     MeshSkin* _skin{ nullptr };
 };
 

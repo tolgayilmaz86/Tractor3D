@@ -17,14 +17,14 @@ FirstPersonCamera::FirstPersonCamera() : _pitchNode(nullptr), _rootNode(nullptr)
 
 FirstPersonCamera::~FirstPersonCamera()
 {
-    SAFE_RELEASE(_pitchNode);
-    SAFE_RELEASE(_rootNode);
+    _pitchNode.reset();
+    _rootNode.reset();
 }
 
 void FirstPersonCamera::initialize(float nearPlane, float farPlane, float fov)
 {
-    SAFE_RELEASE(_pitchNode);
-    SAFE_RELEASE(_rootNode);
+    _pitchNode.reset();
+    _rootNode.reset();
     _rootNode = Node::create("FirstPersonCamera_root");
     _pitchNode = Node::create("FirstPersonCamera_pitch");
     _rootNode->addChild(_pitchNode);
@@ -35,7 +35,9 @@ void FirstPersonCamera::initialize(float nearPlane, float farPlane, float fov)
     _pitchNode->setCamera(camera);
 }
 
-Node* FirstPersonCamera::getRootNode() { return _rootNode; }
+Node* FirstPersonCamera::getRootNode() { return _rootNode.get(); }
+
+NodePtr FirstPersonCamera::getRootNodePtr() { return _rootNode; }
 
 Camera* FirstPersonCamera::getCamera()
 {

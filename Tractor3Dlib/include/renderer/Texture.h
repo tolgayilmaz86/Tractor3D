@@ -13,18 +13,26 @@
  */
 #pragma once
 
+#include <memory>
+
 #include "framework/Stream.h"
-#include "utils/Ref.h"
 
 namespace tractor
 {
 
 class Image;
+class Texture;
+
+/** Shared pointer type for Texture. */
+using TexturePtr = std::shared_ptr<Texture>;
+
+/** Weak pointer type for Texture. */
+using TextureWeakPtr = std::weak_ptr<Texture>;
 
 /**
  * Defines a standard texture.
  */
-class Texture : public Ref
+class Texture : public std::enable_shared_from_this<Texture>
 {
     friend class Sampler;
 
@@ -90,6 +98,14 @@ class Texture : public Ref
         NEGATIVE_Z
     };
 
+    class Sampler;
+
+    /** Shared pointer type for Sampler. */
+    using SamplerPtr = std::shared_ptr<Sampler>;
+
+    /** Weak pointer type for Sampler. */
+    using SamplerWeakPtr = std::weak_ptr<Sampler>;
+
     /**
      * Defines a texture sampler.
      *
@@ -98,7 +114,7 @@ class Texture : public Ref
      * itself, a sampler stores per-instance texture state information, such
      * as wrap and filter modes.
      */
-    class Sampler : public Ref
+    class Sampler : public std::enable_shared_from_this<Sampler>
     {
         friend class Texture;
 
@@ -116,7 +132,17 @@ class Texture : public Ref
          * @return The new sampler.
          * @script{create}
          */
-        static Sampler* create(Texture* texture);
+        static SamplerPtr create(const TexturePtr& texture);
+
+        /**
+         * Creates a sampler for the specified texture (raw pointer overload for backward compatibility).
+         *
+         * @param texture The texture (ownership is NOT transferred, caller must ensure texture lives long enough).
+         *
+         * @return The new sampler.
+         * @script{create}
+         */
+        static SamplerPtr create(Texture* texture);
 
         /**
          * Creates a sampler for the specified texture.
@@ -128,7 +154,7 @@ class Texture : public Ref
          * @return The new sampler.
          * @script{create}
          */
-        static Sampler* create(const std::string& path, bool generateMipmaps = false);
+        static SamplerPtr create(const std::string& path, bool generateMipmaps = false);
 
         /**
          * Sets the wrap mode for this sampler.
@@ -152,7 +178,14 @@ class Texture : public Ref
          *
          * @return The texture for this sampler.
          */
-        Texture* getTexture() const noexcept { return _texture; }
+        Texture* getTexture() const noexcept { return _texture.get(); }
+
+        /**
+         * Gets the texture shared_ptr for this sampler.
+         *
+         * @return The texture shared_ptr for this sampler.
+         */
+        const TexturePtr& getTexturePtr() const noexcept { return _texture; }
 
         /**
          * Binds the texture of this sampler to the renderer and applies the sampler state.
@@ -163,20 +196,25 @@ class Texture : public Ref
         /**
          * Constructor.
          */
-        Sampler(Texture* texture);
+        Sampler(const TexturePtr& texture);
 
         /**
          * Hidden copy assignment operator.
          */
         Sampler& operator=(const Sampler&) = delete;
 
-        Texture* _texture;
+        TexturePtr _texture;
         Wrap _wrapS;
         Wrap _wrapT;
         Wrap _wrapR;
         Filter _minFilter;
         Filter _magFilter;
     };
+
+    /**
+     * Destructor.
+     */
+    virtual ~Texture();
 
     /**
      * Creates a texture from the given image resource.
@@ -190,7 +228,7 @@ class Texture : public Ref
      * @return The new texture, or nullptr if the texture could not be loaded/created.
      * @script{create}
      */
-    static Texture* create(const std::string& path, bool generateMipmaps = false);
+    static TexturePtr create(const std::string& path, bool generateMipmaps = false);
 
     /**
      * Creates a texture from the given image.
@@ -201,7 +239,7 @@ class Texture : public Ref
      * @return The new texture, or nullptr if the image is not of a supported texture format.
      * @script{create}
      */
-    static Texture* create(Image* image, bool generateMipmaps = false);
+    static TexturePtr create(Image* image, bool generateMipmaps = false);
 
     /**
      * Creates a texture from the given texture data.
@@ -220,12 +258,12 @@ class Texture : public Ref
      * @return The new texture.
      * @script{create}
      */
-    static Texture* create(Format format,
-                           unsigned int width,
-                           unsigned int height,
-                           const unsigned char* data,
-                           bool generateMipmaps = false,
-                           Type type = TEXTURE_2D);
+    static TexturePtr create(Format format,
+                             unsigned int width,
+                             unsigned int height,
+                             const unsigned char* data,
+                             bool generateMipmaps = false,
+                             Type type = TEXTURE_2D);
 
     /**
      * Creates a texture object to wrap the specified pre-created native texture handle.
@@ -245,7 +283,7 @@ class Texture : public Ref
      * @return The new texture.
      * @script{create}
      */
-    static Texture* create(TextureHandle handle, int width, int height, Format format = UNKNOWN);
+    static TexturePtr create(TextureHandle handle, int width, int height, Format format = UNKNOWN);
 
     /**
      * Set texture data to replace current texture image.
@@ -327,18 +365,13 @@ class Texture : public Ref
     Texture(const Texture& copy);
 
     /**
-     * Destructor.
-     */
-    virtual ~Texture();
-
-    /**
      * Hidden copy assignment operator.
      */
     Texture& operator=(const Texture&) = delete;
 
-    static Texture* createCompressedPVRTC(const std::string& path);
+    static TexturePtr createCompressedPVRTC(const std::string& path);
 
-    static Texture* createCompressedDDS(const std::string& path);
+    static TexturePtr createCompressedDDS(const std::string& path);
 
     static GLubyte* readCompressedPVRTC(const std::string& path,
                                         Stream* stream,
@@ -382,5 +415,8 @@ class Texture : public Ref
     GLenum _texelType;
     size_t _bpp;
 };
+
+/** Convenience typedef for Texture::SamplerPtr */
+using SamplerPtr = Texture::SamplerPtr;
 
 } // namespace tractor

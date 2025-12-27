@@ -28,19 +28,18 @@ namespace tractor
 //----------------------------------------------------------------------------
 Material::~Material()
 {
-    // Destroy all the techniques.
-    std::ranges::for_each(_techniques, [](auto& technique) { SAFE_RELEASE(technique); });
+    // shared_ptr handles cleanup automatically
     _techniques.clear();
 }
 
 //----------------------------------------------------------------------------
-Material* Material::create(const std::string& url)
+MaterialPtr Material::create(const std::string& url)
 {
     return create(url, (PassCallback) nullptr, nullptr);
 }
 
 //----------------------------------------------------------------------------
-Material* Material::create(const std::string& url, PassCallback callback, void* cookie)
+MaterialPtr Material::create(const std::string& url, PassCallback callback, void* cookie)
 {
     // Load the material properties from file.
     auto properties = std::unique_ptr<Properties>(Properties::create(url));
@@ -50,7 +49,7 @@ Material* Material::create(const std::string& url, PassCallback callback, void* 
         return nullptr;
     }
 
-    Material* material =
+    MaterialPtr material =
         create(properties->getNamespace().length() > 0 ? properties.get() : properties->getNextNamespace(),
                callback,
                cookie);
@@ -59,13 +58,13 @@ Material* Material::create(const std::string& url, PassCallback callback, void* 
 }
 
 //----------------------------------------------------------------------------
-Material* Material::create(Properties* materialProperties)
+MaterialPtr Material::create(Properties* materialProperties)
 {
     return create(materialProperties, (PassCallback) nullptr, nullptr);
 }
 
 //----------------------------------------------------------------------------
-Material* Material::create(Properties* materialProperties, PassCallback callback, void* cookie)
+MaterialPtr Material::create(Properties* materialProperties, PassCallback callback, void* cookie)
 {
     // Check if the Properties is valid and has a valid namespace.
     if (!materialProperties || materialProperties->getNamespace() != "material")
@@ -75,10 +74,10 @@ Material* Material::create(Properties* materialProperties, PassCallback callback
     }
 
     // Create new material from the file passed in.
-    Material* material = new Material();
+    MaterialPtr material(new Material());
 
     // Load uniform value parameters for this material.
-    loadRenderState(material, materialProperties);
+    loadRenderState(material.get(), materialProperties);
 
     materialProperties->rewind();
     // Go through all the material properties and create techniques under this material.
@@ -87,10 +86,9 @@ Material* Material::create(Properties* materialProperties, PassCallback callback
     {
         if (techniqueProperties->getNamespace() == "technique")
         {
-            if (!loadTechnique(material, techniqueProperties, callback, cookie))
+            if (!loadTechnique(material.get(), techniqueProperties, callback, cookie))
             {
                 GP_ERROR("Failed to load technique for material.");
-                SAFE_RELEASE(material);
                 return nullptr;
             }
         }
@@ -106,34 +104,37 @@ Material* Material::create(Properties* materialProperties, PassCallback callback
 }
 
 //----------------------------------------------------------------------------
-Material* Material::create(Effect* effect)
+MaterialPtr Material::create(Effect* effect)
 {
     assert(effect);
 
     // Create a new material with a single technique and pass for the given effect.
-    Material* material = new Material();
+    MaterialPtr material(new Material());
 
-    const auto& technique = material->_techniques.emplace_back(new Technique(EMPTY_STRING, material));
+    auto technique = Technique::create(EMPTY_STRING, material.get());
+    material->_techniques.push_back(technique);
 
-    const auto& pass = technique->_passes.emplace_back(new Pass(EMPTY_STRING, technique));
-    pass->_effect = effect->shared_from_this();  // Get shared_ptr from raw pointer
+    auto pass = Pass::create(EMPTY_STRING, technique.get());
+    pass->_effect = effect->shared_from_this();
+    technique->_passes.push_back(pass);
 
-    material->_currentTechnique = technique;
+    material->_currentTechnique = technique.get();
 
     return material;
 }
 
 //----------------------------------------------------------------------------
-Material* Material::create(const std::string& vshPath,
-                           const std::string& fshPath,
-                           const std::string& defines)
+MaterialPtr Material::create(const std::string& vshPath,
+                             const std::string& fshPath,
+                             const std::string& defines)
 {
     // Create a new material with a single technique and pass for the given effect
-    Material* material = new Material();
+    MaterialPtr material(new Material());
 
-    const auto& technique = material->_techniques.emplace_back(new Technique(EMPTY_STRING, material));
-    technique->addRef();
-    Pass* pass = new Pass(EMPTY_STRING, technique);
+    auto technique = Technique::create(EMPTY_STRING, material.get());
+    material->_techniques.push_back(technique);
+
+    auto pass = Pass::create(EMPTY_STRING, technique.get());
     if (!pass->initialize(vshPath, fshPath, defines))
     {
         GP_WARN("Failed to create pass for material: vertexShader = %s, fragmentShader = %s, "
@@ -141,13 +142,11 @@ Material* Material::create(const std::string& vshPath,
                 vshPath.c_str(),
                 fshPath.c_str(),
                 defines.c_str());
-        SAFE_RELEASE(pass);
-        SAFE_RELEASE(material);
         return nullptr;
     }
     technique->_passes.push_back(pass);
 
-    material->_currentTechnique = technique;
+    material->_currentTechnique = technique.get();
 
     return material;
 }
@@ -156,19 +155,19 @@ Material* Material::create(const std::string& vshPath,
 Technique* Material::getTechniqueByIndex(unsigned int index) const
 {
     assert(index < _techniques.size());
-    return _techniques.at(index);
+    return _techniques.at(index).get();
 }
 
 //----------------------------------------------------------------------------
 Technique* Material::getTechnique(const std::string& id) const noexcept
 {
     auto it = std::ranges::find_if(_techniques,
-                                   [&id](const Technique* t)
+                                   [&id](const TechniquePtr& t)
                                    {
                                        return t->getId() == id;
                                    });
 
-    return it != _techniques.end() ? *it : nullptr;
+    return it != _techniques.end() ? it->get() : nullptr;
 }
 
 //----------------------------------------------------------------------------
@@ -188,19 +187,19 @@ void Material::setNodeBinding(Node* node)
 }
 
 //----------------------------------------------------------------------------
-Material* Material::clone(NodeCloneContext& context) const
+MaterialPtr Material::clone(NodeCloneContext& context) const
 {
-    Material* material = new Material();
-    RenderState::cloneInto(material, context);
+    MaterialPtr material(new Material());
+    RenderState::cloneInto(material.get(), context);
 
     for (const auto& technique : _techniques)
     {
         assert(technique);
-        Technique* techniqueClone = technique->clone(material, context);
+        auto techniqueClone = technique->clone(material.get(), context);
         material->_techniques.push_back(techniqueClone);
-        if (_currentTechnique == technique)
+        if (_currentTechnique == technique.get())
         {
-            material->_currentTechnique = techniqueClone;
+            material->_currentTechnique = techniqueClone.get();
         }
     }
     return material;
@@ -216,12 +215,11 @@ bool Material::loadTechnique(Material* material,
     assert(techniqueProperties);
 
     // Create a new technique.
-    // Add the new technique to the material.
-    auto& technique =
-        material->_techniques.emplace_back(new Technique(techniqueProperties->getId(), material));
+    auto technique = Technique::create(techniqueProperties->getId(), material);
+    material->_techniques.push_back(technique);
 
     // Load uniform value parameters for this technique.
-    loadRenderState(technique, techniqueProperties);
+    loadRenderState(technique.get(), techniqueProperties);
 
     // Go through all the properties and create passes under this technique.
     techniqueProperties->rewind();
@@ -231,10 +229,9 @@ bool Material::loadTechnique(Material* material,
         if (passProperties->getNamespace() == "pass")
         {
             // Create and load passes.
-            if (!loadPass(technique, passProperties, callback, cookie))
+            if (!loadPass(technique.get(), passProperties, callback, cookie))
             {
                 GP_ERROR("Failed to create pass for technique.");
-                SAFE_RELEASE(technique);
                 return false;
             }
         }
@@ -258,16 +255,16 @@ bool Material::loadPass(Technique* technique,
     auto passDefines = passProperties->getString("defines");
 
     // Create the pass
-    Pass* pass = new Pass(passProperties->getId(), technique);
+    auto pass = Pass::create(passProperties->getId(), technique);
 
     // Load render state.
-    loadRenderState(pass, passProperties);
+    loadRenderState(pass.get(), passProperties);
 
     // If a pass callback was specified, call it and add the result to our list of defines
     std::string allDefines = !passDefines.empty() ? passDefines : "";
     if (callback)
     {
-        std::string customDefines = callback(pass, cookie);
+        std::string customDefines = callback(pass.get(), cookie);
         if (customDefines.length() > 0)
         {
             if (allDefines.length() > 0) allDefines += ';';
@@ -279,7 +276,6 @@ bool Material::loadPass(Technique* technique,
     if (!pass->initialize(vertexShaderPath, fragmentShaderPath, allDefines))
     {
         GP_WARN("Failed to create pass for technique.");
-        SAFE_RELEASE(pass);
         return false;
     }
 

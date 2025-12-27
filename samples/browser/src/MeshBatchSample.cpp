@@ -19,9 +19,9 @@
 ADD_SAMPLE("Graphics", "Mesh Batch", MeshBatchSample, 3);
 #endif
 
-static Material* createMaterial()
+static MaterialPtr createMaterial()
 {
-    Material* material =
+    auto material =
         Material::create("res/shaders/colored.vert", "res/shaders/colored.frag", "VERTEX_COLOR");
     assert(material && material->getStateBlock());
     return material;
@@ -29,13 +29,12 @@ static Material* createMaterial()
 
 static MeshBatch* createMeshBatch(Mesh::PrimitiveType primitiveType)
 {
-    Material* material = createMaterial();
+    auto material = createMaterial();
     VertexFormat::Element elements[] = { VertexFormat::Element(VertexFormat::POSITION, 3),
                                          VertexFormat::Element(VertexFormat::COLOR, 3) };
     unsigned int elementCount = sizeof(elements) / sizeof(VertexFormat::Element);
     MeshBatch* meshBatch =
         MeshBatch::create(VertexFormat(elements, elementCount), primitiveType, material, false);
-    SAFE_RELEASE(material);
     return meshBatch;
 }
 

@@ -13,6 +13,8 @@
  */
 #pragma once
 
+#include <memory>
+
 #include "graphics/Effect.h"
 #include "renderer/RenderState.h"
 #include "renderer/VertexAttributeBinding.h"
@@ -22,6 +24,7 @@ namespace tractor
 
 class Technique;
 class NodeCloneContext;
+class Pass;
 
 /**
  * Defines a pass for an object to be rendered.
@@ -30,13 +33,18 @@ class NodeCloneContext;
  * to an object to be rendered. This includes specifying both a vertex and fragment
  * shader, as well as any uniforms and vertex attributes to be applied to these.
  */
-class Pass : public RenderState
+class Pass : public RenderState, public std::enable_shared_from_this<Pass>
 {
     friend class Technique;
     friend class Material;
     friend class RenderState;
 
   public:
+    /**
+     * Destructor.
+     */
+    ~Pass();
+
     /**
      * Returns the Id of this pass.
      */
@@ -87,29 +95,24 @@ class Pass : public RenderState
     Pass(const std::string& id, Technique* technique);
 
     /**
-     * Constructor.
-     */
-    // Pass(const char* id, Technique* technique, Effect* effect);
-
-    /**
      * Hidden copy constructor.
      */
     Pass(const Pass& copy);
 
     /**
-     * Destructor.
+     * Hidden copy assignment operator.
      */
-    ~Pass();
+    Pass& operator=(const Pass&) = delete;
+
+    /**
+     * Creates a new Pass (factory method for internal use).
+     */
+    static std::shared_ptr<Pass> create(const std::string& id, Technique* technique);
 
     /**
      * Creates a new pass for the given shaders.
      */
     bool initialize(const std::string& vshPath, const std::string& fshPath, const std::string& defines);
-
-    /**
-     * Hidden copy assignment operator.
-     */
-    Pass& operator=(const Pass&) = delete;
 
     /**
      * Clones the Pass and assigns it the given Technique.
@@ -119,7 +122,7 @@ class Pass : public RenderState
      *
      * @return The newly created Pass.
      */
-    Pass* clone(Technique* technique, NodeCloneContext& context) const;
+    std::shared_ptr<Pass> clone(Technique* technique, NodeCloneContext& context) const;
 
     std::string _id{};
     Technique* _technique{ nullptr };

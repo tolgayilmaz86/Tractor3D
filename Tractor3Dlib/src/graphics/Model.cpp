@@ -32,12 +32,12 @@ Model::Model(std::shared_ptr<Mesh> mesh) : Drawable(), _mesh(mesh)
 //----------------------------------------------------------------------------
 Model::~Model()
 {
-    SAFE_RELEASE(_material);
+    _material.reset();
     if (_partMaterials)
     {
         for (size_t i = 0; i < _partCount; ++i)
         {
-            SAFE_RELEASE(_partMaterials[i]);
+            _partMaterials[i].reset();
         }
         SAFE_DELETE_ARRAY(_partMaterials);
     }
@@ -72,40 +72,36 @@ Material* Model::getMaterial(int partIndex)
 
     Material* m = nullptr;
 
-    if (partIndex < 0) return _material;
+    if (partIndex < 0) return _material.get();
     if (partIndex >= (int)_partCount) return nullptr;
 
     // Look up explicitly specified part material.
     if (_partMaterials)
     {
-        m = _partMaterials[partIndex];
+        m = _partMaterials[partIndex].get();
     }
     if (m == nullptr)
     {
         // Return the shared material.
-        m = _material;
+        m = _material.get();
     }
 
     return m;
 }
 
 //----------------------------------------------------------------------------
-void Model::setMaterial(Material* material, int partIndex)
+void Model::setMaterial(MaterialPtr material, int partIndex)
 {
     assert(partIndex == -1 || (partIndex >= 0 && partIndex < (int)getMeshPartCount()));
 
-    Material* oldMaterial = nullptr;
+    MaterialPtr oldMaterial;
 
     if (partIndex == -1)
     {
         oldMaterial = _material;
 
         // Set new shared material.
-        if (material)
-        {
-            _material = material;
-            _material->addRef();
-        }
+        _material = material;
     }
     else if (partIndex >= 0 && partIndex < (int)getMeshPartCount())
     {
@@ -122,17 +118,12 @@ void Model::setMaterial(Material* material, int partIndex)
             // Allocate part arrays for the first time.
             if (_partMaterials == nullptr)
             {
-                _partMaterials = new Material*[_partCount];
-                memset(_partMaterials, 0, sizeof(Material*) * _partCount);
+                _partMaterials = new MaterialPtr[_partCount];
             }
         }
 
         // Set new part material.
-        if (material)
-        {
-            _partMaterials[partIndex] = material;
-            material->addRef();
-        }
+        _partMaterials[partIndex] = material;
     }
 
     // Release existing material and binding.
@@ -148,7 +139,6 @@ void Model::setMaterial(Material* material, int partIndex)
                 t->getPassByIndex(j)->setVertexAttributeBinding(nullptr);
             }
         }
-        SAFE_RELEASE(oldMaterial);
     }
 
     if (material)
@@ -169,7 +159,7 @@ void Model::setMaterial(Material* material, int partIndex)
         // Apply node binding for the new material.
         if (_node)
         {
-            setMaterialNodeBinding(material);
+            setMaterialNodeBinding(material.get());
         }
     }
 }
@@ -181,7 +171,7 @@ Material* Model::setMaterial(const std::string& vshPath,
                              int partIndex)
 {
     // Try to create a Material with the given parameters.
-    Material* material = Material::create(vshPath, fshPath, defines);
+    MaterialPtr material = Material::create(vshPath, fshPath, defines);
     if (material == nullptr)
     {
         GP_ERROR("Failed to create material for model.");
@@ -191,16 +181,13 @@ Material* Model::setMaterial(const std::string& vshPath,
     // Assign the material to us.
     setMaterial(material, partIndex);
 
-    // Release the material since we now have a reference to it.
-    material->release();
-
-    return material;
+    return material.get();
 }
 
 Material* Model::setMaterial(const std::string& materialPath, int partIndex)
 {
     // Try to create a Material from the specified material file.
-    Material* material = Material::create(materialPath);
+    MaterialPtr material = Material::create(materialPath);
     if (material == nullptr)
     {
         GP_ERROR("Failed to create material for model.");
@@ -210,10 +197,7 @@ Material* Model::setMaterial(const std::string& materialPath, int partIndex)
     // Assign the material to us
     setMaterial(material, partIndex);
 
-    // Release the material since we now have a reference to it
-    material->release();
-
-    return material;
+    return material.get();
 }
 
 //----------------------------------------------------------------------------
@@ -246,7 +230,7 @@ void Model::setNode(Node* node)
     {
         if (_material)
         {
-            setMaterialNodeBinding(_material);
+            setMaterialNodeBinding(_material.get());
         }
         if (_partMaterials)
         {
@@ -254,7 +238,7 @@ void Model::setNode(Node* node)
             {
                 if (_partMaterials[i])
                 {
-                    setMaterialNodeBinding(_partMaterials[i]);
+                    setMaterialNodeBinding(_partMaterials[i].get());
                 }
             }
         }
@@ -437,14 +421,13 @@ Drawable* Model::clone(NodeCloneContext& context)
     }
     if (getMaterial())
     {
-        Material* materialClone = getMaterial()->clone(context);
+        MaterialPtr materialClone = getMaterial()->clone(context);
         if (!materialClone)
         {
             GP_ERROR("Failed to clone material for model.");
             return model;
         }
         model->setMaterial(materialClone);
-        materialClone->release();
     }
     if (_partMaterials)
     {
@@ -453,9 +436,8 @@ Drawable* Model::clone(NodeCloneContext& context)
         {
             if (_partMaterials[i])
             {
-                Material* materialClone = _partMaterials[i]->clone(context);
+                MaterialPtr materialClone = _partMaterials[i]->clone(context);
                 model->setMaterial(materialClone, i);
-                materialClone->release();
             }
         }
     }
@@ -473,9 +455,8 @@ void Model::validatePartCount()
         // Allocate new arrays and copy old items to them.
         if (_partMaterials)
         {
-            Material** oldArray = _partMaterials;
-            _partMaterials = new Material*[partCount];
-            memset(_partMaterials, 0, sizeof(Material*) * partCount);
+            MaterialPtr* oldArray = _partMaterials;
+            _partMaterials = new MaterialPtr[partCount];
             if (oldArray)
             {
                 for (size_t i = 0; i < _partCount; ++i)

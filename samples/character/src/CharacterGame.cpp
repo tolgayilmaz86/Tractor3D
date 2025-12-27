@@ -56,7 +56,7 @@ void CharacterGame::initialize()
     initializeCharacter();
 
     // Create a collision object for the ceiling.
-    Node* ceiling = _scene->addNode("ceiling");
+    NodePtr ceiling = _scene->addNode("ceiling");
     ceiling->setTranslationY(14.5f);
     PhysicsRigidBody::Parameters rbParams;
     rbParams.mass = 0.0f;
@@ -653,7 +653,7 @@ void CharacterGame::animationEvent(AnimationClip* clip, AnimationClip::Listener:
 
 void CharacterGame::clone()
 {
-    Node* clone = _scene->findNode("boycharacter")->clone();
+    NodePtr clone = _scene->findNode("boycharacter")->clone();
     Animation* cloneAnimation = clone->getAnimation();
 
     // Find the current clip and have the clone play that clip repeatedly.
@@ -664,7 +664,6 @@ void CharacterGame::clone()
     clip->play();
 
     _scene->addNode(clone);
-    clone->release();
 }
 
 void CharacterGame::collisionEvent(PhysicsCollisionObject::CollisionListener::EventType type,

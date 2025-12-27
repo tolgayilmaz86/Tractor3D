@@ -67,11 +67,10 @@ ScenePtr Scene::load(const std::string& filePath)
     if (endsWithIgnoreCase(filePath, ".gpb"))
     {
         ScenePtr scene = nullptr;
-        Bundle* bundle = Bundle::create(filePath);
+        BundlePtr bundle = Bundle::create(filePath);
         if (bundle)
         {
             scene = bundle->loadScene();
-            SAFE_RELEASE(bundle);
         }
         return scene;
     }
@@ -166,7 +165,7 @@ void Scene::visitNode(Node* node, const char* visitMethod)
     Model* model = dynamic_cast<Model*>(node->getDrawable());
     if (model && model->_skin && model->_skin->_rootNode)
     {
-        visitNode(model->_skin->_rootNode, visitMethod);
+        visitNode(model->_skin->_rootNode.get(), visitMethod);
     }
 
     // Recurse for all children.
@@ -177,20 +176,16 @@ void Scene::visitNode(Node* node, const char* visitMethod)
 }
 
 //----------------------------------------------------------------------------
-Node* Scene::addNode(const std::string& id)
+NodePtr Scene::addNode(const std::string& id)
 {
-    Node* node = Node::create(id);
+    NodePtr node = Node::create(id);
     assert(node);
     addNode(node);
-
-    // Call release to decrement the ref count to 1 before returning.
-    node->release();
-
     return node;
 }
 
 //----------------------------------------------------------------------------
-void Scene::addNode(Node* node)
+void Scene::addNode(const NodePtr& node)
 {
     assert(node);
 
@@ -200,25 +195,23 @@ void Scene::addNode(Node* node)
         return;
     }
 
-    node->addRef();
-
     // If the node is part of another scene, remove it.
     if (node->_scene && node->_scene != this)
     {
-        node->_scene->removeNode(node);
+        node->_scene->removeNode(node.get());
     }
 
     // If the node is part of another node hierarchy, remove it.
     if (node->getParent())
     {
-        node->getParent()->removeChild(node);
+        node->getParent()->removeChild(node.get());
     }
 
     // Link the new node into the end of our list.
     if (_lastNode)
     {
         _lastNode->_nextSibling = node;
-        node->_prevSibling = _lastNode;
+        node->_prevSibling = _lastNode.get();
         _lastNode = node;
     }
     else
@@ -248,29 +241,54 @@ void Scene::removeNode(Node* node)
 
     if (node->_scene != this) return;
 
-    if (node == _firstNode)
+    // Find the shared_ptr for this node
+    NodePtr nodePtr;
+    if (_firstNode.get() == node)
     {
+        nodePtr = _firstNode;
         _firstNode = node->_nextSibling;
     }
-    if (node == _lastNode)
+    else
     {
-        _lastNode = node->_prevSibling;
+        for (NodePtr n = _firstNode; n != nullptr; n = n->_nextSibling)
+        {
+            if (n->_nextSibling.get() == node)
+            {
+                nodePtr = n->_nextSibling;
+                break;
+            }
+        }
+    }
+    
+    if (_lastNode.get() == node)
+    {
+        // Find new last node
+        if (_firstNode)
+        {
+            NodePtr n = _firstNode;
+            while (n->_nextSibling && n->_nextSibling.get() != node)
+                n = n->_nextSibling;
+            _lastNode = n;
+        }
+        else
+        {
+            _lastNode.reset();
+        }
     }
 
     node->remove();
     node->_scene = nullptr;
 
-    SAFE_RELEASE(node);
-
     --_nodeCount;
+    // nodePtr will be released when it goes out of scope
 }
 
 //----------------------------------------------------------------------------
 void Scene::removeAllNodes()
 {
-    while (_lastNode)
+    while (_firstNode)
     {
-        removeNode(_lastNode);
+        removeNode(_firstNode.get());
     }
 }
 
@@ -334,7 +352,7 @@ void Scene::setAmbientColor(float red, float green, float blue)
 //----------------------------------------------------------------------------
 void Scene::update(float elapsedTime)
 {
-    for (Node* node = _firstNode; node != nullptr; node = node->_nextSibling)
+    for (Node* node = getFirstNode(); node != nullptr; node = node->getNextSibling())
     {
         if (node->isEnabled()) node->update(elapsedTime);
     }

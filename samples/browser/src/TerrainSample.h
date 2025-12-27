@@ -73,8 +73,8 @@ class TerrainSample : public Sample, public Control::Listener, private RenderSta
     bool _snapToGround;
     bool _vsync;
     Mode _mode;
-    Node* _sphere;
-    Node* _box;
-    std::list<Node*> _shapes;
+    NodePtr _sphere;
+    NodePtr _box;
+    std::list<NodePtr> _shapes;
     Light* _directionalLight;
 };

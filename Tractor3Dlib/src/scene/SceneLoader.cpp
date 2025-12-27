@@ -302,9 +302,8 @@ void SceneLoader::applyNodeProperty(SceneNode& sceneNode,
                 Model* model = dynamic_cast<Model*>(node->getDrawable());
                 if (model)
                 {
-                    Material* material = Material::create(p);
+                    MaterialPtr material = Material::create(p);
                     model->setMaterial(material, snp._index);
-                    SAFE_RELEASE(material);
                 }
                 else
                 {
@@ -536,9 +535,12 @@ void SceneLoader::applyNodeUrls(SceneNode& sceneNode, Node* parent)
         else
         {
             // There is no node in the scene with this ID, so create a new empty node
-            node = Node::create(sceneNode._nodeID);
-            parent ? parent->addChild(node) : _scene->addNode(node);
-            node->release();
+            NodePtr nodePtr = Node::create(sceneNode._nodeID);
+            node = nodePtr.get();
+            if (parent)
+                parent->addChild(nodePtr);
+            else
+                _scene->addNode(nodePtr);
             sceneNode._nodes.push_back(node);
         }
     }
@@ -964,7 +966,7 @@ ScenePtr SceneLoader::loadMainSceneData(const Properties* sceneProperties)
     assert(sceneProperties);
 
     // Load the main scene from the specified path.
-    Bundle* bundle = Bundle::create(_gpbPath);
+    BundlePtr bundle = Bundle::create(_gpbPath);
     if (!bundle)
     {
         GP_WARN("Failed to load scene GPB file '%s'.", _gpbPath.c_str());
@@ -977,11 +979,9 @@ ScenePtr SceneLoader::loadMainSceneData(const Properties* sceneProperties)
     if (!scene)
     {
         GP_WARN("Failed to load scene from '%s'.", _gpbPath.c_str());
-        SAFE_RELEASE(bundle);
         return nullptr;
     }
-
-    SAFE_RELEASE(bundle);
+	
     return scene;
 }
 
@@ -1342,18 +1342,20 @@ void SceneLoader::processExternalFile(SceneNode& sceneNode,
     // TODO: Revisit this to determine if we should cache Bundle objects for the duration of the
     // scene load to prevent constantly creating/destroying the same externally referenced bundles
     // each time a url with a file is encountered.
-    Bundle* tmpBundle = Bundle::create(file);
+    BundlePtr tmpBundle = Bundle::create(file);
     if (tmpBundle)
     {
         if (sceneNode._exactMatch)
         {
-            Node* node = tmpBundle->loadNode(id, _scene.get());
-            if (node)
+            NodePtr nodePtr = tmpBundle->loadNode(id, _scene.get());
+            if (nodePtr)
             {
-                node->setId(sceneNode._nodeID);
-                parent ? parent->addChild(node) : _scene->addNode(node);
-                sceneNode._nodes.push_back(node);
-                SAFE_RELEASE(node);
+                nodePtr->setId(sceneNode._nodeID);
+                if (parent)
+                    parent->addChild(nodePtr);
+                else
+                    _scene->addNode(nodePtr);
+                sceneNode._nodes.push_back(nodePtr.get());
             }
             else
             {
@@ -1372,17 +1374,19 @@ void SceneLoader::processExternalFile(SceneNode& sceneNode,
                 {
                     // This object ID matches (starts with).
                     // Try to load this object as a Node.
-                    Node* node = tmpBundle->loadNode(objid);
-                    if (node)
+                    NodePtr nodePtr = tmpBundle->loadNode(objid);
+                    if (nodePtr)
                     {
                         // Construct a new node ID using _nodeID plus the remainder of the partial
                         // match.
                         std::string newID(sceneNode._nodeID);
-                        newID += (node->getId() + std::to_string(id.length()));
-                        node->setId(newID);
-                        parent ? parent->addChild(node) : _scene->addNode(node);
-                        sceneNode._nodes.push_back(node);
-                        SAFE_RELEASE(node);
+                        newID += (nodePtr->getId() + std::to_string(id.length()));
+                        nodePtr->setId(newID);
+                        if (parent)
+                            parent->addChild(nodePtr);
+                        else
+                            _scene->addNode(nodePtr);
+                        sceneNode._nodes.push_back(nodePtr.get());
                         matchCount++;
                     }
                 }
@@ -1394,8 +1398,7 @@ void SceneLoader::processExternalFile(SceneNode& sceneNode,
                          file.c_str());
             }
         }
-
-        SAFE_RELEASE(tmpBundle);
+        // tmpBundle is automatically cleaned up when BundlePtr goes out of scope
     }
     else
     {

@@ -87,7 +87,14 @@ class RenderTarget : public std::enable_shared_from_this<RenderTarget>
      *
      * @return The backing texture of this RenderTarget.
      */
-    Texture* getTexture() const noexcept { return _texture; }
+    Texture* getTexture() const noexcept { return _texture.get(); }
+
+    /**
+     * Get the backing texture shared_ptr of this RenderTarget.
+     *
+     * @return The backing texture shared_ptr of this RenderTarget.
+     */
+    const TexturePtr& getTexturePtr() const noexcept { return _texture; }
 
     /**
      * Returns the width of the RenderTarget.
@@ -115,7 +122,7 @@ class RenderTarget : public std::enable_shared_from_this<RenderTarget>
     RenderTarget& operator=(const RenderTarget&) = delete;
 
     std::string _id{};
-    Texture* _texture{ nullptr };
+    TexturePtr _texture;
 };
 
 } // namespace tractor

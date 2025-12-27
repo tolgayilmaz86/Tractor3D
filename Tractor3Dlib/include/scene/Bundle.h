@@ -23,11 +23,19 @@
 namespace tractor
 {
 
+class Bundle;
+
+/**
+ * Unique pointer type for Bundle.
+ * Bundles are typically loaded, used once, and released - they don't need shared ownership.
+ */
+using BundlePtr = std::unique_ptr<Bundle>;
+
 /**
  * Defines a gameplay bundle file (.gpb) that contains a
  * collection of binary game assets that can be loaded.
  */
-class Bundle : public Ref
+class Bundle
 {
     friend class PhysicsController;
     friend class SceneLoader;
@@ -37,16 +45,16 @@ class Bundle : public Ref
      * Returns a Bundle for the given resource path.
      *
      * The specified path must reference a valid Tractor3D bundle file.
-     * If the bundle is already loaded, the existing bundle is returned
-     * with its reference count incremented. When no longer needed, the
-     * release() method must be called. Note that calling release() does
-     * NOT free any actual game objects created/returned from the Bundle
-     * instance and those objects must be released separately.
      *
-     * @return The new Bundle or nullptr if there was an error.
+     * @return A unique_ptr to the new Bundle or nullptr if there was an error.
      * @script{create}
      */
-    static Bundle* create(const std::string& path);
+    static BundlePtr create(const std::string& path);
+
+    /**
+     * Destructor.
+     */
+    ~Bundle();
 
     /**
      * Loads the scene with the specified ID from the bundle.
@@ -67,7 +75,7 @@ class Bundle : public Ref
      * @return The loaded node, or nullptr if the node could not be loaded.
      * @script{create}
      */
-    Node* loadNode(const std::string& id) { return loadNode(id, nullptr); }
+    NodePtr loadNode(const std::string& id) { return loadNode(id, nullptr); }
 
     /**
      * Loads a mesh with the specified ID from the bundle.
@@ -202,9 +210,9 @@ class Bundle : public Ref
     explicit Bundle(const std::string& path);
 
     /**
-     * Destructor.
+     * Hidden copy constructor.
      */
-    ~Bundle();
+    Bundle(const Bundle&) = delete;
 
     /**
      * Hidden copy assignment operator.
@@ -271,12 +279,12 @@ class Bundle : public Ref
      *
      * Only one of node or scene should be passed as non-nullptr (or neither).
      */
-    Node* loadNode(const std::string& id, Scene* sceneContext, Node* nodeContext);
+    NodePtr loadNode(const std::string& id, Scene* sceneContext, Node* nodeContext);
 
     /**
      * Internal method for SceneLoader to load a node into a scene.
      */
-    Node* loadNode(const std::string& id, Scene* sceneContext);
+    NodePtr loadNode(const std::string& id, Scene* sceneContext);
 
     /**
      * Loads a mesh with the specified ID from the bundle.
@@ -375,6 +383,14 @@ class Bundle : public Ref
      * @return A pointer to new node or nullptr if there was an error.
      */
     Node* readNode(Scene* sceneContext, Node* nodeContext);
+
+    /**
+     * Recursively reads nodes from the current file position and returns a shared_ptr.
+     * This method will load cameras, lights and models in the nodes.
+     *
+     * @return A shared pointer to new node or nullptr if there was an error.
+     */
+    NodePtr readNodePtr(Scene* sceneContext, Node* nodeContext);
 
     /**
      * Reads a camera from the current file position.
@@ -498,6 +514,7 @@ class Bundle : public Ref
     std::unique_ptr<Stream> _stream{ nullptr };
     std::vector<MeshSkinData*> _meshSkins{};
     std::map<std::string, Node*>* _trackedNodes{ nullptr };
+    std::map<std::string, NodePtr>* _trackedNodesPtr{ nullptr };
 };
 
 } // namespace tractor

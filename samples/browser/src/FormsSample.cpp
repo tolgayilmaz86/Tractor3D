@@ -36,7 +36,8 @@ FormsSample::FormsSample()
 void FormsSample::finalize()
 {
     _scene.reset();
-    SAFE_RELEASE(_formNode);
+    _formNode.reset();
+    _formNodeParent.reset();
     _formSelect.reset();
     _forms.clear();
 }
@@ -116,7 +117,7 @@ void FormsSample::initialize()
     auto camera =
         Camera::createPerspective(45.0f, (float)getWidth() / (float)getHeight(), 0.25f, 100.0f);
     _scene = Scene::create();
-    Node* cameraNode = _scene->addNode("Camera");
+    NodePtr cameraNode = _scene->addNode("Camera");
     cameraNode->setCamera(camera);
     _scene->setActiveCamera(camera.get());
     _formNodeParent = _scene->addNode("FormParent");

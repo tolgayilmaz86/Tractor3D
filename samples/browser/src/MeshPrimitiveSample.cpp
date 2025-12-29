@@ -161,7 +161,7 @@ void MeshPrimitiveSample::initialize()
 
     // Create a model for the triangle mesh. A model is an instance of a Mesh that can be drawn with a specified material.
     auto triangleMesh = createTriangleMesh();
-    _triangles = Model::createRaw(triangleMesh);
+    _triangles = Model::create(triangleMesh);
 
     // Create a material from the built-in "colored-unlit" vertex and fragment shaders.
     // This sample doesn't use lighting so the unlit shader is used.
@@ -169,7 +169,7 @@ void MeshPrimitiveSample::initialize()
     _triangles->setMaterial("res/shaders/colored.vert", "res/shaders/colored.frag", "VERTEX_COLOR");
 
     auto triangleStripMesh = createTriangleStripMesh();
-    _triangleStrip = Model::createRaw(triangleStripMesh);
+    _triangleStrip = Model::create(triangleStripMesh);
     Material* material = _triangleStrip->setMaterial("res/shaders/colored.vert",
                                                      "res/shaders/colored.frag",
                                                      "VERTEX_COLOR");
@@ -177,23 +177,23 @@ void MeshPrimitiveSample::initialize()
     material->getStateBlock()->setDepthWrite(true);
 
     auto lineStripMesh = createLineStripMesh();
-    _lineStrip = Model::createRaw(lineStripMesh);
+    _lineStrip = Model::create(lineStripMesh);
     _lineStrip->setMaterial("res/shaders/colored.vert", "res/shaders/colored.frag", "VERTEX_COLOR");
 
     auto lineMesh = createLinesMesh();
-    _lines = Model::createRaw(lineMesh);
+    _lines = Model::create(lineMesh);
     _lines->setMaterial("res/shaders/colored.vert", "res/shaders/colored.frag", "VERTEX_COLOR");
 }
 
 void MeshPrimitiveSample::finalize()
 {
-    // Model and font are reference counted and should be released before closing this sample.
-    SAFE_RELEASE(_triangles);
-    SAFE_RELEASE(_triangleStrip);
-    SAFE_RELEASE(_lineStrip);
-    SAFE_RELEASE(_lines);
-    SAFE_RELEASE(_points);
-    SAFE_RELEASE(_font);
+    // Smart pointers handle cleanup automatically, just reset them
+    _triangles.reset();
+    _triangleStrip.reset();
+    _lineStrip.reset();
+    _lines.reset();
+    _points.reset();
+    _font.reset();
 }
 
 void MeshPrimitiveSample::update(float elapsedTime)

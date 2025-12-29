@@ -100,9 +100,6 @@ void AudioSample::finalize()
     _audioBraking.reset();
     _audioEngine.reset();
     _audioBackground.reset();
-    SAFE_RELEASE(_formBraking);
-    SAFE_RELEASE(_formEngine);
-    SAFE_RELEASE(_formBackground);
 }
 
 void AudioSample::update(float elapsedTime)

@@ -653,14 +653,14 @@ class Node : public Transform, public std::enable_shared_from_this<Node>
      *
      * @return The user object assigned object to this node.
      */
-    Ref* getUserObject() const noexcept { return _userObject; }
+    void* getUserObject() const noexcept { return _userObject; }
 
     /**
      * Sets a user object to be assigned object to this node.
      *
      * @param obj The user object assigned object to this node.
      */
-    void setUserObject(Ref* obj) { _userObject = obj; }
+    void setUserObject(void* obj) { _userObject = obj; }
 
     /**
      * Returns the bounding sphere for the Node, in world space.
@@ -831,7 +831,7 @@ class Node : public Transform, public std::enable_shared_from_this<Node>
     /** The AI agent component attached to this node. */
     mutable AIAgentPtr _agent;
     /** The user object component attached to this node. */
-    Ref* _userObject{ nullptr };
+    void* _userObject{ nullptr };
     /** The world matrix for this node. */
     mutable Matrix _world;
     /** The bounding sphere for this node. */

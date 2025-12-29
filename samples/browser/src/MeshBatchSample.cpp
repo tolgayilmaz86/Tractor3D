@@ -62,8 +62,9 @@ void MeshBatchSample::initialize()
 
 void MeshBatchSample::finalize()
 {
-    SAFE_RELEASE(_font);
-    SAFE_DELETE(_meshBatch);
+    _font.reset();
+    delete _meshBatch;
+    _meshBatch = nullptr;
 }
 
 void MeshBatchSample::update(float elapsedTime) {}

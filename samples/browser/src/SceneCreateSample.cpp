@@ -127,8 +127,8 @@ void SceneCreateSample::finalize()
 {
     // Clear drawable references before deleting models to avoid dangling pointer access
     if (_cubeNode) _cubeNode->setDrawable(nullptr);
-    
-    SAFE_RELEASE(_font);
+
+    _font.reset();
     _cubeNode.reset();
     _scene.reset();
 }

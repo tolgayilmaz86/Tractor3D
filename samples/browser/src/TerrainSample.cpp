@@ -43,8 +43,8 @@ TerrainSample::~TerrainSample()
 {
     _box.reset();
     _sphere.reset();
-    SAFE_RELEASE(_form);
-    SAFE_RELEASE(_font);
+    _form.reset();
+    _font.reset();
     _scene.reset();
 }
 
@@ -95,11 +95,11 @@ void TerrainSample::initialize()
 
 void TerrainSample::finalize()
 {
-    SAFE_RELEASE(_font);
-    SAFE_RELEASE(_scene);
-    SAFE_RELEASE(_form);
-    SAFE_RELEASE(_sphere);
-    SAFE_RELEASE(_box);
+    _font.reset();
+    _scene.reset();
+    _form.reset();
+    _sphere.reset();
+    _box.reset();
 }
 
 void TerrainSample::update(float elapsedTime)

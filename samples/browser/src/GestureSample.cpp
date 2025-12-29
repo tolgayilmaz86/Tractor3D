@@ -67,7 +67,7 @@ void GestureSample::initialize()
 
 void GestureSample::finalize()
 {
-    SAFE_RELEASE(_font);
+    _font.reset();
 
     unregisterGesture(Gesture::GESTURE_TAP);
     unregisterGesture(Gesture::GESTURE_SWIPE);

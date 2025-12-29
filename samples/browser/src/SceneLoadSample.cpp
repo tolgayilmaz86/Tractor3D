@@ -53,7 +53,7 @@ bool SceneLoadSample::initializeMaterials(Node* node)
 
 void SceneLoadSample::finalize()
 {
-    SAFE_RELEASE(_font);
+    _font.reset();
     _scene.reset();
 }
 

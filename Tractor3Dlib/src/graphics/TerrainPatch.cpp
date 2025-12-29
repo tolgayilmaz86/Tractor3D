@@ -38,14 +38,6 @@ static int __currentPatchIndex = -1;
 //----------------------------------------------------------------------------
 TerrainPatch::~TerrainPatch()
 {
-    for (size_t i = 0, count = _levels.size(); i < count; ++i)
-    {
-        Level* level = _levels[i];
-
-        SAFE_RELEASE(level->model);
-        SAFE_DELETE(level);
-    }
-
     while (_layers.size() > 0)
     {
         deleteLayer(*_layers.begin());
@@ -151,7 +143,7 @@ void TerrainPatch::addLOD(float* heights,
 
     unsigned int vertexCount = patchHeight * patchWidth;
     unsigned int vertexElements = _terrain->_normalMap ? 5 : 8; //<x,y,z>[i,j,k]<u,v>
-    float* vertices = new float[vertexCount * vertexElements];
+    std::vector<float> vertices(vertexCount * vertexElements);
 
     unsigned int index = 0;
     Vector3 min(FLT_MAX, FLT_MAX, FLT_MAX);
@@ -166,7 +158,7 @@ void TerrainPatch::addLOD(float* heights,
         {
             assert(index < vertexCount);
 
-            float* v = vertices + (index * vertexElements);
+            float* v = vertices.data() + (index * vertexElements);
             index++;
 
             // Compute position - apply the local scale of the terrain into the vertex data
@@ -278,7 +270,7 @@ void TerrainPatch::addLOD(float* heights,
     }
     VertexFormat format(elements, _terrain->_normalMap ? 2 : 3);
     auto mesh = Mesh::createMesh(format, vertexCount);
-    mesh->setVertexData(vertices);
+    mesh->setVertexData(vertices.data());
     mesh->setBoundingBox(BoundingBox(min, max));
     mesh->setBoundingSphere(BoundingSphere(center, center.distance(max)));
 
@@ -299,7 +291,7 @@ void TerrainPatch::addLOD(float* heights,
     }
 
     auto part = mesh->addPart(Mesh::TRIANGLE_STRIP, Mesh::INDEX16, indexCount);
-    unsigned short* indices = new unsigned short[indexCount];
+    std::vector<unsigned short> indices(indexCount);
     index = 0;
     for (unsigned int z = 0; z < patchHeight - 1; ++z)
     {
@@ -346,15 +338,11 @@ void TerrainPatch::addLOD(float* heights,
         }
     }
     assert(index == indexCount);
-    part->setIndexData(indices, 0, indexCount);
+    part->setIndexData(indices.data(), 0, indexCount);
 
-    SAFE_DELETE_ARRAY(vertices);
-    SAFE_DELETE_ARRAY(indices);
-
-    // Add this level
-    _levels.emplace_back(new Level())->model = Model::createRaw(mesh);
-
-    // mesh->release();
+    // Add this level - vectors clean up automatically when function exits
+    _levels.push_back(std::make_unique<Level>());
+    _levels.back()->model = Model::create(mesh);
 }
 
 //----------------------------------------------------------------------------
@@ -380,7 +368,7 @@ void TerrainPatch::deleteLayer(Layer* layer)
     }
 
     _layers.erase(layer);
-    SAFE_DELETE(layer);
+    delete layer;
 }
 
 //----------------------------------------------------------------------------

@@ -66,6 +66,33 @@ using std::atoi;
 
 constexpr auto EMPTY_STRING{ "" };
 
+// Safe deletion macros (legacy - prefer smart pointers for new code)
+#define SAFE_DELETE(x) do { delete x; x = nullptr; } while(0)
+#define SAFE_DELETE_ARRAY(x) do { delete[] x; x = nullptr; } while(0)
+
+// Helper to detect smart pointers at compile time
+namespace detail {
+    template<typename T>
+    struct is_smart_ptr : std::false_type {};
+    template<typename T>
+    struct is_smart_ptr<std::shared_ptr<T>> : std::true_type {};
+    template<typename T>
+    struct is_smart_ptr<std::unique_ptr<T>> : std::true_type {};
+    
+    template<typename T>
+    inline void safe_release_impl(T& x) {
+        if constexpr (is_smart_ptr<std::remove_cv_t<T>>::value) {
+            x.reset();
+        } else {
+            delete x;
+            x = nullptr;
+        }
+    }
+}
+
+// SAFE_RELEASE - works with both raw pointers and smart pointers
+#define SAFE_RELEASE(x) do { ::detail::safe_release_impl(x); } while(0)
+
 namespace tractor
 {
     /**
@@ -121,40 +148,6 @@ namespace tractor
 
 // Debug new for memory leak detection
 #include "utils/DebugNew.h"
-#include "utils/Ref.h"
-#include "utils/SafeDelete.h"
-#include "utils/RefRelease.h"
-
-// =============================================================================
-// Legacy cleanup macros
-// =============================================================================
-// Note: These macros are retained because some classes have private/protected
-// destructors that are only accessible in friend/member contexts where the
-// macro is expanded. For new code with public destructors, prefer:
-//   tractor::safeDelete(x)
-//   tractor::safeDeleteArray(x)
-//   tractor::safeRelease(x)
-// =============================================================================
-
-// Object deletion macro
-#define SAFE_DELETE(x) \
-    { \
-        delete x; \
-        x = nullptr; \
-    }
-
-// Array deletion macro
-#define SAFE_DELETE_ARRAY(x) \
-    { \
-        delete[] x; \
-        x = nullptr; \
-    }
-
-// Ref cleanup macro - uses tractor::safeRelease which supports:
-// - Legacy intrusive Ref pointers (calls release())
-// - std::shared_ptr (calls reset())
-// - std::weak_ptr (calls reset())
-#define SAFE_RELEASE(x) tractor::safeRelease(x)
 
 // Math
 #define MATH_DEG_TO_RAD(x)          ((x) * 0.0174532925f)
@@ -185,13 +178,13 @@ constexpr auto M_1_PI           = 0.31830988618379067154;
 #include <AL/al.h>
 #include <AL/alc.h>
 
-// Compressed Media
+/// Compressed Media
 #include <vorbis/vorbisfile.h>
 
-// Image
+/// Image
 #include <png.h>
 
-// Scripting
+/// Scripting
 using std::va_list;
 #include <lua.hpp>
 

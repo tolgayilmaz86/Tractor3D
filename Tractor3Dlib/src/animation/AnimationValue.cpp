@@ -20,23 +20,21 @@ namespace tractor
 
 //----------------------------------------------------------------------------
 AnimationValue::AnimationValue(unsigned int componentCount)
-    : _componentCount(componentCount), _componentSize(componentCount * sizeof(float))
+    : _componentCount(componentCount),
+      _componentSize(componentCount * sizeof(float)),
+      _value(std::make_unique<float[]>(componentCount))
 {
     assert(_componentCount > 0);
-    _value = new float[_componentCount];
 }
 
 //----------------------------------------------------------------------------
 AnimationValue::AnimationValue(const AnimationValue& copy)
+    : _componentCount(copy._componentCount),
+      _componentSize(copy._componentSize),
+      _value(std::make_unique<float[]>(copy._componentCount))
 {
-    _value = new float[copy._componentCount];
-    _componentSize = copy._componentSize;
-    _componentCount = copy._componentCount;
-    memcpy(_value, copy._value, _componentSize);
+    memcpy(_value.get(), copy._value.get(), _componentSize);
 }
-
-//----------------------------------------------------------------------------
-AnimationValue::~AnimationValue() { SAFE_DELETE_ARRAY(_value); }
 
 //----------------------------------------------------------------------------
 AnimationValue& AnimationValue::operator=(AnimationValue v)

@@ -63,9 +63,9 @@ void PhysicsCollisionObjectSample::initialize()
 
 void PhysicsCollisionObjectSample::finalize()
 {
-    SAFE_RELEASE(_font);
+    _font.reset();
     _scene.reset();
-    SAFE_RELEASE(_form);
+    _form.reset();
 }
 
 void PhysicsCollisionObjectSample::update(float elapsedTime) {}

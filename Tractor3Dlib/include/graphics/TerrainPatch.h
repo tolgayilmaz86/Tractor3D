@@ -105,7 +105,7 @@ class TerrainPatch : public Camera::Listener
 
     struct Level
     {
-        Model* model{ nullptr };
+        ModelPtr model;
 
         Level() = default;
     };
@@ -178,7 +178,7 @@ class TerrainPatch : public Camera::Listener
     unsigned int _index{ 0 };
     unsigned int _row{ 0 };
     unsigned int _column{ 0 };
-    std::vector<Level*> _levels{};
+    std::vector<std::unique_ptr<Level>> _levels{};
     std::set<Layer*, LayerCompare> _layers{};
     std::vector<SamplerPtr> _samplers{};
     mutable BoundingBox _boundingBox{};

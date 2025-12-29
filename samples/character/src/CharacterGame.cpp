@@ -148,7 +148,7 @@ void CharacterGame::initializeCharacter()
 //----------------------------------------------------------------
 void CharacterGame::finalize()
 {
-    SAFE_RELEASE(_font);
+    _font.reset();
     _scene.reset();
 }
 

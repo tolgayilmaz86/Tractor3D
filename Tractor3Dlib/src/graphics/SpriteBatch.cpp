@@ -104,7 +104,6 @@ SpriteBatch* SpriteBatch::create(Texture* texture, Effect* effect, unsigned int 
     if (!samplerUniform)
     {
         GP_ERROR("No uniform of type GL_SAMPLER_2D found in sprite effect.");
-        SAFE_RELEASE(effect);
         return nullptr;
     }
 

@@ -150,7 +150,6 @@
     <ClCompile Include="src\ui\VerticalLayout.cpp" />
     <ClCompile Include="src\utils\DebugNew.cpp" />
     <ClCompile Include="src\utils\Logger.cpp" />
-    <ClCompile Include="src\utils\Ref.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ai\AIAgent.h" />
@@ -268,7 +267,6 @@
     <ClInclude Include="include\utils\DebugNew.h" />
     <ClInclude Include="include\utils\Logger.h" />
     <ClInclude Include="include\utils\Profiler.h" />
-    <ClInclude Include="include\utils\Ref.h" />
     <ClInclude Include="include\utils\RefRelease.h" />
     <ClInclude Include="include\utils\SafeDelete.h" />
     <ClInclude Include="include\utils\StringUtil.h" />

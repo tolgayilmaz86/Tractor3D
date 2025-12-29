@@ -17,14 +17,11 @@
 
 #include "graphics/Drawable.h"
 #include "graphics/Mesh.h"
-#include "input/Gamepad.h"
 #include "input/Keyboard.h"
 #include "input/Mouse.h"
 #include "input/Touch.h"
-#include "renderer/FrameBuffer.h"
 #include "scene/Node.h"
 #include "ui/Container.h"
-#include "utils/Ref.h"
 
 namespace tractor
 {

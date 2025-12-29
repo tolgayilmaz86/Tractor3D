@@ -39,7 +39,7 @@ class TriangleSample : public Sample
 
   private:
     FontPtr _font;
-    Model* _model;
+    ModelPtr _model;
     float _spinDirection;
     Matrix _worldViewProjectionMatrix;
 };

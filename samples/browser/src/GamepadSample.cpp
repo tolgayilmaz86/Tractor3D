@@ -50,7 +50,7 @@ void GamepadSample::initialize()
     _status = "Looking for gamepads...";
 }
 
-void GamepadSample::finalize() { SAFE_RELEASE(_font); }
+void GamepadSample::finalize() { _font.reset(); }
 
 void GamepadSample::updateGamepad(float elapsedTime, Gamepad* gamepad, unsigned int player)
 {

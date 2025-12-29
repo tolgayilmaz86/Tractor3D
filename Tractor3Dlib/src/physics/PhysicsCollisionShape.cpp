@@ -82,27 +82,6 @@ PhysicsCollisionShape::Definition::Definition(const Definition& definition)
       isExplicit(definition.isExplicit),
       centerAbsolute(definition.centerAbsolute)
 {
-    // Handle mesh type
-    if (type == PhysicsCollisionShape::SHAPE_MESH)
-    {
-        assert(data.mesh);
-        // data.mesh->addRef();
-    }
-}
-
-//----------------------------------------------------------------------------
-PhysicsCollisionShape::Definition::~Definition()
-{
-    switch (type)
-    {
-        case PhysicsCollisionShape::SHAPE_HEIGHTFIELD:
-            heightfieldData.reset();  // shared_ptr cleanup
-            break;
-
-        case PhysicsCollisionShape::SHAPE_MESH:
-            // SAFE_RELEASE(data.mesh);
-            break;
-    }
 }
 
 //----------------------------------------------------------------------------
@@ -113,16 +92,9 @@ PhysicsCollisionShape::Definition& PhysicsCollisionShape::Definition::operator=(
     {
         type = definition.type;
         data = definition.data;
-        heightfieldData = definition.heightfieldData;  // shared_ptr copy
+        heightfieldData = definition.heightfieldData;
         isExplicit = definition.isExplicit;
         centerAbsolute = definition.centerAbsolute;
-
-        // Handle mesh type
-        if (type == PhysicsCollisionShape::SHAPE_MESH)
-        {
-            assert(data.mesh);
-            // data.mesh->addRef();
-        }
     }
 
     return *this;

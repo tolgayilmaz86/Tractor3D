@@ -28,7 +28,7 @@ using namespace tractor;
 class LightSample : public Sample, Control::Listener
 {
   public:
-    LightSample();
+    LightSample() = default;
 
     void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
 
@@ -64,39 +64,39 @@ class LightSample : public Sample, Control::Listener
 
     FontPtr _font;
     ScenePtr _scene;
-    Node* _modelNode;
-    Node* _directionalLightNode;
-    Node* _pointLightNode;
-    Node* _spotLightNode;
-    Node* _usedForMoving;
+    Node* _modelNode{nullptr};
+    Node* _directionalLightNode{nullptr};
+    Node* _pointLightNode{nullptr};
+    Node* _spotLightNode{nullptr};
+    Node* _usedForMoving{nullptr};
 
-    Model* _model;
-    Model* _directionalLightQuadModel;
-    Model* _spotLightQuadModel;
-    Model* _pointLightQuadModel;
+    Model* _model{nullptr};
+    ModelPtr _directionalLightQuadModel;
+    ModelPtr _spotLightQuadModel;
+    ModelPtr _pointLightQuadModel{nullptr};
 
-    Material* _unlitMaterial;
-    Material* _texturedMaterial;
-    Material* _bumpedMaterial;
-    Material* _bumpedSpecularMaterial;
+    Material* _unlitMaterial{nullptr};
+    Material* _texturedMaterial{nullptr};
+    Material* _bumpedMaterial{nullptr};
+    Material* _bumpedSpecularMaterial{nullptr};
 
     MaterialPtr _lighting;
 
-    RadioButton* _noLight;
-    RadioButton* _directional;
-    RadioButton* _spot;
-    RadioButton* _point;
+    RadioButton* _noLight{nullptr};
+    RadioButton* _directional{nullptr};
+    RadioButton* _spot{nullptr};
+    RadioButton* _point{nullptr};
 
-    Container* _properties;
-    Slider* _redSlider;
-    Slider* _greenSlider;
-    Slider* _blueSlider;
-    Slider* _specularSlider;
-    CheckBox* _addSpecular;
-    CheckBox* _addBumped;
+    Container* _properties{nullptr};
+    Slider* _redSlider{nullptr};
+    Slider* _greenSlider{nullptr};
+    Slider* _blueSlider{nullptr};
+    Slider* _specularSlider{nullptr};
+    CheckBox* _addSpecular{nullptr};
+    CheckBox* _addBumped{nullptr};
 
     FormPtr _form;
 
-    bool _touched;
-    int _touchX, _touchY;
+    bool _touched{false};
+    int _touchX{0}, _touchY{0};
 };

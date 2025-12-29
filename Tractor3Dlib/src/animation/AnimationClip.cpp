@@ -565,7 +565,7 @@ bool AnimationClip::update(float elapsedTime)
                                       percentageStart,
                                       percentageEnd,
                                       percentageBlend,
-                                      value->_value);
+                                      value->_value.get());
 
         // Set the animation value on the target property.
         target->setAnimationPropertyValue(channel->_propertyId, value, _blendWeight);

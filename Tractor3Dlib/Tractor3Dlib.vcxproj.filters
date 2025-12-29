@@ -319,9 +319,6 @@
     <ClCompile Include="src\utils\Logger.cpp">
       <Filter>src\utils</Filter>
     </ClCompile>
-    <ClCompile Include="src\utils\Ref.cpp">
-      <Filter>src\utils</Filter>
-    </ClCompile>
     <ClCompile Include="src\ui\AbsoluteLayout.cpp">
       <Filter>src\ui</Filter>
     </ClCompile>
@@ -664,9 +661,6 @@
       <Filter>include\utils</Filter>
     </ClInclude>
     <ClInclude Include="include\utils\Profiler.h">
-      <Filter>include\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="include\utils\Ref.h">
       <Filter>include\utils</Filter>
     </ClInclude>
     <ClInclude Include="include\utils\TimeListener.h">

@@ -160,14 +160,14 @@ void PostProcessSample::initialize()
 
 void PostProcessSample::finalize()
 {
-    SAFE_RELEASE(_font);
+    _font.reset();
     _scene.reset();
     for (std::vector<Compositor*>::iterator it = _compositors.begin(); it != _compositors.end(); ++it)
     {
         delete *it;
     }
     _compositors.clear();
-    SAFE_RELEASE(_quadModel);
+    _quadModel.reset();
     _frameBuffer.reset();
 }
 

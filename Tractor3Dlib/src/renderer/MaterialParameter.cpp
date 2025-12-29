@@ -42,7 +42,7 @@ static void releaseSampler(const Texture::Sampler* sampler)
 {
     if (!sampler) return;
     auto& storage = getSamplerStorage();
-    if (storage.empty()) return;  // Storage already destroyed or empty during static destruction
+    if (storage.empty()) return;
     std::erase_if(storage, [sampler](const SamplerPtr& sp) {
         return sp.get() == sampler;
     });
@@ -98,17 +98,20 @@ void MaterialParameter::clearValue()
             case MaterialParameter::VECTOR3:
             case MaterialParameter::VECTOR4:
             case MaterialParameter::MATRIX:
-                SAFE_DELETE_ARRAY(_value.floatPtrValue);
+                delete[] _value.floatPtrValue;
+                _value.floatPtrValue = nullptr;
                 break;
             case MaterialParameter::INT:
             case MaterialParameter::INT_ARRAY:
-                SAFE_DELETE_ARRAY(_value.intPtrValue);
+                delete[] _value.intPtrValue;
+                _value.intPtrValue = nullptr;
                 break;
             case MaterialParameter::METHOD:
-                _methodBinding.reset();  // Release the shared_ptr
+                _methodBinding.reset();
                 break;
             case MaterialParameter::SAMPLER_ARRAY:
-                SAFE_DELETE_ARRAY(_value.samplerArrayValue);
+                delete[] _value.samplerArrayValue;
+                _value.samplerArrayValue = nullptr;
                 break;
             default:
                 // Ignore all other cases.
@@ -137,7 +140,6 @@ Texture::Sampler* MaterialParameter::getSampler(unsigned int index) const
 void MaterialParameter::setValue(float value)
 {
     clearValue();
-
     _value.floatValue = value;
     _type = MaterialParameter::FLOAT;
 }
@@ -146,7 +148,6 @@ void MaterialParameter::setValue(float value)
 void MaterialParameter::setValue(int value)
 {
     clearValue();
-
     _value.intValue = value;
     _type = MaterialParameter::INT;
 }
@@ -155,7 +156,6 @@ void MaterialParameter::setValue(int value)
 void MaterialParameter::setValue(const float* values, unsigned int count)
 {
     clearValue();
-
     _value.floatPtrValue = const_cast<float*>(values);
     _count = count;
     _type = MaterialParameter::FLOAT_ARRAY;
@@ -165,7 +165,6 @@ void MaterialParameter::setValue(const float* values, unsigned int count)
 void MaterialParameter::setValue(const int* values, unsigned int count)
 {
     clearValue();
-
     _value.intPtrValue = const_cast<int*>(values);
     _count = count;
     _type = MaterialParameter::INT_ARRAY;
@@ -175,11 +174,8 @@ void MaterialParameter::setValue(const int* values, unsigned int count)
 void MaterialParameter::setValue(const Vector2& value)
 {
     clearValue();
-
-    // Copy data by-value into a dynamic array.
     float* array = new float[2];
     memcpy(array, &value.x, sizeof(float) * 2);
-
     _value.floatPtrValue = array;
     _dynamic = true;
     _count = 1;
@@ -191,7 +187,6 @@ void MaterialParameter::setValue(const Vector2* values, unsigned int count)
 {
     assert(values);
     clearValue();
-
     _value.floatPtrValue = const_cast<float*>(&values[0].x);
     _count = count;
     _type = MaterialParameter::VECTOR2;
@@ -201,11 +196,8 @@ void MaterialParameter::setValue(const Vector2* values, unsigned int count)
 void MaterialParameter::setValue(const Vector3& value)
 {
     clearValue();
-
-    // Copy data by-value into a dynamic array.
     float* array = new float[3];
     memcpy(array, &value.x, sizeof(float) * 3);
-
     _value.floatPtrValue = array;
     _dynamic = true;
     _count = 1;
@@ -217,7 +209,6 @@ void MaterialParameter::setValue(const Vector3* values, unsigned int count)
 {
     assert(values);
     clearValue();
-
     _value.floatPtrValue = const_cast<float*>(&values[0].x);
     _count = count;
     _type = MaterialParameter::VECTOR3;
@@ -227,11 +218,8 @@ void MaterialParameter::setValue(const Vector3* values, unsigned int count)
 void MaterialParameter::setValue(const Vector4& value)
 {
     clearValue();
-
-    // Copy data by-value into a dynamic array.
     float* array = new float[4];
     memcpy(array, &value.x, sizeof(float) * 4);
-
     _value.floatPtrValue = array;
     _dynamic = true;
     _count = 1;
@@ -243,7 +231,6 @@ void MaterialParameter::setValue(const Vector4* values, unsigned int count)
 {
     assert(values);
     clearValue();
-
     _value.floatPtrValue = const_cast<float*>(&values[0].x);
     _count = count;
     _type = MaterialParameter::VECTOR4;
@@ -253,17 +240,12 @@ void MaterialParameter::setValue(const Vector4* values, unsigned int count)
 void MaterialParameter::setValue(const Matrix& value)
 {
     // If this parameter is already storing a single dynamic matrix, no need to clear it.
-    if (!(_dynamic && _count == 1 && _type == MaterialParameter::MATRIX
-          && _value.floatPtrValue != nullptr))
+    if (!(_dynamic && _count == 1 && _type == MaterialParameter::MATRIX && _value.floatPtrValue != nullptr))
     {
         clearValue();
-
-        // Allocate a new dynamic matrix.
         _value.floatPtrValue = new float[16];
     }
-
     memcpy(_value.floatPtrValue, value.m, sizeof(float) * 16);
-
     _dynamic = true;
     _count = 1;
     _type = MaterialParameter::MATRIX;
@@ -274,28 +256,24 @@ void MaterialParameter::setValue(const Matrix* values, unsigned int count)
 {
     assert(values);
     clearValue();
-
     _value.floatPtrValue = const_cast<Matrix&>(values[0]).m;
     _count = count;
     _type = MaterialParameter::MATRIX;
 }
 
 //-----------------------------------------------------------------------------
-void MaterialParameter::setValue(const Texture::Sampler* sampler)
+void MaterialParameter::setValue(const Texture::SamplerPtr& sampler)
 {
     assert(sampler);
     clearValue();
-
-    // Try to get the shared_ptr from sampler storage or create a non-owning one
-    // For external samplers, we keep them in storage to ensure they stay alive
-    _value.samplerValue = sampler;
     
-    // Check if this sampler is already in storage
+    _value.samplerValue = sampler.get();
+    
     auto& storage = getSamplerStorage();
     bool found = false;
     for (const auto& sp : storage)
     {
-        if (sp.get() == sampler)
+        if (sp == sampler)
         {
             found = true;
             break;
@@ -304,16 +282,42 @@ void MaterialParameter::setValue(const Texture::Sampler* sampler)
     
     if (!found)
     {
-        // Sampler is not in storage - try to get shared_from_this
-        try
+        storage.push_back(sampler);
+    }
+    
+    _type = MaterialParameter::SAMPLER;
+}
+
+//-----------------------------------------------------------------------------
+void MaterialParameter::setValue(const Texture::Sampler* sampler)
+{
+    if (!sampler) return;
+    
+    clearValue();
+    _value.samplerValue = sampler;
+    
+    // Try to get a shared_ptr from the sampler
+    auto& storage = getSamplerStorage();
+    try
+    {
+        auto samplerPtr = const_cast<Texture::Sampler*>(sampler)->shared_from_this();
+        bool found = false;
+        for (const auto& sp : storage)
         {
-            storage.push_back(const_cast<Texture::Sampler*>(sampler)->shared_from_this());
+            if (sp.get() == sampler)
+            {
+                found = true;
+                break;
+            }
         }
-        catch (const std::bad_weak_ptr&)
+        if (!found)
         {
-            // Sampler is not managed by shared_ptr - store with non-owning deleter
-            storage.push_back(SamplerPtr(const_cast<Texture::Sampler*>(sampler), [](Texture::Sampler*) {}));
+            storage.push_back(samplerPtr);
         }
+    }
+    catch (const std::bad_weak_ptr&)
+    {
+        // Not managed by shared_ptr - caller owns lifetime
     }
     
     _type = MaterialParameter::SAMPLER;
@@ -328,7 +332,6 @@ void MaterialParameter::setValue(const Texture::Sampler** samplers, unsigned int
     auto& storage = getSamplerStorage();
     for (size_t i = 0; i < count; ++i)
     {
-        // Check if this sampler is already in storage
         bool found = false;
         for (const auto& sp : storage)
         {
@@ -341,14 +344,13 @@ void MaterialParameter::setValue(const Texture::Sampler** samplers, unsigned int
         
         if (!found)
         {
-            // Try to get shared_from_this
             try
             {
                 storage.push_back(const_cast<Texture::Sampler*>(samplers[i])->shared_from_this());
             }
             catch (const std::bad_weak_ptr&)
             {
-                storage.push_back(SamplerPtr(const_cast<Texture::Sampler*>(samplers[i]), [](Texture::Sampler*) {}));
+                // Not managed by shared_ptr - no storage needed, caller owns it
             }
         }
     }
@@ -370,6 +372,47 @@ Texture::Sampler* MaterialParameter::setValue(const std::string& texturePath, bo
         _type = MaterialParameter::SAMPLER;
     }
     return const_cast<Texture::Sampler*>(_value.samplerValue);
+}
+
+//-----------------------------------------------------------------------------
+void MaterialParameter::setSampler(const Texture::Sampler* value)
+{
+    if (!value) return;
+    
+    clearValue();
+    _value.samplerValue = value;
+    
+    // Try to get a shared_ptr from the sampler
+    auto& storage = getSamplerStorage();
+    try
+    {
+        auto samplerPtr = const_cast<Texture::Sampler*>(value)->shared_from_this();
+        bool found = false;
+        for (const auto& sp : storage)
+        {
+            if (sp.get() == value)
+            {
+                found = true;
+                break;
+            }
+        }
+        if (!found)
+        {
+            storage.push_back(samplerPtr);
+        }
+    }
+    catch (const std::bad_weak_ptr&)
+    {
+        // Not managed by shared_ptr - caller owns lifetime
+    }
+    
+    _type = MaterialParameter::SAMPLER;
+}
+
+//-----------------------------------------------------------------------------
+Texture::Sampler* MaterialParameter::setSampler(const char* texturePath, bool generateMipmaps)
+{
+    return setValue(texturePath, generateMipmaps);
 }
 
 //-----------------------------------------------------------------------------
@@ -488,11 +531,6 @@ void MaterialParameter::setMatrixArray(const Matrix* values, unsigned int count,
     _type = MaterialParameter::MATRIX;
 }
 
-Texture::Sampler* MaterialParameter::setSampler(const char* texturePath, bool generateMipmaps)
-{
-    return setValue(texturePath, generateMipmaps);
-}
-
 //-----------------------------------------------------------------------------
 void MaterialParameter::setSamplerArray(const Texture::Sampler** values, unsigned int count, bool copy)
 {
@@ -511,7 +549,6 @@ void MaterialParameter::setSamplerArray(const Texture::Sampler** values, unsigne
     auto& storage = getSamplerStorage();
     for (size_t i = 0; i < count; ++i)
     {
-        // Check if this sampler is already in storage
         bool found = false;
         for (const auto& sp : storage)
         {
@@ -530,7 +567,7 @@ void MaterialParameter::setSamplerArray(const Texture::Sampler** values, unsigne
             }
             catch (const std::bad_weak_ptr&)
             {
-                storage.push_back(SamplerPtr(const_cast<Texture::Sampler*>(_value.samplerArrayValue[i]), [](Texture::Sampler*) {}));
+                // Not managed by shared_ptr
             }
         }
     }

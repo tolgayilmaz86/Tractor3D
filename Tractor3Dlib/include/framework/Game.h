@@ -253,7 +253,7 @@ class Game
      *
      * @return The audio controller for this game.
      */
-    constexpr AudioController* getAudioController() const { return _audioController; }
+    AudioController* getAudioController() const { return _audioController.get(); }
 
     /**
      * Gets the animation controller for managing control of animations
@@ -261,7 +261,7 @@ class Game
      *
      * @return The animation controller for this game.
      */
-    constexpr AnimationController* getAnimationController() const { return _animationController; }
+    AnimationController* getAnimationController() const { return _animationController.get(); }
 
     /**
      * Gets the physics controller for managing control of physics
@@ -269,7 +269,7 @@ class Game
      *
      * @return The physics controller for this game.
      */
-    constexpr PhysicsController* getPhysicsController() const { return _physicsController; }
+    PhysicsController* getPhysicsController() const { return _physicsController.get(); }
 
     /**
      * Gets the AI controller for managing control of artificial
@@ -277,7 +277,7 @@ class Game
      *
      * @return The AI controller for this game.
      */
-    constexpr AIController* getAIController() const { return _aiController; }
+    AIController* getAIController() const { return _aiController.get(); }
 
     /**
      * Gets the script controller for managing control of Lua scripts
@@ -285,7 +285,7 @@ class Game
      *
      * @return The script controller for this game.
      */
-    constexpr ScriptController* getScriptController() const { return _scriptController; }
+    ScriptController* getScriptController() const { return _scriptController.get(); }
 
     /**
      * Gets the audio listener for 3D audio.
@@ -798,20 +798,14 @@ class Game
     float _clearDepth{ 0.0f };   // The clear depth value last used for clearing the depth buffer.
     int _clearStencil{ 0 }; // The clear stencil value last used for clearing the stencil buffer.
     std::unique_ptr<Properties> _properties; // Game configuration properties object.
-    AnimationController* _animationController{
-        nullptr
-    }; // Controls the scheduling and running of animations.
-    AudioController* _audioController{ nullptr }; // Controls audio sources that are playing in the game.
-    PhysicsController* _physicsController{
-        nullptr
-    }; // Controls the simulation of a physics scene and entities.
-    AIController* _aiController{ nullptr };   // Controls AI simulation.
-    AudioListener* _audioListener{ nullptr }; // The audio listener in 3D space.
-    std::priority_queue<TimeEvent, std::vector<TimeEvent>, std::less<TimeEvent>>* _timeEvents{
-        nullptr
-    }; // Contains the scheduled time events.
-    ScriptController* _scriptController{ nullptr }; // Controls the scripting engine.
-    ScriptTarget* _scriptTarget{ nullptr };         // Script target for the game
+    std::unique_ptr<AnimationController> _animationController; // Controls the scheduling and running of animations.
+    std::unique_ptr<AudioController> _audioController; // Controls audio sources that are playing in the game.
+    std::unique_ptr<PhysicsController> _physicsController; // Controls the simulation of a physics scene and entities.
+    std::unique_ptr<AIController> _aiController;   // Controls AI simulation.
+    std::unique_ptr<AudioListener> _audioListener; // The audio listener in 3D space.
+    std::unique_ptr<std::priority_queue<TimeEvent, std::vector<TimeEvent>, std::less<TimeEvent>>> _timeEvents; // Contains the scheduled time events.
+    std::unique_ptr<ScriptController> _scriptController; // Controls the scripting engine.
+    std::unique_ptr<ScriptTarget> _scriptTarget;         // Script target for the game
 
     // Note: Do not add STL object member variables on the stack; this will cause false memory leaks to be reported.
 

@@ -77,7 +77,7 @@ void TextureSample::initialize()
     cameraNode->setCamera(camera);
     _scene->setActiveCamera(camera.get());
     cameraNode->translate(0, 0, 50);
-    SAFE_RELEASE(camera);
+    camera.reset();
 
     const float fontSize = 18;
     const float cubeSize = 10.0f;
@@ -103,7 +103,6 @@ void TextureSample::initialize()
                                      Vector3(cubeSize, cubeSize, 0),
                                      Vector3(cubeSize, 0, 0));
         Node* node = addQuadModelAndNode(_scene.get(), mesh);
-        // SAFE_RELEASE(mesh);
 
         setTextureUnlitMaterial(dynamic_cast<Model*>(node->getDrawable()), "res/png/color-wheel.png");
         node->setTranslation(-14, cubeSize, 0);
@@ -165,7 +164,7 @@ void TextureSample::finalize()
 {
     // Model and font are reference counted and should be released before closing this sample.
     _scene.reset();
-    SAFE_RELEASE(_font);
+    _font.reset();
 }
 
 void TextureSample::update(float elapsedTime)

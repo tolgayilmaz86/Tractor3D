@@ -66,7 +66,7 @@ void TriangleSample::initialize()
     auto mesh = createTriangleMesh();
 
     // Create a model for the triangle mesh. A model is an instance of a Mesh that can be drawn with a specified material.
-    _model = Model::createRaw(mesh);
+    _model = Model::create(mesh);
 
     // Create a material from the built-in "colored-unlit" vertex and fragment shaders.
     // This sample doesn't use lighting so the unlit shader is used.
@@ -77,8 +77,8 @@ void TriangleSample::initialize()
 void TriangleSample::finalize()
 {
     // Model and font are reference counted and should be released before closing this sample.
-    SAFE_RELEASE(_model);
-    SAFE_RELEASE(_font);
+    _model.reset();
+    _font.reset();
 }
 
 void TriangleSample::update(float elapsedTime)

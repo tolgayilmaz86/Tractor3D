@@ -64,7 +64,7 @@ class PhysicsCollisionShape : public std::enable_shared_from_this<PhysicsCollisi
         Definition();
         Definition(const Definition& definition);
         Definition& operator=(const Definition& definition);
-        ~Definition();
+        ~Definition() = default;
 
         bool isEmpty() const noexcept { return type == SHAPE_NONE; }
 

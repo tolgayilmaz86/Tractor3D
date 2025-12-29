@@ -43,11 +43,11 @@ class MeshPrimitiveSample : public Sample
     static MeshBatch* createMeshBatch(Mesh::PrimitiveType primitiveType);
 
     FontPtr _font;
-    Model* _triangles;
-    Model* _triangleStrip;
-    Model* _lineStrip;
-    Model* _lines;
-    Model* _points;
+    ModelPtr _triangles;
+    ModelPtr _triangleStrip;
+    ModelPtr _lineStrip;
+    ModelPtr _lines;
+    ModelPtr _points;
     Matrix _viewProjectionMatrix;
     Vector2 _touchPoint;
     Vector2 _tilt;

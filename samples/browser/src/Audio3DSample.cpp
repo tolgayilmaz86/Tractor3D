@@ -83,7 +83,6 @@ void Audio3DSample::initialize()
 void Audio3DSample::finalize()
 {
     _scene.reset();
-    SAFE_RELEASE(_font);
     _cubeNode.reset();
     _audioNodes.clear();
 }

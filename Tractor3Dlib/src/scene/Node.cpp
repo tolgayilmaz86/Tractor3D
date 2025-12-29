@@ -28,7 +28,6 @@
 #include "scene/Scene.h"
 #include "scripting/ScriptTarget.h"
 #include "ui/Form.h"
-#include "utils/Ref.h"
 
 // Node dirty flags
 constexpr auto NODE_DIRTY_WORLD = 1;
@@ -59,28 +58,14 @@ Node::~Node()
     if (_drawable)
     {
         _drawable->setNode(nullptr);
-        // Only release if we don't have a shared_ptr holder
-        if (!_drawableHolder.has_value())
-        {
-            Ref* ref = dynamic_cast<Ref*>(_drawable);
-            if (ref)
-            {
-                SAFE_RELEASE(ref);
-            }
-            else
-            {
-                // Drawable doesn't inherit from Ref, delete directly
-                delete _drawable;
-            }
-        }
-        // Clear the drawable holder to release the shared_ptr
-        _drawableHolder.reset();
-        _drawable = nullptr;
     }
+    // Clear the drawable holder to release the shared_ptr
+    _drawableHolder.reset();
+    _drawable = nullptr;
+    
     if (_audioSource) _audioSource->setNode(nullptr);
     if (_camera) _camera->setNode(nullptr);
     if (_light) _light->setNode(nullptr);
-    SAFE_RELEASE(_userObject);
     setAgent(nullptr);
 }
 
@@ -811,20 +796,6 @@ void Node::setDrawableInternal(Drawable* drawable, std::any holder)
         if (_drawable)
         {
             _drawable->setNode(nullptr);
-            // Only release if we don't have a shared_ptr holder
-            if (!_drawableHolder.has_value())
-            {
-                Ref* ref = dynamic_cast<Ref*>(_drawable);
-                if (ref)
-                {
-                    ref->release();
-                }
-                else
-                {
-                    // Drawable doesn't inherit from Ref, delete directly
-                    delete _drawable;
-                }
-            }
         }
 
         _drawable = drawable;
@@ -832,14 +803,6 @@ void Node::setDrawableInternal(Drawable* drawable, std::any holder)
 
         if (_drawable)
         {
-            // Only addRef if we don't have a shared_ptr holder
-            if (!_drawableHolder.has_value())
-            {
-                Ref* ref = dynamic_cast<Ref*>(_drawable);
-                // Note: If drawable doesn't inherit from Ref, ownership is transferred directly
-                // and no addRef is needed (caller should not delete)
-                if (ref) ref->addRef();
-            }
             _drawable->setNode(this);
         }
     }
@@ -1003,8 +966,6 @@ void Node::cloneInto(Node* node, NodeCloneContext& context) const
     {
         Drawable* clone = drawable->clone(context);
         node->setDrawable(clone);
-        Ref* ref = dynamic_cast<Ref*>(clone);
-        if (ref) ref->release();
     }
     if (Camera* camera = getCamera())
     {

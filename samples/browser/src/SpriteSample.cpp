@@ -94,7 +94,7 @@ void SpriteSample::initialize()
     SamplerPtr noiseSampler =
         Texture::Sampler::create("res/common/sprites/water2d-noise.png");
     waterMaterial->getParameter("u_texture_noise")->setValue(noiseSampler.get());
-    SAFE_RELEASE(noiseSampler);
+    noiseSampler.reset();
     waterMaterial->getParameter("u_time")->bindValue(this, &SpriteSample::getTime);
 }
 

@@ -1824,7 +1824,7 @@ Control::Alignment Control::getAlignment(const std::string& alignment)
     }
     else if (alignment == "ALIGN_BOTTOM_LEFT")
     {
-        return Control::ALIGN_BOTTOM_LEFT;
+        return Control:: ALIGN_BOTTOM_LEFT;
     }
     else if (alignment == "ALIGN_TOP_HCENTER")
     {

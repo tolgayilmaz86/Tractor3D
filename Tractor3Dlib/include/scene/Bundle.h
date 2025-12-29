@@ -409,9 +409,9 @@ class Bundle
     /**
      * Reads a model from the current file position.
      *
-     * @return A pointer to a new model or nullptr if there was an error.
+     * @return A shared pointer to a new model or nullptr if there was an error.
      */
-    Model* readModel(const std::string& nodeId);
+    ModelPtr readModel(const std::string& nodeId);
 
     /**
      * Reads mesh data from the current file position.

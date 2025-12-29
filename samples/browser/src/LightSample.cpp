@@ -18,19 +18,6 @@
 ADD_SAMPLE("Graphics", "Light", LightSample, 10);
 #endif
 
-LightSample::LightSample()
-    : _font(nullptr), _scene(nullptr), _modelNode(nullptr), _directionalLightNode(nullptr),
-      _pointLightNode(nullptr), _spotLightNode(nullptr), _usedForMoving(nullptr), _model(nullptr),
-      _directionalLightQuadModel(nullptr), _spotLightQuadModel(nullptr),
-      _pointLightQuadModel(nullptr), _unlitMaterial(nullptr), _texturedMaterial(nullptr),
-      _bumpedMaterial(nullptr), _bumpedSpecularMaterial(nullptr), _lighting(nullptr),
-      _noLight(nullptr), _directional(nullptr), _spot(nullptr), _point(nullptr),
-      _properties(nullptr), _redSlider(nullptr), _greenSlider(nullptr), _blueSlider(nullptr),
-      _specularSlider(nullptr), _addSpecular(nullptr), _addBumped(nullptr), _form(nullptr),
-      _touched(false), _touchX(0), _touchY(0)
-{
-}
-
 void LightSample::initialize()
 {
     // Create the font for drawing the framerate.
@@ -51,9 +38,9 @@ void LightSample::initialize()
     _directionalLightNode = directionalLightNode.get();
 
     auto directionalLightQuadMesh = Mesh::createQuad(-0.3f, -0.3f, 0.6f, 0.6f);
-    _directionalLightQuadModel = Model::createRaw(directionalLightQuadMesh);
+    _directionalLightQuadModel = Model::create(directionalLightQuadMesh);
 
-    setUnlitMaterialTexture(_directionalLightQuadModel, "res/png/light-directional.png");
+    setUnlitMaterialTexture(_directionalLightQuadModel.get(), "res/png/light-directional.png");
     _directionalLightNode->setDrawable(_directionalLightQuadModel);
     _directionalLightNode->setTranslation(0.0f, 0.0f, 7.0f);
     _scene->addNode(directionalLightNode);
@@ -66,9 +53,9 @@ void LightSample::initialize()
     _spotLightNode = spotLightNode.get();
 
     auto spotLightQuadMesh = Mesh::createQuad(-0.3f, -0.3f, 0.6f, 0.6f);
-    _spotLightQuadModel = Model::createRaw(spotLightQuadMesh);
+    _spotLightQuadModel = Model::create(spotLightQuadMesh);
 
-    setUnlitMaterialTexture(_spotLightQuadModel, "res/png/light-spot.png");
+    setUnlitMaterialTexture(_spotLightQuadModel.get(), "res/png/light-spot.png");
     _spotLightNode->setDrawable(_spotLightQuadModel);
     _spotLightNode->setTranslation(0.0f, 0.0f, 8.0f);
     _scene->addNode(spotLightNode);
@@ -80,9 +67,9 @@ void LightSample::initialize()
     _pointLightNode = pointLightNode.get();
 
     auto pointLightQuadMesh = Mesh::createQuad(-0.3f, -0.3f, 0.6f, 0.6f);
-    _pointLightQuadModel = Model::createRaw(pointLightQuadMesh);
+    _pointLightQuadModel = Model::create(pointLightQuadMesh);
 
-    setUnlitMaterialTexture(_pointLightQuadModel, "res/png/light-point.png");
+    setUnlitMaterialTexture(_pointLightQuadModel.get(), "res/png/light-point.png");
     _pointLightNode->setDrawable(_pointLightQuadModel);
     _pointLightNode->setTranslation(0.0f, 0.0f, 8.0f);
     _scene->addNode(pointLightNode);

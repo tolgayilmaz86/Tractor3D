@@ -41,7 +41,7 @@ void FontSample::finalize()
     _stateBlock.reset();
     _fonts.clear();
     _font = nullptr;
-    SAFE_RELEASE(_form);
+    _form.reset();
 }
 
 void FontSample::initialize()

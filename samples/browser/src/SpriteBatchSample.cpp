@@ -26,17 +26,17 @@ void SpriteBatchSample::initialize()
     // Create the font for drawing the framerate.
     _font = Font::create("res/ui/arial.gpb");
 
-    // Create an orthographic projection matrix.
-    float width = getWidth() / (float)getHeight();
-    float height = 1.0f;
-    _worldViewProjectionMatrix = Matrix::createOrthographic(width, height, -1.0f, 1.0f);
+    _worldViewProjectionMatrix =
+        Matrix::createOrthographicOffCenter(0, getWidth(), getHeight(), 0, -1, 1);
+
     _spriteBatch = SpriteBatch::create("res/png/logo.png");
 }
 
 void SpriteBatchSample::finalize()
 {
-    SAFE_DELETE(_spriteBatch);
-    SAFE_RELEASE(_font);
+    _font.reset();
+    delete _spriteBatch;
+    _spriteBatch = nullptr;
 }
 
 void SpriteBatchSample::update(float elapsedTime) {}

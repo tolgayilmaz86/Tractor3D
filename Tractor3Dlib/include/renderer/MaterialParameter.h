@@ -140,6 +140,11 @@ class MaterialParameter : public AnimationTarget, public std::enable_shared_from
     /**
      * Sets the value of this parameter to the specified texture sampler.
      */
+    void setValue(const Texture::SamplerPtr& sampler);
+
+    /**
+     * Sets the value of this parameter to the specified texture sampler (raw pointer).
+     */
     void setValue(const Texture::Sampler* sampler);
 
     /**
@@ -270,14 +275,14 @@ class MaterialParameter : public AnimationTarget, public std::enable_shared_from
      *
      * @param value The value to set.
      */
-    void setSampler(const Texture::Sampler* value) { setValue(value); }
+    void setSampler(const Texture::Sampler* value);
 
     /**
      * Stores a Sampler shared_ptr value in this parameter.
      *
      * @param value The value to set.
      */
-    void setSampler(const SamplerPtr& value) { if (value) setValue(value.get()); }
+    void setSampler(const SamplerPtr& value) { setValue(value); }
 
     /**
      * Stores an array of Sampler values in this parameter.

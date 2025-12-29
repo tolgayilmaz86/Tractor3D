@@ -13,6 +13,8 @@
  */
 #pragma once
 
+#include <memory>
+
 #include "animation/Animation.h"
 
 namespace tractor
@@ -80,16 +82,16 @@ class AnimationValue
     /**
      * Destructor.
      */
-    ~AnimationValue();
+    ~AnimationValue() = default;
 
     /**
      * Copy assignment operator using copy-and-swap idiom.
      */
     AnimationValue& operator=(AnimationValue v);
 
-    unsigned int _componentCount; // The number of float values for the property.
-    unsigned int _componentSize;  // The number of bytes of memory the property is.
-    float* _value;                // The current value of the property.
+    unsigned int _componentCount{ 0 }; // The number of float values for the property.
+    unsigned int _componentSize{ 0 };  // The number of bytes of memory the property is.
+    std::unique_ptr<float[]> _value;   // The current value of the property.
 };
 
 } // namespace tractor

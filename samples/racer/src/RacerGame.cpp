@@ -141,9 +141,9 @@ bool RacerGame::initializeScene(Node* node)
 void RacerGame::finalize()
 {
     _scene.reset();
-    SAFE_RELEASE(_font);
-    SAFE_RELEASE(_menu);
-    SAFE_RELEASE(_overlay);
+    _font.reset();
+    _menu.reset();
+    _overlay.reset();
 }
 
 void RacerGame::update(float elapsedTime)

@@ -98,10 +98,8 @@ void WaterSample::initialize()
         dynamic_cast<Model*>(_scene->findNode("Water")->getDrawable())->getMaterial();
     auto refractSampler = Texture::Sampler::create(_refractBuffer->getRenderTarget()->getTexture());
     waterMaterial->getParameter("u_refractionTexture")->setSampler(refractSampler);
-    SAFE_RELEASE(refractSampler);
     auto reflectSampler = Texture::Sampler::create(_reflectBuffer->getRenderTarget()->getTexture());
     waterMaterial->getParameter("u_reflectionTexture")->setSampler(reflectSampler);
-    SAFE_RELEASE(reflectSampler);
     waterMaterial->getParameter("u_worldViewProjectionReflectionMatrix")
         ->bindValue(this, &WaterSample::getReflectionMatrix);
     waterMaterial->getParameter("u_time")->bindValue(this, &WaterSample::getTime);
@@ -116,14 +114,16 @@ void WaterSample::initialize()
 void WaterSample::finalize()
 {
     setMouseCaptured(false);
-    SAFE_DELETE(_reflectBatch);
+    delete _reflectBatch;
+    _reflectBatch = nullptr;
+    delete _refractBatch;
+    _refractBatch = nullptr;
     _reflectBuffer.reset();
-    SAFE_DELETE(_refractBatch);
     _refractBuffer.reset();
     _reflectCameraNode.reset();
     _cameraNode.reset();
     _scene.reset();
-    SAFE_RELEASE(_font);
+    _font.reset();
 }
 
 void WaterSample::update(float elapsedTime)

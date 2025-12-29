@@ -775,7 +775,7 @@ NodePtr Bundle::readNodePtr(Scene* sceneContext, Node* nodeContext)
     }
 
     // Read model.
-    Model* model = readModel(node->getId());
+    ModelPtr model = readModel(node->getId());
     if (model)
     {
         node->setDrawable(model);
@@ -821,10 +821,10 @@ bool Bundle::skipNode()
     }
 
     // Skip over the node's camera, light, and model attachments.
-    readCamera();  // CameraPtr will auto-release
-    readLight();   // LightPtr will auto-release
-    auto model = readModel(id);
-    SAFE_RELEASE(model);
+    // All return smart pointers that auto-release when going out of scope
+    readCamera();
+    readLight();
+    readModel(id);
 
     return true;
 }
@@ -973,7 +973,7 @@ LightPtr Bundle::readLight()
 }
 
 //----------------------------------------------------------------------------
-Model* Bundle::readModel(const std::string& nodeId)
+ModelPtr Bundle::readModel(const std::string& nodeId)
 {
     std::string xref = readString(_stream.get());
     if (xref.length() > 1 && xref[0] == '#') // TODO: Handle full xrefs
@@ -981,7 +981,7 @@ Model* Bundle::readModel(const std::string& nodeId)
         auto mesh = loadMesh(xref.substr(1), nodeId);
         if (mesh.get())
         {
-            Model* model = Model::createRaw(mesh);
+            ModelPtr model = Model::create(mesh);
 
             // Read skin.
             unsigned char hasSkin;

@@ -835,7 +835,7 @@ void ParticlesSample::updateFrames()
 void ParticlesSample::finalize()
 {
     _font.reset();
-    SAFE_RELEASE(_form);
+    _form.reset();
     _scene.reset();
 }
 

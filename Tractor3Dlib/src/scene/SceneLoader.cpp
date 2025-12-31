@@ -153,12 +153,12 @@ ScenePtr SceneLoader::loadInternal(const std::string& url)
     // Load physics properties and constraints.
     if (physics) loadPhysics(physics);
 
-    std::erase_if(_propertiesFromFile,
-                  [](auto& pair)
-                  {
-                      SAFE_DELETE(pair.second);
-                      return true; // erase each of them
-                  });
+    // Clean up properties loaded from files
+    for (auto& pair : _propertiesFromFile)
+    {
+        delete pair.second;
+    }
+    _propertiesFromFile.clear();
 
     return _scene;
 }

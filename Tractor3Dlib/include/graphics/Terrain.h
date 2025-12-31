@@ -226,7 +226,7 @@ class Terrain : public Drawable, public Transform::Listener
     /**
      * Gets a terrain patch
      */
-    TerrainPatch* getPatch(unsigned int index) const { return _patches[index]; }
+    TerrainPatch* getPatch(unsigned int index) const { return _patches[index].get(); }
 
     /**
      * Gets the local bounding box for this terrain.
@@ -361,7 +361,7 @@ class Terrain : public Drawable, public Transform::Listener
     std::string _materialPath{};
     HeightFieldPtr _heightfield;
     Vector3 _localScale{};
-    std::vector<TerrainPatch*> _patches{};
+    std::vector<std::unique_ptr<TerrainPatch>> _patches{};
     SamplerPtr _normalMap;
     unsigned int _flags{ FRUSTUM_CULLING | LEVEL_OF_DETAIL };
     mutable Matrix _inverseWorldMatrix;

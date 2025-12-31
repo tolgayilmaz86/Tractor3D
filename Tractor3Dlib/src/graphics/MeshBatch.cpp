@@ -41,8 +41,7 @@ MeshBatch::MeshBatch(const VertexFormat& vertexFormat,
 MeshBatch::~MeshBatch()
 {
     _material.reset();
-    SAFE_DELETE_ARRAY(_vertices);
-    SAFE_DELETE_ARRAY(_indices);
+    // unique_ptr handles cleanup automatically
 }
 
 //----------------------------------------------------------------------------
@@ -159,7 +158,7 @@ void MeshBatch::updateVertexAttributeBinding()
             Pass* pass = t->getPassByIndex(j);
             assert(pass);
             VertexAttributeBindingPtr binder =
-                VertexAttributeBinding::create(_vertexFormat, _vertices, pass->getEffect());
+                VertexAttributeBinding::create(_vertexFormat, _vertices.get(), pass->getEffect());
             pass->setVertexAttributeBinding(binder);
         }
     }
@@ -177,8 +176,8 @@ bool MeshBatch::resize(unsigned int capacity)
     if (capacity == _capacity) return true;
 
     // Store old batch data.
-    unsigned char* oldVertices = _vertices;
-    unsigned short* oldIndices = _indices;
+    auto oldVertices = std::move(_vertices);
+    auto oldIndices = std::move(_indices);
 
     unsigned int vertexCapacity = 0;
     switch (_primitiveType)
@@ -215,30 +214,30 @@ bool MeshBatch::resize(unsigned int capacity)
         return false;
     }
 
-    // Allocate new data and reset pointers.
-    unsigned int voffset = _verticesPtr - _vertices;
+    // Calculate the offset based on actual vertex count, not pointer arithmetic
+    // This avoids undefined behavior when oldVertices was null
+    unsigned int voffset = _vertexCount * _vertexFormat.getVertexSize();
     unsigned int vBytes = vertexCapacity * _vertexFormat.getVertexSize();
-    _vertices = new unsigned char[vBytes];
-    if (voffset >= vBytes) voffset = vBytes - 1;
-    _verticesPtr = _vertices + voffset;
+    _vertices = std::make_unique<unsigned char[]>(vBytes);
+    if (voffset > vBytes) voffset = vBytes;
+    _verticesPtr = _vertices.get() + voffset;
 
     if (_indexed)
     {
-        unsigned int ioffset = _indicesPtr - _indices;
-        _indices = new unsigned short[indexCapacity];
-        if (ioffset >= indexCapacity) ioffset = indexCapacity - 1;
-        _indicesPtr = _indices + ioffset;
+        // Calculate the offset based on actual index count, not pointer arithmetic
+        unsigned int ioffset = _indexCount;
+        _indices = std::make_unique<unsigned short[]>(indexCapacity);
+        if (ioffset > indexCapacity) ioffset = indexCapacity;
+        _indicesPtr = _indices.get() + ioffset;
     }
 
     // Copy old data back in
     if (oldVertices)
-        memcpy(_vertices,
-               oldVertices,
+        memcpy(_vertices.get(),
+               oldVertices.get(),
                std::min(_vertexCapacity, vertexCapacity) * _vertexFormat.getVertexSize());
-    SAFE_DELETE_ARRAY(oldVertices);
     if (oldIndices)
-        memcpy(_indices, oldIndices, std::min(_indexCapacity, indexCapacity) * sizeof(unsigned short));
-    SAFE_DELETE_ARRAY(oldIndices);
+        memcpy(_indices.get(), oldIndices.get(), std::min(_indexCapacity, indexCapacity) * sizeof(unsigned short));
 
     // Assign new capacities
     _capacity = capacity;
@@ -265,8 +264,8 @@ void MeshBatch::start() noexcept
 {
     _vertexCount = 0;
     _indexCount = 0;
-    _verticesPtr = _vertices;
-    _indicesPtr = _indices;
+    _verticesPtr = _vertices.get();
+    _indicesPtr = _indices.get();
     _started = true;
 }
 
@@ -295,7 +294,7 @@ void MeshBatch::draw()
         if (_indexed)
         {
             GL_ASSERT(
-                glDrawElements(_primitiveType, _indexCount, GL_UNSIGNED_SHORT, (GLvoid*)_indices));
+                glDrawElements(_primitiveType, _indexCount, GL_UNSIGNED_SHORT, (GLvoid*)_indices.get()));
         }
         else
         {

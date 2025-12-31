@@ -51,23 +51,20 @@ PhysicsController::PhysicsController()
     GP_REGISTER_SCRIPT_EVENTS();
 
     // Default gravity is 9.8 along the negative Y axis.
-    _collisionCallback = new CollisionCallback(this);
+    _collisionCallback = std::make_unique<CollisionCallback>(this);
 }
 
 //----------------------------------------------------------------------------
 PhysicsController::~PhysicsController()
 {
-    SAFE_DELETE(_collisionCallback);
-    SAFE_DELETE(_ghostPairCallback);
-    SAFE_DELETE(_debugDrawer);
-    SAFE_DELETE(_listeners);
+    // unique_ptr members automatically cleaned up
 }
 
 //----------------------------------------------------------------------------
 void PhysicsController::addStatusListener(Listener* listener)
 {
     assert(listener);
-    if (!_listeners) _listeners = new std::vector<Listener*>();
+    if (!_listeners) _listeners = std::make_unique<std::vector<Listener*>>();
 
     _listeners->push_back(listener);
 }
@@ -531,20 +528,26 @@ void PhysicsController::initialize()
     _world->getDispatchInfo().m_allowedCcdPenetration = 0.0001f;
 
     // Set up debug drawing.
-    _debugDrawer = new DebugDrawer();
-    _world->setDebugDrawer(_debugDrawer);
+    _debugDrawer = std::make_unique<DebugDrawer>();
+    _world->setDebugDrawer(_debugDrawer.get());
 }
 
 //----------------------------------------------------------------------------
 void PhysicsController::finalize()
 {
     // Clean up the world and its various components.
-    SAFE_DELETE(_world);
-    SAFE_DELETE(_ghostPairCallback);
-    SAFE_DELETE(_solver);
-    SAFE_DELETE(_overlappingPairCache);
-    SAFE_DELETE(_dispatcher);
-    SAFE_DELETE(_collisionConfiguration);
+    delete _world;
+    _world = nullptr;
+    delete _ghostPairCallback;
+    _ghostPairCallback = nullptr;
+    delete _solver;
+    _solver = nullptr;
+    delete _overlappingPairCache;
+    _overlappingPairCache = nullptr;
+    delete _dispatcher;
+    _dispatcher = nullptr;
+    delete _collisionConfiguration;
+    _collisionConfiguration = nullptr;
 }
 
 //----------------------------------------------------------------------------
@@ -1303,8 +1306,8 @@ PhysicsCollisionShapePtr PhysicsController::createMesh(Mesh* mesh, const Vector3
         collisionShape =
             bullet_new<btConvexHullShape>((btScalar*)hull->getVertexPointer(), hull->numVertices());
 
-        SAFE_DELETE(hull);
-        SAFE_DELETE(originalConvexShape);
+        delete hull;
+        delete originalConvexShape;
     }
     else
     {
@@ -1338,9 +1341,9 @@ PhysicsCollisionShapePtr PhysicsController::createMesh(Mesh* mesh, const Vector3
                         break;
                     default:
                         GP_ERROR("Unsupported index format (%d).", meshPart->indexFormat);
-                        SAFE_DELETE(meshInterface);
-                        SAFE_DELETE_ARRAY(shapeMeshData->vertexData);
-                        SAFE_DELETE(shapeMeshData);
+                        delete meshInterface;
+                        delete[] shapeMeshData->vertexData;
+                        delete shapeMeshData;
                         return nullptr;
                 }
 
@@ -1407,7 +1410,7 @@ PhysicsCollisionShapePtr PhysicsController::createMesh(Mesh* mesh, const Vector3
     _shapes.push_back(shape);
 
     // Free the temporary mesh data now that it's stored in physics system.
-    data.release();
+    // unique_ptr automatically handles cleanup when data goes out of scope
 
     return shape;
 }
@@ -1531,7 +1534,10 @@ PhysicsController::DebugDrawer::DebugDrawer()
 }
 
 //----------------------------------------------------------------------------
-PhysicsController::DebugDrawer::~DebugDrawer() { SAFE_DELETE(_meshBatch); }
+PhysicsController::DebugDrawer::~DebugDrawer() 
+{ 
+    delete _meshBatch;
+}
 
 //----------------------------------------------------------------------------
 void PhysicsController::DebugDrawer::begin(const Matrix& viewProjection)

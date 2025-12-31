@@ -101,7 +101,8 @@ void InputSample::finalize()
     _formNodeParent.reset();
     _scene.reset();
     _inputSampleControls.reset();
-    SAFE_DELETE(_crosshair);
+    delete _crosshair;
+    _crosshair = nullptr;
 }
 
 void InputSample::update(float elapsedTime)
@@ -263,9 +264,9 @@ void InputSample::touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int c
     // Add a new touch point if not found above
     if (!tp)
     {
-        tp = new TouchPoint();
+        _touchPoints.emplace_back();
+        tp = &_touchPoints.back();
         tp->_id = contactIndex;
-        _touchPoints.push_back(*tp);
     }
 
     // Update the touch point

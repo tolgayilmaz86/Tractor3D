@@ -596,12 +596,12 @@ class PhysicsController : public ScriptTarget
     btDynamicsWorld* _world{ nullptr };
     btGhostPairCallback* _ghostPairCallback{ nullptr };
     std::vector<PhysicsCollisionShapePtr> _shapes;
-    DebugDrawer* _debugDrawer{ nullptr };
+    std::unique_ptr<DebugDrawer> _debugDrawer;
     Listener::EventType _status{ PhysicsController::Listener::DEACTIVATED };
-    std::vector<Listener*>* _listeners{ nullptr };
+    std::unique_ptr<std::vector<Listener*>> _listeners;
     Vector3 _gravity{ 0.0f, -9.81f, 0.0f };
     std::map<PhysicsCollisionObject::CollisionPair, CollisionInfo> _collisionStatus;
-    CollisionCallback* _collisionCallback{ nullptr };
+    std::unique_ptr<CollisionCallback> _collisionCallback;
 };
 
 } // namespace tractor

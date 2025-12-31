@@ -17,6 +17,7 @@
 
 #include <cstdarg>
 #include <cstdio>
+#include <cstdint>
 #include <exception>
 #include <mutex>
 #include <new>
@@ -33,15 +34,15 @@ bool __trackStackTrace = false;
 
 struct MemoryAllocationRecord
 {
-    unsigned long address; // address returned to the caller after allocation
-    unsigned int size;     // size of the allocation request
-    const char* file;      // source file of allocation request
-    int line;              // source line of the allocation request
+    std::uintptr_t address; // address returned to the caller after allocation
+    std::size_t size;       // size of the allocation request
+    const char* file;       // source file of allocation request
+    int line;               // source line of the allocation request
     MemoryAllocationRecord* next;
     MemoryAllocationRecord* prev;
 #ifdef WIN32
     bool trackStackTrace;
-    unsigned int pc[MAX_STACK_FRAMES];
+    DWORD64 pc[MAX_STACK_FRAMES];
 #endif
 };
 
@@ -111,8 +112,8 @@ void* debugAlloc(std::size_t size, const char* file, int line)
     mem += sizeof(MemoryAllocationRecord);
 
     std::lock_guard<std::mutex> lock(getMemoryAllocationMutex());
-    rec->address = (unsigned long)mem;
-    rec->size = (unsigned int)size;
+    rec->address = reinterpret_cast<std::uintptr_t>(mem);
+    rec->size = size;
     rec->file = file;
     rec->line = line;
     rec->next = __memoryAllocations;
@@ -198,7 +199,7 @@ void debugFree(void* p)
     MemoryAllocationRecord* rec = (MemoryAllocationRecord*)mem;
 
     // Sanity check: ensure that address in record matches passed in address
-    if (rec->address != (unsigned long)p)
+    if (rec->address != reinterpret_cast<std::uintptr_t>(p))
     {
         tractor::print("[memory] CORRUPTION: Attempting to free memory address with invalid memory "
                        "allocation record.\n");
@@ -222,7 +223,7 @@ void printStackTrace(MemoryAllocationRecord* rec)
     const unsigned int bufferSize = 512;
 
     // Resolve the program counter to the corresponding function names.
-    unsigned int pc;
+    DWORD64 pc;
     for (size_t i = 0; i < MAX_STACK_FRAMES; i++)
     {
         // Check to see if we are at the end of the stack trace.
@@ -302,22 +303,22 @@ extern void printMemoryLeaks()
 #ifdef WIN32
             if (rec->trackStackTrace)
             {
-                tractor::print("[memory] LEAK: HEAP allocation leak at address %#x of size %d:\n",
-                               rec->address,
+                tractor::print("[memory] LEAK: HEAP allocation leak at address %#llx of size %zu:\n",
+                               static_cast<unsigned long long>(rec->address),
                                rec->size);
                 printStackTrace(rec);
             }
             else
-                tractor::print("[memory] LEAK: HEAP allocation leak at address %#x of size %d from "
+                tractor::print("[memory] LEAK: HEAP allocation leak at address %#llx of size %zu from "
                                "line %d in file '%s'.\n",
-                               rec->address,
+                               static_cast<unsigned long long>(rec->address),
                                rec->size,
                                rec->line,
                                rec->file);
 #else
-            tractor::print("[memory] LEAK: HEAP allocation leak at address %#x of size %d from "
+            tractor::print("[memory] LEAK: HEAP allocation leak at address %#llx of size %zu from "
                            "line %d in file '%s'.\n",
-                           rec->address,
+                           static_cast<unsigned long long>(rec->address),
                            rec->size,
                            rec->line,
                            rec->file);

@@ -210,16 +210,14 @@ bool loadWav(Stream* stream, ALuint buffer, bool streamed, tractor::AudioStreamS
                 if (dataSize > STREAMING_BUFFER_SIZE) dataSize = STREAMING_BUFFER_SIZE;
             }
 
-            char* data = new char[dataSize];
-            if (stream->read(data, sizeof(char), dataSize) != dataSize)
+            auto audioData = std::make_unique<char[]>(dataSize);
+            if (stream->read(audioData.get(), sizeof(char), dataSize) != dataSize)
             {
                 GP_ERROR("Failed to load wave file; file is missing data.");
-                SAFE_DELETE_ARRAY(data);
                 return false;
             }
 
-            AL_CHECK(alBufferData(buffer, format, data, dataSize, frequency));
-            SAFE_DELETE_ARRAY(data);
+            AL_CHECK(alBufferData(buffer, format, audioData.get(), dataSize, frequency));
 
             // We've read the data, so return now.
             return true;
@@ -319,18 +317,17 @@ bool loadOgg(Stream* stream, ALuint buffer, bool streamed, tractor::AudioStreamS
         if (data_size > STREAMING_BUFFER_SIZE) data_size = STREAMING_BUFFER_SIZE;
     }
 
-    char* data = new char[data_size];
+    auto data = std::make_unique<char[]>(data_size);
 
     while (size < data_size)
     {
-        result = ov_read(&streamState->oggFile, data + size, data_size - size, 0, 2, 1, &section);
+        result = ov_read(&streamState->oggFile, data.get() + size, data_size - size, 0, 2, 1, &section);
         if (result > 0)
         {
             size += result;
         }
         else if (result < 0)
         {
-            SAFE_DELETE_ARRAY(data);
             GP_ERROR("Failed to read ogg file; file is missing data.");
             return false;
         }
@@ -342,14 +339,11 @@ bool loadOgg(Stream* stream, ALuint buffer, bool streamed, tractor::AudioStreamS
 
     if (size == 0)
     {
-        SAFE_DELETE_ARRAY(data);
         GP_ERROR("Filed to read ogg file; unable to read any data.");
         return false;
     }
 
-    AL_CHECK(alBufferData(buffer, format, data, size, info->rate));
-
-    SAFE_DELETE_ARRAY(data);
+    AL_CHECK(alBufferData(buffer, format, data.get(), size, info->rate));
 
     if (!streamed) ov_clear(&streamState->oggFile);
 

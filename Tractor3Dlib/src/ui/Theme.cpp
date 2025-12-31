@@ -36,12 +36,12 @@ Theme::~Theme()
     for (size_t i = 0, count = _styles.size(); i < count; ++i)
     {
         Style* style = _styles[i];
-        SAFE_DELETE(style);
+        delete style;
     }
 
     // shared_ptr handles cleanup for _images, _imageLists, _skins, _emptyImage
 
-    SAFE_DELETE(_spriteBatch);
+    delete _spriteBatch;
     _texture.reset();  // shared_ptr handles cleanup
 
     // Remove ourself from the theme cache.

@@ -41,7 +41,7 @@ static CacheGuard __cacheGuard;
 VertexAttributeBinding::~VertexAttributeBinding()
 {
     _effect.reset();
-    SAFE_DELETE_ARRAY(_attributes);
+    delete[] _attributes;
 
     if (_handle)
     {

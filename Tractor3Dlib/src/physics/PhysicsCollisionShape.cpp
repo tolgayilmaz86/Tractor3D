@@ -45,26 +45,26 @@ PhysicsCollisionShape::~PhysicsCollisionShape()
             case SHAPE_MESH:
                 if (_shapeData.meshData)
                 {
-                    SAFE_DELETE_ARRAY(_shapeData.meshData->vertexData);
+                    delete[] _shapeData.meshData->vertexData;
                     for (size_t i = 0; i < _shapeData.meshData->indexData.size(); i++)
                     {
-                        SAFE_DELETE_ARRAY(_shapeData.meshData->indexData[i]);
+                        delete[] _shapeData.meshData->indexData[i];
                     }
-                    SAFE_DELETE(_shapeData.meshData);
+                    delete _shapeData.meshData;
                 }
-                SAFE_DELETE(_meshInterface);
+                delete _meshInterface;
                 break;
 
             case SHAPE_HEIGHTFIELD:
                 if (_shapeData.heightfieldData)
                 {
                     _shapeData.heightfieldData->heightfield.reset();  // shared_ptr cleanup
-                    SAFE_DELETE(_shapeData.heightfieldData);
+                    delete _shapeData.heightfieldData;
                 }
                 break;
         }
 
-        SAFE_DELETE(_shape);
+        delete _shape;
     }
 }
 

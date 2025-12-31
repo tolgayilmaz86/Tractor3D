@@ -78,9 +78,12 @@ void SamplesGame::initialize()
 void SamplesGame::finalize()
 {
     if (_activeSample) _activeSample->finalize();
-    SAFE_DELETE(_activeSample);
-    SAFE_DELETE(_categories);
-    SAFE_DELETE(_samples);
+    delete _activeSample;
+    _activeSample = nullptr;
+    delete _categories;
+    _categories = nullptr;
+    delete _samples;
+    _samples = nullptr;
     _sampleSelectForm.reset();
 }
 
@@ -268,7 +271,8 @@ void SamplesGame::exitActiveSample()
     if (_activeSample)
     {
         _activeSample->finalize();
-        SAFE_DELETE(_activeSample);
+        delete _activeSample;
+        _activeSample = nullptr;
 
         _sampleSelectForm->setEnabled(true);
         _sampleSelectForm->setFocus();

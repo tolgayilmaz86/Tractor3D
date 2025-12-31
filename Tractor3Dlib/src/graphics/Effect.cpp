@@ -43,8 +43,7 @@ Effect::~Effect()
     {
         __effectCache.erase(_id);
     }
-    // Free uniforms.
-    std::for_each(_uniforms.begin(), _uniforms.end(), [](auto& pair) { SAFE_DELETE(pair.second); });
+    // Uniforms are automatically cleaned up by unique_ptr
 
     if (_program)
     {
@@ -99,14 +98,14 @@ EffectPtr Effect::createFromFile(const std::string& vshPath,
     if (fshSource == nullptr)
     {
         GP_ERROR("Failed to read fragment shader from file '%s'.", fshPath);
-        SAFE_DELETE_ARRAY(vshSource);
+        delete[] vshSource;
         return nullptr;
     }
 
     EffectPtr effect = createFromSource(vshPath, vshSource, fshPath, fshSource, defines);
 
-    SAFE_DELETE_ARRAY(vshSource);
-    SAFE_DELETE_ARRAY(fshSource);
+    delete[] vshSource;
+    delete[] fshSource;
 
     if (effect == nullptr)
     {
@@ -229,7 +228,7 @@ static void replaceIncludes(const std::string& filepath, const std::string& sour
             {
                 // Valid file so lets attempt to see if we need to append anything to it too (recurse...)
                 replaceIncludes(directoryPath, includedSource, out);
-                SAFE_DELETE_ARRAY(includedSource);
+                delete[] includedSource;
             }
         }
         else
@@ -261,7 +260,7 @@ EffectPtr Effect::createFromSource(const std::string& vshPath,
 {
     const unsigned int SHADER_SOURCE_LENGTH = 3;
     const GLchar* shaderSource[SHADER_SOURCE_LENGTH];
-    char* infoLog = nullptr;
+    std::unique_ptr<char[]> infoLog;
     GLuint vertexShader;
     GLuint fragmentShader;
     GLuint program;
@@ -292,8 +291,8 @@ EffectPtr Effect::createFromSource(const std::string& vshPath,
         if (length == 0) length = 4096;
         if (length > 0)
         {
-            infoLog = new char[length];
-            GL_ASSERT(glGetShaderInfoLog(vertexShader, length, nullptr, infoLog));
+            infoLog = std::make_unique<char[]>(length);
+            GL_ASSERT(glGetShaderInfoLog(vertexShader, length, nullptr, infoLog.get()));
             infoLog[length - 1] = '\0';
         }
 
@@ -302,8 +301,7 @@ EffectPtr Effect::createFromSource(const std::string& vshPath,
 
         GP_ERROR("Compile failed for vertex shader '%s' with error '%s'.",
                  vshPath == EMPTY_STRING ? vshSource : vshPath,
-                 infoLog == EMPTY_STRING ? "" : infoLog);
-        SAFE_DELETE_ARRAY(infoLog);
+                 infoLog ? infoLog.get() : "");
         GL_ASSERT(glDeleteShader(vertexShader));
         return nullptr;
     }
@@ -327,8 +325,8 @@ EffectPtr Effect::createFromSource(const std::string& vshPath,
         if (length == 0) length = 4096;
         if (length > 0)
         {
-            infoLog = new char[length];
-            GL_ASSERT(glGetShaderInfoLog(fragmentShader, length, nullptr, infoLog));
+            infoLog = std::make_unique<char[]>(length);
+            GL_ASSERT(glGetShaderInfoLog(fragmentShader, length, nullptr, infoLog.get()));
             infoLog[length - 1] = '\0';
         }
 
@@ -337,8 +335,7 @@ EffectPtr Effect::createFromSource(const std::string& vshPath,
 
         GP_ERROR("Compile failed for fragment shader (%s): %s",
                  fshPath == EMPTY_STRING ? fshSource : fshPath,
-                 infoLog == EMPTY_STRING ? "" : infoLog);
-        SAFE_DELETE_ARRAY(infoLog);
+                 infoLog ? infoLog.get() : "");
         GL_ASSERT(glDeleteShader(vertexShader));
         GL_ASSERT(glDeleteShader(fragmentShader));
         return nullptr;
@@ -362,15 +359,14 @@ EffectPtr Effect::createFromSource(const std::string& vshPath,
         if (length == 0) length = 4096;
         if (length > 0)
         {
-            infoLog = new char[length];
-            GL_ASSERT(glGetProgramInfoLog(program, length, nullptr, infoLog));
+            infoLog = std::make_unique<char[]>(length);
+            GL_ASSERT(glGetProgramInfoLog(program, length, nullptr, infoLog.get()));
             infoLog[length - 1] = '\0';
         }
         GP_ERROR("Linking program failed (%s,%s): %s",
                  vshPath == EMPTY_STRING ? "nullptr" : vshPath,
                  fshPath == EMPTY_STRING ? "nullptr" : fshPath,
-                 infoLog == EMPTY_STRING ? "" : infoLog);
-        SAFE_DELETE_ARRAY(infoLog);
+                 infoLog ? infoLog.get() : "");
         GL_ASSERT(glDeleteProgram(program));
         return nullptr;
     }
@@ -387,7 +383,7 @@ EffectPtr Effect::createFromSource(const std::string& vshPath,
         GL_ASSERT(glGetProgramiv(program, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &length));
         if (length > 0)
         {
-            GLchar* attribName = new GLchar[length + 1];
+            auto attribName = std::make_unique<GLchar[]>(length + 1);
             GLint attribSize;
             GLenum attribType;
             GLint attribLocation;
@@ -395,16 +391,15 @@ EffectPtr Effect::createFromSource(const std::string& vshPath,
             {
                 // Query attribute info.
                 GL_ASSERT(
-                    glGetActiveAttrib(program, i, length, nullptr, &attribSize, &attribType, attribName));
+                    glGetActiveAttrib(program, i, length, nullptr, &attribSize, &attribType, attribName.get()));
                 attribName[length] = '\0';
 
                 // Query the pre-assigned attribute location.
-                GL_ASSERT(attribLocation = glGetAttribLocation(program, attribName));
+                GL_ASSERT(attribLocation = glGetAttribLocation(program, attribName.get()));
 
                 // Assign the vertex attribute mapping for the effect.
-                effect->_vertexAttributes[attribName] = attribLocation;
+                effect->_vertexAttributes[attribName.get()] = attribLocation;
             }
-            SAFE_DELETE_ARRAY(attribName);
         }
     }
 
@@ -416,7 +411,7 @@ EffectPtr Effect::createFromSource(const std::string& vshPath,
         GL_ASSERT(glGetProgramiv(program, GL_ACTIVE_UNIFORM_MAX_LENGTH, &length));
         if (length > 0)
         {
-            GLchar* uniformName = new GLchar[length + 1];
+            auto uniformName = std::make_unique<GLchar[]>(length + 1);
             GLint uniformSize;
             GLenum uniformType;
             GLint uniformLocation;
@@ -430,7 +425,7 @@ EffectPtr Effect::createFromSource(const std::string& vshPath,
                                              nullptr,
                                              &uniformSize,
                                              &uniformType,
-                                             uniformName));
+                                             uniformName.get()));
                 uniformName[length] = '\0'; // null terminate
                 if (length > 3)
                 {
@@ -438,7 +433,7 @@ EffectPtr Effect::createFromSource(const std::string& vshPath,
                     // seem to be consistent across different drivers/implementations in how it
                     // returns array uniforms. On some systems it will return "u_matrixArray", while
                     // on others it will return "u_matrixArray[0]".
-                    char* c = strrchr(uniformName, '[');
+                    char* c = strrchr(uniformName.get(), '[');
                     if (c)
                     {
                         *c = '\0';
@@ -446,11 +441,11 @@ EffectPtr Effect::createFromSource(const std::string& vshPath,
                 }
 
                 // Query the pre-assigned uniform location.
-                GL_ASSERT(uniformLocation = glGetUniformLocation(program, uniformName));
+                GL_ASSERT(uniformLocation = glGetUniformLocation(program, uniformName.get()));
 
-                Uniform* uniform = new Uniform();
+                auto uniform = std::make_unique<Uniform>();
                 uniform->_effect = effect.get();
-                uniform->_name = uniformName;
+                uniform->_name = uniformName.get();
                 uniform->_location = uniformLocation;
                 uniform->_type = uniformType;
                 if (uniformType == GL_SAMPLER_2D || uniformType == GL_SAMPLER_CUBE)
@@ -463,9 +458,8 @@ EffectPtr Effect::createFromSource(const std::string& vshPath,
                     uniform->_index = 0;
                 }
 
-                effect->_uniforms[uniformName] = uniform;
+                effect->_uniforms[uniformName.get()] = std::move(uniform);
             }
-            SAFE_DELETE_ARRAY(uniformName);
         }
     }
 
@@ -482,39 +476,38 @@ VertexAttribute Effect::getVertexAttribute(const std::string& name) const
 //----------------------------------------------------------------------------
 Uniform* Effect::getUniform(const std::string& name) const
 {
-    std::map<std::string, Uniform*>::const_iterator itr = _uniforms.find(name);
+    auto itr = _uniforms.find(name);
 
     if (itr != _uniforms.end())
     {
-        return itr->second;
+        return itr->second.get();
     }
 
     GLint uniformLocation;
     GL_ASSERT(uniformLocation = glGetUniformLocation(_program, name.c_str()));
     if (uniformLocation > -1)
     {
-        char* parentname = new char[name.length() + 1];
-        strcpy(parentname, name.c_str());
-        if (strtok(parentname, "[") != nullptr)
+        auto parentname = std::make_unique<char[]>(name.length() + 1);
+        strcpy(parentname.get(), name.c_str());
+        if (strtok(parentname.get(), "[") != nullptr)
         {
-            std::map<std::string, Uniform*>::const_iterator itr = _uniforms.find(parentname);
+            auto itr = _uniforms.find(parentname.get());
             if (itr != _uniforms.end())
             {
-                Uniform* puniform = itr->second;
+                Uniform* puniform = itr->second.get();
 
-                Uniform* uniform = new Uniform();
+                auto uniform = std::make_unique<Uniform>();
                 uniform->_effect = const_cast<Effect*>(this);
                 uniform->_name = name;
                 uniform->_location = uniformLocation;
                 uniform->_index = 0;
                 uniform->_type = puniform->getType();
-                _uniforms[name] = uniform;
+                Uniform* result = uniform.get();
+                _uniforms[name] = std::move(uniform);
 
-                SAFE_DELETE_ARRAY(parentname);
-                return uniform;
+                return result;
             }
         }
-        SAFE_DELETE_ARRAY(parentname);
     }
 
     return nullptr;
@@ -524,7 +517,7 @@ Uniform* Effect::getUniform(const std::string& name) const
 Uniform* Effect::getUniform(unsigned int index) const
 {
     auto itr = std::next(_uniforms.begin(), index);
-    return itr->second;
+    return itr->second.get();
 }
 
 //----------------------------------------------------------------------------

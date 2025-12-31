@@ -170,7 +170,7 @@ class Model : public Drawable
      *
      * @return The MeshSkin, or nullptr if one is not set.
      */
-    MeshSkin* getSkin() const noexcept { return _skin; }
+    MeshSkin* getSkin() const noexcept { return _skin.get(); }
 
     /**
      * @see Drawable::draw
@@ -221,8 +221,8 @@ class Model : public Drawable
     std::shared_ptr<Mesh> _mesh;
     MaterialPtr _material;
     unsigned int _partCount{ 0 };
-    MaterialPtr* _partMaterials{ nullptr };
-    MeshSkin* _skin{ nullptr };
+    std::unique_ptr<MaterialPtr[]> _partMaterials;
+    std::unique_ptr<MeshSkin> _skin;
 };
 
 } // namespace tractor

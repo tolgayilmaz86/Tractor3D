@@ -217,7 +217,7 @@ class Effect : public std::enable_shared_from_this<Effect>
     GLuint _program{ 0 };
     std::string _id{};
     std::map<std::string, VertexAttribute> _vertexAttributes;
-    mutable std::map<std::string, Uniform*> _uniforms;
+    mutable std::map<std::string, std::unique_ptr<Uniform>> _uniforms;
     static Uniform _emptyUniform;
 };
 
@@ -244,10 +244,18 @@ class Uniform
      */
     Effect* getEffect() const noexcept;
 
-  private:
+    /**
+     * Default constructor.
+     */
     Uniform();
-    Uniform(const Uniform& copy);
+
+    /**
+     * Destructor.
+     */
     ~Uniform();
+
+  private:
+    Uniform(const Uniform& copy);
     Uniform& operator=(const Uniform&) = delete;
 
     std::string _name;

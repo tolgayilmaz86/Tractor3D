@@ -1307,11 +1307,10 @@ extern void print(const char* format, ...)
     int sz = vfprintf(stderr, format, argptr);
     if (sz > 0)
     {
-        char* buf = new char[sz + 1];
-        vsprintf(buf, format, argptr);
+        auto buf = std::make_unique<char[]>(sz + 1);
+        vsprintf(buf.get(), format, argptr);
         buf[sz] = 0;
-        OutputDebugStringA(buf);
-        SAFE_DELETE_ARRAY(buf);
+        OutputDebugStringA(buf.get());
     }
     va_end(argptr);
 }

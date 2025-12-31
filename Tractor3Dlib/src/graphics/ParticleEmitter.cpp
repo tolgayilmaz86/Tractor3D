@@ -28,15 +28,7 @@ namespace tractor
 ParticleEmitter::ParticleEmitter(unsigned int particleCountMax)
     : Drawable(), _particleCountMax(particleCountMax)
 {
-    _particles = new Particle[particleCountMax];
-}
-
-//----------------------------------------------------------------------------
-ParticleEmitter::~ParticleEmitter()
-{
-    SAFE_DELETE(_spriteBatch);
-    SAFE_DELETE_ARRAY(_particles);
-    SAFE_DELETE_ARRAY(_spriteTextureCoords);
+    _particles = std::make_unique<Particle[]>(particleCountMax);
 }
 
 //----------------------------------------------------------------------------
@@ -228,13 +220,11 @@ void ParticleEmitter::setTexture(Texture* texture, BlendMode blendMode)
 {
     // Create new batch before releasing old one, in case the same texture
     // is used for both (so it's not released before passing to the new batch).
-    SpriteBatch* batch = SpriteBatch::create(texture, nullptr, _particleCountMax);
+    auto batch = std::unique_ptr<SpriteBatch>(SpriteBatch::create(texture, nullptr, _particleCountMax));
     batch->getSampler()->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
 
-    // Free existing batch
-    SAFE_DELETE(_spriteBatch);
-
-    _spriteBatch = batch;
+    // Replace old batch with new one (old one is automatically deleted)
+    _spriteBatch = std::move(batch);
     _spriteBatch->getStateBlock()->setDepthWrite(false);
     _spriteBatch->getStateBlock()->setDepthTest(true);
 
@@ -515,9 +505,8 @@ void ParticleEmitter::setSpriteTexCoords(unsigned int frameCount, float* texCoor
     _spriteFrameCount = frameCount;
     _spritePercentPerFrame = 1.0f / (float)frameCount;
 
-    SAFE_DELETE_ARRAY(_spriteTextureCoords);
-    _spriteTextureCoords = new float[frameCount * 4];
-    memcpy(_spriteTextureCoords, texCoords, frameCount * 4 * sizeof(float));
+    _spriteTextureCoords = std::make_unique<float[]>(frameCount * 4);
+    memcpy(_spriteTextureCoords.get(), texCoords, frameCount * 4 * sizeof(float));
 }
 
 //----------------------------------------------------------------------------
@@ -529,8 +518,7 @@ void ParticleEmitter::setSpriteFrameCoords(unsigned int frameCount, Rectangle* f
     _spriteFrameCount = frameCount;
     _spritePercentPerFrame = 1.0f / (float)frameCount;
 
-    SAFE_DELETE_ARRAY(_spriteTextureCoords);
-    _spriteTextureCoords = new float[frameCount * 4];
+    _spriteTextureCoords = std::make_unique<float[]>(frameCount * 4);
 
     // Pre-compute texture coordinates from rects.
     for (size_t i = 0; i < frameCount; i++)
@@ -550,7 +538,7 @@ void ParticleEmitter::setSpriteFrameCoords(unsigned int frameCount, int width, i
     assert(width);
     assert(height);
 
-    Rectangle* frameCoords = new Rectangle[frameCount];
+    auto frameCoords = std::make_unique<Rectangle[]>(frameCount);
     unsigned int cols = _spriteTextureWidth / width;
     unsigned int rows = _spriteTextureHeight / height;
 
@@ -574,9 +562,7 @@ void ParticleEmitter::setSpriteFrameCoords(unsigned int frameCount, int width, i
         }
     }
 
-    setSpriteFrameCoords(frameCount, frameCoords);
-
-    SAFE_DELETE_ARRAY(frameCoords);
+    setSpriteFrameCoords(frameCount, frameCoords.get());
 }
 
 //----------------------------------------------------------------------------
@@ -917,7 +903,7 @@ Drawable* ParticleEmitter::clone(NodeCloneContext& context)
     clone->_rotationSpeedMax = _rotationSpeedMax;
     clone->_rotationAxis = _rotationAxis;
     clone->_rotationAxisVar = _rotationAxisVar;
-    clone->setSpriteTexCoords(_spriteFrameCount, _spriteTextureCoords);
+    clone->setSpriteTexCoords(_spriteFrameCount, _spriteTextureCoords.get());
     clone->_spriteAnimated = _spriteAnimated;
     clone->_spriteLooped = _spriteLooped;
     clone->_spriteFrameRandomOffset = _spriteFrameRandomOffset;

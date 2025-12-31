@@ -38,7 +38,7 @@ class PhysicsGenericConstraint : public PhysicsConstraint
      */
     inline const Quaternion& getRotationOffsetA() const
     {
-        if (!_rotationOffsetA) _rotationOffsetA = new Quaternion();
+        if (!_rotationOffsetA) _rotationOffsetA = std::make_unique<Quaternion>();
 
         assert(_constraint);
         btQuaternion ro =
@@ -55,7 +55,7 @@ class PhysicsGenericConstraint : public PhysicsConstraint
 
     inline const Quaternion& getRotationOffsetB() const
     {
-        if (!_rotationOffsetB) _rotationOffsetB = new Quaternion();
+        if (!_rotationOffsetB) _rotationOffsetB = std::make_unique<Quaternion>();
 
         assert(_constraint);
         btQuaternion ro =
@@ -71,7 +71,7 @@ class PhysicsGenericConstraint : public PhysicsConstraint
      */
     inline const Vector3& getTranslationOffsetA() const
     {
-        if (!_translationOffsetA) _translationOffsetA = new Vector3();
+        if (!_translationOffsetA) _translationOffsetA = std::make_unique<Vector3>();
 
         assert(_constraint);
         btVector3 to =
@@ -87,7 +87,7 @@ class PhysicsGenericConstraint : public PhysicsConstraint
      */
     inline const Vector3& getTranslationOffsetB() const
     {
-        if (!_translationOffsetB) _translationOffsetB = new Vector3();
+        if (!_translationOffsetB) _translationOffsetB = std::make_unique<Vector3>();
 
         assert(_constraint);
         btVector3 to =
@@ -198,7 +198,7 @@ class PhysicsGenericConstraint : public PhysicsConstraint
 
     inline const Quaternion& PgetRotationOffsetA() const
     {
-        if (!_rotationOffsetA) _rotationOffsetA = new Quaternion();
+        if (!_rotationOffsetA) _rotationOffsetA = std::make_unique<Quaternion>();
 
         assert(_constraint);
         btQuaternion ro =
@@ -209,7 +209,7 @@ class PhysicsGenericConstraint : public PhysicsConstraint
 
     inline const Quaternion& PgetRotationOffsetB() const
     {
-        if (!_rotationOffsetB) _rotationOffsetB = new Quaternion();
+        if (!_rotationOffsetB) _rotationOffsetB = std::make_unique<Quaternion>();
 
         assert(_constraint);
         btQuaternion ro =
@@ -220,7 +220,7 @@ class PhysicsGenericConstraint : public PhysicsConstraint
 
     inline const Vector3& PgetTranslationOffsetA() const
     {
-        if (!_translationOffsetA) _translationOffsetA = new Vector3();
+        if (!_translationOffsetA) _translationOffsetA = std::make_unique<Vector3>();
 
         assert(_constraint);
         btVector3 to =
@@ -231,7 +231,7 @@ class PhysicsGenericConstraint : public PhysicsConstraint
 
     inline const Vector3& PgetTranslationOffsetB() const
     {
-        if (!_translationOffsetB) _translationOffsetB = new Vector3();
+        if (!_translationOffsetB) _translationOffsetB = std::make_unique<Vector3>();
 
         assert(_constraint);
         btVector3 to =
@@ -299,9 +299,6 @@ class PhysicsGenericConstraint : public PhysicsConstraint
   protected:
     /**
      * Constructor.
-     *
-     * Note: This should only used by subclasses that do not want
-     * the _constraint member variable to be initialized.
      */
     PhysicsGenericConstraint() : PhysicsConstraint(nullptr, nullptr) {};
 
@@ -343,10 +340,10 @@ class PhysicsGenericConstraint : public PhysicsConstraint
     virtual ~PhysicsGenericConstraint();
 
   private:
-    mutable Quaternion* _rotationOffsetA{ nullptr };
-    mutable Quaternion* _rotationOffsetB{ nullptr };
-    mutable Vector3* _translationOffsetA{ nullptr };
-    mutable Vector3* _translationOffsetB{ nullptr };
+    mutable std::unique_ptr<Quaternion> _rotationOffsetA;
+    mutable std::unique_ptr<Quaternion> _rotationOffsetB;
+    mutable std::unique_ptr<Vector3> _translationOffsetA;
+    mutable std::unique_ptr<Vector3> _translationOffsetB;
 };
 
 } // namespace tractor

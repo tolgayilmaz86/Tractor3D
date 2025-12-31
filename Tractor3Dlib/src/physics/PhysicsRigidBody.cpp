@@ -46,7 +46,7 @@ PhysicsRigidBody::PhysicsRigidBody(Node* node,
     assert(_collisionShape && _collisionShape->getShape());
 
     // Create motion state object.
-    _motionState = new PhysicsMotionState(node,
+    _motionState = std::make_unique<PhysicsMotionState>(node,
                                           this,
                                           (centerOfMassOffset.lengthSquared() > MATH_EPSILON)
                                               ? &centerOfMassOffset
@@ -74,7 +74,7 @@ PhysicsRigidBody::PhysicsRigidBody(Node* node,
 
     // Set motion state after rigid body assignment, since bullet will callback on the motion state
     // interface to query the initial transform and it will need to access to rigid body (_body).
-    _body->setMotionState(_motionState);
+    _body->setMotionState(_motionState.get());
 
     // Set other initially defined properties.
     setKinematic(parameters.kinematic);
@@ -106,16 +106,16 @@ PhysicsRigidBody::~PhysicsRigidBody()
     {
         for (size_t i = 0; i < _constraints->size(); ++i)
         {
-            SAFE_DELETE((*_constraints)[i]);
+            delete (*_constraints)[i];
         }
-        SAFE_DELETE(_constraints);
+        _constraints.reset();
     }
 
     // Remove collision object from physics controller.
     Game::getInstance()->getPhysicsController()->removeCollisionObject(this, true);
 
     // Clean up the rigid body and its related objects.
-    SAFE_DELETE(_body);
+    delete _body;
 
     // Unregister node listener (only registered for heihgtfield collision shape types).
     if (_collisionShape->getType() == PhysicsCollisionShape::SHAPE_HEIGHTFIELD)
@@ -222,7 +222,7 @@ PhysicsRigidBody* PhysicsRigidBody::create(Node* node, Properties* properties, c
 
     // Set the rigid body parameters to their defaults.
     Parameters parameters;
-    Vector3* gravity = nullptr;
+    std::unique_ptr<Vector3> gravity;
 
     // Load the defined rigid body parameters.
     properties->rewind();
@@ -261,8 +261,8 @@ PhysicsRigidBody* PhysicsRigidBody::create(Node* node, Properties* properties, c
         }
         else if (name == "gravity")
         {
-            gravity = new Vector3();
-            properties->getVector3(EMPTY_STRING, gravity);
+            gravity = std::make_unique<Vector3>();
+            properties->getVector3(EMPTY_STRING, gravity.get());
         }
         else if (name == "angularFactor")
         {
@@ -284,7 +284,7 @@ PhysicsRigidBody* PhysicsRigidBody::create(Node* node, Properties* properties, c
     if (gravity)
     {
         body->setGravity(*gravity);
-        SAFE_DELETE(gravity);
+        // gravity automatically cleaned up by unique_ptr
     }
 
     return body;
@@ -311,7 +311,7 @@ void PhysicsRigidBody::setKinematic(bool kinematic)
 void PhysicsRigidBody::setEnabled(bool enable)
 {
     PhysicsCollisionObject::setEnabled(enable);
-    if (enable) _body->setMotionState(_motionState);
+    if (enable) _body->setMotionState(_motionState.get());
 }
 
 //----------------------------------------------------------------------------
@@ -368,7 +368,7 @@ float PhysicsRigidBody::getHeight(float x, float z) const
 void PhysicsRigidBody::addConstraint(PhysicsConstraint* constraint)
 {
     assert(constraint);
-    if (_constraints == nullptr) _constraints = new std::vector<PhysicsConstraint*>();
+    if (!_constraints) _constraints = std::make_unique<std::vector<PhysicsConstraint*>>();
 
     _constraints->push_back(constraint);
 }

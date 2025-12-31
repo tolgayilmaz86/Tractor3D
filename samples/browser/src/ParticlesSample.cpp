@@ -1110,7 +1110,7 @@ void ParticlesSample::emitterChanged()
             _energyMax->setMax(f);
         }
     }
-    SAFE_DELETE(p);
+    delete p;
 
     // Set the values of UI controls to display the new emitter's settings.
     _startRed->setValue(emitter->getColorStart().x);

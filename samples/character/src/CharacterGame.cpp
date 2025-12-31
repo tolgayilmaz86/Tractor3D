@@ -170,7 +170,7 @@ void CharacterGame::drawSplash(void* param)
                 Vector4::one(),
                 true);
     batch->finish();
-    SAFE_DELETE(batch);
+    delete batch;
 }
 
 //----------------------------------------------------------------

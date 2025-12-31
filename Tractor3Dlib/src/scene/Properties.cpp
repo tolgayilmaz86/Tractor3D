@@ -583,7 +583,7 @@ Properties* Properties::create(const std::string& url)
     if (!p)
     {
         GP_WARN("Failed to load properties from url '%s'.", url);
-        SAFE_DELETE(properties);
+        delete properties;
         return nullptr;
     }
 
@@ -593,7 +593,7 @@ Properties* Properties::create(const std::string& url)
     if (p != properties)
     {
         p = p->clone();
-        SAFE_DELETE(properties);
+        delete properties;
     }
     p->setDirectoryPath(FileSystem::getDirectoryName(fileString));
     return p;
@@ -614,7 +614,7 @@ Properties::~Properties()
 {
     for (size_t i = 0, count = _namespaces.size(); i < count; ++i)
     {
-        SAFE_DELETE(_namespaces[i]);
+        delete _namespaces[i];
     }
 }
 
@@ -653,7 +653,7 @@ void Properties::resolveInheritance(const std::string& id)
                 // Delete the child's data.
                 for (size_t i = 0, count = derived->_namespaces.size(); i < count; i++)
                 {
-                    SAFE_DELETE(derived->_namespaces[i]);
+                    delete derived->_namespaces[i];
                 }
 
                 // Copy data from the parent into the child.
@@ -671,7 +671,7 @@ void Properties::resolveInheritance(const std::string& id)
                 derived->mergeWith(overrides);
 
                 // Delete the child copy.
-                SAFE_DELETE(overrides);
+                delete overrides;
             }
             derived->_visited = false;
         }

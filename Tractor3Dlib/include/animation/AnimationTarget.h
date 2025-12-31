@@ -13,6 +13,8 @@
  */
 #pragma once
 
+#include <memory>
+
 #include "animation/Animation.h"
 #include "animation/AnimationController.h"
 #include "graphics/Curve.h"
@@ -279,14 +281,12 @@ class AnimationTarget
      */
     void convertByValues(float* from, float* by, unsigned int componentCount);
 
-    std::vector<Animation::Channel*>* _animationChannels{
-        nullptr
-    }; // Collection of all animation channels that target the AnimationTarget
-
     /**
      * Storage for animations owned by this target.
      * This ensures AnimationPtr lifetime is maintained while channels reference the animation.
      */
     std::unordered_map<std::string, AnimationPtr> _animations;
+
+    std::unique_ptr<std::vector<Animation::Channel*>> _animationChannels; // Collection of all animation channels that target the AnimationTarget
 };
 } // namespace tractor

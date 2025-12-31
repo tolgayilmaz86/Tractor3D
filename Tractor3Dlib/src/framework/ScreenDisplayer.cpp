@@ -18,7 +18,7 @@
 namespace tractor
 {
 
-ScreenDisplayer* ScreenDisplayer::__scriptInstance = nullptr;
+std::unique_ptr<ScreenDisplayer> ScreenDisplayer::__scriptInstance = nullptr;
 
 //----------------------------------------------------------------------------
 ScreenDisplayer::~ScreenDisplayer()
@@ -30,9 +30,9 @@ ScreenDisplayer::~ScreenDisplayer()
 //----------------------------------------------------------------------------
 void ScreenDisplayer::start(const char* function, unsigned long time)
 {
-    if (__scriptInstance == nullptr)
+    if (!__scriptInstance)
     {
-        __scriptInstance = new ScreenDisplayer();
+        __scriptInstance = std::make_unique<ScreenDisplayer>();
     }
 
     __scriptInstance->_time = time;
@@ -41,6 +41,9 @@ void ScreenDisplayer::start(const char* function, unsigned long time)
 }
 
 //----------------------------------------------------------------------------
-void ScreenDisplayer::finish() { SAFE_DELETE(__scriptInstance); }
+void ScreenDisplayer::finish()
+{
+    __scriptInstance.reset();
+}
 
 } // namespace tractor

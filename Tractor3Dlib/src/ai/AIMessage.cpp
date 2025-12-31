@@ -18,8 +18,6 @@
 namespace tractor
 {
 
-AIMessage::~AIMessage() { SAFE_DELETE_ARRAY(_parameters); }
-
 //----------------------------------------------------------------------------
 AIMessage* AIMessage::create(unsigned int id,
                              const std::string& sender,
@@ -31,12 +29,15 @@ AIMessage* AIMessage::create(unsigned int id,
     message->_sender = sender;
     message->_receiver = receiver;
     message->_parameterCount = parameterCount;
-    if (parameterCount > 0) message->_parameters = new AIMessage::Parameter[parameterCount];
+    if (parameterCount > 0) message->_parameters = std::make_unique<AIMessage::Parameter[]>(parameterCount);
     return message;
 }
 
 //----------------------------------------------------------------------------
-void AIMessage::destroy(AIMessage* message) { SAFE_DELETE(message); }
+void AIMessage::destroy(AIMessage* message)
+{
+    delete message;
+}
 
 //----------------------------------------------------------------------------
 int AIMessage::getInt(unsigned int index) const

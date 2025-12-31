@@ -14,6 +14,7 @@
 #pragma once
 
 #include <functional>
+#include <memory>
 
 #include "framework/Game.h"
 #include "framework/Platform.h"
@@ -71,7 +72,7 @@ class ScreenDisplayer
   private:
     long _time{ 0L };
     double _startTime{ 0.0 };
-    static ScreenDisplayer* __scriptInstance;
+    static std::unique_ptr<ScreenDisplayer> __scriptInstance;
 };
 
 /**

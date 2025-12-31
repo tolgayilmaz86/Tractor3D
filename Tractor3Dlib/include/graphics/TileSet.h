@@ -198,14 +198,14 @@ class TileSet : public Drawable
     Drawable* clone(NodeCloneContext& context) override;
 
   private:
-    Vector2* _tiles{ nullptr };
+    std::unique_ptr<Vector2[]> _tiles;
     float _tileWidth{ 0.0f };
     float _tileHeight{ 0.0f };
     unsigned int _rowCount{ 0 };
     unsigned int _columnCount{ 0 };
     float _width{ 0.0f };
     float _height{ 0.0f };
-    SpriteBatch* _batch{ nullptr };
+    std::unique_ptr<SpriteBatch> _batch;
     float _opacity{ 1.0f };
     Vector4 _color{ Vector4::one() };
 };

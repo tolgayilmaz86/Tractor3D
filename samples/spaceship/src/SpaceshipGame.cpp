@@ -533,7 +533,7 @@ void SpaceshipGame::drawSplash(void* param)
                 Vector4::one(),
                 true);
     batch->finish();
-    SAFE_DELETE(batch);
+    delete batch;
 }
 
 bool SpaceshipGame::drawScene(Node* node, void* cookie)

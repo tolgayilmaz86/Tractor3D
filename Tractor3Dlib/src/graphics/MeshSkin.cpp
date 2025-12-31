@@ -29,8 +29,7 @@ namespace tractor
 MeshSkin::~MeshSkin()
 {
     clearJoints();
-
-    SAFE_DELETE_ARRAY(_matrixPalette);
+    // _matrixPalette is automatically cleaned up by unique_ptr
 }
 
 //----------------------------------------------------------------------------
@@ -132,11 +131,11 @@ void MeshSkin::setJointCount(unsigned int jointCount)
     _joints.resize(jointCount);
 
     // Rebuild the matrix palette. Each matrix is 3 rows of Vector4.
-    SAFE_DELETE_ARRAY(_matrixPalette);
+    _matrixPalette.reset();
 
     if (jointCount > 0)
     {
-        _matrixPalette = new Vector4[jointCount * PALETTE_ROWS];
+        _matrixPalette = std::make_unique<Vector4[]>(jointCount * PALETTE_ROWS);
         for (size_t i = 0; i < jointCount * PALETTE_ROWS; i += PALETTE_ROWS)
         {
             _matrixPalette[i + 0].set(1.0f, 0.0f, 0.0f, 0.0f);
@@ -174,7 +173,7 @@ Vector4* MeshSkin::getMatrixPalette() const
         assert(_joints[i]);
         _joints[i]->updateJointMatrix(getBindShape(), &_matrixPalette[i * PALETTE_ROWS]);
     }
-    return _matrixPalette;
+    return _matrixPalette.get();
 }
 
 //----------------------------------------------------------------------------

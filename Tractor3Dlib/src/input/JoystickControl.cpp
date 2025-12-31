@@ -19,13 +19,7 @@ namespace tractor
 {
 
 //-----------------------------------------------------------------------------
-JoystickControl::~JoystickControl()
-{
-    if (_innerSizePixels) SAFE_DELETE(_innerSizePixels);
-    if (_outerSizePixels) SAFE_DELETE(_outerSizePixels);
-    if (_innerRegionCoord) SAFE_DELETE_ARRAY(_innerRegionCoord);
-    if (_outerRegionCoord) SAFE_DELETE_ARRAY(_outerRegionCoord);
-}
+JoystickControl::~JoystickControl() = default;
 
 //-----------------------------------------------------------------------------
 JoystickControlPtr JoystickControl::create(const std::string& id, Theme::Style* style)
@@ -51,7 +45,7 @@ void JoystickControl::setInnerRegionSize(const Vector2& size,
 {
     if (_innerSizePixels)
     {
-        if (!_innerRegionCoord) _innerRegionCoord = new Vector2();
+        if (!_innerRegionCoord) _innerRegionCoord = std::make_unique<Vector2>();
 
         setRegion(size,
                   *_innerRegionCoord,
@@ -97,7 +91,7 @@ void JoystickControl::setOuterRegionSize(const Vector2& size,
     {
         if (!_outerRegionCoord)
         {
-            _outerRegionCoord = new Vector2();
+            _outerRegionCoord = std::make_unique<Vector2>();
         }
 
         setRegion(size,
@@ -182,7 +176,7 @@ void JoystickControl::initialize(const std::string& typeName,
     const std::string innerRegionId{ "innerRegion" };
     if (properties->exists(innerRegionId))
     {
-        _innerRegionCoord = new Vector2();
+        _innerRegionCoord = std::make_unique<Vector2>();
         getRegion(*_innerRegionCoord,
                   _innerRegionCoordBoundsBits,
                   properties->getString(innerRegionId));
@@ -191,7 +185,7 @@ void JoystickControl::initialize(const std::string& typeName,
     const std::string outerRegionId{ "outerRegion" };
     if (properties->exists(outerRegionId))
     {
-        _outerRegionCoord = new Vector2();
+        _outerRegionCoord = std::make_unique<Vector2>();
         getRegion(*_outerRegionCoord,
                   _outerRegionCoordBoundsBits,
                   properties->getString(outerRegionId));
@@ -271,7 +265,7 @@ void JoystickControl::updateAbsoluteSizes() noexcept
     {
         if (!_innerSizePixels)
         {
-            _innerSizePixels = new Vector2();
+            _innerSizePixels = std::make_unique<Vector2>();
         }
 
         *_innerSizePixels = _innerRegionCoord
@@ -288,7 +282,7 @@ void JoystickControl::updateAbsoluteSizes() noexcept
     {
         if (!_outerSizePixels)
         {
-            _outerSizePixels = new Vector2();
+            _outerSizePixels = std::make_unique<Vector2>();
         }
 
         *_outerSizePixels = _outerRegionCoord

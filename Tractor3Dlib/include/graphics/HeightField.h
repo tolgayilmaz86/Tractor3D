@@ -110,7 +110,7 @@ class HeightField : public std::enable_shared_from_this<HeightField>
      *
      * @return The underlying height array.
      */
-    float* getArray() const { return _array; }
+    float* getArray() const { return _array.get(); }
 
     /**
      * Returns the height at the specified row and column.
@@ -158,7 +158,7 @@ class HeightField : public std::enable_shared_from_this<HeightField>
                                  float heightMin,
                                  float heightMax);
 
-    float* _array;
+    std::unique_ptr<float[]> _array;
     unsigned int _cols;
     unsigned int _rows;
 };

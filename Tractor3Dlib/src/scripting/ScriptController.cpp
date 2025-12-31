@@ -261,13 +261,24 @@ bool ScriptController::loadScript(Script* script)
     // Track whether we added the script to the map (so we can remove it on failure)
     bool addedToMap = false;
     
-    // If not found, create a temporary shared_ptr (for reloading scenarios)
+    // If not found in map, the script must already be owned by a shared_ptr from the caller
+    // (loadScript(const std::string&, ...) creates it). We need to get that shared_ptr.
     if (!scriptPtr)
     {
-        // Create a new shared_ptr with the raw pointer - but we need to be careful here
-        // For reload case, we shouldn't create a new shared_ptr
-        // Just insert into the map for tracking purposes
-        scriptPtr = script->shared_from_this();
+        // Only call shared_from_this() if the object is already managed by a shared_ptr.
+        // This is safe because loadScript(const std::string&, ...) creates the Script 
+        // via ScriptPtr(new Script()) and holds onto it before calling this method.
+        try
+        {
+            scriptPtr = script->shared_from_this();
+        }
+        catch (const std::bad_weak_ptr&)
+        {
+            // This should not happen if called correctly from loadScript(const std::string&, ...)
+            // but provides a safety net.
+            GP_ERROR("Script object is not managed by a shared_ptr. Cannot load script: %s", script->_path.c_str());
+            return false;
+        }
         _scripts[script->_path].push_back(scriptPtr);
         addedToMap = true;
     }
@@ -275,7 +286,7 @@ bool ScriptController::loadScript(Script* script)
     // Load the contents of the script, but don't execute it yet
     const char* scriptSource = FileSystem::readAll(script->_path);
     int ret = luaL_loadstring(_lua, scriptSource); // [chunk]
-    SAFE_DELETE_ARRAY(scriptSource);
+    delete[] scriptSource;
 
     if (ret == LUA_OK)
     {
@@ -844,7 +855,7 @@ void ScriptController::finalize()
     // Cleanup any outstanding time listeners
     for (auto listener : _timeListeners)
     {
-        SAFE_DELETE(listener);
+        delete listener;
     }
     _timeListeners.clear();
 
@@ -1245,18 +1256,14 @@ bool ScriptController::executeFunction<long>(Script* script, const char* func, l
 
 //----------------------------------------------------------------------------
 template <>
-bool ScriptController::executeFunction<unsigned char>(Script* script,
-                                                      const char* func,
-                                                      unsigned char* out)
+bool ScriptController::executeFunction<unsigned char>(Script* script, const char* func, unsigned char* out)
 {
     SCRIPT_EXECUTE_FUNCTION_NO_PARAM(script, unsigned char, luaL_checkunsigned);
 }
 
 //----------------------------------------------------------------------------
 template <>
-bool ScriptController::executeFunction<unsigned short>(Script* script,
-                                                       const char* func,
-                                                       unsigned short* out)
+bool ScriptController::executeFunction<unsigned short>(Script* script, const char* func, unsigned short* out)
 {
     SCRIPT_EXECUTE_FUNCTION_NO_PARAM(script, unsigned short, luaL_checkunsigned);
 }
@@ -1270,9 +1277,7 @@ bool ScriptController::executeFunction<unsigned int>(Script* script, const char*
 
 //----------------------------------------------------------------------------
 template <>
-bool ScriptController::executeFunction<unsigned long>(Script* script,
-                                                      const char* func,
-                                                      unsigned long* out)
+bool ScriptController::executeFunction<unsigned long>(Script* script, const char* func, unsigned long* out)
 {
     SCRIPT_EXECUTE_FUNCTION_NO_PARAM(script, unsigned long, luaL_checkunsigned);
 }
@@ -1646,20 +1651,14 @@ bool ScriptController::executeFunction<unsigned long>(const char* func,
 
 //----------------------------------------------------------------------------
 template <>
-bool ScriptController::executeFunction<float>(const char* func,
-                                              const char* args,
-                                              float* out,
-                                              va_list* list)
+bool ScriptController::executeFunction<float>(const char* func, const char* args, float* out, va_list* list)
 {
     SCRIPT_EXECUTE_FUNCTION_PARAM_LIST(nullptr, float, luaL_checknumber);
 }
 
 //----------------------------------------------------------------------------
 template <>
-bool ScriptController::executeFunction<double>(const char* func,
-                                               const char* args,
-                                               double* out,
-                                               va_list* list)
+bool ScriptController::executeFunction<double>(const char* func, const char* args, double* out, va_list* list)
 {
     SCRIPT_EXECUTE_FUNCTION_PARAM_LIST(nullptr, double, luaL_checknumber);
 }
@@ -2278,10 +2277,10 @@ template <typename T> ScriptUtil::LuaArray<T>::~LuaArray()
         if (_data->refCount == 0)
         {
             unsigned char* value = (unsigned char*)_data->value;
-            SAFE_DELETE_ARRAY(value);
+            delete[] value;
         }
 
-        SAFE_DELETE(_data);
+        delete _data;
     }
 }
 

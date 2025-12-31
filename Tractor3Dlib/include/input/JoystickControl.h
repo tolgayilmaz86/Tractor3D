@@ -256,13 +256,13 @@ class JoystickControl : public Control
     }
 
     float _radiusCoord{ 1.0f };
-    Vector2* _innerRegionCoord{ nullptr };
-    Vector2* _outerRegionCoord{ nullptr };
+    std::unique_ptr<Vector2> _innerRegionCoord;
+    std::unique_ptr<Vector2> _outerRegionCoord;
     int _innerRegionCoordBoundsBits{ 0 };
     int _outerRegionCoordBoundsBits{ 0 };
     float _radiusPixels{ 1.0f };
-    Vector2* _innerSizePixels{ nullptr };
-    Vector2* _outerSizePixels{ nullptr };
+    std::unique_ptr<Vector2> _innerSizePixels;
+    std::unique_ptr<Vector2> _outerSizePixels;
     Rectangle _screenRegionPixels{};
     bool _relative{ true };
     Vector2 _value{ Vector2::zero() };

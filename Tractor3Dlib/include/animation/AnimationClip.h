@@ -445,11 +445,11 @@ class AnimationClip : public std::enable_shared_from_this<AnimationClip>, public
     float _crossFadeOutElapsed{ 0.0f }; // The amount of time that has elapsed for the crossfade.
     unsigned long _crossFadeOutDuration{ 0 };           // The duration of the cross fade.
     float _blendWeight{ 1.0f };                         // The clip's blendweight.
-    std::vector<AnimationValue*> _values{};             // AnimationValue holder.
-    std::vector<Listener*>* _beginListeners{ nullptr }; // Collection of begin listeners on the clip.
-    std::vector<Listener*>* _endListeners{ nullptr };   // Collection of end listeners on the clip.
-    std::list<ListenerEvent*>* _listeners{ nullptr }; // Ordered collection of listeners on the clip.
-    std::list<ListenerEvent*>::iterator* _listenerItr{  nullptr }; // Iterator that points to the next listener event to be triggered.
+    std::vector<std::unique_ptr<AnimationValue>> _values{};             // AnimationValue holder.
+    std::unique_ptr<std::vector<Listener*>> _beginListeners; // Collection of begin listeners on the clip.
+    std::unique_ptr<std::vector<Listener*>> _endListeners;   // Collection of end listeners on the clip.
+    std::unique_ptr<std::list<std::unique_ptr<ListenerEvent>>> _listeners; // Ordered collection of listeners on the clip.
+    std::list<std::unique_ptr<ListenerEvent>>::iterator _listenerItr; // Iterator that points to the next listener event to be triggered.
 };
 
 } // namespace tractor

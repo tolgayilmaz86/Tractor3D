@@ -386,7 +386,8 @@ void Node::removeTag(const std::string& name)
         _tags->erase(name);
         if (_tags->size() == 0)
         {
-            SAFE_DELETE(_tags);
+            delete _tags;
+            _tags = nullptr;
         }
     }
 }

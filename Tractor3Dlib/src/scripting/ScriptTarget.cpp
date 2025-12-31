@@ -35,7 +35,7 @@ ScriptTarget::EventRegistry::~EventRegistry()
 {
     for (size_t i = 0, count = _events.size(); i < count; ++i)
     {
-        SAFE_DELETE(_events[i]);
+        delete _events[i];
     }
 }
 
@@ -79,7 +79,8 @@ ScriptTarget::ScriptTarget()
 ScriptTarget::~ScriptTarget()
 {
     // Free callbacks
-    SAFE_DELETE(_scriptCallbacks);
+    delete _scriptCallbacks;
+    _scriptCallbacks = nullptr;
 
     // Free scripts
     ScriptEntry* se = _scripts;
@@ -89,7 +90,7 @@ ScriptTarget::~ScriptTarget()
         se = se->next;
 
         // shared_ptr will release automatically when ScriptEntry is deleted
-        SAFE_DELETE(tmp);
+        delete tmp;
     }
 
     // Free registry entries
@@ -101,7 +102,7 @@ ScriptTarget::~ScriptTarget()
 
         // Don't delete the actual EventRegistry, since it's shared by all
         // ScriptTargets of the same type
-        SAFE_DELETE(tmp);
+        delete tmp;
     }
 }
 
@@ -204,7 +205,7 @@ void ScriptTarget::removeScript(ScriptEntry* se)
     ScriptPtr script = se->script;
 
     // Delete the ScriptEntry
-    SAFE_DELETE(se);
+    delete se;
 
     // Erase any callback functions registered for this script
     if (_scriptCallbacks)

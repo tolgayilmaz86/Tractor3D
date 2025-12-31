@@ -482,7 +482,7 @@ TexturePtr Texture::createCompressedPVRTC(const std::string& path)
     // Read texture data.
     GLsizei width, height;
     GLenum format;
-    GLubyte* data = nullptr;
+    std::unique_ptr<GLubyte[]> data;
     unsigned int mipMapCount;
     unsigned int faceCount;
     GLenum faces[6] = { GL_TEXTURE_2D };
@@ -490,26 +490,26 @@ TexturePtr Texture::createCompressedPVRTC(const std::string& path)
     if (version == 0x03525650)
     {
         // Modern PVR file format.
-        data = readCompressedPVRTC(path,
+        data.reset(readCompressedPVRTC(path,
                                    stream.get(),
                                    &width,
                                    &height,
                                    &format,
                                    &mipMapCount,
                                    &faceCount,
-                                   faces);
+                                   faces));
     }
     else
     {
         // Legacy PVR file format.
-        data = readCompressedPVRTCLegacy(path,
+        data.reset(readCompressedPVRTCLegacy(path,
                                          stream.get(),
                                          &width,
                                          &height,
                                          &format,
                                          &mipMapCount,
                                          &faceCount,
-                                         faces);
+                                         faces));
     }
     if (data == nullptr)
     {
@@ -542,7 +542,7 @@ TexturePtr Texture::createCompressedPVRTC(const std::string& path)
     texture->_minFilter = minFilter;
 
     // Load the data for each level.
-    GLubyte* ptr = data;
+    GLubyte* ptr = data.get();
     for (size_t level = 0; level < mipMapCount; ++level)
     {
         unsigned int dataSize = computePVRTCDataSize(width, height, bpp);
@@ -565,8 +565,7 @@ TexturePtr Texture::createCompressedPVRTC(const std::string& path)
         ptr += dataSize * faceCount;
     }
 
-    // Free data.
-    SAFE_DELETE_ARRAY(data);
+    // data automatically freed by unique_ptr
 
     // Restore the texture id
     GL_ASSERT(glBindTexture((GLenum)__currentTextureType, __currentTextureId));
@@ -753,7 +752,7 @@ GLubyte* Texture::readCompressedPVRTC(const std::string& path,
     read = stream->read(data, 1, dataSize);
     if (read != dataSize)
     {
-        SAFE_DELETE_ARRAY(data);
+        delete[] data;
         GP_ERROR("Failed to read texture data from PVR file '%s'.", path);
         return nullptr;
     }
@@ -857,7 +856,7 @@ GLubyte* Texture::readCompressedPVRTCLegacy(const std::string& path,
     read = (int)stream->read(data, 1, totalSize);
     if (read != totalSize)
     {
-        SAFE_DELETE_ARRAY(data);
+        delete[] data;
         GP_ERROR("Failed to load texture data for pvrtc file '%s'.", path);
         return nullptr;
     }
@@ -919,7 +918,7 @@ TexturePtr Texture::createCompressedDDS(const std::string& path)
 
     struct dds_mip_level
     {
-        GLubyte* data;
+        std::unique_ptr<GLubyte[]> data;
         GLsizei width;
         GLsizei height;
         GLsizei size;
@@ -983,8 +982,7 @@ TexturePtr Texture::createCompressedDDS(const std::string& path)
     }
 
     // Allocate mip level structures.
-    dds_mip_level* mipLevels = new dds_mip_level[header.dwMipMapCount * facecount];
-    memset(mipLevels, 0, sizeof(dds_mip_level) * header.dwMipMapCount * facecount);
+    std::vector<dds_mip_level> mipLevels(header.dwMipMapCount * facecount);
 
     GLenum format = 0;
     GLenum internalFormat = 0;
@@ -1033,7 +1031,6 @@ TexturePtr Texture::createCompressedDDS(const std::string& path)
                 GP_ERROR("Unsupported compressed texture format (%d) for DDS file '%s'.",
                          header.ddspf.dwFourCC,
                          path);
-                SAFE_DELETE_ARRAY(mipLevels);
                 return nullptr;
         }
 
@@ -1047,17 +1044,11 @@ TexturePtr Texture::createCompressedDDS(const std::string& path)
                 level.height = height;
                 level.size =
                     std::max(1, (width + 3) >> 2) * std::max(1, (height + 3) >> 2) * bytesPerBlock;
-                level.data = new GLubyte[level.size];
+                level.data = std::make_unique<GLubyte[]>(level.size);
 
-                if (stream->read(level.data, 1, level.size) != (unsigned int)level.size)
+                if (stream->read(level.data.get(), 1, level.size) != (unsigned int)level.size)
                 {
                     GP_ERROR("Failed to load dds compressed texture bytes for texture: %s", path);
-
-                    // Cleanup mip data.
-                    for (size_t face = 0; face < facecount; ++face)
-                        for (size_t i = 0; i < header.dwMipMapCount; ++i)
-                            SAFE_DELETE_ARRAY(mipLevels[i + face * header.dwMipMapCount].data);
-                    SAFE_DELETE_ARRAY(mipLevels);
                     return texture;
                 }
 
@@ -1112,7 +1103,6 @@ TexturePtr Texture::createCompressedDDS(const std::string& path)
             GP_ERROR("Failed to create texture from uncompressed DDS file '%s': Unsupported color "
                      "format (must be one of R8G8B8, A8R8G8B8, A8B8G8R8, X8R8G8B8, X8B8G8R8.",
                      path);
-            SAFE_DELETE_ARRAY(mipLevels);
             return nullptr;
         }
 
@@ -1126,17 +1116,11 @@ TexturePtr Texture::createCompressedDDS(const std::string& path)
                 level.width = width;
                 level.height = height;
                 level.size = width * height * (header.ddspf.dwRGBBitCount >> 3);
-                level.data = new GLubyte[level.size];
+                level.data = std::make_unique<GLubyte[]>(level.size);
 
-                if (stream->read(level.data, 1, level.size) != (unsigned int)level.size)
+                if (stream->read(level.data.get(), 1, level.size) != (unsigned int)level.size)
                 {
                     GP_ERROR("Failed to load bytes for RGB dds texture: %s", path);
-
-                    // Cleanup mip data.
-                    for (size_t face = 0; face < facecount; ++face)
-                        for (size_t i = 0; i < header.dwMipMapCount; ++i)
-                            SAFE_DELETE_ARRAY(mipLevels[i + face * header.dwMipMapCount].data);
-                    SAFE_DELETE_ARRAY(mipLevels);
                     return texture;
                 }
 
@@ -1201,7 +1185,6 @@ TexturePtr Texture::createCompressedDDS(const std::string& path)
         GP_ERROR("Failed to create texture from DDS file '%s': unsupported flags (%d).",
                  path,
                  header.ddspf.dwFlags);
-        SAFE_DELETE_ARRAY(mipLevels);
         return nullptr;
     }
 
@@ -1242,7 +1225,7 @@ TexturePtr Texture::createCompressedDDS(const std::string& path)
                                                  level.height,
                                                  0,
                                                  level.size,
-                                                 level.data));
+                                                 level.data.get()));
             }
             else
             {
@@ -1254,16 +1237,13 @@ TexturePtr Texture::createCompressedDDS(const std::string& path)
                                        0,
                                        format,
                                        GL_UNSIGNED_BYTE,
-                                       level.data));
+                                       level.data.get()));
             }
-
-            // Clean up the texture data.
-            SAFE_DELETE_ARRAY(level.data);
+            // level.data automatically cleaned up by unique_ptr when vector is destroyed
         }
     }
 
-    // Clean up mip levels structure.
-    SAFE_DELETE_ARRAY(mipLevels);
+    // mipLevels vector automatically cleaned up
 
     // Restore the texture id
     GL_ASSERT(glBindTexture((GLenum)__currentTextureType, __currentTextureId));

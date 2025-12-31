@@ -34,7 +34,11 @@ static ControlFactory* __controlFactory = nullptr;
 ControlFactory::ControlFactory() { registerStandardControls(); }
 
 //----------------------------------------------------------------
-void ControlFactory::finalize() { SAFE_DELETE(__controlFactory); }
+void ControlFactory::finalize()
+{
+    delete __controlFactory;
+    __controlFactory = nullptr;
+}
 
 //----------------------------------------------------------------
 ControlFactory* ControlFactory::getInstance()

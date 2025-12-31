@@ -213,7 +213,7 @@ class ParticleEmitter : public Drawable
     /**
      * Destructor.
      */
-    ~ParticleEmitter();
+    ~ParticleEmitter() = default;
 
     /**
      * Sets a new texture for this particle emitter.
@@ -838,7 +838,7 @@ class ParticleEmitter : public Drawable
 
     unsigned int _particleCountMax{ 0 };
     unsigned int _particleCount{ 0 };
-    Particle* _particles{ nullptr };
+    std::unique_ptr<Particle[]> _particles;
     unsigned int _emissionRate{ PARTICLE_EMISSION_RATE };
     bool _started{ false };
     bool _ellipsoid{ false };
@@ -865,13 +865,13 @@ class ParticleEmitter : public Drawable
     Vector3 _rotationAxis{ Vector3::zero() };
     Vector3 _rotationAxisVar{ Vector3::zero() };
     Matrix _rotation{ Matrix::identity() };
-    SpriteBatch* _spriteBatch{ nullptr };
+    std::unique_ptr<SpriteBatch> _spriteBatch;
     BlendMode _spriteBlendMode{ BLEND_ALPHA };
     float _spriteTextureWidth{ 0 };
     float _spriteTextureHeight{ 0 };
     float _spriteTextureWidthRatio{ 0 };
     float _spriteTextureHeightRatio{ 0 };
-    float* _spriteTextureCoords{ nullptr };
+    std::unique_ptr<float[]> _spriteTextureCoords;
     bool _spriteAnimated{ false };
     bool _spriteLooped{ false };
     unsigned int _spriteFrameCount{ 1 };

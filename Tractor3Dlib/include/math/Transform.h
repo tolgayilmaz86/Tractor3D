@@ -898,7 +898,7 @@ class Transform : public AnimationTarget, public ScriptTarget
     /**
      * List of TransformListener's on the Transform.
      */
-    std::list<TransformListener>* _listeners;
+    std::unique_ptr<std::list<TransformListener>> _listeners;
 
   private:
     void applyAnimationValueRotation(AnimationValue* value, unsigned int index, float blendWeight);

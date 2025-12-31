@@ -38,11 +38,6 @@ static int __currentPatchIndex = -1;
 //----------------------------------------------------------------------------
 TerrainPatch::~TerrainPatch()
 {
-    while (_layers.size() > 0)
-    {
-        deleteLayer(*_layers.begin());
-    }
-
     if (auto camera = _camera.lock())
     {
         camera->removeListener(this);
@@ -346,7 +341,7 @@ void TerrainPatch::addLOD(float* heights,
 }
 
 //----------------------------------------------------------------------------
-void TerrainPatch::deleteLayer(Layer* layer)
+void TerrainPatch::deleteLayer(std::unique_ptr<Layer>& layer)
 {
     // Release layer samplers - with shared_ptr, just reset the entry
     if (layer->textureIndex != -1 && layer->textureIndex < (int)_samplers.size())
@@ -366,9 +361,7 @@ void TerrainPatch::deleteLayer(Layer* layer)
             _samplers[layer->blendIndex].reset();
         }
     }
-
-    _layers.erase(layer);
-    delete layer;
+    // unique_ptr will be automatically deleted when erased from set
 }
 
 //----------------------------------------------------------------------------
@@ -430,11 +423,12 @@ bool TerrainPatch::setLayer(int index,
                             int blendChannel)
 {
     // If there is an existing layer at this index, delete it
-    for (auto layer : _layers)
+    for (auto it = _layers.begin(); it != _layers.end(); ++it)
     {
-        if (layer->index == index)
+        if ((*it)->index == index)
         {
-            deleteLayer(layer);
+            deleteLayer(const_cast<std::unique_ptr<Layer>&>(*it));
+            _layers.erase(it);
             break;
         }
     }
@@ -451,14 +445,14 @@ bool TerrainPatch::setLayer(int index,
     }
 
     // Create the layer
-    Layer* layer = new Layer();
+    auto layer = std::make_unique<Layer>();
     layer->index = index;
     layer->textureIndex = textureIndex;
     layer->textureRepeat = textureRepeat;
     layer->blendIndex = blendIndex;
     layer->blendChannel = blendChannel;
 
-    _layers.insert(layer);
+    _layers.insert(std::move(layer));
 
     _bits |= TERRAINPATCH_DIRTY_MATERIAL;
 
@@ -501,11 +495,8 @@ std::string TerrainPatch::passCreated(Pass* pass)
     // Rebuild layer lists while we're at it.
     //
     int layerIndex = 0;
-    for (std::set<Layer*, LayerCompare>::iterator itr = _layers.begin(); itr != _layers.end();
-         ++itr, ++layerIndex)
+    for (const auto& layer : _layers)
     {
-        Layer* layer = *itr;
-
         defines << ";TEXTURE_INDEX_" << layerIndex << " " << layer->textureIndex;
         defines << ";TEXTURE_REPEAT_" << layerIndex << " vec2(" << layer->textureRepeat.x << ","
                 << layer->textureRepeat.y << ")";
@@ -515,6 +506,7 @@ std::string TerrainPatch::passCreated(Pass* pass)
             defines << ";BLEND_INDEX_" << layerIndex << " " << layer->blendIndex;
             defines << ";BLEND_CHANNEL_" << layerIndex << " " << layer->blendChannel;
         }
+        ++layerIndex;
     }
 
     return defines.str();
@@ -681,7 +673,7 @@ float TerrainPatch::computeHeight(float* heights, unsigned int width, unsigned i
 }
 
 //----------------------------------------------------------------------------
-bool TerrainPatch::LayerCompare::operator()(const Layer* lhs, const Layer* rhs) const
+bool TerrainPatch::LayerCompare::operator()(const std::unique_ptr<Layer>& lhs, const std::unique_ptr<Layer>& rhs) const
 {
     return (lhs->index < rhs->index);
 }
@@ -701,7 +693,7 @@ bool TerrainAutoBindingResolver::resolveAutoBinding(const std::string& autoBindi
             {
                 if (__currentPatchIndex >= 0 && __currentPatchIndex < (int)terrain->_patches.size())
                 {
-                    return terrain->_patches[__currentPatchIndex];
+                    return terrain->_patches[__currentPatchIndex].get();
                 }
             }
             return nullptr;

@@ -58,7 +58,7 @@ Animation::~Animation()
         {
             channel->_target->removeChannel(channel);
         }
-        SAFE_DELETE(channel);
+        delete channel;
     }
     _channels.clear();
 
@@ -114,11 +114,7 @@ Animation::Channel::Channel(const Channel& copy, const std::shared_ptr<Animation
 }
 
 //----------------------------------------------------------------------------
-Animation::Channel::~Channel()
-{
-    // _curve is a shared_ptr and will be released automatically
-    // _animation is a weak_ptr and doesn't need explicit cleanup
-}
+Animation::Channel::~Channel() = default;
 
 //----------------------------------------------------------------------------
 void Animation::createClips(const std::string& url)
@@ -365,7 +361,7 @@ Animation::Channel* Animation::createChannel(AnimationTarget* target,
     unsigned long lowest = keyTimes[0];
     unsigned long duration = keyTimes[keyCount - 1] - lowest;
 
-    float* normalizedKeyTimes = new float[keyCount];
+    auto normalizedKeyTimes = std::make_unique<float[]>(keyCount);
 
     normalizedKeyTimes[0] = 0.0f;
     curve->setPoint(0,
@@ -396,8 +392,6 @@ Animation::Channel* Animation::createChannel(AnimationTarget* target,
                     (Curve::InterpolationType)type,
                     keyInValue + pointOffset,
                     keyOutValue + pointOffset);
-
-    SAFE_DELETE_ARRAY(normalizedKeyTimes);
 
     Channel* channel = new Channel(shared_from_this(), target, propertyId, curve, duration);
     addChannel(channel);

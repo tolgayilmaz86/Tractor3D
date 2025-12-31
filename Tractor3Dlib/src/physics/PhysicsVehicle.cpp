@@ -202,10 +202,10 @@ void PhysicsVehicle::initialize()
     // Create the vehicle and add it to world
     btRigidBody* body = reinterpret_cast<btRigidBody*>(_rigidBody->getCollisionObject());
     btDynamicsWorld* dynamicsWorld = Game::getInstance()->getPhysicsController()->_world;
-    _vehicleRaycaster = new VehicleNotMeRaycaster(dynamicsWorld, body);
-    _vehicle = bullet_new<btRaycastVehicle>(_vehicleTuning, body, _vehicleRaycaster);
+    _vehicleRaycaster = std::make_unique<VehicleNotMeRaycaster>(dynamicsWorld, body);
+    _vehicle = std::unique_ptr<btRaycastVehicle>(bullet_new<btRaycastVehicle>(_vehicleTuning, body, _vehicleRaycaster.get()));
     body->setActivationState(DISABLE_DEACTIVATION);
-    dynamicsWorld->addVehicle(_vehicle);
+    dynamicsWorld->addVehicle(_vehicle.get());
     _vehicle->setCoordinateSystem(0, 1, 2);
 }
 
@@ -215,9 +215,8 @@ PhysicsVehicle::~PhysicsVehicle()
     // Note that the destructor for PhysicsRigidBody calls removeCollisionObject and so
     // that is where the rigid body gets removed from the dynamics world. The vehicle
     // itself is just an action interface in the dynamics world.
-    SAFE_DELETE(_vehicle);
-    SAFE_DELETE(_vehicleRaycaster);
-    SAFE_DELETE(_rigidBody);
+    // _vehicle and _vehicleRaycaster automatically cleaned up by unique_ptr
+    delete _rigidBody;
 }
 
 //----------------------------------------------------------------------------
@@ -226,7 +225,7 @@ void PhysicsVehicle::addWheel(PhysicsVehicleWheel* wheel)
     unsigned i = (unsigned int)_wheels.size();
     _wheels.push_back(wheel);
     wheel->setHost(this, i);
-    wheel->addToVehicle(_vehicle);
+    wheel->addToVehicle(_vehicle.get());
 }
 
 //----------------------------------------------------------------------------

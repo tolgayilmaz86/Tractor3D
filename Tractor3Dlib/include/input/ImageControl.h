@@ -162,7 +162,7 @@ class ImageControl : public Control
     Rectangle _srcRegion{ Rectangle::empty() };
     // Destination region.
     Rectangle _dstRegion{ Rectangle::empty() };
-    SpriteBatch* _batch{ nullptr };
+    std::unique_ptr<SpriteBatch> _batch;
 
     // One over texture width and height, for use when calculating UVs from a new source region.
     float _tw{ 0.0f };

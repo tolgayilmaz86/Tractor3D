@@ -63,6 +63,11 @@ class AnimationValue
      */
     void setFloats(unsigned int index, float* values, unsigned int count);
 
+    /**
+     * Destructor.
+     */
+    ~AnimationValue() = default;
+
   private:
     /**
      * Constructor.
@@ -78,11 +83,6 @@ class AnimationValue
      * Constructor.
      */
     AnimationValue(const AnimationValue& copy);
-
-    /**
-     * Destructor.
-     */
-    ~AnimationValue() = default;
 
     /**
      * Copy assignment operator using copy-and-swap idiom.

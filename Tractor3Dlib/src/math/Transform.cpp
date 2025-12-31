@@ -63,7 +63,7 @@ Transform::Transform(const Transform& copy) : _matrixDirtyBits(0), _listeners(nu
 }
 
 //----------------------------------------------------------------------------
-Transform::~Transform() { SAFE_DELETE(_listeners); }
+Transform::~Transform() = default;
 
 //----------------------------------------------------------------------------
 void Transform::resumeTransformChanged()
@@ -925,7 +925,7 @@ void Transform::addListener(Transform::Listener* listener, long cookie)
 {
     assert(listener);
 
-    if (_listeners == nullptr) _listeners = new std::list<TransformListener>();
+    if (!_listeners) _listeners = std::make_unique<std::list<TransformListener>>();
 
     TransformListener l;
     l.listener = listener;

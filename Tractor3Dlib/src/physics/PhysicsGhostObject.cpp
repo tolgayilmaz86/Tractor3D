@@ -42,7 +42,7 @@ PhysicsGhostObject::PhysicsGhostObject(Node* node,
                                     | btCollisionObject::CF_NO_CONTACT_RESPONSE);
 
     // Initialize a physics motion state object for syncing the transform.
-    _motionState = new PhysicsMotionState(_node, this, &centerOfMassOffset);
+    _motionState = std::make_unique<PhysicsMotionState>(_node, this, &centerOfMassOffset);
     _motionState->getWorldTransform(_ghostObject->getWorldTransform());
 
     // Add the ghost object to the physics world.
@@ -61,7 +61,7 @@ PhysicsGhostObject::~PhysicsGhostObject()
     assert(Game::getInstance()->getPhysicsController());
     Game::getInstance()->getPhysicsController()->removeCollisionObject(this, true);
 
-    SAFE_DELETE(_ghostObject);
+    delete _ghostObject;
 }
 
 //----------------------------------------------------------------------------

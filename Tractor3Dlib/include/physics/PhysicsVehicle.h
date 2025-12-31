@@ -408,10 +408,10 @@ class PhysicsVehicle : public PhysicsCollisionObject
     float _boostGain;
     float _downforce;
     float _speedSmoothed;
-    PhysicsRigidBody* _rigidBody;
+    PhysicsRigidBody* _rigidBody{ nullptr };
     btRaycastVehicle::btVehicleTuning _vehicleTuning;
-    btVehicleRaycaster* _vehicleRaycaster;
-    btRaycastVehicle* _vehicle;
+    std::unique_ptr<btVehicleRaycaster> _vehicleRaycaster;
+    std::unique_ptr<btRaycastVehicle> _vehicle;
     std::vector<PhysicsVehicleWheel*> _wheels;
 };
 

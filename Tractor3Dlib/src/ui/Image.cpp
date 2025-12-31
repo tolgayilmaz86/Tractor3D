@@ -156,6 +156,9 @@ std::shared_ptr<Image> Image::create(unsigned int width, unsigned int height, Im
 }
 
 //----------------------------------------------------------------
-Image::~Image() { SAFE_DELETE_ARRAY(_data); }
+Image::~Image()
+{
+    delete[] _data;
+}
 
 } // namespace tractor

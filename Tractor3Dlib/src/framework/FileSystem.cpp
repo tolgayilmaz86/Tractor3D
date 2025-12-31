@@ -149,8 +149,8 @@ char* FileSystem::readAll(const std::string& filePath, int* fileSize)
     size_t size = stream->length();
 
     // Read entire file contents.
-    char* buffer = new char[size + 1];
-    size_t read = stream->read(buffer, 1, size);
+    auto buffer = std::make_unique<char[]>(size + 1);
+    size_t read = stream->read(buffer.get(), 1, size);
     if (read != size)
     {
         GP_ERROR("Failed to read complete contents of file '%s' (amount read vs. file size: %u < "
@@ -158,7 +158,6 @@ char* FileSystem::readAll(const std::string& filePath, int* fileSize)
                  filePath,
                  read,
                  size);
-        SAFE_DELETE_ARRAY(buffer);
         return nullptr;
     }
 
@@ -167,7 +166,7 @@ char* FileSystem::readAll(const std::string& filePath, int* fileSize)
 
     if (fileSize) *fileSize = (int)size;
 
-    return buffer;
+    return buffer.release();
 }
 
 //----------------------------------------------------------------------------

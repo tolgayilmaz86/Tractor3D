@@ -33,15 +33,7 @@ Model::Model(std::shared_ptr<Mesh> mesh) : Drawable(), _mesh(mesh)
 Model::~Model()
 {
     _material.reset();
-    if (_partMaterials)
-    {
-        for (size_t i = 0; i < _partCount; ++i)
-        {
-            _partMaterials[i].reset();
-        }
-        SAFE_DELETE_ARRAY(_partMaterials);
-    }
-    SAFE_DELETE(_skin);
+    // _partMaterials and _skin are automatically cleaned up by unique_ptr
 }
 
 //----------------------------------------------------------------------------
@@ -116,9 +108,9 @@ void Model::setMaterial(MaterialPtr material, int partIndex)
         else
         {
             // Allocate part arrays for the first time.
-            if (_partMaterials == nullptr)
+            if (!_partMaterials)
             {
-                _partMaterials = new MaterialPtr[_partCount];
+                _partMaterials = std::make_unique<MaterialPtr[]>(_partCount);
             }
         }
 
@@ -209,13 +201,10 @@ bool Model::hasMaterial(unsigned int partIndex) const
 //----------------------------------------------------------------------------
 void Model::setSkin(MeshSkin* skin)
 {
-    if (_skin != skin)
+    if (_skin.get() != skin)
     {
-        // Free the old skin
-        SAFE_DELETE(_skin);
-
-        // Assign the new skin
-        _skin = skin;
+        // Assign the new skin (unique_ptr takes ownership)
+        _skin.reset(skin);
         if (_skin) _skin->_model = this;
     }
 }
@@ -455,16 +444,12 @@ void Model::validatePartCount()
         // Allocate new arrays and copy old items to them.
         if (_partMaterials)
         {
-            MaterialPtr* oldArray = _partMaterials;
-            _partMaterials = new MaterialPtr[partCount];
-            if (oldArray)
+            auto oldArray = std::move(_partMaterials);
+            _partMaterials = std::make_unique<MaterialPtr[]>(partCount);
+            for (size_t i = 0; i < _partCount; ++i)
             {
-                for (size_t i = 0; i < _partCount; ++i)
-                {
-                    _partMaterials[i] = oldArray[i];
-                }
+                _partMaterials[i] = oldArray[i];
             }
-            SAFE_DELETE_ARRAY(oldArray);
         }
         // Update local part count.
         _partCount = _mesh->getPartCount();

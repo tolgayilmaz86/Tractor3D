@@ -38,7 +38,7 @@ PhysicsConstraint::~PhysicsConstraint()
     // Remove the constraint from the physics world and delete the Bullet object.
     assert(Game::getInstance()->getPhysicsController());
     Game::getInstance()->getPhysicsController()->removeConstraint(this);
-    SAFE_DELETE(_constraint);
+    delete _constraint;
 }
 
 //----------------------------------------------------------------------------

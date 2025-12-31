@@ -85,8 +85,8 @@ PhysicsCharacter::PhysicsCharacter(Node* node,
     // Register ourselves as an action on the physics world so we are called back during physics ticks.
     assert(Game::getInstance()->getPhysicsController()
            && Game::getInstance()->getPhysicsController()->_world);
-    _actionInterface = new ActionInterface(this);
-    Game::getInstance()->getPhysicsController()->_world->addAction(_actionInterface);
+    _actionInterface = std::make_unique<ActionInterface>(this);
+    Game::getInstance()->getPhysicsController()->_world->addAction(_actionInterface.get());
 }
 
 //----------------------------------------------------------------------------
@@ -95,8 +95,8 @@ PhysicsCharacter::~PhysicsCharacter()
     // Unregister ourselves as action from world.
     assert(Game::getInstance()->getPhysicsController()
            && Game::getInstance()->getPhysicsController()->_world);
-    Game::getInstance()->getPhysicsController()->_world->removeAction(_actionInterface);
-    SAFE_DELETE(_actionInterface);
+    Game::getInstance()->getPhysicsController()->_world->removeAction(_actionInterface.get());
+    // _actionInterface automatically cleaned up by unique_ptr
 }
 
 //----------------------------------------------------------------------------

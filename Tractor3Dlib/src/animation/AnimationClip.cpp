@@ -57,37 +57,18 @@ AnimationClip::AnimationClip(const std::string& id,
                               assert(channel->getCurve());
                               // Construct AnimationValue and add it to the values vector
                               _values.emplace_back(
-                                  new AnimationValue(channel->getCurve()->getComponentCount()));
+                                  std::unique_ptr<AnimationValue>(new AnimationValue(channel->getCurve()->getComponentCount())));
                           });
 }
 
 //----------------------------------------------------------------------------
 AnimationClip::~AnimationClip()
 {
-    std::vector<AnimationValue*>::iterator valueIter = _values.begin();
-    while (valueIter != _values.end())
-    {
-        SAFE_DELETE(*valueIter);
-        valueIter++;
-    }
     _values.clear();
-
     _crossFadeToClip.reset();
-    SAFE_DELETE(_beginListeners);
-    SAFE_DELETE(_endListeners);
-
-    if (_listeners)
-    {
-        *_listenerItr = _listeners->begin();
-        while (*_listenerItr != _listeners->end())
-        {
-            ListenerEvent* lEvt = **_listenerItr;
-            SAFE_DELETE(lEvt);
-            ++(*_listenerItr);
-        }
-        SAFE_DELETE(_listeners);
-    }
-    SAFE_DELETE(_listenerItr);
+    _beginListeners.reset();
+    _endListeners.reset();
+    _listeners.reset();
 }
 
 //----------------------------------------------------------------------------
@@ -261,42 +242,40 @@ void AnimationClip::addListener(AnimationClip::Listener* listener, unsigned long
 
     if (!_listeners)
     {
-        _listeners = new std::list<ListenerEvent*>;
-        _listeners->emplace_front(new ListenerEvent(listener, eventTime));
+        _listeners = std::make_unique<std::list<std::unique_ptr<ListenerEvent>>>();
+        _listeners->emplace_front(std::make_unique<ListenerEvent>(listener, eventTime));
 
-        _listenerItr = new std::list<ListenerEvent*>::iterator;
-        if (isClipStateBitSet(CLIP_IS_PLAYING_BIT)) *_listenerItr = _listeners->begin();
+        if (isClipStateBitSet(CLIP_IS_PLAYING_BIT)) _listenerItr = _listeners->begin();
     }
     else
     {
-        for (std::list<ListenerEvent*>::iterator itr = _listeners->begin(); itr != _listeners->end();
-             itr++)
+        for (auto itr = _listeners->begin(); itr != _listeners->end(); itr++)
         {
             assert(*itr);
             if (eventTime < (*itr)->_eventTime)
             {
-                itr = _listeners->emplace(itr, new ListenerEvent(listener, eventTime));
+                itr = _listeners->emplace(itr, std::make_unique<ListenerEvent>(listener, eventTime));
 
                 // If playing, update the iterator if we need to.
                 // otherwise, it will just be set the next time the clip gets played.
                 if (isClipStateBitSet(CLIP_IS_PLAYING_BIT))
                 {
                     float currentTime = fmodf(_elapsedTime, (float)_duration);
-                    assert(**_listenerItr || *_listenerItr == _listeners->end());
+                    assert(*_listenerItr || _listenerItr == _listeners->end());
                     if ((_speed >= 0.0f && currentTime < eventTime
-                         && (*_listenerItr == _listeners->end()
-                             || eventTime < (**_listenerItr)->_eventTime))
+                         && (_listenerItr == _listeners->end()
+                             || eventTime < (*_listenerItr)->_eventTime))
                         || (_speed <= 0 && currentTime > eventTime
-                            && (*_listenerItr == _listeners->begin()
-                                || eventTime > (**_listenerItr)->_eventTime)))
+                            && (_listenerItr == _listeners->begin()
+                                || eventTime > (*_listenerItr)->_eventTime)))
                     {
-                        *_listenerItr = itr;
+                        _listenerItr = itr;
                     }
                 }
                 return;
             }
         }
-        _listeners->emplace_back(new ListenerEvent(listener, eventTime));
+        _listeners->emplace_back(std::make_unique<ListenerEvent>(listener, eventTime));
     }
 }
 
@@ -306,25 +285,25 @@ void AnimationClip::removeListener(AnimationClip::Listener* listener, unsigned l
     if (_listeners)
     {
         assert(listener);
-        std::list<ListenerEvent*>::iterator iter =
+        auto iter =
             std::find_if(_listeners->begin(),
                          _listeners->end(),
-                         [&](ListenerEvent* lst)
+                         [&](const std::unique_ptr<ListenerEvent>& lst)
                          { return lst->_eventTime == eventTime && lst->_listener == listener; });
         if (iter != _listeners->end())
         {
             if (isClipStateBitSet(CLIP_IS_PLAYING_BIT))
             {
                 float currentTime = fmodf(_elapsedTime, (float)_duration);
-                assert(**_listenerItr || *_listenerItr == _listeners->end());
+                assert(*_listenerItr || _listenerItr == _listeners->end());
 
                 // We the listener has not been triggered yet, then check if it is next to be
                 // triggered, remove it, and update the iterator
                 if (((_speed >= 0.0f && currentTime < eventTime)
                      || (_speed <= 0 && currentTime > eventTime))
-                    && *iter == **_listenerItr)
+                    && iter == _listenerItr)
                 {
-                    *_listenerItr = _listeners->erase(iter);
+                    _listenerItr = _listeners->erase(iter);
                     return;
                 }
             }
@@ -336,7 +315,7 @@ void AnimationClip::removeListener(AnimationClip::Listener* listener, unsigned l
 //----------------------------------------------------------------------------
 void AnimationClip::addBeginListener(AnimationClip::Listener* listener)
 {
-    if (!_beginListeners) _beginListeners = new std::vector<Listener*>;
+    if (!_beginListeners) _beginListeners = std::make_unique<std::vector<Listener*>>();
 
     assert(listener);
     _beginListeners->push_back(listener);
@@ -360,7 +339,7 @@ void AnimationClip::removeBeginListener(AnimationClip::Listener* listener)
 //----------------------------------------------------------------------------
 void AnimationClip::addEndListener(AnimationClip::Listener* listener)
 {
-    if (!_endListeners) _endListeners = new std::vector<Listener*>;
+    if (!_endListeners) _endListeners = std::make_unique<std::vector<Listener*>>();
 
     assert(listener);
     _endListeners->push_back(listener);
@@ -448,32 +427,28 @@ bool AnimationClip::update(float elapsedTime)
     // Notify any listeners of Animation events.
     if (_listeners)
     {
-        assert(_listenerItr);
-
         if (_speed >= 0.0f)
         {
-            while (*_listenerItr != _listeners->end()
-                   && _elapsedTime >= (long)(**_listenerItr)->_eventTime)
+            while (_listenerItr != _listeners->end()
+                   && _elapsedTime >= (long)(*_listenerItr)->_eventTime)
             {
-                assert(_listenerItr);
-                assert(**_listenerItr);
-                assert((**_listenerItr)->_listener);
+                assert(*_listenerItr);
+                assert((*_listenerItr)->_listener);
 
-                (**_listenerItr)->_listener->animationEvent(this, Listener::TIME);
-                ++(*_listenerItr);
+                (*_listenerItr)->_listener->animationEvent(this, Listener::TIME);
+                ++_listenerItr;
             }
         }
         else
         {
-            while (*_listenerItr != _listeners->begin()
-                   && _elapsedTime <= (long)(**_listenerItr)->_eventTime)
+            while (_listenerItr != _listeners->begin()
+                   && _elapsedTime <= (long)(*_listenerItr)->_eventTime)
             {
-                assert(_listenerItr);
-                assert(**_listenerItr);
-                assert((**_listenerItr)->_listener);
+                assert(*_listenerItr);
+                assert((*_listenerItr)->_listener);
 
-                (**_listenerItr)->_listener->animationEvent(this, Listener::TIME);
-                --(*_listenerItr);
+                (*_listenerItr)->_listener->animationEvent(this, Listener::TIME);
+                --_listenerItr;
             }
         }
     }
@@ -556,7 +531,7 @@ bool AnimationClip::update(float elapsedTime)
         assert(channel);
         target = channel->_target;
         assert(target);
-        value = _values[i];
+        value = _values[i].get();
         assert(value);
 
         // Evaluate the point on Curve
@@ -593,13 +568,13 @@ void AnimationClip::onBegin()
     {
         _elapsedTime = (Game::getGameTime() - _timeStarted) * _speed;
 
-        if (_listeners) *_listenerItr = _listeners->begin();
+        if (_listeners) _listenerItr = _listeners->begin();
     }
     else
     {
         _elapsedTime = _activeDuration + (Game::getGameTime() - _timeStarted) * _speed;
 
-        if (_listeners) *_listenerItr = _listeners->end();
+        if (_listeners) _listenerItr = _listeners->end();
     }
 
     // Notify begin listeners if any.
@@ -653,17 +628,10 @@ AnimationClipPtr AnimationClip::clone(Animation* animation) const
     newClip->setBlendWeight(getBlendWeight());
 
     size_t size = _values.size();
-    newClip->_values.resize(size, nullptr);
+    newClip->_values.resize(size);
     for (size_t i = 0; i < size; ++i)
     {
-        if (newClip->_values[i] == nullptr)
-        {
-            newClip->_values[i] = new AnimationValue(*_values[i]);
-        }
-        else
-        {
-            *newClip->_values[i] = *_values[i];
-        }
+        newClip->_values[i] = std::unique_ptr<AnimationValue>(new AnimationValue(*_values[i]));
     }
     return newClip;
 }

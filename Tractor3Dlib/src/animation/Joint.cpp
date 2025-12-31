@@ -127,11 +127,10 @@ void Joint::removeSkin(MeshSkin* skin)
         // Shift the next skin reference down to the root
         if (_skin.next)
         {
-            SkinReference* tmp = _skin.next;
+            std::unique_ptr<SkinReference> tmp(_skin.next);
             _skin.skin = tmp->skin;
             _skin.next = tmp->next;
-            tmp->next = nullptr; // prevent deletion
-            SAFE_DELETE(tmp);
+            tmp->next = nullptr; // prevent deletion of remaining chain
         }
     }
     else
@@ -142,10 +141,10 @@ void Joint::removeSkin(MeshSkin* skin)
         {
             if (tmp->skin == skin)
             {
-                // Link this refernce out
+                // Link this reference out
                 ref->next = tmp->next;
-                tmp->next = nullptr; // prevent deletion
-                SAFE_DELETE(tmp);
+                tmp->next = nullptr; // prevent deletion of remaining chain
+                delete tmp;
                 break;
             }
             ref = tmp;
@@ -154,6 +153,9 @@ void Joint::removeSkin(MeshSkin* skin)
 }
 
 //----------------------------------------------------------------------------
-Joint::SkinReference::~SkinReference() { SAFE_DELETE(next); }
+Joint::SkinReference::~SkinReference()
+{
+    delete next;
+}
 
 } // namespace tractor

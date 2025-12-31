@@ -1312,7 +1312,7 @@ class ScriptUtil
     static void registerFunction(const char* luaFunction, lua_CFunction cppFunction);
 
     /**
-     * Gets a pointer to a bool (as an array-use SAFE_DELETE_ARRAY to clean up) for the given stack index.
+     * Gets a pointer to a bool for the given stack index.
      *
      * @param index The stack index.
      *
@@ -1321,7 +1321,7 @@ class ScriptUtil
     static LuaArray<bool> getBoolPointer(int index);
 
     /**
-     * Gets a pointer to a short (as an array-use SAFE_DELETE_ARRAY to clean up) for the given stack index.
+     * Gets a pointer to a short for the given stack index.
      *
      * @param index The stack index.
      *
@@ -1330,7 +1330,7 @@ class ScriptUtil
     static LuaArray<short> getShortPointer(int index);
 
     /**
-     * Gets a pointer to an int (as an array-use SAFE_DELETE_ARRAY to clean up) for the given stack index.
+     * Gets a pointer to an int for the given stack index.
      *
      * @param index The stack index.
      *
@@ -1339,7 +1339,7 @@ class ScriptUtil
     static LuaArray<int> getIntPointer(int index);
 
     /**
-     * Gets a pointer to a long (as an array-use SAFE_DELETE_ARRAY to clean up) for the given stack index.
+     * Gets a pointer to a long for the given stack index.
      *
      * @param index The stack index.
      *
@@ -1348,7 +1348,7 @@ class ScriptUtil
     static LuaArray<long> getLongPointer(int index);
 
     /**
-     * Gets a pointer to an unsigned char (as an array-use SAFE_DELETE_ARRAY to clean up) for the
+     * Gets a pointer to an unsigned char for the
      * given stack index.
      *
      * @param index The stack index.
@@ -1358,7 +1358,7 @@ class ScriptUtil
     static LuaArray<unsigned char> getUnsignedCharPointer(int index);
 
     /**
-     * Gets a pointer to an unsigned short (as an array-use SAFE_DELETE_ARRAY to clean up) for the
+     * Gets a pointer to an unsigned short for the
      * given stack index.
      *
      * @param index The stack index.
@@ -1368,7 +1368,7 @@ class ScriptUtil
     static LuaArray<unsigned short> getUnsignedShortPointer(int index);
 
     /**
-     * Gets a pointer to an unsigned int (as an array-use SAFE_DELETE_ARRAY to clean up) for the
+     * Gets a pointer to an unsigned int  for the
      * given stack index.
      *
      * @param index The stack index.
@@ -1378,7 +1378,7 @@ class ScriptUtil
     static LuaArray<unsigned int> getUnsignedIntPointer(int index);
 
     /**
-     * Gets a pointer to an unsigned long (as an array-use SAFE_DELETE_ARRAY to clean up) for the
+     * Gets a pointer to an unsigned long for the
      * given stack index.
      *
      * @param index The stack index.
@@ -1388,7 +1388,7 @@ class ScriptUtil
     static LuaArray<unsigned long> getUnsignedLongPointer(int index);
 
     /**
-     * Gets a pointer to a float (as an array-use SAFE_DELETE_ARRAY to clean up) for the given stack index.
+     * Gets a pointer to a float for the given stack index.
      *
      * @param index The stack index.
      *
@@ -1397,7 +1397,7 @@ class ScriptUtil
     static LuaArray<float> getFloatPointer(int index);
 
     /**
-     * Gets a pointer to a double (as an array-use SAFE_DELETE_ARRAY to clean up) for the given stack index.
+     * Gets a pointer to a double for the given stack index.
      *
      * @param index The stack index.
      *

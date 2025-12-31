@@ -152,8 +152,8 @@ std::shared_ptr<Mesh> Mesh::createLines(Vector3* points, unsigned int pointCount
     assert(points);
     assert(pointCount);
 
-    float* vertices = new float[pointCount * 3];
-    memcpy(vertices, points, pointCount * 3 * sizeof(float));
+    auto vertices = std::make_unique<float[]>(pointCount * 3);
+    memcpy(vertices.get(), points, pointCount * 3 * sizeof(float));
 
     VertexFormat::Element elements[] = { VertexFormat::Element(VertexFormat::POSITION, 3) };
 
@@ -161,14 +161,11 @@ std::shared_ptr<Mesh> Mesh::createLines(Vector3* points, unsigned int pointCount
     if (mesh == nullptr)
     {
         GP_ERROR("Failed to create mesh.");
-        SAFE_DELETE_ARRAY(vertices);
         return nullptr;
     }
 
     mesh->_primitiveType = LINE_STRIP;
-    mesh->setVertexData(vertices, 0, pointCount);
-
-    SAFE_DELETE_ARRAY(vertices);
+    mesh->setVertexData(vertices.get(), 0, pointCount);
 
     return mesh;
 }

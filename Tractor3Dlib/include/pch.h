@@ -66,10 +66,6 @@ using std::atoi;
 
 constexpr auto EMPTY_STRING{ "" };
 
-// Safe deletion macros (legacy - prefer smart pointers for new code)
-#define SAFE_DELETE(x) do { delete x; x = nullptr; } while(0)
-#define SAFE_DELETE_ARRAY(x) do { delete[] x; x = nullptr; } while(0)
-
 // Helper to detect smart pointers at compile time
 namespace detail {
     template<typename T>

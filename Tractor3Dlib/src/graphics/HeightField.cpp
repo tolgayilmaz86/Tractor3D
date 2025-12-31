@@ -23,13 +23,12 @@ namespace tractor
 
 //----------------------------------------------------------------------------
 HeightField::HeightField(unsigned int columns, unsigned int rows)
-    : _array(nullptr), _cols(columns), _rows(rows)
+    : _array(std::make_unique<float[]>(columns * rows)), _cols(columns), _rows(rows)
 {
-    _array = new float[columns * rows];
 }
 
 //----------------------------------------------------------------------------
-HeightField::~HeightField() { SAFE_DELETE_ARRAY(_array); }
+HeightField::~HeightField() = default;
 
 //----------------------------------------------------------------------------
 HeightFieldPtr HeightField::create(unsigned int columns, unsigned int rows)
@@ -131,8 +130,9 @@ HeightFieldPtr HeightField::create(const std::string& path,
 
         // Load raw bytes
         int fileSize = 0;
-        unsigned char* bytes = (unsigned char*)FileSystem::readAll(path, &fileSize);
-        if (bytes == nullptr)
+        std::unique_ptr<unsigned char[]> bytes(
+            reinterpret_cast<unsigned char*>(FileSystem::readAll(path, &fileSize)));
+        if (!bytes)
         {
             GP_WARN("Falied to read bytes from RAW heightfield image: %s.", path);
             return nullptr;
@@ -143,7 +143,6 @@ HeightFieldPtr HeightField::create(const std::string& path,
         if (bits != 8 && bits != 16)
         {
             GP_WARN("Invalid RAW file - must be 8-bit or 16-bit, but found neither: %s.", path);
-            SAFE_DELETE_ARRAY(bytes);
             return nullptr;
         }
 
@@ -175,8 +174,6 @@ HeightFieldPtr HeightField::create(const std::string& path,
                 }
             }
         }
-
-        SAFE_DELETE_ARRAY(bytes);
     }
     else
     {

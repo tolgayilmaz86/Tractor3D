@@ -30,21 +30,17 @@ AnimationTarget::~AnimationTarget()
 {
     if (_animationChannels)
     {
-        std::vector<Animation::Channel*>::iterator itr = _animationChannels->begin();
-        while (itr != _animationChannels->end())
+        for (auto* channel : *_animationChannels)
         {
-            Animation::Channel* channel = (*itr);
             assert(channel);
             auto animation = channel->getAnimation();
             if (animation)
             {
                 animation->removeChannel(channel);
             }
-            SAFE_DELETE(channel);
-            itr++;
+            delete channel;
         }
         _animationChannels->clear();
-        SAFE_DELETE(_animationChannels);
     }
     
     // Clear stored animations (shared_ptrs will release automatically)
@@ -117,19 +113,16 @@ AnimationPtr AnimationTarget::createAnimationFromTo(const std::string& id,
 
     const unsigned int propertyComponentCount = getAnimationPropertyComponentCount(propertyId);
     assert(propertyComponentCount > 0);
-    float* keyValues = new float[2 * propertyComponentCount];
+    auto keyValues = std::make_unique<float[]>(2 * propertyComponentCount);
 
-    memcpy(keyValues, from, sizeof(float) * propertyComponentCount);
-    memcpy(keyValues + propertyComponentCount, to, sizeof(float) * propertyComponentCount);
+    memcpy(keyValues.get(), from, sizeof(float) * propertyComponentCount);
+    memcpy(keyValues.get() + propertyComponentCount, to, sizeof(float) * propertyComponentCount);
 
-    unsigned int* keyTimes = new unsigned int[2];
+    auto keyTimes = std::make_unique<unsigned int[]>(2);
     keyTimes[0] = 0;
     keyTimes[1] = (unsigned int)duration;
 
-    AnimationPtr animation = createAnimation(id, propertyId, 2, keyTimes, keyValues, type);
-
-    SAFE_DELETE_ARRAY(keyValues);
-    SAFE_DELETE_ARRAY(keyTimes);
+    AnimationPtr animation = createAnimation(id, propertyId, 2, keyTimes.get(), keyValues.get(), type);
 
     return animation;
 }
@@ -147,21 +140,18 @@ AnimationPtr AnimationTarget::createAnimationFromBy(const std::string& id,
 
     const unsigned int propertyComponentCount = getAnimationPropertyComponentCount(propertyId);
     assert(propertyComponentCount > 0);
-    float* keyValues = new float[2 * propertyComponentCount];
+    auto keyValues = std::make_unique<float[]>(2 * propertyComponentCount);
 
-    memcpy(keyValues, from, sizeof(float) * propertyComponentCount);
+    memcpy(keyValues.get(), from, sizeof(float) * propertyComponentCount);
 
     convertByValues(propertyId, propertyComponentCount, from, by);
-    memcpy(keyValues + propertyComponentCount, by, sizeof(float) * propertyComponentCount);
+    memcpy(keyValues.get() + propertyComponentCount, by, sizeof(float) * propertyComponentCount);
 
-    unsigned int* keyTimes = new unsigned int[2];
+    auto keyTimes = std::make_unique<unsigned int[]>(2);
     keyTimes[0] = 0;
     keyTimes[1] = (unsigned int)duration;
 
-    AnimationPtr animation = createAnimation(id, propertyId, 2, keyTimes, keyValues, type);
-
-    SAFE_DELETE_ARRAY(keyValues);
-    SAFE_DELETE_ARRAY(keyTimes);
+    AnimationPtr animation = createAnimation(id, propertyId, 2, keyTimes.get(), keyValues.get(), type);
 
     return animation;
 }
@@ -223,7 +213,7 @@ AnimationPtr AnimationTarget::createAnimation(const std::string& id, Properties*
     size_t startOffset = 0;
     size_t endOffset = std::string::npos;
 
-    unsigned int* keyTimes = new unsigned int[keyCount];
+    auto keyTimes = std::make_unique<unsigned int[]>(keyCount);
     for (size_t i = 0; i < keyCount; i++)
     {
         endOffset = static_cast<std::string>(keyTimesStr).find_first_of(delimeter, startOffset);
@@ -255,7 +245,7 @@ AnimationPtr AnimationTarget::createAnimation(const std::string& id, Properties*
 
     unsigned int components = keyCount * componentCount;
 
-    float* keyValues = new float[components];
+    auto keyValues = std::make_unique<float[]>(components);
     for (size_t i = 0; i < components; i++)
     {
         endOffset = static_cast<std::string>(keyValuesStr).find_first_of(delimeter, startOffset);
@@ -276,10 +266,10 @@ AnimationPtr AnimationTarget::createAnimation(const std::string& id, Properties*
     }
 
     const auto& keyInStr = animationProperties->getString("keyIn");
-    float* keyIn = nullptr;
+    std::unique_ptr<float[]> keyIn;
     if (!keyInStr.empty())
     {
-        keyIn = new float[components];
+        keyIn = std::make_unique<float[]>(components);
         startOffset = 0;
         endOffset = std::string::npos;
         for (size_t i = 0; i < components; i++)
@@ -303,10 +293,10 @@ AnimationPtr AnimationTarget::createAnimation(const std::string& id, Properties*
     }
 
     const auto& keyOutStr = animationProperties->getString("keyOut");
-    float* keyOut = nullptr;
+    std::unique_ptr<float[]> keyOut;
     if (!keyOutStr.empty())
     {
-        keyOut = new float[components];
+        keyOut = std::make_unique<float[]>(components);
         startOffset = 0;
         endOffset = std::string::npos;
         for (size_t i = 0; i < components; i++)
@@ -337,10 +327,10 @@ AnimationPtr AnimationTarget::createAnimation(const std::string& id, Properties*
         animation = createAnimation(id,
                                     propertyId,
                                     keyCount,
-                                    keyTimes,
-                                    keyValues,
-                                    keyIn,
-                                    keyOut,
+                                    keyTimes.get(),
+                                    keyValues.get(),
+                                    keyIn.get(),
+                                    keyOut.get(),
                                     (Curve::InterpolationType)curve);
     }
     else
@@ -348,8 +338,8 @@ AnimationPtr AnimationTarget::createAnimation(const std::string& id, Properties*
         animation = createAnimation(id,
                                     propertyId,
                                     keyCount,
-                                    keyTimes,
-                                    keyValues,
+                                    keyTimes.get(),
+                                    keyValues.get(),
                                     (Curve::InterpolationType)curve);
     }
 
@@ -367,11 +357,6 @@ AnimationPtr AnimationTarget::createAnimation(const std::string& id, Properties*
             animation->getClip()->setRepeatCount(value);
         }
     }
-
-    SAFE_DELETE_ARRAY(keyOut);
-    SAFE_DELETE_ARRAY(keyIn);
-    SAFE_DELETE_ARRAY(keyValues);
-    SAFE_DELETE_ARRAY(keyTimes);
 
     Properties* pClip = animationProperties->getNextNamespace();
     if (pClip && pClip->getNamespace() == "clip" && animation)
@@ -403,7 +388,7 @@ void AnimationTarget::destroyAnimation(const std::string& id)
     }
     removeChannel(channel);
 
-    SAFE_DELETE(channel);
+    delete channel;
     
     // Remove from stored animations map
     if (id.empty())
@@ -527,7 +512,7 @@ int AnimationTarget::getPropertyId(TargetType type, const std::string& propertyI
 //----------------------------------------------------------------------------
 void AnimationTarget::addChannel(Animation::Channel* channel)
 {
-    if (_animationChannels == nullptr) _animationChannels = new std::vector<Animation::Channel*>;
+    if (!_animationChannels) _animationChannels = std::make_unique<std::vector<Animation::Channel*>>();
 
     assert(channel);
     _animationChannels->push_back(channel);
@@ -550,7 +535,7 @@ void AnimationTarget::removeChannel(Animation::Channel* channel)
             // Check if the vector is empty before deleting
             if (_animationChannels->empty())
             {
-                SAFE_DELETE(_animationChannels);
+                _animationChannels.reset();
             }
         }
     }

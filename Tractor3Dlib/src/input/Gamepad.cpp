@@ -101,7 +101,7 @@ void Gamepad::remove(GamepadHandle handle)
                                         {
                                             Game::getInstance()->gamepadEventInternal(DISCONNECTED_EVENT,
                                                                                       gamepad);
-                                            SAFE_DELETE(gamepad);
+                                            delete gamepad;
                                             return true; // Mark for removal
                                         }
                                         return false; // Keep in container
@@ -120,7 +120,7 @@ void Gamepad::remove(Gamepad* gamepad)
                                         {
                                             Game::getInstance()->gamepadEventInternal(DISCONNECTED_EVENT,
                                                                                       g);
-                                            SAFE_DELETE(gamepad);
+                                            delete gamepad;
                                             return true; // Mark for removal
                                         }
                                         return false; // Keep in container

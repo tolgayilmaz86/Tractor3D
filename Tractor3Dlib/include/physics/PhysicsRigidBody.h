@@ -572,7 +572,7 @@ class PhysicsRigidBody : public PhysicsCollisionObject, public Transform::Listen
 
     btRigidBody* _body{ nullptr };
     float _mass{ 0.0f };
-    std::vector<PhysicsConstraint*>* _constraints{ nullptr };
+    std::unique_ptr<std::vector<PhysicsConstraint*>> _constraints;
     bool _inDestructor{ false };
 };
 

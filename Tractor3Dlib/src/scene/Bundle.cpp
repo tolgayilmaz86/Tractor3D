@@ -77,7 +77,8 @@ template <class T> bool Bundle::readArray(unsigned int* length, T** ptr)
         if (_stream->read(*ptr, sizeof(T), *length) != *length)
         {
             GP_ERROR("Failed to read an array of data from bundle (into an array).");
-            SAFE_DELETE_ARRAY(*ptr);
+            delete[] *ptr;
+            *ptr = nullptr;
             return false;
         }
     }
@@ -209,7 +210,7 @@ BundlePtr Bundle::create(const std::string& path)
     }
 
     // Read all refs.
-    Reference* refs = new Reference[refCount];
+    auto refs = std::make_unique<Reference[]>(refCount);
     for (size_t i = 0; i < refCount; ++i)
     {
         if ((refs[i].id = readString(stream.get())).empty()
@@ -217,7 +218,6 @@ BundlePtr Bundle::create(const std::string& path)
             || stream->read(&refs[i].offset, 4, 1) != 1)
         {
             GP_WARN("Failed to read ref number %d for bundle '%s'.", i, path);
-            SAFE_DELETE_ARRAY(refs);
             return nullptr;
         }
     }
@@ -226,7 +226,7 @@ BundlePtr Bundle::create(const std::string& path)
     BundlePtr bundle(new Bundle(path));
     bundle->_version[0] = version[0];
     bundle->_version[1] = version[1];
-    bundle->_references = std::unique_ptr<Reference[]>(refs);
+    bundle->_references = std::move(refs);
     bundle->_referencesSpan = std::span<Reference>(bundle->_references.get(), refCount);
     bundle->_stream = std::move(stream);
 
@@ -251,7 +251,7 @@ void Bundle::clearLoadSession()
 {
     for (size_t i = 0, count = _meshSkins.size(); i < count; ++i)
     {
-        SAFE_DELETE(_meshSkins[i]);
+        delete _meshSkins[i];
     }
     _meshSkins.clear();
 }
@@ -482,8 +482,10 @@ NodePtr Bundle::loadNode(const std::string& id, Scene* sceneContext)
                 GP_ERROR("Failed to seek to object '%s' in bundle '%s'.",
                          ref.id.c_str(),
                          _path.c_str());
-                SAFE_DELETE(_trackedNodes);
-                SAFE_DELETE(_trackedNodesPtr);
+                delete _trackedNodes;
+                delete _trackedNodesPtr;
+                _trackedNodes = nullptr;
+                _trackedNodesPtr = nullptr;
                 return nullptr;
             }
 
@@ -492,8 +494,10 @@ NodePtr Bundle::loadNode(const std::string& id, Scene* sceneContext)
             if (!read(&animationCount))
             {
                 GP_ERROR("Failed to read the number of animations for object '%s'.", ref.id.c_str());
-                SAFE_DELETE(_trackedNodes);
-                SAFE_DELETE(_trackedNodesPtr);
+                delete _trackedNodes;
+                delete _trackedNodesPtr;
+                _trackedNodes = nullptr;
+                _trackedNodesPtr = nullptr;
                 return nullptr;
             }
 
@@ -508,8 +512,10 @@ NodePtr Bundle::loadNode(const std::string& id, Scene* sceneContext)
                     GP_ERROR("Failed to read the number of animation channels for animation '%s'.",
                              "animationChannelCount",
                              id.c_str());
-                    SAFE_DELETE(_trackedNodes);
-                    SAFE_DELETE(_trackedNodesPtr);
+                    delete _trackedNodes;
+                    delete _trackedNodesPtr;
+                    _trackedNodes = nullptr;
+                    _trackedNodesPtr = nullptr;
                     return nullptr;
                 }
 
@@ -521,8 +527,10 @@ NodePtr Bundle::loadNode(const std::string& id, Scene* sceneContext)
                     if (targetId.empty())
                     {
                         GP_ERROR("Failed to read target id for animation '%s'.", id.c_str());
-                        SAFE_DELETE(_trackedNodes);
-                        SAFE_DELETE(_trackedNodesPtr);
+                        delete _trackedNodes;
+                        delete _trackedNodesPtr;
+                        _trackedNodes = nullptr;
+                        _trackedNodesPtr = nullptr;
                         return nullptr;
                     }
 
@@ -536,8 +544,10 @@ NodePtr Bundle::loadNode(const std::string& id, Scene* sceneContext)
                         {
                             GP_ERROR("Failed to read target attribute for animation '%s'.",
                                      id.c_str());
-                            SAFE_DELETE(_trackedNodes);
-                            SAFE_DELETE(_trackedNodesPtr);
+                            delete _trackedNodes;
+                            delete _trackedNodesPtr;
+                            _trackedNodes = nullptr;
+                            _trackedNodesPtr = nullptr;
                             return nullptr;
                         }
 
@@ -548,8 +558,10 @@ NodePtr Bundle::loadNode(const std::string& id, Scene* sceneContext)
                                      "animation target",
                                      targetId.c_str(),
                                      id.c_str());
-                            SAFE_DELETE(_trackedNodes);
-                            SAFE_DELETE(_trackedNodesPtr);
+                            delete _trackedNodes;
+                            delete _trackedNodesPtr;
+                            _trackedNodes = nullptr;
+                            _trackedNodesPtr = nullptr;
                             return nullptr;
                         }
 
@@ -563,8 +575,10 @@ NodePtr Bundle::loadNode(const std::string& id, Scene* sceneContext)
                         {
                             GP_ERROR("Failed to skip over target attribute for animation '%s'.",
                                      id.c_str());
-                            SAFE_DELETE(_trackedNodes);
-                            SAFE_DELETE(_trackedNodesPtr);
+                            delete _trackedNodes;
+                            delete _trackedNodesPtr;
+                            _trackedNodes = nullptr;
+                            _trackedNodesPtr = nullptr;
                             return nullptr;
                         }
 
@@ -577,8 +591,10 @@ NodePtr Bundle::loadNode(const std::string& id, Scene* sceneContext)
         }
     }
 
-    SAFE_DELETE(_trackedNodes);
-    SAFE_DELETE(_trackedNodesPtr);
+    delete _trackedNodes;
+    delete _trackedNodesPtr;
+    _trackedNodes = nullptr;
+    _trackedNodesPtr = nullptr;
     return node;
 }
 
@@ -1046,30 +1062,33 @@ MeshSkin* Bundle::readMeshSkin()
     if (!readMatrix(bindShape))
     {
         GP_ERROR("Failed to load bind shape for mesh skin in bundle '%s'.", _path.c_str());
-        SAFE_DELETE(meshSkin);
+        delete meshSkin;
         return nullptr;
     }
     meshSkin->setBindShape(bindShape);
 
     // Store the MeshSkinData so we can go back and resolve all joint references later.
-    auto& skinData = _meshSkins.emplace_back(new MeshSkinData());
+    auto skinData = new MeshSkinData();
     skinData->skin = meshSkin;
+    _meshSkins.push_back(skinData);
 
     // Read joint count.
     unsigned int jointCount;
     if (!read(&jointCount))
     {
         GP_ERROR("Failed to load joint count for mesh skin in bundle '%s'.", _path.c_str());
-        SAFE_DELETE(meshSkin);
-        SAFE_DELETE(skinData);
+        delete meshSkin;
+        _meshSkins.pop_back();
+        delete skinData;
         return nullptr;
     }
     if (jointCount == 0)
     {
         GP_ERROR("Invalid joint count (must be greater than 0) for mesh skin in bundle '%s'.",
                  _path.c_str());
-        SAFE_DELETE(meshSkin);
-        SAFE_DELETE(skinData);
+        delete meshSkin;
+        _meshSkins.pop_back();
+        delete skinData;
         return nullptr;
     }
     meshSkin->setJointCount(jointCount);
@@ -1085,8 +1104,9 @@ MeshSkin* Bundle::readMeshSkin()
     if (!read(&jointsBindPosesCount))
     {
         GP_ERROR("Failed to load number of joint bind poses in bundle '%s'.", _path.c_str());
-        SAFE_DELETE(meshSkin);
-        SAFE_DELETE(skinData);
+        delete meshSkin;
+        _meshSkins.pop_back();
+        delete skinData;
         return nullptr;
     }
     if (jointsBindPosesCount > 0)
@@ -1101,8 +1121,9 @@ MeshSkin* Bundle::readMeshSkin()
                          "bundle '%s'.",
                          i,
                          _path.c_str());
-                SAFE_DELETE(meshSkin);
-                SAFE_DELETE(skinData);
+                delete meshSkin;
+                _meshSkins.pop_back();
+                delete skinData;
                 return nullptr;
             }
             skinData->inverseBindPoseMatrices.push_back(m);
@@ -1237,7 +1258,7 @@ void Bundle::resolveJointReferences(Scene* sceneContext, Node* nodeContext)
         if (sceneContext) sceneContext->removeNode(skinData->skin->_rootNode.get());
 
         // Done with this MeshSkinData entry.
-        SAFE_DELETE(_meshSkins[i]);
+        delete _meshSkins[i];
     }
     _meshSkins.clear();
 }
@@ -1490,20 +1511,18 @@ std::unique_ptr<Bundle::MeshData> Bundle::readMeshData()
         return nullptr;
     }
 
-    VertexFormat::Element* vertexElements = new VertexFormat::Element[vertexElementCount];
+    auto vertexElements = std::make_unique<VertexFormat::Element[]>(vertexElementCount);
     for (size_t i = 0; i < vertexElementCount; ++i)
     {
         unsigned int vUsage, vSize;
         if (_stream->read(&vUsage, 4, 1) != 1)
         {
             GP_ERROR("Failed to load vertex usage.");
-            SAFE_DELETE_ARRAY(vertexElements);
             return nullptr;
         }
         if (_stream->read(&vSize, 4, 1) != 1)
         {
             GP_ERROR("Failed to load vertex size.");
-            SAFE_DELETE_ARRAY(vertexElements);
             return nullptr;
         }
 
@@ -1511,23 +1530,18 @@ std::unique_ptr<Bundle::MeshData> Bundle::readMeshData()
         vertexElements[i].size = vSize;
     }
 
-    auto meshData = std::make_unique<MeshData>(VertexFormat(vertexElements, vertexElementCount));
-    SAFE_DELETE_ARRAY(vertexElements);
+    auto meshData = std::make_unique<MeshData>(VertexFormat(vertexElements.get(), vertexElementCount));
 
     // Read vertex data.
     unsigned int vertexByteCount;
     if (_stream->read(&vertexByteCount, 4, 1) != 1)
     {
         GP_ERROR("Failed to load vertex byte count.");
-        // SAFE_DELETE(meshData);
-        meshData.release();
         return nullptr;
     }
     if (vertexByteCount == 0)
     {
         GP_ERROR("Failed to load mesh data; invalid vertex byte count of 0.");
-        meshData.release();
-        // SAFE_DELETE(meshData);
         return nullptr;
     }
 
@@ -1537,8 +1551,6 @@ std::unique_ptr<Bundle::MeshData> Bundle::readMeshData()
     if (_stream->read(meshData->vertexData, 1, vertexByteCount) != vertexByteCount)
     {
         GP_ERROR("Failed to load vertex data.");
-        meshData.release();
-        // SAFE_DELETE(meshData);
         return nullptr;
     }
 
@@ -1547,16 +1559,12 @@ std::unique_ptr<Bundle::MeshData> Bundle::readMeshData()
         || _stream->read(&meshData->boundingBox.max.x, 4, 3) != 3)
     {
         GP_ERROR("Failed to load mesh bounding box.");
-        meshData.release();
-        // SAFE_DELETE(meshData);
         return nullptr;
     }
     if (_stream->read(&meshData->boundingSphere.center.x, 4, 3) != 3
         || _stream->read(&meshData->boundingSphere.radius, 4, 1) != 1)
     {
         GP_ERROR("Failed to load mesh bounding sphere.");
-        meshData.release();
-        // SAFE_DELETE(meshData);
         return nullptr;
     }
 
@@ -1565,8 +1573,6 @@ std::unique_ptr<Bundle::MeshData> Bundle::readMeshData()
     if (_stream->read(&meshPartCount, 4, 1) != 1)
     {
         GP_ERROR("Failed to load mesh part count.");
-        meshData.release();
-        // SAFE_DELETE(meshData);
         return nullptr;
     }
     for (size_t i = 0; i < meshPartCount; ++i)
@@ -1576,26 +1582,21 @@ std::unique_ptr<Bundle::MeshData> Bundle::readMeshData()
         if (_stream->read(&pType, 4, 1) != 1)
         {
             GP_ERROR("Failed to load primitive type for mesh part with index %d.", i);
-            meshData.release();
-            // SAFE_DELETE(meshData);
             return nullptr;
         }
         if (_stream->read(&iFormat, 4, 1) != 1)
         {
             GP_ERROR("Failed to load index format for mesh part with index %d.", i);
-            meshData.release();
-            // SAFE_DELETE(meshData);
             return nullptr;
         }
         if (_stream->read(&iByteCount, 4, 1) != 1)
         {
             GP_ERROR("Failed to load index byte count for mesh part with index %d.", i);
-            meshData.release();
-            // SAFE_DELETE(meshData);
             return nullptr;
         }
 
-        auto& partData = meshData->parts.emplace_back(new MeshPartData());
+        auto partData = new MeshPartData();
+        meshData->parts.push_back(partData);
 
         partData->primitiveType = (Mesh::PrimitiveType)pType;
         partData->indexFormat = (Mesh::IndexFormat)iFormat;
@@ -1624,8 +1625,6 @@ std::unique_ptr<Bundle::MeshData> Bundle::readMeshData()
         if (_stream->read(partData->indexData, 1, iByteCount) != iByteCount)
         {
             GP_ERROR("Failed to read index data for mesh part with index %d.", i);
-            meshData.release();
-            // SAFE_DELETE(meshData);
             return nullptr;
         }
     }
@@ -1682,8 +1681,6 @@ std::unique_ptr<Bundle::MeshData> Bundle::readMeshData(const std::string& url)
 //----------------------------------------------------------------------------
 FontPtr Bundle::loadFont(const std::string& id)
 {
-    assert(_stream);
-
     // Seek to the specified font.
     Reference* ref = seekTo(id, BUNDLE_TYPE_FONT);
     if (ref == nullptr)
@@ -1747,19 +1744,17 @@ FontPtr Bundle::loadFont(const std::string& id)
             return nullptr;
         }
 
-        Font::Glyph* glyphs = new Font::Glyph[glyphCount];
+        auto glyphs = std::make_unique<Font::Glyph[]>(glyphCount);
         for (unsigned j = 0; j < glyphCount; j++)
         {
             if (_stream->read(&glyphs[j].code, 4, 1) != 1)
             {
                 GP_ERROR("Failed to read glyph #%d code for font '%s'.", j, id);
-                SAFE_DELETE_ARRAY(glyphs);
                 return nullptr;
             }
             if (_stream->read(&glyphs[j].width, 4, 1) != 1)
             {
                 GP_ERROR("Failed to read glyph #%d width for font '%s'.", j, id);
-                SAFE_DELETE_ARRAY(glyphs);
                 return nullptr;
             }
             if (getVersionMajor() >= 1 && getVersionMinor() >= 5)
@@ -1767,13 +1762,11 @@ FontPtr Bundle::loadFont(const std::string& id)
                 if (_stream->read(&glyphs[j].bearingX, 4, 1) != 1)
                 {
                     GP_ERROR("Failed to read glyph #%d bearingX for font '%s'.", j, id);
-                    SAFE_DELETE_ARRAY(glyphs);
                     return nullptr;
                 }
                 if (_stream->read(&glyphs[j].advance, 4, 1) != 1)
                 {
                     GP_ERROR("Failed to read glyph #%d advance for font '%s'.", j, id);
-                    SAFE_DELETE_ARRAY(glyphs);
                     return nullptr;
                 }
             }
@@ -1786,7 +1779,6 @@ FontPtr Bundle::loadFont(const std::string& id)
             if (_stream->read(&glyphs[j].uvs, 4, 4) != 4)
             {
                 GP_ERROR("Failed to read glyph #%d uvs for font '%s'.", j, id);
-                SAFE_DELETE_ARRAY(glyphs);
                 return nullptr;
             }
         }
@@ -1796,35 +1788,29 @@ FontPtr Bundle::loadFont(const std::string& id)
         if (_stream->read(&width, 4, 1) != 1)
         {
             GP_ERROR("Failed to read texture width for font '%s'.", id);
-            SAFE_DELETE_ARRAY(glyphs);
             return nullptr;
         }
         if (_stream->read(&height, 4, 1) != 1)
         {
             GP_ERROR("Failed to read texture height for font '%s'.", id);
-            SAFE_DELETE_ARRAY(glyphs);
             return nullptr;
         }
         if (_stream->read(&textureByteCount, 4, 1) != 1)
         {
             GP_ERROR("Failed to read texture byte count for font '%s'.", id);
-            SAFE_DELETE_ARRAY(glyphs);
             return nullptr;
         }
         if (textureByteCount != (width * height))
         {
             GP_ERROR("Invalid texture byte count for font '%s'.", id);
-            SAFE_DELETE_ARRAY(glyphs);
             return nullptr;
         }
 
         // Read texture data.
-        unsigned char* textureData = new unsigned char[textureByteCount];
-        if (_stream->read(textureData, 1, textureByteCount) != textureByteCount)
+        auto textureData = std::make_unique<unsigned char[]>(textureByteCount);
+        if (_stream->read(textureData.get(), 1, textureByteCount) != textureByteCount)
         {
             GP_ERROR("Failed to read texture data for font '%s'.", id);
-            SAFE_DELETE_ARRAY(glyphs);
-            SAFE_DELETE_ARRAY(textureData);
             return nullptr;
         }
 
@@ -1836,33 +1822,26 @@ FontPtr Bundle::loadFont(const std::string& id)
             if (_stream->read(&format, 4, 1) != 1)
             {
                 GP_ERROR("Failed to font format'%u'.", format);
-                SAFE_DELETE_ARRAY(glyphs);
-                SAFE_DELETE_ARRAY(textureData);
                 return nullptr;
             }
         }
 
         // Create the texture for the font.
-        TexturePtr texture = Texture::create(Texture::ALPHA, width, height, textureData, true);
+        TexturePtr texture = Texture::create(Texture::ALPHA, width, height, textureData.get(), true);
 
-        // Free the texture data (no longer needed).
-        SAFE_DELETE_ARRAY(textureData);
+        // textureData automatically freed by unique_ptr
 
         if (texture == nullptr)
         {
             GP_ERROR("Failed to create texture for font '%s'.", id);
-            SAFE_DELETE_ARRAY(glyphs);
             return nullptr;
         }
 
         // Create the font for this size
         FontPtr font =
-            Font::create(family, Font::PLAIN, size, glyphs, glyphCount, texture.get(), (Font::Format)format);
+            Font::create(family, Font::PLAIN, size, glyphs.get(), glyphCount, texture.get(), (Font::Format)format);
 
-        // Free the glyph array.
-        SAFE_DELETE_ARRAY(glyphs);
-
-        // Texture is now managed by shared_ptr, no need to release
+        // glyphs automatically freed by unique_ptr
 
         if (font)
         {
@@ -1908,7 +1887,7 @@ const std::string& Bundle::getObjectId(unsigned int index) const
 }
 
 //----------------------------------------------------------------------------
-Bundle::MeshPartData::~MeshPartData() { SAFE_DELETE_ARRAY(indexData); }
+Bundle::MeshPartData::~MeshPartData() { delete[] indexData; }
 
 //----------------------------------------------------------------------------
 Bundle::MeshData::MeshData(const VertexFormat& vertexFormat) : vertexFormat(vertexFormat) {}
@@ -1916,11 +1895,11 @@ Bundle::MeshData::MeshData(const VertexFormat& vertexFormat) : vertexFormat(vert
 //----------------------------------------------------------------------------
 Bundle::MeshData::~MeshData()
 {
-    SAFE_DELETE_ARRAY(vertexData);
+    delete[] vertexData;
 
     for (size_t i = 0; i < parts.size(); ++i)
     {
-        SAFE_DELETE(parts[i]);
+        delete parts[i];
     }
 }
 

@@ -41,9 +41,9 @@ Control::~Control()
              ++itr)
         {
             std::list<Control::Listener*>* list = itr->second;
-            SAFE_DELETE(list);
+            delete list;
         }
-        SAFE_DELETE(_listeners);
+        delete _listeners;
     }
 
     if (_style)
@@ -52,7 +52,7 @@ Control::~Control()
 
         if (_styleOverridden)
         {
-            SAFE_DELETE(_style);
+            delete _style;
         }
     }
 }
@@ -943,13 +943,17 @@ void Control::removeListener(Control::Listener* listener)
         {
             std::list<Control::Listener*>* list = itr->second;
             _listeners->erase(itr++);
-            SAFE_DELETE(list);
+            delete list;
         }
         else
             ++itr;
     }
 
-    if (_listeners->empty()) SAFE_DELETE(_listeners);
+    if (_listeners->empty())
+    {
+        delete _listeners;
+        _listeners = nullptr;
+    }
 }
 
 //----------------------------------------------------------------------------

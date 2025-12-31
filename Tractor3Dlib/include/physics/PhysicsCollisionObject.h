@@ -348,7 +348,7 @@ class PhysicsCollisionObject
     /**
      * The list of script listeners.
      */
-    std::vector<ScriptListener*>* _scriptListeners{ nullptr };
+    std::unique_ptr<std::vector<std::unique_ptr<ScriptListener>>> _scriptListeners;
 
   private:
     /**
@@ -407,7 +407,7 @@ class PhysicsCollisionObject
     /**
      * The PhysicsCollisionObject's motion state.
      */
-    PhysicsMotionState* _motionState{ nullptr };
+    std::unique_ptr<PhysicsMotionState> _motionState;
 
     /**
      * Group identifier and the bitmask for collision filtering.

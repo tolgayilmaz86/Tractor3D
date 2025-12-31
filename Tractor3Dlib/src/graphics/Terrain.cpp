@@ -43,12 +43,8 @@ static float getDefaultHeight(unsigned int width, unsigned int height);
 //----------------------------------------------------------------------------
 Terrain::~Terrain()
 {
-    for (size_t i = 0, count = _patches.size(); i < count; ++i)
-    {
-        SAFE_DELETE(_patches[i]);
-    }
-    _normalMap.reset();  // shared_ptr handles cleanup
-    _heightfield.reset();  // shared_ptr handles cleanup
+    _normalMap.reset();
+    _heightfield.reset();
 }
 
 //----------------------------------------------------------------------------
@@ -65,8 +61,8 @@ TerrainPtr Terrain::create(const std::string& path, Properties* properties)
 {
     // Terrain properties
     Properties* p = properties;
+    std::unique_ptr<Properties> ownedProperties;
     Properties* pTerrain = nullptr;
-    bool externalProperties = (p != nullptr);
     HeightFieldPtr heightfield = nullptr;
     Vector3 terrainSize;
     int patchSize = 0;
@@ -77,7 +73,8 @@ TerrainPtr Terrain::create(const std::string& path, Properties* properties)
 
     if (!p && !path.empty())
     {
-        p = Properties::create(path);
+        ownedProperties.reset(Properties::create(path));
+        p = ownedProperties.get();
     }
 
     if (!p)
@@ -90,7 +87,6 @@ TerrainPtr Terrain::create(const std::string& path, Properties* properties)
     if (pTerrain == nullptr)
     {
         GP_WARN("Invalid terrain definition.");
-        if (!externalProperties) SAFE_DELETE(p);
         return nullptr;
     }
 
@@ -104,7 +100,6 @@ TerrainPtr Terrain::create(const std::string& path, Properties* properties)
         {
             GP_WARN("No 'path' property supplied in heightmap section of terrain definition: %s",
                     path);
-            if (!externalProperties) SAFE_DELETE(p);
             return nullptr;
         }
 
@@ -123,7 +118,6 @@ TerrainPtr Terrain::create(const std::string& path, Properties* properties)
                 GP_WARN("Invalid or missing 'size' attribute in heightmap defintion of terrain "
                         "definition: %s",
                         path);
-                if (!externalProperties) SAFE_DELETE(p);
                 return nullptr;
             }
 
@@ -140,7 +134,6 @@ TerrainPtr Terrain::create(const std::string& path, Properties* properties)
             GP_WARN("Unsupported heightmap format ('%s') in terrain definition: %s",
                     heightmap.c_str(),
                     path);
-            if (!externalProperties) SAFE_DELETE(p);
             return nullptr;
         }
     }
@@ -151,7 +144,6 @@ TerrainPtr Terrain::create(const std::string& path, Properties* properties)
         if (!pTerrain->getPath("heightmap", heightmap))
         {
             GP_WARN("No 'heightmap' property supplied in terrain definition: %s", path);
-            if (!externalProperties) SAFE_DELETE(p);
             return nullptr;
         }
 
@@ -165,7 +157,6 @@ TerrainPtr Terrain::create(const std::string& path, Properties* properties)
         {
             GP_WARN("RAW heightmaps must be specified inside a heightmap block with width and "
                     "height properties.");
-            if (!externalProperties) SAFE_DELETE(p);
             return nullptr;
         }
         else
@@ -173,7 +164,6 @@ TerrainPtr Terrain::create(const std::string& path, Properties* properties)
             GP_WARN("Unsupported 'heightmap' format ('%s') in terrain definition: %s.",
                     heightmap.c_str(),
                     path);
-            if (!externalProperties) SAFE_DELETE(p);
             return nullptr;
         }
     }
@@ -216,7 +206,6 @@ TerrainPtr Terrain::create(const std::string& path, Properties* properties)
     if (heightfield == nullptr)
     {
         GP_WARN("Failed to read heightfield heights for terrain definition: %s", path);
-        if (!externalProperties) SAFE_DELETE(p);
         return nullptr;
     }
 
@@ -252,8 +241,6 @@ TerrainPtr Terrain::create(const std::string& path, Properties* properties)
                                 normalMap,
                                 materialPath,
                                 pTerrain);
-
-    if (!externalProperties) SAFE_DELETE(p);
 
     return terrain;
 }
@@ -332,7 +319,7 @@ TerrainPtr Terrain::create(HeightField* heightfield,
             x2 = std::min(x1 + patchSize, width - 1);
 
             // Create this patch
-            TerrainPatch* patch = TerrainPatch::create(terrain.get(),
+            std::unique_ptr<TerrainPatch> patch(TerrainPatch::create(terrain.get(),
                                                        terrain->_patches.size(),
                                                        row,
                                                        column,
@@ -346,11 +333,12 @@ TerrainPtr Terrain::create(HeightField* heightfield,
                                                        -halfWidth,
                                                        -halfHeight,
                                                        maxStep,
-                                                       skirtScale);
-            terrain->_patches.push_back(patch);
-
+                                                       skirtScale));
+            
             // Append the new patch's local bounds to the terrain local bounds
             bounds.merge(patch->getBoundingBox(false));
+            
+            terrain->_patches.push_back(std::move(patch));
         }
     }
 
@@ -486,7 +474,7 @@ bool Terrain::setLayer(int index,
     bool result = true;
     for (size_t i = 0, count = _patches.size(); i < count; ++i)
     {
-        TerrainPatch* patch = _patches[i];
+        TerrainPatch* patch = _patches[i].get();
 
         if ((row == -1 || (int)patch->_row == row) && (column == -1 || (int)patch->_column == column))
         {

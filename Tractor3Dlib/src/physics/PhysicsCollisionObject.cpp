@@ -66,15 +66,12 @@ PhysicsCollisionObject::PhysicsCollisionObject(Node* node, int group, int mask)
 //----------------------------------------------------------------------------
 PhysicsCollisionObject::~PhysicsCollisionObject()
 {
-    SAFE_DELETE(_motionState);
+    _motionState.reset();
 
     if (_scriptListeners)
     {
-        for (size_t i = 0, count = _scriptListeners->size(); i < count; ++i)
-        {
-            SAFE_DELETE((*_scriptListeners)[i]);
-        }
-        SAFE_DELETE(_scriptListeners);
+        // unique_ptr in vector will automatically clean up ScriptListeners
+        _scriptListeners.reset();
     }
 
     assert(Game::getInstance()->getPhysicsController());
@@ -165,13 +162,13 @@ void PhysicsCollisionObject::removeCollisionListener(CollisionListener* listener
 //----------------------------------------------------------------------------
 void PhysicsCollisionObject::addCollisionListener(const char* function, PhysicsCollisionObject* object)
 {
-    ScriptListener* listener = ScriptListener::create(function);
-    if (!listener) return; // falied to load
+    std::unique_ptr<ScriptListener> listener(ScriptListener::create(function));
+    if (!listener) return; // failed to load
 
-    if (!_scriptListeners) _scriptListeners = new std::vector<ScriptListener*>();
-    _scriptListeners->push_back(listener);
-
-    addCollisionListener(listener, object);
+    if (!_scriptListeners) _scriptListeners = std::make_unique<std::vector<std::unique_ptr<ScriptListener>>>();
+    
+    addCollisionListener(listener.get(), object);
+    _scriptListeners->push_back(std::move(listener));
 }
 
 //----------------------------------------------------------------------------
@@ -185,8 +182,7 @@ void PhysicsCollisionObject::removeCollisionListener(const char* function,
     {
         if ((*_scriptListeners)[i]->url == url)
         {
-            removeCollisionListener((*_scriptListeners)[i], object);
-            SAFE_DELETE((*_scriptListeners)[i]);
+            removeCollisionListener((*_scriptListeners)[i].get(), object);
             _scriptListeners->erase(_scriptListeners->begin() + i);
             return;
         }

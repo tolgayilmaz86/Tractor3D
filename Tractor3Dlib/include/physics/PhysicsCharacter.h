@@ -288,7 +288,7 @@ class PhysicsCharacter : public PhysicsGhostObject
     float _cosSlopeAngle{ 1.0f };
     bool _physicsEnabled{ true };
     float _mass{ 1.0f };
-    ActionInterface* _actionInterface{ nullptr };
+    std::unique_ptr<ActionInterface> _actionInterface;
 };
 
 } // namespace tractor

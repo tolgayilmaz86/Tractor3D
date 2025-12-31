@@ -86,10 +86,7 @@ PhysicsGenericConstraint::PhysicsGenericConstraint(PhysicsRigidBody* a,
 //----------------------------------------------------------------------------
 PhysicsGenericConstraint::~PhysicsGenericConstraint()
 {
-    SAFE_DELETE(_rotationOffsetA);
-    SAFE_DELETE(_rotationOffsetB);
-    SAFE_DELETE(_translationOffsetA);
-    SAFE_DELETE(_translationOffsetB);
+    // unique_ptr members automatically cleaned up
 }
 
 } // namespace tractor

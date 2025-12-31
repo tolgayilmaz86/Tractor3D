@@ -50,6 +50,11 @@ class MeshSkin : public Transform::Listener
 
   public:
     /**
+     * Destructor.
+     */
+    ~MeshSkin();
+
+    /**
      * Returns the bind shape matrix.
      *
      * @return The bind shape matrix.
@@ -147,11 +152,6 @@ class MeshSkin : public Transform::Listener
     MeshSkin(const MeshSkin&);
 
     /**
-     * Destructor.
-     */
-    ~MeshSkin();
-
-    /**
      * Hidden copy assignment operator.
      */
     MeshSkin& operator=(const MeshSkin&) = delete;
@@ -207,7 +207,7 @@ class MeshSkin : public Transform::Listener
     // This array is passed to the vertex shader as a uniform.
     // Each 4x3 row-wise matrix is represented as 3 Vector4's.
     // The number of Vector4's is (_joints.size() * 3).
-    Vector4* _matrixPalette{ nullptr };
+    std::unique_ptr<Vector4[]> _matrixPalette;
     Model* _model{ nullptr };
 };
 

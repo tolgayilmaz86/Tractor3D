@@ -13,6 +13,7 @@
  */
 #pragma once
 
+#include <memory>
 #include <string>
 
 namespace tractor
@@ -271,7 +272,7 @@ class AIMessage
     /**
      * Destructor (hidden - use AIMessage::destroy instead).
      */
-    ~AIMessage();
+    ~AIMessage() = default;
 
     /**
      * Returns the delivery time for the message.
@@ -287,7 +288,7 @@ class AIMessage
     std::string _sender{};
     std::string _receiver{};
     double _deliveryTime{ 0.0 };
-    Parameter* _parameters{ nullptr };
+    std::unique_ptr<Parameter[]> _parameters;
     unsigned int _parameterCount{ 0 };
     MessageType _messageType{ MESSAGE_TYPE_CUSTOM };
     AIMessage* _next{ nullptr };

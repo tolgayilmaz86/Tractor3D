@@ -14,6 +14,7 @@
 #pragma once
 
 #include <memory>
+#include <variant>
 
 #include "math/Vector3.h"
 #include "scene/Properties.h"
@@ -147,7 +148,7 @@ class Light : public std::enable_shared_from_this<Light>
     /**
      * Destructor.
      */
-    virtual ~Light();
+    virtual ~Light() = default;
 
     /**
      * Hidden copy assignment operator.
@@ -258,9 +259,8 @@ class Light : public std::enable_shared_from_this<Light>
     /**
      * Directional light data.
      */
-    class Directional
+    struct Directional
     {
-      public:
         Vector3 color;
 
         Directional(const Vector3& color);
@@ -269,9 +269,8 @@ class Light : public std::enable_shared_from_this<Light>
     /**
      * Point light data.
      */
-    class Point
+    struct Point
     {
-      public:
         Vector3 color;
         float range;
         float rangeInverse;
@@ -282,9 +281,8 @@ class Light : public std::enable_shared_from_this<Light>
     /**
      * Spot light data.
      */
-    class Spot
+    struct Spot
     {
-      public:
         Vector3 color;
         float range;
         float rangeInverse;
@@ -328,16 +326,9 @@ class Light : public std::enable_shared_from_this<Light>
 
     Light::Type _type;
 
-    union
-    {
-        /** @script{ignore} */
-        Directional* _directional;
-        /** @script{ignore} */
-        Point* _point;
-        /** @script{ignore} */
-        Spot* _spot;
-    };
-    Node* _node;
+    std::variant<Directional, Point, Spot> _lightData;
+    
+    Node* _node{ nullptr };
 };
 
 } // namespace tractor

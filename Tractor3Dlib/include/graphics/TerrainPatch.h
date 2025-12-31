@@ -32,6 +32,11 @@ class TerrainPatch : public Camera::Listener
 
   public:
     /**
+     * Destructor.
+     */
+    ~TerrainPatch();
+
+    /**
      * Gets the number of material for this patch for all level of details.
      *
      * @return The number of material for this patch for all level of details.
@@ -79,11 +84,6 @@ class TerrainPatch : public Camera::Listener
      */
     TerrainPatch& operator=(const TerrainPatch&) = delete;
 
-    /**
-     * Destructor.
-     */
-    ~TerrainPatch();
-
     struct Layer
     {
         Layer() = default;
@@ -112,7 +112,7 @@ class TerrainPatch : public Camera::Listener
 
     struct LayerCompare
     {
-        bool operator()(const Layer* lhs, const Layer* rhs) const;
+        bool operator()(const std::unique_ptr<Layer>& lhs, const std::unique_ptr<Layer>& rhs) const;
     };
 
     static TerrainPatch* create(Terrain* terrain,
@@ -149,7 +149,7 @@ class TerrainPatch : public Camera::Listener
                   const std::string& blendPath,
                   int blendChannel);
 
-    void deleteLayer(Layer* layer);
+    void deleteLayer(std::unique_ptr<Layer>& layer);
 
     int addSampler(const std::string& path);
 
@@ -179,7 +179,7 @@ class TerrainPatch : public Camera::Listener
     unsigned int _row{ 0 };
     unsigned int _column{ 0 };
     std::vector<std::unique_ptr<Level>> _levels{};
-    std::set<Layer*, LayerCompare> _layers{};
+    std::set<std::unique_ptr<Layer>, LayerCompare> _layers{};
     std::vector<SamplerPtr> _samplers{};
     mutable BoundingBox _boundingBox{};
     mutable BoundingBox _boundingBoxWorld{};

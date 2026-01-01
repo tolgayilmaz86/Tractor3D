@@ -66,29 +66,6 @@ using std::atoi;
 
 constexpr auto EMPTY_STRING{ "" };
 
-// Helper to detect smart pointers at compile time
-namespace detail {
-    template<typename T>
-    struct is_smart_ptr : std::false_type {};
-    template<typename T>
-    struct is_smart_ptr<std::shared_ptr<T>> : std::true_type {};
-    template<typename T>
-    struct is_smart_ptr<std::unique_ptr<T>> : std::true_type {};
-    
-    template<typename T>
-    inline void safe_release_impl(T& x) {
-        if constexpr (is_smart_ptr<std::remove_cv_t<T>>::value) {
-            x.reset();
-        } else {
-            delete x;
-            x = nullptr;
-        }
-    }
-}
-
-// SAFE_RELEASE - works with both raw pointers and smart pointers
-#define SAFE_RELEASE(x) do { ::detail::safe_release_impl(x); } while(0)
-
 namespace tractor
 {
     /**
@@ -269,32 +246,3 @@ extern ALenum __al_error_code;
  * Accesses the most recently set global AL error.
  */
 #define AL_LAST_ERROR() __al_error_code
-
-#define DEFINE_ITERATOR(StructType)                             \
-    class Iterator {                                            \
-    public:                                                     \
-        StructType* current;                                    \
-                                                                \
-        explicit Iterator(StructType* entry) : current(entry) {}\
-                                                                \
-        StructType& operator*() { return *current; }            \
-        StructType* operator->() { return current; }            \
-                                                                \
-        Iterator& operator++() {                                \
-            if (current) current = current->next;               \
-            return *this;                                       \
-        }                                                       \
-                                                                \
-        Iterator operator++(int) {                              \
-            Iterator temp = *this;                              \
-            ++(*this);                                          \
-            return temp;                                        \
-        }                                                       \
-                                                                \
-        bool operator!=(const Iterator& other) const {          \
-            return current != other.current;                    \
-        }                                                       \
-    };                                                          \
-                                                                \
-    Iterator begin() { return Iterator(this); }                 \
-    Iterator end() { return Iterator(nullptr); }

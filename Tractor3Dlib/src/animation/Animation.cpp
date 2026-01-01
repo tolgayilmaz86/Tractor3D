@@ -60,17 +60,13 @@ Animation::~Animation()
         }
         delete channel;
     }
-    _channels.clear();
 
-    if (_defaultClip)
+    // Unschedule playing clips from the controller
+    if (_defaultClip && _defaultClip->isClipStateBitSet(AnimationClip::CLIP_IS_PLAYING_BIT))
     {
-        if (_defaultClip->isClipStateBitSet(AnimationClip::CLIP_IS_PLAYING_BIT))
-        {
-            assert(_controller);
-            _controller->unschedule(_defaultClip.get());
-        }
+        assert(_controller);
+        _controller->unschedule(_defaultClip.get());
     }
-    _defaultClip.reset();
 
     for (auto& [clipId, clipPtr] : _clipsMap)
     {
@@ -79,7 +75,7 @@ Animation::~Animation()
             _controller->unschedule(clipPtr.get());
         }
     }
-    _clipsMap.clear();
+    // _channels vector, _defaultClip, and _clipsMap are automatically cleaned up
 }
 
 //----------------------------------------------------------------------------

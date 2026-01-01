@@ -66,17 +66,8 @@ PhysicsCollisionObject::PhysicsCollisionObject(Node* node, int group, int mask)
 //----------------------------------------------------------------------------
 PhysicsCollisionObject::~PhysicsCollisionObject()
 {
-    _motionState.reset();
-
-    if (_scriptListeners)
-    {
-        // unique_ptr in vector will automatically clean up ScriptListeners
-        _scriptListeners.reset();
-    }
-
     assert(Game::getInstance()->getPhysicsController());
     Game::getInstance()->getPhysicsController()->destroyShape(_collisionShape.get());
-    _collisionShape.reset();
 }
 
 //----------------------------------------------------------------------------

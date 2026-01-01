@@ -39,12 +39,6 @@ FrameBuffer::FrameBuffer(const std::string& id,
 //----------------------------------------------------------------------------
 FrameBuffer::~FrameBuffer()
 {
-    // shared_ptr vector handles cleanup automatically
-    _renderTargets.clear();
-
-    // shared_ptr automatically handles cleanup
-    _depthStencilTarget.reset();
-
     // Release GL resource.
     if (_handle) GL_ASSERT(glDeleteFramebuffers(1, &_handle));
 
@@ -55,6 +49,7 @@ FrameBuffer::~FrameBuffer()
     {
         _frameBuffers.erase(it);
     }
+    // _renderTargets and _depthStencilTarget are automatically cleaned up
 }
 
 //----------------------------------------------------------------------------

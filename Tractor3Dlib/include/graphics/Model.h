@@ -71,7 +71,7 @@ class Model : public Drawable
     /**
      * Destructor.
      */
-    ~Model();
+    ~Model() = default;
 
     /**
      * Returns the Mesh for this Model.

@@ -363,7 +363,34 @@ class ScriptTarget
          */
         ScriptEntry(const ScriptPtr& script) : script(script), next(nullptr), prev(nullptr) {}
 
-        DEFINE_ITERATOR(ScriptEntry)
+        class Iterator
+        {
+          public:
+            ScriptEntry* current;
+
+            explicit Iterator(ScriptEntry* entry) : current(entry) {}
+
+            ScriptEntry& operator*() { return *current; }
+            ScriptEntry* operator->() { return current; }
+
+            Iterator& operator++()
+            {
+                if (current) current = current->next;
+                return *this;
+            }
+
+            Iterator operator++(int)
+            {
+                Iterator temp = *this;
+                ++(*this);
+                return temp;
+            }
+
+            bool operator!=(const Iterator& other) const { return current != other.current; }
+        };
+
+        Iterator begin() { return Iterator(this); }
+        Iterator end() { return Iterator(nullptr); }
     };
 
     /**

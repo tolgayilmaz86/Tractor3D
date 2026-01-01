@@ -65,8 +65,6 @@ Gamepad::Gamepad(GamepadHandle handle,
 }
 
 //----------------------------------------------------------------------------
-Gamepad::~Gamepad() { _form.reset(); }
-//----------------------------------------------------------------------------
 Gamepad* Gamepad::add(GamepadHandle handle,
                       unsigned int buttonCount,
                       unsigned int joystickCount,

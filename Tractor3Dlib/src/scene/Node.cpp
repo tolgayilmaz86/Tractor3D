@@ -59,8 +59,6 @@ Node::~Node()
     {
         _drawable->setNode(nullptr);
     }
-    // Clear the drawable holder to release the shared_ptr
-    _drawableHolder.reset();
     _drawable = nullptr;
     
     if (_audioSource) _audioSource->setNode(nullptr);

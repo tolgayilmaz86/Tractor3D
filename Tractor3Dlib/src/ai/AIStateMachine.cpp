@@ -32,15 +32,7 @@ AIStateMachine::AIStateMachine(AIAgent* agent) : _agent(agent)
 }
 
 //----------------------------------------------------------------------------
-AIStateMachine::~AIStateMachine()
-{
-    // shared_ptr handles cleanup automatically
-    _states.clear();
-    _currentState.reset();
-}
-
-//----------------------------------------------------------------------------
-std::shared_ptr<AIState> AIStateMachine::addState(const std::string& id)
+AIStatePtr AIStateMachine::addState(const std::string& id)
 {
     auto state = AIState::create(id);
     _states.push_back(state);
@@ -48,13 +40,13 @@ std::shared_ptr<AIState> AIStateMachine::addState(const std::string& id)
 }
 
 //----------------------------------------------------------------------------
-void AIStateMachine::addState(std::shared_ptr<AIState> state)
+void AIStateMachine::addState(AIStatePtr state)
 {
     _states.push_back(state);
 }
 
 //----------------------------------------------------------------------------
-void AIStateMachine::removeState(std::shared_ptr<AIState> state)
+void AIStateMachine::removeState(AIStatePtr state)
 {
     auto itr = std::find(_states.begin(), _states.end(), state);
     if (itr != _states.end())
@@ -64,7 +56,7 @@ void AIStateMachine::removeState(std::shared_ptr<AIState> state)
 }
 
 //----------------------------------------------------------------------------
-std::shared_ptr<AIState> AIStateMachine::getState(const std::string& id) const noexcept
+AIStatePtr AIStateMachine::getState(const std::string& id) const noexcept
 {
     for (const auto& state : _states)
     {
@@ -76,7 +68,7 @@ std::shared_ptr<AIState> AIStateMachine::getState(const std::string& id) const n
 }
 
 //----------------------------------------------------------------------------
-bool AIStateMachine::hasState(std::shared_ptr<AIState> state) const
+bool AIStateMachine::hasState(AIStatePtr state) const
 {
     assert(state);
 
@@ -84,7 +76,7 @@ bool AIStateMachine::hasState(std::shared_ptr<AIState> state) const
 }
 
 //----------------------------------------------------------------------------
-std::shared_ptr<AIState> AIStateMachine::setState(const std::string& id)
+AIStatePtr AIStateMachine::setState(const std::string& id)
 {
     auto state = getState(id);
     if (state) sendChangeStateMessage(state);
@@ -92,7 +84,7 @@ std::shared_ptr<AIState> AIStateMachine::setState(const std::string& id)
 }
 
 //----------------------------------------------------------------------------
-bool AIStateMachine::setState(std::shared_ptr<AIState> state)
+bool AIStateMachine::setState(AIStatePtr state)
 {
     if (hasState(state))
     {
@@ -104,7 +96,7 @@ bool AIStateMachine::setState(std::shared_ptr<AIState> state)
 }
 
 //----------------------------------------------------------------------------
-void AIStateMachine::sendChangeStateMessage(std::shared_ptr<AIState> newState)
+void AIStateMachine::sendChangeStateMessage(AIStatePtr newState)
 {
     AIMessage* message = AIMessage::create(0, _agent->getId(), _agent->getId(), 1);
     message->_messageType = AIMessage::MESSAGE_TYPE_STATE_CHANGE;
@@ -113,7 +105,7 @@ void AIStateMachine::sendChangeStateMessage(std::shared_ptr<AIState> newState)
 }
 
 //----------------------------------------------------------------------------
-void AIStateMachine::setStateInternal(std::shared_ptr<AIState> state)
+void AIStateMachine::setStateInternal(AIStatePtr state)
 {
     assert(hasState(state));
 

@@ -73,7 +73,7 @@ class RenderTarget : public std::enable_shared_from_this<RenderTarget>
     /**
      * Destructor.
      */
-    ~RenderTarget();
+    ~RenderTarget() = default;
 
     /**
      * Get the ID of this RenderTarget.

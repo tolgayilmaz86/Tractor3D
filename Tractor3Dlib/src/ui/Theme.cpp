@@ -32,17 +32,13 @@ static ThemePtr __defaultTheme = nullptr;
 //----------------------------------------------------------------
 Theme::~Theme()
 {
-    // Destroy all the styles
+    // Destroy all the styles (raw pointers)
     for (size_t i = 0, count = _styles.size(); i < count; ++i)
     {
-        Style* style = _styles[i];
-        delete style;
+        delete _styles[i];
     }
 
-    // shared_ptr handles cleanup for _images, _imageLists, _skins, _emptyImage
-
     delete _spriteBatch;
-    _texture.reset();  // shared_ptr handles cleanup
 
     // Remove ourself from the theme cache.
     auto itr = std::find_if(__themeCache.begin(), __themeCache.end(),
@@ -53,6 +49,9 @@ Theme::~Theme()
     }
 
     if (__defaultTheme.get() == this) __defaultTheme = nullptr;
+    
+    // _images, _imageLists, _skins, _emptyImage, _texture, _fonts 
+    // are automatically cleaned up by smart pointers
 }
 
 //----------------------------------------------------------------

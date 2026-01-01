@@ -38,13 +38,6 @@ MeshBatch::MeshBatch(const VertexFormat& vertexFormat,
 }
 
 //----------------------------------------------------------------------------
-MeshBatch::~MeshBatch()
-{
-    _material.reset();
-    // unique_ptr handles cleanup automatically
-}
-
-//----------------------------------------------------------------------------
 MeshBatch* MeshBatch::create(const VertexFormat& vertexFormat,
                              Mesh::PrimitiveType primitiveType,
                              const std::string& materialPath,

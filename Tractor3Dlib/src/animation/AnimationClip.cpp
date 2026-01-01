@@ -62,16 +62,6 @@ AnimationClip::AnimationClip(const std::string& id,
 }
 
 //----------------------------------------------------------------------------
-AnimationClip::~AnimationClip()
-{
-    _values.clear();
-    _crossFadeToClip.reset();
-    _beginListeners.reset();
-    _endListeners.reset();
-    _listeners.reset();
-}
-
-//----------------------------------------------------------------------------
 AnimationClip::ListenerEvent::ListenerEvent(Listener* listener, unsigned long eventTime)
 {
     _listener = listener;

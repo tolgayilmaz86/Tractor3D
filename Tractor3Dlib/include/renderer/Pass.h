@@ -43,7 +43,7 @@ class Pass : public RenderState, public std::enable_shared_from_this<Pass>
     /**
      * Destructor.
      */
-    ~Pass();
+    ~Pass() = default;
 
     /**
      * Returns the Id of this pass.

@@ -43,15 +43,6 @@ RenderState::StateBlock::Ptr RenderState::StateBlock::_defaultState;
 std::vector<RenderState::AutoBindingResolver*> RenderState::_customAutoBindingResolvers;
 
 //----------------------------------------------------------------------------
-RenderState::~RenderState()
-{
-    _state.reset();
-
-    // Destroy all the material parameters - now using shared_ptr
-    _parameters.clear();
-}
-
-//----------------------------------------------------------------------------
 void RenderState::initialize()
 {
     if (!StateBlock::_defaultState) StateBlock::_defaultState = StateBlock::create();

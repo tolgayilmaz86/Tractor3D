@@ -608,7 +608,7 @@ class RenderState
     /**
      * Destructor.
      */
-    virtual ~RenderState();
+    virtual ~RenderState() = default;
 
     /**
      * Static initializer that is called during game startup.

@@ -26,12 +26,6 @@ static std::vector<std::weak_ptr<RenderTarget>> __renderTargets;
 RenderTarget::RenderTarget(const std::string& id) : _id(id) {}
 
 //----------------------------------------------------------------------------
-RenderTarget::~RenderTarget()
-{
-    _texture.reset();
-}
-
-//----------------------------------------------------------------------------
 std::shared_ptr<RenderTarget> RenderTarget::create(const std::string& id,
                                                    unsigned int width,
                                                    unsigned int height,

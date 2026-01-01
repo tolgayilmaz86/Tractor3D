@@ -41,13 +41,6 @@ static const float DEFAULT_TERRAIN_HEIGHT_RATIO = 0.3f;
 static float getDefaultHeight(unsigned int width, unsigned int height);
 
 //----------------------------------------------------------------------------
-Terrain::~Terrain()
-{
-    _normalMap.reset();
-    _heightfield.reset();
-}
-
-//----------------------------------------------------------------------------
 TerrainPtr Terrain::create(const std::string& path) { return create(path, nullptr); }
 
 //----------------------------------------------------------------------------

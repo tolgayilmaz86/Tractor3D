@@ -30,13 +30,6 @@ Model::Model(std::shared_ptr<Mesh> mesh) : Drawable(), _mesh(mesh)
 }
 
 //----------------------------------------------------------------------------
-Model::~Model()
-{
-    _material.reset();
-    // _partMaterials and _skin are automatically cleaned up by unique_ptr
-}
-
-//----------------------------------------------------------------------------
 ModelPtr Model::create(std::shared_ptr<Mesh> mesh)
 {
     assert(mesh);

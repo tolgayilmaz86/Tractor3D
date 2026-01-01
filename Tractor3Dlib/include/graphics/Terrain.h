@@ -201,7 +201,7 @@ class Terrain : public Drawable, public Transform::Listener
     /**
      * Destructor.
      */
-    ~Terrain();
+    ~Terrain() = default;
 
     /**
      * Determines if the specified terrain flag is currently set.

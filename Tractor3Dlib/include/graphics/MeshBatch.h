@@ -72,7 +72,7 @@ class MeshBatch
     /**
      * Destructor.
      */
-    ~MeshBatch();
+    ~MeshBatch() = default;
 
     /**
      * Returns the current capacity of the batch.

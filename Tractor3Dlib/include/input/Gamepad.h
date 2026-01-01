@@ -214,7 +214,7 @@ class Gamepad
     /**
      * Destructor.
      */
-    virtual ~Gamepad();
+    virtual ~Gamepad() = default;
 
     static void updateInternal(float elapsedTime);
 

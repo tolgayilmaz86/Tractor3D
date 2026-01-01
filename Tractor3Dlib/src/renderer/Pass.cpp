@@ -30,13 +30,6 @@ Pass::Pass(const std::string& id, Technique* technique)
 }
 
 //----------------------------------------------------------------------------
-Pass::~Pass()
-{
-    _effect.reset();
-    _vaBinding.reset();
-}
-
-//----------------------------------------------------------------------------
 std::shared_ptr<Pass> Pass::create(const std::string& id, Technique* technique)
 {
     return std::shared_ptr<Pass>(new Pass(id, technique));

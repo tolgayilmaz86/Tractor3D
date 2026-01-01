@@ -56,11 +56,7 @@ PhysicsCollisionShape::~PhysicsCollisionShape()
                 break;
 
             case SHAPE_HEIGHTFIELD:
-                if (_shapeData.heightfieldData)
-                {
-                    _shapeData.heightfieldData->heightfield.reset();  // shared_ptr cleanup
-                    delete _shapeData.heightfieldData;
-                }
+                delete _shapeData.heightfieldData;
                 break;
         }
 

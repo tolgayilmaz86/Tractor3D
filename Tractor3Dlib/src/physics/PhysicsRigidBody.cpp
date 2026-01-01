@@ -101,14 +101,12 @@ PhysicsRigidBody::~PhysicsRigidBody()
     assert(_node);
 
     // Clean up all constraints linked to this rigid body.
-    _inDestructor = true;
     if (_constraints)
     {
         for (size_t i = 0; i < _constraints->size(); ++i)
         {
             delete (*_constraints)[i];
         }
-        _constraints.reset();
     }
 
     // Remove collision object from physics controller.
@@ -117,7 +115,7 @@ PhysicsRigidBody::~PhysicsRigidBody()
     // Clean up the rigid body and its related objects.
     delete _body;
 
-    // Unregister node listener (only registered for heihgtfield collision shape types).
+    // Unregister node listener (only registered for heightfield collision shape types).
     if (_collisionShape->getType() == PhysicsCollisionShape::SHAPE_HEIGHTFIELD)
     {
         _node->removeListener(this);

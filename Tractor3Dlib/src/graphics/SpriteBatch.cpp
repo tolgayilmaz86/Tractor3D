@@ -46,19 +46,6 @@ namespace tractor
 static EffectPtr __spriteEffect = nullptr;
 
 //----------------------------------------------------------------------------
-SpriteBatch::~SpriteBatch()
-{
-    _sampler.reset();  // shared_ptr handles cleanup
-
-    if (!_customEffect)
-    {
-        // Just reset our reference - shared_ptr handles cleanup automatically
-        // Effect will be cleaned up when last reference goes away
-    }
-    // __spriteEffect will be released when all SpriteBatch instances are destroyed
-}
-
-//----------------------------------------------------------------------------
 SpriteBatch* SpriteBatch::create(const std::string& texturePath,
                                  Effect* effect,
                                  unsigned int initialCapacity)

@@ -19,6 +19,12 @@
 
 namespace tractor
 {
+    
+/** Shared pointer type for AIState. */
+using AIStatePtr = std::shared_ptr<AIState>;
+
+/** Weak pointer type for AIState. */
+using AIStateWeakPtr = std::weak_ptr<AIState>;
 
 /**
  * Defines a simple AI state machine that can be used to program logic
@@ -53,7 +59,7 @@ class AIStateMachine
     /**
      * Destructor.
      */
-    ~AIStateMachine();
+    ~AIStateMachine() = default;
 
     /**
      * Returns the AIAgent that owns this state machine.
@@ -69,7 +75,7 @@ class AIStateMachine
      *
      * @return The newly created and added state.
      */
-    std::shared_ptr<AIState> addState(const std::string& id);
+    AIStatePtr addState(const std::string& id);
 
     /**
      * Adds a state to the state machine.
@@ -78,14 +84,14 @@ class AIStateMachine
      *
      * @param state The state to add.
      */
-    void addState(std::shared_ptr<AIState> state);
+    void addState(AIStatePtr state);
 
     /**
      * Removes a state from the state machine.
      *
      * @param state The state to remove.
      */
-    void removeState(std::shared_ptr<AIState> state);
+    void removeState(AIStatePtr state);
 
     /**
      * Returns a state registered with this state machine.
@@ -94,14 +100,14 @@ class AIStateMachine
      *
      * @return The state with the given ID, or nullptr if no such state exists.
      */
-    std::shared_ptr<AIState> getState(const std::string& id) const noexcept;
+    AIStatePtr getState(const std::string& id) const noexcept;
 
     /**
      * Returns the active state for this state machine.
      *
      * @return The active state for this state machine.
      */
-    std::shared_ptr<AIState> getActiveState() const noexcept { return _currentState; }
+    AIStatePtr getActiveState() const noexcept { return _currentState; }
 
     /**
      * Changes the state of this state machine to the given state.
@@ -113,7 +119,7 @@ class AIStateMachine
      *
      * @return The new state, or nullptr if no matching state could be found.
      */
-    std::shared_ptr<AIState> setState(const std::string& id);
+    AIStatePtr setState(const std::string& id);
 
     /**
      * Changes the state of this state machine to the given state.
@@ -125,7 +131,7 @@ class AIStateMachine
      *
      * @return true if the state is successfully changed, false otherwise.
      */
-    bool setState(std::shared_ptr<AIState> state);
+    bool setState(AIStatePtr state);
 
   private:
     /**
@@ -141,17 +147,17 @@ class AIStateMachine
     /**
      * Sends a message to change the state of this state machine.
      */
-    void sendChangeStateMessage(std::shared_ptr<AIState> newState);
+    void sendChangeStateMessage(AIStatePtr newState);
 
     /**
      * Changes the active state of the state machine.
      */
-    void setStateInternal(std::shared_ptr<AIState> state);
+    void setStateInternal(AIStatePtr state);
 
     /**
      * Determines if the specified state exists within this state machine.
      */
-    bool hasState(std::shared_ptr<AIState> state) const;
+    bool hasState(AIStatePtr state) const;
 
     /**
      * Called by AIController to update the state machine each frame.
@@ -159,8 +165,8 @@ class AIStateMachine
     void update(float elapsedTime) { _currentState->update(this, elapsedTime); }
 
     AIAgent* _agent;
-    std::shared_ptr<AIState> _currentState;
-    std::list<std::shared_ptr<AIState>> _states;
+    AIStatePtr _currentState;
+    std::list<AIStatePtr> _states;
 };
 
 } // namespace tractor

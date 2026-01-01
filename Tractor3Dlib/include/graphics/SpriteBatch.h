@@ -102,7 +102,7 @@ class SpriteBatch
     /**
      * Destructor.
      */
-    virtual ~SpriteBatch();
+    virtual ~SpriteBatch() = default;
 
     /**
      * Starts drawing sprites.

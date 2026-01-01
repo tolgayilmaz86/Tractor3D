@@ -36,11 +36,6 @@ Font::~Font()
     {
         __fontCache.erase(itr);
     }
-
-    _texture.reset();  // shared_ptr handles cleanup
-
-    // _sizes is now vector<FontPtr>, will clean up automatically
-    _sizes.clear();
 }
 
 //----------------------------------------------------------------------------

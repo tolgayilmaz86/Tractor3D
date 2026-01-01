@@ -70,7 +70,7 @@ class AnimationClip : public std::enable_shared_from_this<AnimationClip>, public
     /**
      * Destructor.
      */
-    ~AnimationClip();
+    ~AnimationClip() = default;
 
     /**
      * Defines an animation event listener.

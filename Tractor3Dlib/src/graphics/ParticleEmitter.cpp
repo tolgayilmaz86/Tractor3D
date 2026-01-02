@@ -823,8 +823,16 @@ unsigned int ParticleEmitter::draw(bool wireframe)
 //----------------------------------------------------------------------------
 Drawable* ParticleEmitter::clone(NodeCloneContext& context)
 {
-    // Create a clone of this emitter - use new directly since clone returns raw pointer
-    ParticleEmitter* clone = new ParticleEmitter(_particleCountMax);
+    // Delegate to cloneDrawable and release the raw pointer
+    // This maintains backward compatibility while using the new pattern
+    return cloneDrawable(context).get();
+}
+
+//----------------------------------------------------------------------------
+DrawablePtr ParticleEmitter::cloneDrawable(NodeCloneContext& context) const
+{
+    // Create a clone of this emitter as shared_ptr
+    auto clone = ParticleEmitterPtr(new ParticleEmitter(_particleCountMax));
     clone->setTexture(_spriteBatch->getSampler()->getTexture(), _spriteBlendMode);
     
     // Clone properties

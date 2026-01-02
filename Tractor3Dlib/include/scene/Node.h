@@ -20,6 +20,7 @@
 #include "animation/Animation.h"
 #include "audio/AudioSource.h"
 #include "graphics/BoundingBox.h"
+#include "graphics/Drawable.h"
 #include "graphics/Light.h"
 #include "graphics/Model.h"
 #include "graphics/ParticleEmitter.h"

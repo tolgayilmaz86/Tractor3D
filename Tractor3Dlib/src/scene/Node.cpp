@@ -963,8 +963,10 @@ void Node::cloneInto(Node* node, NodeCloneContext& context) const
 
     if (Drawable* drawable = getDrawable())
     {
-        Drawable* clone = drawable->clone(context);
-        node->setDrawable(clone);
+        if (auto clonedDrawable = drawable->cloneDrawable(context))
+        {
+            node->setDrawable(clonedDrawable);
+        }
     }
     if (Camera* camera = getCamera())
     {

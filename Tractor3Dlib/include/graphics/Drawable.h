@@ -13,14 +13,26 @@
  */
 #pragma once
 
+#include <memory>
+
 namespace tractor
 {
 
 class Node;
 class NodeCloneContext;
+class Drawable;
+
+/** Shared pointer type for Drawable. */
+using DrawablePtr = std::shared_ptr<Drawable>;
+
+/** Weak pointer type for Drawable. */
+using DrawableWeakPtr = std::weak_ptr<Drawable>;
 
 /**
  * Defines a drawable object that can be attached to a Node.
+ * 
+ * Drawable classes support cloning via the clone() method which returns
+ * a shared_ptr for consistent lifetime management across the engine.
  */
 class Drawable
 {
@@ -43,7 +55,6 @@ class Drawable
      * @param wireframe true if you want to request to draw the wireframe only.
      * @return The number of graphics draw calls required to draw the object.
      */
-
     virtual unsigned int draw(bool wireframe = false) = 0;
 
     /**
@@ -53,12 +64,27 @@ class Drawable
      */
     Node* getNode() const noexcept { return _node; }
 
+    /**
+     * Clones the drawable and returns a new drawable as shared_ptr.
+     *
+     * @param context The clone context for tracking cloned objects.
+     * @return The newly created drawable as shared_ptr.
+     */
+    virtual DrawablePtr cloneDrawable(NodeCloneContext& context) const
+    {
+        // Default implementation calls the legacy clone() and wraps in shared_ptr
+        // Subclasses should override this for proper shared_ptr semantics
+        return DrawablePtr(const_cast<Drawable*>(this)->clone(context));
+    }
+
   protected:
     /**
      * Clones the drawable and returns a new drawable.
      *
      * @param context The clone context.
      * @return The newly created drawable.
+     * @deprecated Use cloneDrawable() instead for consistent shared_ptr semantics.
+     *             This method is kept for backward compatibility with existing subclasses.
      */
     virtual Drawable* clone(NodeCloneContext& context) = 0;
 

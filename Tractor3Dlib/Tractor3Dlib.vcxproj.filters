@@ -846,5 +846,9 @@
     <ClInclude Include="include\utils\SafeDelete.h" />
     <ClInclude Include="include\graphics\BlendMode.h" />
     <ClInclude Include="include\scene\PropertyUtils.h" />
+    <ClInclude Include="include\graphics\IParticleEmission.h" />
+    <ClInclude Include="include\graphics\IParticlePhysics.h" />
+    <ClInclude Include="include\graphics\IParticleAppearance.h" />
+    <ClInclude Include="include\graphics\IParticleSprite.h" />
   </ItemGroup>
 </Project>

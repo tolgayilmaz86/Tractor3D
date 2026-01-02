@@ -51,7 +51,7 @@ AnimationClip::AnimationClip(const std::string& id,
            && endTime <= _animation->_duration);
 
     std::ranges::for_each(_animation->_channels,
-                          [this](auto* channel)
+                          [this](const auto& channel)
                           {
                               assert(channel);
                               assert(channel->getCurve());
@@ -517,7 +517,7 @@ bool AnimationClip::update(float elapsedTime)
     float percentageBlend = (float)_loopBlendTime / (float)_animation->_duration;
     for (size_t i = 0; i < channelCount; i++)
     {
-        channel = _animation->_channels[i];
+        channel = _animation->_channels[i].get();
         assert(channel);
         target = channel->_target;
         assert(target);

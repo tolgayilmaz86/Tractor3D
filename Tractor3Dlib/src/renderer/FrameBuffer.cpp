@@ -240,9 +240,9 @@ std::shared_ptr<RenderTarget> FrameBuffer::getRenderTarget(unsigned int index) c
 //----------------------------------------------------------------------------
 void FrameBuffer::setDepthStencilTarget(std::shared_ptr<DepthStencilTarget> target)
 {
-    if (_depthStencilTarget == target) return;
+    if (_depthStencilTarget == target) 
+        return;
 
-    // shared_ptr assignment handles the reference counting automatically
     _depthStencilTarget = target;
 
     if (target)

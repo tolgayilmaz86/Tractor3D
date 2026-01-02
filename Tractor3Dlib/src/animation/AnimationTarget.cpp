@@ -37,10 +37,10 @@ AnimationTarget::~AnimationTarget()
             if (animation)
             {
                 animation->removeChannel(channel);
+                // Note: removeChannel will delete the channel via unique_ptr
             }
-            delete channel;
         }
-        _animationChannels->clear();
+        // Don't delete channels here - Animation owns them via unique_ptr
     }
     
     // Clear stored animations (shared_ptrs will release automatically)
@@ -384,11 +384,11 @@ void AnimationTarget::destroyAnimation(const std::string& id)
     auto animation = channel->getAnimation();
     if (animation)
     {
+        // removeChannel from animation will delete the channel via unique_ptr
         animation->removeChannel(channel);
     }
+    // Remove from our local list (non-owning)
     removeChannel(channel);
-
-    delete channel;
     
     // Remove from stored animations map
     if (id.empty())
@@ -580,8 +580,8 @@ void AnimationTarget::cloneInto(AnimationTarget* target, NodeCloneContext& conte
             AnimationPtr clonedAnimation = context.findClonedAnimation(srcAnimation.get());
             if (clonedAnimation)
             {
-                Animation::Channel* channelCopy = new Animation::Channel(*channel, clonedAnimation, target);
-                clonedAnimation->addChannel(channelCopy);
+                Animation::ChannelPtr channelCopy(new Animation::Channel(*channel, clonedAnimation, target));
+                clonedAnimation->addChannel(std::move(channelCopy));
             }
             else
             {

@@ -158,6 +158,9 @@ class Animation : public std::enable_shared_from_this<Animation>
         friend class Animation;
         friend class AnimationTarget;
 
+      public:
+        ~Channel();
+
       private:
         Channel(const AnimationPtr& animation,
                 AnimationTarget* target,
@@ -166,7 +169,6 @@ class Animation : public std::enable_shared_from_this<Animation>
                 unsigned long duration);
         Channel(const Channel& copy, const AnimationPtr& animation, AnimationTarget* target);
         Channel(const Channel&); // Hidden copy constructor.
-        ~Channel();
         Channel& operator=(const Channel&) = delete;
         Curve* getCurve() const noexcept { return _curve.get(); }
         
@@ -182,6 +184,9 @@ class Animation : public std::enable_shared_from_this<Animation>
         std::shared_ptr<Curve> _curve; // The curve used to represent the animation data.
         unsigned long _duration;  // The length of the animation (in milliseconds).
     };
+
+    /** Unique pointer type for Channel. */
+    using ChannelPtr = std::unique_ptr<Channel>;
 
     /**
      * Hidden copy constructor.
@@ -243,7 +248,7 @@ class Animation : public std::enable_shared_from_this<Animation>
     /**
      * Adds a channel to the animation.
      */
-    void addChannel(Channel* channel);
+    void addChannel(ChannelPtr channel);
 
     /**
      * Removes a channel from the animation.
@@ -283,7 +288,7 @@ class Animation : public std::enable_shared_from_this<Animation>
     }; // The AnimationController that this Animation will run on.
     std::string _id;                        // The Animation's ID.
     unsigned long _duration{ 0L };          // the length of the animation (in milliseconds).
-    std::vector<Channel*> _channels;        // The channels within this Animation.
+    std::vector<ChannelPtr> _channels;      // The channels within this Animation.
     AnimationClipPtr _defaultClip;          // The Animation's default clip.
     std::unordered_map<std::string, AnimationClipPtr> _clipsMap; // All the clips created from this Animation.
 };

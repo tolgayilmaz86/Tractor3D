@@ -51,14 +51,13 @@ Animation::Animation(const std::string& id)
 //----------------------------------------------------------------------------
 Animation::~Animation()
 {
-    // Clean up channels - remove from targets before deleting to prevent dangling pointers
-    for (auto* channel : _channels)
+    // Remove channels from their targets before destruction
+    for (auto& channel : _channels)
     {
         if (channel && channel->_target)
         {
-            channel->_target->removeChannel(channel);
+            channel->_target->removeChannel(channel.get());
         }
-        delete channel;
     }
 
     // Unschedule playing clips from the controller
@@ -75,7 +74,7 @@ Animation::~Animation()
             _controller->unschedule(clipPtr.get());
         }
     }
-    // _channels vector, _defaultClip, and _clipsMap are automatically cleaned up
+    // _channels, _defaultClip, and _clipsMap are automatically cleaned up
 }
 
 //----------------------------------------------------------------------------
@@ -207,7 +206,7 @@ bool Animation::targets(AnimationTarget* target) const
 {
     bool targetExists = std::any_of(_channels.begin(),
                                     _channels.end(),
-                                    [target](const Animation::Channel* channel)
+                                    [target](const ChannelPtr& channel)
                                     {
                                         assert(channel); // Ensure channel is not null
                                         return channel->_target == target;
@@ -327,9 +326,10 @@ Animation::Channel* Animation::createChannel(AnimationTarget* target,
                         (Curve::InterpolationType)type);
     }
 
-    Channel* channel = new Channel(shared_from_this(), target, propertyId, curve, duration);
-    addChannel(channel);
-    return channel;
+    ChannelPtr channel(new Channel(shared_from_this(), target, propertyId, curve, duration));
+    Channel* rawPtr = channel.get();
+    addChannel(std::move(channel));
+    return rawPtr;
 }
 
 //----------------------------------------------------------------------------
@@ -389,36 +389,29 @@ Animation::Channel* Animation::createChannel(AnimationTarget* target,
                     keyInValue + pointOffset,
                     keyOutValue + pointOffset);
 
-    Channel* channel = new Channel(shared_from_this(), target, propertyId, curve, duration);
-    addChannel(channel);
-    return channel;
+    ChannelPtr channel(new Channel(shared_from_this(), target, propertyId, curve, duration));
+    Channel* rawPtr = channel.get();
+    addChannel(std::move(channel));
+    return rawPtr;
 }
 
 //----------------------------------------------------------------------------
-void Animation::addChannel(Channel* channel)
+void Animation::addChannel(ChannelPtr channel)
 {
     assert(channel);
-    _channels.push_back(channel);
-
     if (channel->_duration > _duration) _duration = channel->_duration;
+    _channels.push_back(std::move(channel));
 }
 
 //----------------------------------------------------------------------------
 void Animation::removeChannel(Channel* channel)
 {
-    std::vector<Animation::Channel*>::iterator itr = _channels.begin();
-    while (itr != _channels.end())
+    auto itr = std::find_if(_channels.begin(), _channels.end(),
+        [channel](const ChannelPtr& ptr) { return ptr.get() == channel; });
+    
+    if (itr != _channels.end())
     {
-        Animation::Channel* chan = *itr;
-        if (channel == chan)
-        {
-            _channels.erase(itr);
-            return;
-        }
-        else
-        {
-            itr++;
-        }
+        _channels.erase(itr);
     }
 }
 
@@ -449,8 +442,8 @@ AnimationPtr Animation::clone(Channel* channel, AnimationTarget* target)
 
     auto animation = Animation::create(getId());
 
-    Animation::Channel* channelCopy = new Animation::Channel(*channel, animation, target);
-    animation->addChannel(channelCopy);
+    ChannelPtr channelCopy(new Animation::Channel(*channel, animation, target));
+    animation->addChannel(std::move(channelCopy));
 
     // Clone the clips
     if (_defaultClip) animation->_defaultClip = _defaultClip->clone(animation.get());

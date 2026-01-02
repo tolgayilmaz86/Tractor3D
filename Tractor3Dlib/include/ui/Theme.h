@@ -43,7 +43,7 @@ using ThemeWeakPtr = std::weak_ptr<Theme>;
  * A Style describes the border, margin, and padding of a Control, what images, skins, and cursors
  * are associated with a Control, and Font properties to apply to a Control's text.
  */
-class Theme : public std::enable_shared_from_this<Theme>
+class Theme
 {
     friend class Control;
     friend class Form;

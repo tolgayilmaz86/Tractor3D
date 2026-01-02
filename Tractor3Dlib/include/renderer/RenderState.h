@@ -288,7 +288,7 @@ class RenderState
      * Defines a block of fixed-function render states that can be applied to a
      * RenderState object.
      */
-    class StateBlock : public std::enable_shared_from_this<StateBlock>
+    class StateBlock
     {
         friend class RenderState;
         friend class Game;

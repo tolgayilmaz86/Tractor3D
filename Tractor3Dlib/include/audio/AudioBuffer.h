@@ -56,7 +56,7 @@ struct AudioStreamStateOgg
  *
  * Currently only supports supported formats: .ogg, .wav, .au and .raw files.
  */
-class AudioBuffer : public std::enable_shared_from_this<AudioBuffer>
+class AudioBuffer
 {
     friend class AudioSource;
 

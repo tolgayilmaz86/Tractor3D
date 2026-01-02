@@ -38,7 +38,7 @@ using AIAgentWeakPtr = std::weak_ptr<AIAgent>;
  * such as state machines. By default, an AIAgent has an empty state
  * machine.
  */
-class AIAgent : public std::enable_shared_from_this<AIAgent>
+class AIAgent
 {
     friend class Node;
     friend class AIState;

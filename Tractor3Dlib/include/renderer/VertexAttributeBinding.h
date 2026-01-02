@@ -52,7 +52,7 @@ using VertexAttributeBindingWeakPtr = std::weak_ptr<VertexAttributeBinding>;
  * @note VertexAttributeBinding uses std::shared_ptr for memory management.
  * Use the static create() methods which return VertexAttributeBindingPtr.
  */
-class VertexAttributeBinding : public std::enable_shared_from_this<VertexAttributeBinding>
+class VertexAttributeBinding
 {
     friend class Pass;
 

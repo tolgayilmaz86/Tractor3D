@@ -37,7 +37,7 @@ using CameraWeakPtr = std::weak_ptr<Camera>;
 /**
  * Defines a camera which acts as a view of a scene to be rendered.
  */
-class Camera : public std::enable_shared_from_this<Camera>, public Transform::Listener
+class Camera : public Transform::Listener
 {
     friend class Node;
 

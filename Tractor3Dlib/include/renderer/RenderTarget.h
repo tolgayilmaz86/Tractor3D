@@ -24,7 +24,7 @@ namespace tractor
  * Defines a linear area of display memory and usually resides
  * in the display memory of the graphics device.
  */
-class RenderTarget : public std::enable_shared_from_this<RenderTarget>
+class RenderTarget
 {
     friend class FrameBuffer;
 

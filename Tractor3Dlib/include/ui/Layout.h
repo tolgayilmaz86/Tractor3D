@@ -37,7 +37,7 @@ using LayoutWeakPtr = std::weak_ptr<Layout>;
  * Implementations are responsible for positioning, resizing and
  * calling update on all the controls within a container.
  */
-class Layout : public std::enable_shared_from_this<Layout>
+class Layout
 {
     friend class Container;
     friend class Form;

@@ -38,7 +38,7 @@ using LightWeakPtr = std::weak_ptr<Light>;
  * There are 3 types of lights that can be created
  * directional, point and spot lights.
  */
-class Light : public std::enable_shared_from_this<Light>
+class Light
 {
     friend class Node;
 

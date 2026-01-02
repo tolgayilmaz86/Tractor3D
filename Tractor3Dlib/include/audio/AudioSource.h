@@ -37,7 +37,7 @@ using AudioSourceWeakPtr = std::weak_ptr<AudioSource>;
  *
  * This can be attached to a Node for applying its 3D transformation.
  */
-class AudioSource : public std::enable_shared_from_this<AudioSource>, public Transform::Listener
+class AudioSource : public Transform::Listener
 {
   public:
     friend class Node;

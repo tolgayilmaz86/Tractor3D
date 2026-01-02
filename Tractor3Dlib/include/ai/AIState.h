@@ -29,7 +29,7 @@ class AIStateMachine;
  * state machine. Events can be programmed or scripted when the
  * state is entered, exited and each frame/tick in its update event.
  */
-class AIState : public std::enable_shared_from_this<AIState>
+class AIState
 {
     friend class AIStateMachine;
 

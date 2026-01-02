@@ -46,7 +46,7 @@ using TechniqueWeakPtr = std::weak_ptr<Technique>;
  * material files (.material). When multiple techniques are loaded using a material file,
  * the current technique for an object can be set at runtime.
  */
-class Material : public RenderState, public std::enable_shared_from_this<Material>
+class Material : public RenderState
 {
     friend class Technique;
     friend class Pass;

@@ -40,7 +40,7 @@ using PassWeakPtr = std::weak_ptr<Pass>;
  *
  * A technique has one or more passes for supporting multi pass rendering.
  */
-class Technique : public RenderState, public std::enable_shared_from_this<Technique>
+class Technique : public RenderState
 {
     friend class Material;
     friend class Pass;

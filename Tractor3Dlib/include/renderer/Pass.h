@@ -33,7 +33,7 @@ class Pass;
  * to an object to be rendered. This includes specifying both a vertex and fragment
  * shader, as well as any uniforms and vertex attributes to be applied to these.
  */
-class Pass : public RenderState, public std::enable_shared_from_this<Pass>
+class Pass : public RenderState
 {
     friend class Technique;
     friend class Material;

@@ -23,7 +23,7 @@ namespace tractor
 /**
  * Defines a container for depth and stencil targets in a frame buffer object.
  */
-class DepthStencilTarget : public std::enable_shared_from_this<DepthStencilTarget>
+class DepthStencilTarget
 {
     friend class FrameBuffer;
 

@@ -23,7 +23,7 @@ namespace tractor
  *
  * Currently only supports loading from .png image files.
  */
-class Image : public std::enable_shared_from_this<Image>
+class Image
 {
   public:
     /**

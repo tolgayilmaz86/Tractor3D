@@ -36,7 +36,7 @@ using PhysicsCollisionShapeWeakPtr = std::weak_ptr<PhysicsCollisionShape>;
  * 
  * @note PhysicsCollisionShape uses std::shared_ptr for memory management.
  */
-class PhysicsCollisionShape : public std::enable_shared_from_this<PhysicsCollisionShape>
+class PhysicsCollisionShape
 {
     friend class PhysicsController;
     friend class PhysicsRigidBody;

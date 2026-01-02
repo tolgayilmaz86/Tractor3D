@@ -487,6 +487,8 @@
     <ClCompile Include="src\framework\FileStream.cpp">
       <Filter>src\framework</Filter>
     </ClCompile>
+    <ClCompile Include="src\graphics\BlendMode.cpp" />
+    <ClCompile Include="src\scene\PropertyUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ai\AIAgent.h">
@@ -842,5 +844,7 @@
     </ClInclude>
     <ClInclude Include="include\utils\RefRelease.h" />
     <ClInclude Include="include\utils\SafeDelete.h" />
+    <ClInclude Include="include\graphics\BlendMode.h" />
+    <ClInclude Include="include\scene\PropertyUtils.h" />
   </ItemGroup>
 </Project>

@@ -16,6 +16,7 @@
 #include "graphics/ParticleEmitter.h"
 
 #include "framework/Game.h"
+#include "graphics/BlendMode.h"
 #include "math/Quaternion.h"
 #include "scene/Node.h"
 #include "scene/Properties.h"
@@ -110,7 +111,9 @@ ParticleEmitterPtr ParticleEmitter::create(Properties* properties)
     // Check for the old naming
     if (blendModeString.empty()) blendModeString = sprite->getString("blending");
 
-    BlendMode blendMode = getBlendModeFromString(blendModeString);
+    // Use centralized BlendMode parsing
+    BlendMode blendMode = BlendModeUtils::fromString(blendModeString);
+    
     int spriteWidth = sprite->getInt("width");
     int spriteHeight = sprite->getInt("height");
     bool spriteAnimated = sprite->getBool("animated");
@@ -441,31 +444,8 @@ void ParticleEmitter::setBlendMode(BlendMode blendMode)
     assert(_spriteBatch);
     assert(_spriteBatch->getStateBlock());
 
-    switch (blendMode)
-    {
-        case BLEND_NONE:
-            _spriteBatch->getStateBlock()->setBlend(false);
-            break;
-        case BLEND_ALPHA:
-            _spriteBatch->getStateBlock()->setBlend(true);
-            _spriteBatch->getStateBlock()->setBlendSrc(RenderState::BLEND_SRC_ALPHA);
-            _spriteBatch->getStateBlock()->setBlendDst(RenderState::BLEND_ONE_MINUS_SRC_ALPHA);
-            break;
-        case BLEND_ADDITIVE:
-            _spriteBatch->getStateBlock()->setBlend(true);
-            _spriteBatch->getStateBlock()->setBlendSrc(RenderState::BLEND_SRC_ALPHA);
-            _spriteBatch->getStateBlock()->setBlendDst(RenderState::BLEND_ONE);
-            break;
-        case BLEND_MULTIPLIED:
-            _spriteBatch->getStateBlock()->setBlend(true);
-            _spriteBatch->getStateBlock()->setBlendSrc(RenderState::BLEND_ZERO);
-            _spriteBatch->getStateBlock()->setBlendDst(RenderState::BLEND_SRC_COLOR);
-            break;
-        default:
-            GP_ERROR("Unsupported blend mode (%d).", blendMode);
-            break;
-    }
-
+    // Use centralized BlendMode utility
+    BlendModeUtils::applyToStateBlock(_spriteBatch->getStateBlock(), blendMode);
     _spriteBlendMode = blendMode;
 }
 
@@ -660,37 +640,6 @@ void ParticleEmitter::generateColor(const Vector4& base, const Vector4& variance
     dst->y = base.y + variance.y * MATH_RANDOM_MINUS1_1();
     dst->z = base.z + variance.z * MATH_RANDOM_MINUS1_1();
     dst->w = base.w + variance.w * MATH_RANDOM_MINUS1_1();
-}
-
-//----------------------------------------------------------------------------
-ParticleEmitter::BlendMode ParticleEmitter::getBlendModeFromString(const std::string& str)
-{
-    if (str == "BLEND_NONE" || str == "NONE")
-    {
-        return BLEND_NONE;
-    }
-    if (str == "BLEND_OPAQUE" || str == "OPAQUE")
-    {
-        return BLEND_NONE;
-    }
-    if (str == "BLEND_ALPHA" || str == "ALPHA")
-    {
-        return BLEND_ALPHA;
-    }
-    if (str == "BLEND_TRANSPARENT" || str == "TRANSPARENT")
-    {
-        return BLEND_ALPHA;
-    }
-    if (str == "BLEND_ADDITIVE" || str == "ADDITIVE")
-    {
-        return BLEND_ADDITIVE;
-    }
-    if (str == "BLEND_MULTIPLIED" || str == "MULTIPLIED")
-    {
-        return BLEND_MULTIPLIED;
-    }
-
-    return BLEND_ALPHA;
 }
 
 //----------------------------------------------------------------------------

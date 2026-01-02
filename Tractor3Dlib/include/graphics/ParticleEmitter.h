@@ -15,6 +15,7 @@
 
 #include <memory>
 
+#include "graphics/BlendMode.h"
 #include "graphics/Drawable.h"
 #include "graphics/Mesh.h"
 #include "graphics/Rectangle.h"
@@ -164,15 +165,19 @@ class ParticleEmitter : public Drawable
 
   public:
     /**
-     * Defines the types of blend modes
+     * Type alias for backward compatibility.
+     * @deprecated Use tractor::BlendMode enum class directly instead.
      */
-    enum BlendMode
-    {
-        BLEND_NONE,
-        BLEND_ALPHA,
-        BLEND_ADDITIVE,
-        BLEND_MULTIPLIED
-    };
+    using BlendMode = tractor::BlendMode;
+
+    /**
+     * Backward-compatible blend mode constants.
+     * @deprecated Use tractor::BlendMode enum class directly instead.
+     */
+    static constexpr tractor::BlendMode BLEND_NONE = tractor::BlendMode::NONE;
+    static constexpr tractor::BlendMode BLEND_ALPHA = tractor::BlendMode::ALPHA;
+    static constexpr tractor::BlendMode BLEND_ADDITIVE = tractor::BlendMode::ADDITIVE;
+    static constexpr tractor::BlendMode BLEND_MULTIPLIED = tractor::BlendMode::MULTIPLIED;
 
     /**
      * Creates a particle emitter using the data from the Properties object defined at the specified
@@ -791,9 +796,6 @@ class ParticleEmitter : public Drawable
     // Generates a color within the domain defined by a base vector and its variance.
     void generateColor(const Vector4& base, const Vector4& variance, Vector4* dst);
 
-    // Gets the blend mode from string.
-    static ParticleEmitter::BlendMode getBlendModeFromString(const std::string& src);
-
   private:
     /**
      * Defines the data for a single particle in the system.
@@ -866,7 +868,7 @@ class ParticleEmitter : public Drawable
     Vector3 _rotationAxisVar{ Vector3::zero() };
     Matrix _rotation{ Matrix::identity() };
     std::unique_ptr<SpriteBatch> _spriteBatch;
-    BlendMode _spriteBlendMode{ BLEND_ALPHA };
+    BlendMode _spriteBlendMode{ BlendMode::ALPHA };
     float _spriteTextureWidth{ 0 };
     float _spriteTextureHeight{ 0 };
     float _spriteTextureWidthRatio{ 0 };

@@ -60,6 +60,7 @@
     <ClCompile Include="src\framework\Platform.cpp" />
     <ClCompile Include="src\framework\PlatformWindows.cpp" />
     <ClCompile Include="src\framework\ScreenDisplayer.cpp" />
+    <ClCompile Include="src\graphics\BlendMode.cpp" />
     <ClCompile Include="src\graphics\BoundingBox.cpp" />
     <ClCompile Include="src\graphics\BoundingSphere.cpp" />
     <ClCompile Include="src\graphics\Curve.cpp" />
@@ -125,6 +126,7 @@
     <ClCompile Include="src\scene\Bundle.cpp" />
     <ClCompile Include="src\scene\Node.cpp" />
     <ClCompile Include="src\scene\Properties.cpp" />
+    <ClCompile Include="src\scene\PropertyUtils.cpp" />
     <ClCompile Include="src\scene\Scene.cpp" />
     <ClCompile Include="src\scene\SceneLoader.cpp" />
     <ClCompile Include="src\scripting\Script.cpp" />
@@ -173,6 +175,7 @@
     <ClInclude Include="include\framework\Platform.h" />
     <ClInclude Include="include\framework\ScreenDisplayer.h" />
     <ClInclude Include="include\framework\Stream.h" />
+    <ClInclude Include="include\graphics\BlendMode.h" />
     <ClInclude Include="include\graphics\BoundingBox.h" />
     <ClInclude Include="include\graphics\BoundingSphere.h" />
     <ClInclude Include="include\graphics\Curve.h" />
@@ -241,6 +244,7 @@
     <ClInclude Include="include\scene\Bundle.h" />
     <ClInclude Include="include\scene\Node.h" />
     <ClInclude Include="include\scene\Properties.h" />
+    <ClInclude Include="include\scene\PropertyUtils.h" />
     <ClInclude Include="include\scene\Scene.h" />
     <ClInclude Include="include\scene\SceneLoader.h" />
     <ClInclude Include="include\scripting\Script.h" />

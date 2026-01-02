@@ -16,6 +16,7 @@
 #include <memory>
 
 #include "animation/AnimationTarget.h"
+#include "graphics/BlendMode.h"
 #include "graphics/Drawable.h"
 #include "graphics/Effect.h"
 #include "graphics/Rectangle.h"
@@ -102,14 +103,12 @@ class Sprite : public Drawable, public AnimationTarget
 
     /**
      * Defines the blend modes.
+     * @deprecated Use tractor::BlendMode instead. Kept for backwards compatibility.
      */
-    enum BlendMode
-    {
-        BLEND_NONE,
-        BLEND_ALPHA,
-        BLEND_ADDITIVE,
-        BLEND_MULTIPLIED
-    };
+    static constexpr auto BLEND_NONE = BlendMode::NONE;
+    static constexpr auto BLEND_ALPHA = BlendMode::ALPHA;
+    static constexpr auto BLEND_ADDITIVE = BlendMode::ADDITIVE;
+    static constexpr auto BLEND_MULTIPLIED = BlendMode::MULTIPLIED;
 
     /**
      * Create a sprite image using
@@ -322,7 +321,6 @@ class Sprite : public Drawable, public AnimationTarget
      * Sets the blend mode for the sprite.
      *
      * @param mode The blend mode for the sprite.
-     * @see Sprite::BlendMode
      */
     void setBlendMode(BlendMode mode);
 
@@ -330,7 +328,6 @@ class Sprite : public Drawable, public AnimationTarget
      * Gets the blend mode for the sprite.
      *
      * @return The blend mode for the sprite.
-     * @see Sprite::BlendMode
      */
     BlendMode getBlendMode() const noexcept { return _blendMode; }
 
@@ -414,7 +411,7 @@ class Sprite : public Drawable, public AnimationTarget
     unsigned int _frameIndex{ 0 };
     float _opacity{ 1.0f };
     Vector4 _color{ Vector4::one() };
-    BlendMode _blendMode{ BLEND_ALPHA };
+    BlendMode _blendMode{ BlendMode::ALPHA };
     std::unique_ptr<Rectangle[]> _frames;
     std::shared_ptr<SpriteBatch> _batch;
 };

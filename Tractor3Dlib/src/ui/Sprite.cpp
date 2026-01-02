@@ -15,6 +15,7 @@
 
 #include "graphics/Sprite.h"
 
+#include "graphics/BlendMode.h"
 #include "scene/Scene.h"
 
 namespace
@@ -114,51 +115,6 @@ static bool parseOffset(const std::string& str, Sprite::Offset* offset)
 }
 
 /**
- * Parses a string to get the corresponding sprite blend mode enum value.
- *
- * @param str The string to parse.
- * @param blend The sprite blend mode enum value that is set based on the parsed string.
- * @return true if the string was successfully parsed; false if the string is empty or
- *         could not be parsed.
- */
-static bool parseBlendMode(const std::string& str, Sprite::BlendMode* blend)
-{
-    assert(blend);
-
-    if (str.empty())
-    {
-        *blend = Sprite::BLEND_NONE;
-        return false;
-    }
-
-    if (str == "BLEND_ALPHA")
-    {
-        *blend = Sprite::BLEND_ALPHA;
-    }
-    else if (str == "BLEND_ADDITIVE")
-    {
-        *blend = Sprite::BLEND_ADDITIVE;
-    }
-    else if (str == "BLEND_MULTIPLIED")
-    {
-        *blend = Sprite::BLEND_MULTIPLIED;
-    }
-    else if (str != "BLEND_NONE")
-    {
-        GP_ERROR("Failed to get corresponding sprite blend mode for unsupported value '%s'.",
-                 str.c_str());
-        *blend = Sprite::BLEND_NONE;
-        return false;
-    }
-    else
-    {
-        *blend = Sprite::BLEND_NONE;
-    }
-
-    return true;
-}
-
-/**
  * Parses a string to get the corresponding sprite flip flags enum value.
  *
  * @param str The string to parse.
@@ -202,6 +158,9 @@ static bool parseFlipFlags(const std::string& str, Sprite::FlipFlags* flip)
 
     return true;
 }
+
+// Remove parseBlendMode - now using BlendModeUtils::fromString
+
 } // namespace
 
 namespace tractor
@@ -376,11 +335,11 @@ SpritePtr Sprite::create(Properties* properties)
         sprite->setOpacity(properties->getFloat("opacity"));
     }
 
-    // Get blend mode
-    BlendMode mode;
-    if (parseBlendMode(properties->getString("blendMode"), &mode))
+    // Use centralized BlendMode parsing
+    auto blendModeStr = properties->getString("blendMode");
+    if (!blendModeStr.empty())
     {
-        sprite->setBlendMode(mode);
+        sprite->setBlendMode(BlendModeUtils::fromString(blendModeStr));
     }
 
     // Get flip flags
@@ -465,30 +424,9 @@ void Sprite::computeFrames(unsigned int frameStride, unsigned int framePadding)
 //----------------------------------------------------------------
 void Sprite::setBlendMode(BlendMode mode)
 {
-    switch (mode)
-    {
-        case BLEND_NONE:
-            _batch->getStateBlock()->setBlend(false);
-            break;
-        case BLEND_ALPHA:
-            _batch->getStateBlock()->setBlend(true);
-            _batch->getStateBlock()->setBlendSrc(RenderState::BLEND_SRC_ALPHA);
-            _batch->getStateBlock()->setBlendDst(RenderState::BLEND_ONE_MINUS_SRC_ALPHA);
-            break;
-        case BLEND_ADDITIVE:
-            _batch->getStateBlock()->setBlend(true);
-            _batch->getStateBlock()->setBlendSrc(RenderState::BLEND_SRC_ALPHA);
-            _batch->getStateBlock()->setBlendDst(RenderState::BLEND_ONE);
-            break;
-        case BLEND_MULTIPLIED:
-            _batch->getStateBlock()->setBlend(true);
-            _batch->getStateBlock()->setBlendSrc(RenderState::BLEND_ZERO);
-            _batch->getStateBlock()->setBlendDst(RenderState::BLEND_SRC_COLOR);
-            break;
-        default:
-            GP_ERROR("Unsupported blend mode (%d).", mode);
-            break;
-    }
+    // Use centralized BlendMode utility
+    BlendModeUtils::applyToStateBlock(_batch->getStateBlock(), mode);
+    _blendMode = mode;
 }
 
 //----------------------------------------------------------------

@@ -29,7 +29,7 @@ AIMessage* AIMessage::create(unsigned int id,
     message->_sender = sender;
     message->_receiver = receiver;
     message->_parameterCount = parameterCount;
-    if (parameterCount > 0) message->_parameters = std::make_unique<AIMessage::Parameter[]>(parameterCount);
+    if (parameterCount > 0) message->_parameters = std::make_unique<AIMessage::ParameterValue[]>(parameterCount);
     return message;
 }
 
@@ -43,9 +43,9 @@ void AIMessage::destroy(AIMessage* message)
 int AIMessage::getInt(unsigned int index) const
 {
     assert(index < _parameterCount);
-    assert(_parameters[index].type == AIMessage::INTEGER);
+    assert(std::holds_alternative<int>(_parameters[index]));
 
-    return _parameters[index].intValue;
+    return std::get<int>(_parameters[index]);
 }
 
 //----------------------------------------------------------------------------
@@ -53,19 +53,16 @@ void AIMessage::setInt(unsigned int index, int value)
 {
     assert(index < _parameterCount);
 
-    clearParameter(index);
-
-    _parameters[index].intValue = value;
-    _parameters[index].type = AIMessage::INTEGER;
+    _parameters[index] = value;
 }
 
 //----------------------------------------------------------------------------
 long AIMessage::getLong(unsigned int index) const
 {
     assert(index < _parameterCount);
-    assert(_parameters[index].type == AIMessage::LONG);
+    assert(std::holds_alternative<long>(_parameters[index]));
 
-    return _parameters[index].longValue;
+    return std::get<long>(_parameters[index]);
 }
 
 //----------------------------------------------------------------------------
@@ -73,19 +70,16 @@ void AIMessage::setLong(unsigned int index, long value)
 {
     assert(index < _parameterCount);
 
-    clearParameter(index);
-
-    _parameters[index].longValue = value;
-    _parameters[index].type = AIMessage::LONG;
+    _parameters[index] = value;
 }
 
 //----------------------------------------------------------------------------
 float AIMessage::getFloat(unsigned int index) const
 {
     assert(index < _parameterCount);
-    assert(_parameters[index].type == AIMessage::FLOAT);
+    assert(std::holds_alternative<float>(_parameters[index]));
 
-    return _parameters[index].floatValue;
+    return std::get<float>(_parameters[index]);
 }
 
 //----------------------------------------------------------------------------
@@ -93,19 +87,16 @@ void AIMessage::setFloat(unsigned int index, float value)
 {
     assert(index < _parameterCount);
 
-    clearParameter(index);
-
-    _parameters[index].floatValue = value;
-    _parameters[index].type = AIMessage::FLOAT;
+    _parameters[index] = value;
 }
 
 //----------------------------------------------------------------------------
 double AIMessage::getDouble(unsigned int index) const
 {
     assert(index < _parameterCount);
-    assert(_parameters[index].type == AIMessage::DOUBLE);
+    assert(std::holds_alternative<double>(_parameters[index]));
 
-    return _parameters[index].doubleValue;
+    return std::get<double>(_parameters[index]);
 }
 
 //----------------------------------------------------------------------------
@@ -113,19 +104,16 @@ void AIMessage::setDouble(unsigned int index, double value)
 {
     assert(index < _parameterCount);
 
-    clearParameter(index);
-
-    _parameters[index].doubleValue = value;
-    _parameters[index].type = AIMessage::DOUBLE;
+    _parameters[index] = value;
 }
 
 //----------------------------------------------------------------------------
 bool AIMessage::getBoolean(unsigned int index) const
 {
     assert(index < _parameterCount);
-    assert(_parameters[index].type == AIMessage::BOOLEAN);
+    assert(std::holds_alternative<bool>(_parameters[index]));
 
-    return _parameters[index].boolValue;
+    return std::get<bool>(_parameters[index]);
 }
 
 //----------------------------------------------------------------------------
@@ -133,29 +121,24 @@ void AIMessage::setBoolean(unsigned int index, bool value)
 {
     assert(index < _parameterCount);
 
-    clearParameter(index);
-
-    _parameters[index].boolValue = value;
-    _parameters[index].type = AIMessage::BOOLEAN;
+    _parameters[index] = value;
 }
 
 //----------------------------------------------------------------------------
 const std::string& AIMessage::getString(unsigned int index) const
 {
     assert(index < _parameterCount);
-    assert(_parameters[index].type == AIMessage::STRING);
+    assert(std::holds_alternative<std::string>(_parameters[index]));
 
-    return _parameters[index].stringValue;
+    return std::get<std::string>(_parameters[index]);
 }
 
 //----------------------------------------------------------------------------
 void AIMessage::setString(unsigned int index, const std::string& value)
 {
     assert(index < _parameterCount);
-    clearParameter(index);
 
-    _parameters[index].stringValue = value;
-    _parameters[index].type = AIMessage::STRING;
+    _parameters[index] = value;
 }
 
 //----------------------------------------------------------------------------
@@ -163,7 +146,7 @@ AIMessage::ParameterType AIMessage::getParameterType(unsigned int index) const
 {
     assert(index < _parameterCount);
 
-    return _parameters[index].type;
+    return indexToType(_parameters[index].index());
 }
 
 //----------------------------------------------------------------------------
@@ -171,20 +154,31 @@ void AIMessage::clearParameter(unsigned int index)
 {
     assert(index < _parameterCount);
 
-    _parameters[index].clear();
+    _parameters[index] = std::monostate{};
 }
 
-AIMessage::Parameter::Parameter() {}
-
 //----------------------------------------------------------------------------
-AIMessage::Parameter::~Parameter() { clear(); }
-
-//----------------------------------------------------------------------------
-void AIMessage::Parameter::clear()
+AIMessage::ParameterType AIMessage::indexToType(size_t index) noexcept
 {
-    if (type == AIMessage::STRING) stringValue.clear();
-
-    type = AIMessage::UNDEFINED;
+    // Variant indices match the order in ParameterValue definition:
+    // 0: std::monostate (UNDEFINED)
+    // 1: int (INTEGER)
+    // 2: long (LONG)
+    // 3: float (FLOAT)
+    // 4: double (DOUBLE)
+    // 5: bool (BOOLEAN)
+    // 6: std::string (STRING)
+    static constexpr ParameterType typeMap[] = {
+        UNDEFINED,  // index 0: std::monostate
+        INTEGER,    // index 1: int
+        LONG,       // index 2: long
+        FLOAT,      // index 3: float
+        DOUBLE,     // index 4: double
+        BOOLEAN,    // index 5: bool
+        STRING      // index 6: std::string
+    };
+    
+    return (index < std::size(typeMap)) ? typeMap[index] : UNDEFINED;
 }
 
 } // namespace tractor

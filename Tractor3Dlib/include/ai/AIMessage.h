@@ -15,6 +15,7 @@
 
 #include <memory>
 #include <string>
+#include <variant>
 
 namespace tractor
 {
@@ -231,28 +232,18 @@ class AIMessage
     };
 
     /**
-     * Defines a flexible message parameter.
+     * Type alias for the variant-based parameter value.
+     * Uses std::monostate for the UNDEFINED state.
      */
-    struct Parameter
-    {
-        Parameter();
-
-        ~Parameter();
-
-        void clear();
-
-        union
-        {
-            int intValue;
-            long longValue;
-            float floatValue;
-            double doubleValue;
-            bool boolValue;
-            std::string stringValue;
-        };
-
-        AIMessage::ParameterType type{ UNDEFINED };
-    };
+    using ParameterValue = std::variant<
+        std::monostate,  // UNDEFINED
+        int,             // INTEGER
+        long,            // LONG
+        float,           // FLOAT
+        double,          // DOUBLE
+        bool,            // BOOLEAN
+        std::string      // STRING
+    >;
 
     /**
      * Constructor.
@@ -284,11 +275,16 @@ class AIMessage
 
     void clearParameter(unsigned int index);
 
+    /**
+     * Helper to convert variant index to ParameterType.
+     */
+    static ParameterType indexToType(size_t index) noexcept;
+
     unsigned int _id{ 0 };
     std::string _sender{};
     std::string _receiver{};
     double _deliveryTime{ 0.0 };
-    std::unique_ptr<Parameter[]> _parameters;
+    std::unique_ptr<ParameterValue[]> _parameters;
     unsigned int _parameterCount{ 0 };
     MessageType _messageType{ MESSAGE_TYPE_CUSTOM };
     AIMessage* _next{ nullptr };

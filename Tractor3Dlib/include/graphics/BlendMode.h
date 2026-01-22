@@ -13,6 +13,7 @@
  */
 #pragma once
 
+#include <cstdint>
 #include <string>
 
 #include "renderer/RenderState.h"
@@ -26,7 +27,7 @@ namespace tractor
  * This enum consolidates the blend mode definitions that were previously
  * duplicated across ParticleEmitter, Sprite, and other rendering classes.
  */
-enum class BlendMode
+enum class BlendMode : uint8_t
 {
     NONE,       ///< No blending - opaque rendering
     ALPHA,      ///< Standard alpha blending (src_alpha, 1-src_alpha)

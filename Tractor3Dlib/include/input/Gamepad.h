@@ -46,7 +46,7 @@ class Gamepad
     /**
      *  Gamepad events.
      */
-    enum GamepadEvent
+    enum GamepadEvent : uint8_t
     {
         CONNECTED_EVENT,
         DISCONNECTED_EVENT
@@ -55,7 +55,7 @@ class Gamepad
     /**
      * Gamepad buttons.
      */
-    enum ButtonMapping
+    enum ButtonMapping : uint8_t
     {
         BUTTON_A,
         BUTTON_B,

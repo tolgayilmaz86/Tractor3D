@@ -114,7 +114,7 @@ void Platform::gamepadButtonPressedEventInternal(GamepadHandle handle, Gamepad::
     Gamepad* gamepad = Gamepad::getGamepad(handle);
     if (gamepad)
     {
-        unsigned int newButtons = gamepad->_buttons | (1 << mapping);
+        unsigned int newButtons = gamepad->_buttons | (1 << static_cast<uint8_t>(mapping));
         gamepad->setButtons(newButtons);
         Form::gamepadButtonEventInternal(gamepad);
     }
@@ -126,7 +126,7 @@ void Platform::gamepadButtonReleasedEventInternal(GamepadHandle handle, Gamepad:
     Gamepad* gamepad = Gamepad::getGamepad(handle);
     if (gamepad)
     {
-        unsigned int newButtons = gamepad->_buttons & ~(1 << mapping);
+        unsigned int newButtons = gamepad->_buttons & ~(1 << static_cast<uint8_t>(mapping));
         gamepad->setButtons(newButtons);
         Form::gamepadButtonEventInternal(gamepad);
     }

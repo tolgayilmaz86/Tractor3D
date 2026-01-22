@@ -13,6 +13,8 @@
  */
 #pragma once
 
+#include <cstdint>
+
 namespace tractor
 {
 
@@ -27,7 +29,7 @@ class VertexFormat
     /**
      * Defines a set of usages for vertex elements.
      */
-    enum Usage
+    enum Usage : uint8_t
     {
         POSITION = 1,
         NORMAL = 2,
@@ -60,7 +62,7 @@ class VertexFormat
         /**
          * The vertex element usage semantic.
          */
-        Usage usage{ POSITION };
+        Usage usage{ Usage::POSITION };
 
         /**
          * The number of values in the vertex element.

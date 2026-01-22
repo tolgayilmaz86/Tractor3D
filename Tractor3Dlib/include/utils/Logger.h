@@ -13,6 +13,8 @@
  */
 #pragma once
 
+#include <cstdint>
+
 namespace tractor
 {
 
@@ -32,7 +34,7 @@ class Logger
     /**
      * Enumeration of valid log levels.
      */
-    enum Level
+    enum Level : uint8_t
     {
         LEVEL_INFO = 0,
         LEVEL_WARN = 1,

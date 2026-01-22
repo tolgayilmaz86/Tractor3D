@@ -13,6 +13,8 @@
  */
 #pragma once
 
+#include <cstdint>
+
 namespace tractor
 {
 
@@ -27,7 +29,7 @@ class Keyboard
     /**
      * The keyboard event.
      */
-    enum KeyEvent
+    enum KeyEvent : uint8_t
     {
         KEY_PRESS,
         KEY_RELEASE,

@@ -45,7 +45,7 @@ class Font : public std::enable_shared_from_this<Font>
     /**
      * Defines the set of allowable font styles.
      */
-    enum Style
+    enum Style : uint8_t
     {
         PLAIN = 0,
         BOLD = 1,
@@ -78,7 +78,7 @@ class Font : public std::enable_shared_from_this<Font>
     /**
      * Defines the format of the font.
      */
-    enum Format
+    enum Format : uint8_t
     {
         BITMAP = 0,
         DISTANCE_FIELD = 1
@@ -435,11 +435,11 @@ class Font : public std::enable_shared_from_this<Font>
 
     void lazyStart();
 
-    Format _format{ BITMAP };
+    Format _format{ Format::BITMAP };
     std::string _path{};
     std::string _id{};
     std::string _family{};
-    Style _style{ PLAIN };
+    Style _style{ Style::PLAIN };
     unsigned int _size{0};
     std::vector<FontPtr> _sizes{}; // stores additional font sizes of the same family
     float _spacing{0.0f};

@@ -13,6 +13,8 @@
  */
 #pragma once
 
+#include <cstdint>
+
 namespace tractor
 {
 
@@ -25,7 +27,7 @@ class Gesture
     /**
      * The gesture event type.
      */
-    enum GestureEvent
+    enum GestureEvent : int8_t
     {
         GESTURE_TAP = 0,
         GESTURE_SWIPE,
@@ -39,22 +41,22 @@ class Gesture
     /**
      * The up direction for a swipe event.
      */
-    static const int SWIPE_DIRECTION_UP = 1 << 0;
+    static constexpr int SWIPE_DIRECTION_UP = 1 << 0;
 
     /**
      * The down direction for a swipe event.
      */
-    static const int SWIPE_DIRECTION_DOWN = 1 << 1;
+    static constexpr int SWIPE_DIRECTION_DOWN = 1 << 1;
 
     /**
      * The left direction for a swipe event.
      */
-    static const int SWIPE_DIRECTION_LEFT = 1 << 2;
+    static constexpr int SWIPE_DIRECTION_LEFT = 1 << 2;
 
     /**
      * The right direction for a swipe event.
      */
-    static const int SWIPE_DIRECTION_RIGHT = 1 << 3;
+    static constexpr int SWIPE_DIRECTION_RIGHT = 1 << 3;
 
   private:
     /**

@@ -1387,12 +1387,12 @@ int Platform::enterMessagePump()
     SwapBuffers(__hdc);
 
     // Start the game if not already running
-    if (_game->getState() != Game::RUNNING)
+    if (_game->getState() != Game::State::RUNNING)
         _game->run();
 
     // Main message loop
     int result = 0;
-    while (_game->getState() != Game::UNINITIALIZED)
+    while (_game->getState() != Game::State::UNINITIALIZED)
     {
         if (processWindowsMessage(result))
             return result;// processed windows message

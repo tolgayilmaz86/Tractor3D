@@ -13,6 +13,8 @@
  */
 #pragma once
 
+#include <cstdint>
+
 namespace tractor
 {
 
@@ -25,7 +27,7 @@ class Mouse
     /**
      * The mouse event type.
      */
-    enum MouseEvent
+    enum MouseEvent : uint8_t
     {
         MOUSE_PRESS_LEFT_BUTTON,
         MOUSE_RELEASE_LEFT_BUTTON,

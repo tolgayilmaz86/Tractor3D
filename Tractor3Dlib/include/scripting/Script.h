@@ -15,6 +15,7 @@
 
 #include "pch.h"
 
+#include <cstdint>
 #include <memory>
 
 namespace tractor
@@ -31,7 +32,7 @@ class Script : public std::enable_shared_from_this<Script>
     /**
      * Defines the scope of a script environment.
      */
-    enum Scope
+    enum Scope : uint8_t
     {
         /**
          * Global scripts execute in a single shared environment that is accessible to
@@ -125,7 +126,7 @@ class Script : public std::enable_shared_from_this<Script>
     Script& operator=(const Script&) = delete;
 
     std::string _path{};
-    Scope _scope{ GLOBAL };
+    Scope _scope{ Scope::GLOBAL };
     int _env{ 0 };
 };
 

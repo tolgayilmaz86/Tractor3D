@@ -13,6 +13,7 @@
  */
 #pragma once
 
+#include <cstdint>
 #include <memory>
 
 #include "math/Vector3.h"
@@ -117,7 +118,7 @@ class RenderState
     /**
      * Built-in auto-bind targets for material parameters.
      */
-    enum AutoBinding
+    enum AutoBinding : uint8_t
     {
         NONE,
 

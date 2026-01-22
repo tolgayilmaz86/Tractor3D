@@ -15,6 +15,7 @@
 
 #include <functional>
 #include <memory>
+#include <cstdint>
 
 #include "ai/AIController.h"
 #include "animation/AnimationController.h"
@@ -51,7 +52,7 @@ class Game
     /**
      * The game states.
      */
-    enum State
+    enum State : uint8_t
     {
         UNINITIALIZED = 0,
         RUNNING = 1,

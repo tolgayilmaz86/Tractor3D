@@ -141,7 +141,7 @@ bool Game::isVsync() { return Platform::isVsync(); }
 //----------------------------------------------------------------------------
 int Game::run()
 {
-    if (_state != UNINITIALIZED) return -1;
+    if (_state != State::UNINITIALIZED) return -1;
 
     loadConfig();
 
@@ -161,7 +161,7 @@ int Game::run()
 //----------------------------------------------------------------------------
 bool Game::startup()
 {
-    if (_state != UNINITIALIZED) return false;
+    if (_state != State::UNINITIALIZED) return false;
 
     setViewport(Rectangle(0.0f, 0.0f, (float)_width, (float)_height));
     RenderState::initialize();
@@ -228,7 +228,7 @@ bool Game::startup()
         }
     }
 
-    _state = RUNNING;
+    _state = State::RUNNING;
 
     return true;
 }
@@ -237,7 +237,7 @@ bool Game::startup()
 void Game::shutdown()
 {
     // Call user finalization.
-    if (_state != UNINITIALIZED)
+    if (_state != State::UNINITIALIZED)
     {
         assert(_animationController);
         assert(_audioController);
@@ -290,20 +290,20 @@ void Game::shutdown()
         FrameBuffer::finalize();
         RenderState::finalize();
 
-        _state = UNINITIALIZED;
+        _state = State::UNINITIALIZED;
     }
 }
 
 //----------------------------------------------------------------------------
 void Game::pause()
 {
-    if (_state == RUNNING)
+    if (_state == State::RUNNING)
     {
         assert(_animationController);
         assert(_audioController);
         assert(_physicsController);
         assert(_aiController);
-        _state = PAUSED;
+        _state = State::PAUSED;
         _pausedTimeLast = Platform::getAbsoluteTime();
         _animationController->pause();
         _audioController->pause();
@@ -317,7 +317,7 @@ void Game::pause()
 //----------------------------------------------------------------------------
 void Game::resume()
 {
-    if (_state == PAUSED)
+    if (_state == State::PAUSED)
     {
         --_pausedCount;
 
@@ -327,7 +327,7 @@ void Game::resume()
             assert(_audioController);
             assert(_physicsController);
             assert(_aiController);
-            _state = RUNNING;
+            _state = State::RUNNING;
             _pausedTimeTotal += Platform::getAbsoluteTime() - _pausedTimeLast;
             _animationController->resume();
             _audioController->resume();
@@ -383,7 +383,7 @@ void Game::frame()
     // Fire time events to scheduled TimeListeners
     fireTimeEvents(frameTime);
 
-    if (_state == Game::RUNNING)
+    if (_state == State::RUNNING)
     {
         assert(_animationController);
         assert(_audioController);
@@ -437,7 +437,7 @@ void Game::frame()
             _frameLastFPS = getGameTime();
         }
     }
-    else if (_state == Game::PAUSED)
+    else if (_state == State::PAUSED)
     {
         // Update gamepads.
         Gamepad::updateInternal(0);

@@ -14,6 +14,7 @@
 #pragma once
 
 #include <any>
+#include <cstdint>
 #include <memory>
 
 #include "ai/AIAgent.h"
@@ -87,7 +88,7 @@ class Node : public Transform, public std::enable_shared_from_this<Node>
     /**
      * Defines the types of nodes.
      */
-    enum Type
+    enum Type : uint8_t
     {
         NODE = 1,
         JOINT

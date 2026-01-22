@@ -71,9 +71,9 @@ std::shared_ptr<Mesh> Mesh::createQuad(float x,
         x2, y2, 0, 0, 0, 1, s2, t2, x2, y, 0, 0, 0, 1, s2, t1,
     };
 
-    VertexFormat::Element elements[] = { VertexFormat::Element(VertexFormat::POSITION, 3),
-                                         VertexFormat::Element(VertexFormat::NORMAL, 3),
-                                         VertexFormat::Element(VertexFormat::TEXCOORD0, 2) };
+    VertexFormat::Element elements[] = { VertexFormat::Element(VertexFormat::Usage::POSITION, 3),
+                                         VertexFormat::Element(VertexFormat::Usage::NORMAL, 3),
+                                         VertexFormat::Element(VertexFormat::Usage::TEXCOORD0, 2) };
     auto mesh = Mesh::createMesh(VertexFormat(elements, 3), 4, false);
     if (mesh == nullptr)
     {
@@ -97,8 +97,8 @@ std::shared_ptr<Mesh> Mesh::createQuadFullscreen()
 
     float vertices[] = { x, y2, 0, 1, x, y, 0, 0, x2, y2, 1, 1, x2, y, 1, 0 };
 
-    VertexFormat::Element elements[] = { VertexFormat::Element(VertexFormat::POSITION, 2),
-                                         VertexFormat::Element(VertexFormat::TEXCOORD0, 2) };
+    VertexFormat::Element elements[] = { VertexFormat::Element(VertexFormat::Usage::POSITION, 2),
+                                         VertexFormat::Element(VertexFormat::Usage::TEXCOORD0, 2) };
     auto mesh = Mesh::createMesh(VertexFormat(elements, 2), 4, false);
     if (mesh == nullptr)
     {
@@ -129,9 +129,9 @@ std::shared_ptr<Mesh> Mesh::createQuad(const Vector3& p1,
                          n.x,  n.y,  n.z,  0,    0,    p3.x, p3.y, p3.z, n.x,  n.y,  n.z,
                          1,    1,    p4.x, p4.y, p4.z, n.x,  n.y,  n.z,  1,    0 };
 
-    VertexFormat::Element elements[] = { VertexFormat::Element(VertexFormat::POSITION, 3),
-                                         VertexFormat::Element(VertexFormat::NORMAL, 3),
-                                         VertexFormat::Element(VertexFormat::TEXCOORD0, 2) };
+    VertexFormat::Element elements[] = { VertexFormat::Element(VertexFormat::Usage::POSITION, 3),
+                                         VertexFormat::Element(VertexFormat::Usage::NORMAL, 3),
+                                         VertexFormat::Element(VertexFormat::Usage::TEXCOORD0, 2) };
 
     auto mesh = Mesh::createMesh(VertexFormat(elements, 3), 4, false);
     if (mesh == nullptr)
@@ -155,7 +155,7 @@ std::shared_ptr<Mesh> Mesh::createLines(Vector3* points, unsigned int pointCount
     auto vertices = std::make_unique<float[]>(pointCount * 3);
     memcpy(vertices.get(), points, pointCount * 3 * sizeof(float));
 
-    VertexFormat::Element elements[] = { VertexFormat::Element(VertexFormat::POSITION, 3) };
+    VertexFormat::Element elements[] = { VertexFormat::Element(VertexFormat::Usage::POSITION, 3) };
 
     auto mesh = Mesh::createMesh(VertexFormat(elements, 1), pointCount, false);
     if (mesh == nullptr)
@@ -188,7 +188,7 @@ std::shared_ptr<Mesh> Mesh::createBoundingBox(const BoundingBox& box)
                          corners[1].x, corners[1].y, corners[1].z, corners[6].x, corners[6].y,
                          corners[6].z, corners[5].x, corners[5].y, corners[5].z };
 
-    VertexFormat::Element elements[] = { VertexFormat::Element(VertexFormat::POSITION, 3) };
+    VertexFormat::Element elements[] = { VertexFormat::Element(VertexFormat::Usage::POSITION, 3) };
     auto mesh = Mesh::createMesh(VertexFormat(elements, 1), 18, false);
     if (mesh == nullptr)
     {

@@ -13,6 +13,8 @@
  */
 #pragma once
 
+#include <cstdint>
+
 namespace tractor
 {
 
@@ -30,7 +32,7 @@ class Touch
     /**
      * The touch event type.
      */
-    enum TouchEvent
+    enum TouchEvent : uint8_t
     {
         TOUCH_PRESS,
         TOUCH_RELEASE,

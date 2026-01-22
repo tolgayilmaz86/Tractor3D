@@ -30,7 +30,7 @@ namespace tractor
  * character than would be possible if trying to move a character by applying
  * physical simulation with forces.
  */
-class PhysicsCharacter : public PhysicsGhostObject
+class PhysicsCharacter final : public PhysicsGhostObject
 {
     friend class Node;
 

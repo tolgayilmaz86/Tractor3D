@@ -28,7 +28,7 @@ class PhysicsVehicleWheel;
  * to it all of the properties of a rigid body such as shape, mass, friction,
  * etc which correspond to the vehicle body:
  */
-class PhysicsVehicle : public PhysicsCollisionObject
+class PhysicsVehicle final : public PhysicsCollisionObject
 {
     friend class Node;
     friend class PhysicsVehicleWheel;
@@ -37,7 +37,7 @@ class PhysicsVehicle : public PhysicsCollisionObject
     /**
      * @see PhysicsCollisionObject#getType
      */
-    PhysicsCollisionObject::Type getType() const { return PhysicsCollisionObject::VEHICLE; };
+    PhysicsCollisionObject::Type getType() const noexcept override { return PhysicsCollisionObject::VEHICLE; };
 
     /**
      * Returns the rigid body associated with this vehicle.

@@ -31,7 +31,7 @@ class PhysicsConstraint;
  * A rigid body can receive forces and torque to make your objects react to other collision
  * objects around it.
  */
-class PhysicsRigidBody : public PhysicsCollisionObject, public Transform::Listener
+class PhysicsRigidBody final : public PhysicsCollisionObject, public Transform::Listener
 {
     friend class Node;
     friend class PhysicsCharacter;
@@ -134,7 +134,7 @@ class PhysicsRigidBody : public PhysicsCollisionObject, public Transform::Listen
     /**
      * @see PhysicsCollisionObject::getType
      */
-    PhysicsCollisionObject::Type getType() const { return PhysicsCollisionObject::RIGID_BODY; }
+    PhysicsCollisionObject::Type getType() const noexcept override { return PhysicsCollisionObject::RIGID_BODY; }
 
     /**
      * Gets the rigid body's mass.

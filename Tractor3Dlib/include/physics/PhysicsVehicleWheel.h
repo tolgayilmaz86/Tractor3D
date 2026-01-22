@@ -27,7 +27,7 @@ class PhysicsVehicle;
  * itself as well as the tire and suspension.
  */
 
-class PhysicsVehicleWheel : public PhysicsCollisionObject
+class PhysicsVehicleWheel final : public PhysicsCollisionObject
 {
     friend class Node;
     friend class PhysicsVehicle;

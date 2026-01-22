@@ -218,6 +218,7 @@
     <ClInclude Include="include\math\Vector2.h" />
     <ClInclude Include="include\math\Vector3.h" />
     <ClInclude Include="include\math\Vector4.h" />
+    <ClInclude Include="include\math\VectorBase.h" />
     <ClInclude Include="include\pch.h" />
     <ClInclude Include="include\physics\PhysicsCharacter.h" />
     <ClInclude Include="include\physics\PhysicsCollisionObject.h" />

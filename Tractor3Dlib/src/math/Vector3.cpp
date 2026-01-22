@@ -96,14 +96,6 @@ float Vector3::angle(const Vector3& v1, const Vector3& v2)
 }
 
 //-----------------------------------------------------------------------------
-void Vector3::add(const Vector3& v)
-{
-    x += v.x;
-    y += v.y;
-    z += v.z;
-}
-
-//-----------------------------------------------------------------------------
 void Vector3::add(const Vector3& v1, const Vector3& v2, Vector3* dst)
 {
     assert(dst);
@@ -148,78 +140,9 @@ void Vector3::cross(const Vector3& v1, const Vector3& v2, Vector3* dst)
 }
 
 //-----------------------------------------------------------------------------
-float Vector3::distance(const Vector3& v) const
-{
-    float dx = v.x - x;
-    float dy = v.y - y;
-    float dz = v.z - z;
-
-    return sqrt(dx * dx + dy * dy + dz * dz);
-}
-
-//-----------------------------------------------------------------------------
-float Vector3::distanceSquared(const Vector3& v) const
-{
-    float dx = v.x - x;
-    float dy = v.y - y;
-    float dz = v.z - z;
-
-    return (dx * dx + dy * dy + dz * dz);
-}
-
-//-----------------------------------------------------------------------------
 float Vector3::dot(const Vector3& v1, const Vector3& v2)
 {
     return (v1.x * v2.x + v1.y * v2.y + v1.z * v2.z);
-}
-
-//-----------------------------------------------------------------------------
-void Vector3::negate()
-{
-    x = -x;
-    y = -y;
-    z = -z;
-}
-
-//-----------------------------------------------------------------------------
-Vector3& Vector3::normalize()
-{
-    normalize(this);
-    return *this;
-}
-
-//-----------------------------------------------------------------------------
-void Vector3::normalize(Vector3* dst) const
-{
-    assert(dst);
-
-    if (dst != this)
-    {
-        dst->x = x;
-        dst->y = y;
-        dst->z = z;
-    }
-
-    float n = x * x + y * y + z * z;
-    // Already normalized.
-    if (n == 1.0f) return;
-
-    n = sqrt(n);
-    // Too close to zero.
-    if (n < MATH_TOLERANCE) return;
-
-    n = 1.0f / n;
-    dst->x *= n;
-    dst->y *= n;
-    dst->z *= n;
-}
-
-//-----------------------------------------------------------------------------
-void Vector3::scale(float scalar)
-{
-    x *= scalar;
-    y *= scalar;
-    z *= scalar;
 }
 
 //-----------------------------------------------------------------------------
@@ -257,14 +180,6 @@ void Vector3::set(const Vector3& p1, const Vector3& p2)
 }
 
 //-----------------------------------------------------------------------------
-void Vector3::subtract(const Vector3& v)
-{
-    x -= v.x;
-    y -= v.y;
-    z -= v.z;
-}
-
-//-----------------------------------------------------------------------------
 void Vector3::subtract(const Vector3& v1, const Vector3& v2, Vector3* dst)
 {
     assert(dst);
@@ -272,15 +187,6 @@ void Vector3::subtract(const Vector3& v1, const Vector3& v2, Vector3* dst)
     dst->x = v1.x - v2.x;
     dst->y = v1.y - v2.y;
     dst->z = v1.z - v2.z;
-}
-
-//-----------------------------------------------------------------------------
-void Vector3::smooth(const Vector3& target, float elapsedTime, float responseTime)
-{
-    if (elapsedTime > 0)
-    {
-        *this += (target - *this) * (elapsedTime / (elapsedTime + responseTime));
-    }
 }
 
 } // namespace tractor

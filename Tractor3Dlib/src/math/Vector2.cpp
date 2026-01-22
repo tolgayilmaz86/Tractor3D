@@ -66,13 +66,6 @@ float Vector2::angle(const Vector2& v1, const Vector2& v2)
 }
 
 //-----------------------------------------------------------------------------
-void Vector2::add(const Vector2& v)
-{
-    x += v.x;
-    y += v.y;
-}
-
-//-----------------------------------------------------------------------------
 void Vector2::add(const Vector2& v1, const Vector2& v2, Vector2* dst)
 {
     assert(dst);
@@ -103,71 +96,9 @@ void Vector2::clamp(const Vector2& v, const Vector2& min, const Vector2& max, Ve
 }
 
 //-----------------------------------------------------------------------------
-float Vector2::distance(const Vector2& v) const
-{
-    float dx = v.x - x;
-    float dy = v.y - y;
-
-    return sqrt(dx * dx + dy * dy);
-}
-
-//-----------------------------------------------------------------------------
-float Vector2::distanceSquared(const Vector2& v) const
-{
-    float dx = v.x - x;
-    float dy = v.y - y;
-    return (dx * dx + dy * dy);
-}
-
-//-----------------------------------------------------------------------------
 float Vector2::dot(const Vector2& v1, const Vector2& v2) noexcept
 {
     return (v1.x * v2.x + v1.y * v2.y);
-}
-
-//-----------------------------------------------------------------------------
-void Vector2::negate() noexcept
-{
-    x = -x;
-    y = -y;
-}
-
-//-----------------------------------------------------------------------------
-Vector2& Vector2::normalize()
-{
-    normalize(this);
-    return *this;
-}
-
-//-----------------------------------------------------------------------------
-void Vector2::normalize(Vector2* dst) const
-{
-    assert(dst);
-
-    if (dst != this)
-    {
-        dst->x = x;
-        dst->y = y;
-    }
-
-    float n = x * x + y * y;
-    // Already normalized.
-    if (n == 1.0f) return;
-
-    n = sqrt(n);
-    // Too close to zero.
-    if (n < MATH_TOLERANCE) return;
-
-    n = 1.0f / n;
-    dst->x *= n;
-    dst->y *= n;
-}
-
-//-----------------------------------------------------------------------------
-void Vector2::scale(float scalar)
-{
-    x *= scalar;
-    y *= scalar;
 }
 
 //-----------------------------------------------------------------------------
@@ -230,28 +161,12 @@ void Vector2::set(const Vector2& p1, const Vector2& p2)
 }
 
 //-----------------------------------------------------------------------------
-void Vector2::subtract(const Vector2& v)
-{
-    x -= v.x;
-    y -= v.y;
-}
-
-//-----------------------------------------------------------------------------
 void Vector2::subtract(const Vector2& v1, const Vector2& v2, Vector2* dst)
 {
     assert(dst);
 
     dst->x = v1.x - v2.x;
     dst->y = v1.y - v2.y;
-}
-
-//-----------------------------------------------------------------------------
-void Vector2::smooth(const Vector2& target, float elapsedTime, float responseTime)
-{
-    if (elapsedTime > 0)
-    {
-        *this += (target - *this) * (elapsedTime / (elapsedTime + responseTime));
-    }
 }
 
 } // namespace tractor

@@ -13,6 +13,8 @@
  */
 #pragma once
 
+#include "math/VectorBase.h"
+
 namespace tractor
 {
 
@@ -21,8 +23,9 @@ class Matrix;
 /**
  * Defines a 2-element floating point vector.
  */
-class Vector2
+class Vector2 : public VectorBase<Vector2, 2>
 {
+    friend class VectorBase<Vector2, 2>;
   public:
     /**
      * The x coordinate.
@@ -126,12 +129,8 @@ class Vector2
      */
     static float angle(const Vector2& v1, const Vector2& v2);
 
-    /**
-     * Adds the elements of the specified vector to this one.
-     *
-     * @param v The vector to add.
-     */
-    void add(const Vector2& v);
+    // Note: add(const Vector2& v) is inherited from VectorBase
+    using VectorBase::add;
 
     /**
      * Adds the specified vectors and stores the result in dst.
@@ -160,41 +159,16 @@ class Vector2
      */
     static void clamp(const Vector2& v, const Vector2& min, const Vector2& max, Vector2* dst);
 
-    /**
-     * Returns the distance between this vector and v.
-     *
-     * @param v The other vector.
-     *
-     * @return The distance between this vector and v.
-     *
-     * @see distanceSquared
-     */
-    float distance(const Vector2& v) const;
-
-    /**
-     * Returns the squared distance between this vector and v.
-     *
-     * When it is not necessary to get the exact distance between
-     * two vectors (for example, when simply comparing the
-     * distance between different vectors), it is advised to use
-     * this method instead of distance.
-     *
-     * @param v The other vector.
-     *
-     * @return The squared distance between this vector and v.
-     *
-     * @see distance
-     */
-    float distanceSquared(const Vector2& v) const;
-
-    /**
-     * Returns the dot product of this vector and the specified vector.
-     *
-     * @param v The vector to compute the dot product with.
-     *
-     * @return The dot product.
-     */
-    float dot(const Vector2& v) const noexcept { return (x * v.x + y * v.y); }
+    // Note: distance, distanceSquared, dot, length, lengthSquared, negate, normalize, scale(float)
+    // are inherited from VectorBase
+    using VectorBase::distance;
+    using VectorBase::distanceSquared;
+    using VectorBase::dot;
+    using VectorBase::length;
+    using VectorBase::lengthSquared;
+    using VectorBase::negate;
+    using VectorBase::normalize;
+    using VectorBase::scale;
 
     /**
      * Returns the dot product between the specified vectors.
@@ -205,65 +179,6 @@ class Vector2
      * @return The dot product between the vectors.
      */
     static float dot(const Vector2& v1, const Vector2& v2) noexcept;
-
-    /**
-     * Computes the length of this vector.
-     *
-     * @return The length of the vector.
-     *
-     * @see lengthSquared
-     */
-    float length() const { return sqrt(x * x + y * y); }
-
-    /**
-     * Returns the squared length of this vector.
-     *
-     * When it is not necessary to get the exact length of a
-     * vector (for example, when simply comparing the lengths of
-     * different vectors), it is advised to use this method
-     * instead of length.
-     *
-     * @return The squared length of the vector.
-     *
-     * @see length
-     */
-    float lengthSquared() const noexcept { return (x * x + y * y); }
-
-    /**
-     * Negates this vector.
-     */
-    void negate() noexcept;
-
-    /**
-     * Normalizes this vector.
-     *
-     * This method normalizes this Vector2 so that it is of
-     * unit length (in other words, the length of the vector
-     * after calling this method will be 1.0f). If the vector
-     * already has unit length or if the length of the vector
-     * is zero, this method does nothing.
-     *
-     * @return This vector, after the normalization occurs.
-     */
-    Vector2& normalize();
-
-    /**
-     * Normalizes this vector and stores the result in dst.
-     *
-     * If the vector already has unit length or if the length
-     * of the vector is zero, this method simply copies the
-     * current vector into dst.
-     *
-     * @param dst The destination vector.
-     */
-    void normalize(Vector2* dst) const;
-
-    /**
-     * Scales all elements of this vector by the specified value.
-     *
-     * @param scalar The scalar value.
-     */
-    void scale(float scalar);
 
     /**
      * Scales each element of this vector by the matching component of scale.
@@ -310,13 +225,9 @@ class Vector2
      */
     void set(const Vector2& p1, const Vector2& p2);
 
-    /**
-     * Subtracts this vector and the specified vector as (this - v)
-     * and stores the result in this vector.
-     *
-     * @param v The vector to subtract.
-     */
-    void subtract(const Vector2& v);
+    // Note: subtract(const Vector2& v) and smooth are inherited from VectorBase
+    using VectorBase::subtract;
+    using VectorBase::smooth;
 
     /**
      * Subtracts the specified vectors and stores the result in dst.
@@ -328,123 +239,16 @@ class Vector2
      */
     static void subtract(const Vector2& v1, const Vector2& v2, Vector2* dst);
 
-    /**
-     * Updates this vector towards the given target using a smoothing function.
-     * The given response time determines the amount of smoothing (lag). A longer
-     * response time yields a smoother result and more lag. To force this vector to
-     * follow the target closely, provide a response time that is very small relative
-     * to the given elapsed time.
-     *
-     * @param target target value.
-     * @param elapsedTime elapsed time between calls.
-     * @param responseTime response time (in the same units as elapsedTime).
-     */
-    void smooth(const Vector2& target, float elapsedTime, float responseTime);
-
-    /**
-     * Calculates the sum of this vector with the given vector.
-     *
-     * Note: this does not modify this vector.
-     *
-     * @param v The vector to add.
-     * @return The vector sum.
-     */
-    const Vector2 operator+(const Vector2& v) const
-    {
-        Vector2 result(*this);
-        result.add(v);
-        return result;
-    }
-
-    /**
-     * Adds the given vector to this vector.
-     *
-     * @param v The vector to add.
-     * @return This vector, after the addition occurs.
-     */
-    Vector2& operator+=(const Vector2& v)
-    {
-        add(v);
-        return *this;
-    }
-
-    /**
-     * Calculates the sum of this vector with the given vector.
-     *
-     * Note: this does not modify this vector.
-     *
-     * @param v The vector to add.
-     * @return The vector sum.
-     */
-    const Vector2 operator-(const Vector2& v) const
-    {
-        Vector2 result(*this);
-        result.subtract(v);
-        return result;
-    }
-
-    /**
-     * Subtracts the given vector from this vector.
-     *
-     * @param v The vector to subtract.
-     * @return This vector, after the subtraction occurs.
-     */
-    Vector2& operator-=(const Vector2& v)
-    {
-        subtract(v);
-        return *this;
-    }
-
-    /**
-     * Calculates the negation of this vector.
-     *
-     * Note: this does not modify this vector.
-     *
-     * @return The negation of this vector.
-     */
-    const Vector2 operator-() const
-    {
-        Vector2 result(*this);
-        result.negate();
-        return result;
-    }
-
-    /**
-     * Calculates the scalar product of this vector with the given value.
-     *
-     * Note: this does not modify this vector.
-     *
-     * @param x The value to scale by.
-     * @return The scaled vector.
-     */
-    const Vector2 operator*(float x) const
-    {
-        Vector2 result(*this);
-        result.scale(x);
-        return result;
-    }
-
-    /**
-     * Scales this vector by the given value.
-     *
-     * @param x The value to scale by.
-     * @return This vector, after the scale occurs.
-     */
-    Vector2& operator*=(float x)
-    {
-        scale(x);
-        return *this;
-    }
-
-    /**
-     * Returns the components of this vector divided by the given constant
-     *
-     * Note: this does not modify this vector.
-     *
-     * @param x the constant to divide this vector with
-     * @return a smaller vector
-     */
-    const Vector2 operator/(const float x) const { return Vector2(this->x / x, this->y / x); }
+    // Note: Operators +, +=, -, -=, unary-, *, *=, /, ==, != are inherited from VectorBase
+    using VectorBase::operator+;
+    using VectorBase::operator+=;
+    using VectorBase::operator-;
+    using VectorBase::operator-=;
+    using VectorBase::operator*;
+    using VectorBase::operator*=;
+    using VectorBase::operator/;
+    using VectorBase::operator==;
+    using VectorBase::operator!=;
 
     /**
      * Determines if this vector is less than the given vector.
@@ -462,37 +266,8 @@ class Vector2
         return x < v.x;
     }
 
-    /**
-     * Determines if this vector is equal to the given vector.
-     *
-     * @param v The vector to compare against.
-     *
-     * @return True if this vector is equal to the given vector, false otherwise.
-     */
-    bool operator==(const Vector2& v) const { return x == v.x && y == v.y; }
-
-    /**
-     * Determines if this vector is not equal to the given vector.
-     *
-     * @param v The vector to compare against.
-     *
-     * @return True if this vector is not equal to the given vector, false otherwise.
-     */
-    bool operator!=(const Vector2& v) const { return x != v.x || y != v.y; }
 };
 
-/**
- * Calculates the scalar product of the given vector with the given value.
- *
- * @param x The value to scale by.
- * @param v The vector to scale.
- * @return The scaled vector.
- */
-inline const Vector2 operator*(float x, const Vector2& v)
-{
-    Vector2 result(v);
-    result.scale(x);
-    return result;
-}
+// Note: operator*(float, Vector2) is provided by VectorBase template
 
 } // namespace tractor

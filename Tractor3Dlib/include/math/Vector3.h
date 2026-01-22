@@ -13,6 +13,8 @@
  */
 #pragma once
 
+#include "math/VectorBase.h"
+
 namespace tractor
 {
 
@@ -25,8 +27,9 @@ namespace tractor
  * the magnitude of the vector intact. When used as a point,
  * the elements of the vector represent a position in 3D space.
  */
-class Vector3
+class Vector3 : public VectorBase<Vector3, 3>
 {
+    friend class VectorBase<Vector3, 3>;
   public:
     /**
      * The x-coordinate.
@@ -153,12 +156,8 @@ class Vector3
      */
     static float angle(const Vector3& v1, const Vector3& v2);
 
-    /**
-     * Adds the elements of the specified vector to this one.
-     *
-     * @param v The vector to add.
-     */
-    void add(const Vector3& v);
+    // Note: add(const Vector3& v) is inherited from VectorBase
+    using VectorBase::add;
 
     /**
      * Adds the specified vectors and stores the result in dst.
@@ -203,41 +202,12 @@ class Vector3
      */
     static void cross(const Vector3& v1, const Vector3& v2, Vector3* dst);
 
-    /**
-     * Returns the distance between this vector and v.
-     *
-     * @param v The other vector.
-     *
-     * @return The distance between this vector and v.
-     *
-     * @see distanceSquared
-     */
-    float distance(const Vector3& v) const;
-
-    /**
-     * Returns the squared distance between this vector and v.
-     *
-     * When it is not necessary to get the exact distance between
-     * two vectors (for example, when simply comparing the
-     * distance between different vectors), it is advised to use
-     * this method instead of distance.
-     *
-     * @param v The other vector.
-     *
-     * @return The squared distance between this vector and v.
-     *
-     * @see distance
-     */
-    float distanceSquared(const Vector3& v) const;
-
-    /**
-     * Returns the dot product of this vector and the specified vector.
-     *
-     * @param v The vector to compute the dot product with.
-     *
-     * @return The dot product.
-     */
-    float dot(const Vector3& v) const { return (x * v.x + y * v.y + z * v.z); }
+    // Note: distance, distanceSquared, dot, length, lengthSquared are inherited from VectorBase
+    using VectorBase::distance;
+    using VectorBase::distanceSquared;
+    using VectorBase::dot;
+    using VectorBase::length;
+    using VectorBase::lengthSquared;
 
     /**
      * Returns the dot product between the specified vectors.
@@ -249,64 +219,10 @@ class Vector3
      */
     static float dot(const Vector3& v1, const Vector3& v2);
 
-    /**
-     * Computes the length of this vector.
-     *
-     * @return The length of the vector.
-     *
-     * @see lengthSquared
-     */
-    float length() const { return sqrt(x * x + y * y + z * z); }
-
-    /**
-     * Returns the squared length of this vector.
-     *
-     * When it is not necessary to get the exact length of a
-     * vector (for example, when simply comparing the lengths of
-     * different vectors), it is advised to use this method
-     * instead of length.
-     *
-     * @return The squared length of the vector.
-     *
-     * @see length
-     */
-    float lengthSquared() const noexcept { return (x * x + y * y + z * z); }
-
-    /**
-     * Negates this vector.
-     */
-    void negate();
-
-    /**
-     * Normalizes this vector.
-     *
-     * This method normalizes this Vector3 so that it is of
-     * unit length (in other words, the length of the vector
-     * after calling this method will be 1.0f). If the vector
-     * already has unit length or if the length of the vector
-     * is zero, this method does nothing.
-     *
-     * @return This vector, after the normalization occurs.
-     */
-    Vector3& normalize();
-
-    /**
-     * Normalizes this vector and stores the result in dst.
-     *
-     * If the vector already has unit length or if the length
-     * of the vector is zero, this method simply copies the
-     * current vector into dst.
-     *
-     * @param dst The destination vector.
-     */
-    void normalize(Vector3* dst) const;
-
-    /**
-     * Scales all elements of this vector by the specified value.
-     *
-     * @param scalar The scalar value.
-     */
-    void scale(float scalar);
+    // Note: negate, normalize, scale are inherited from VectorBase
+    using VectorBase::negate;
+    using VectorBase::normalize;
+    using VectorBase::scale;
 
     /**
      * Sets the elements of this vector to the specified values.
@@ -336,13 +252,9 @@ class Vector3
      */
     void set(const Vector3& p1, const Vector3& p2);
 
-    /**
-     * Subtracts this vector and the specified vector as (this - v)
-     * and stores the result in this vector.
-     *
-     * @param v The vector to subtract.
-     */
-    void subtract(const Vector3& v);
+    // Note: subtract(const Vector3& v) and smooth are inherited from VectorBase
+    using VectorBase::subtract;
+    using VectorBase::smooth;
 
     /**
      * Subtracts the specified vectors and stores the result in dst.
@@ -354,126 +266,16 @@ class Vector3
      */
     static void subtract(const Vector3& v1, const Vector3& v2, Vector3* dst);
 
-    /**
-     * Updates this vector towards the given target using a smoothing function.
-     * The given response time determines the amount of smoothing (lag). A longer
-     * response time yields a smoother result and more lag. To force this vector to
-     * follow the target closely, provide a response time that is very small relative
-     * to the given elapsed time.
-     *
-     * @param target target value.
-     * @param elapsedTime elapsed time between calls.
-     * @param responseTime response time (in the same units as elapsedTime).
-     */
-    void smooth(const Vector3& target, float elapsedTime, float responseTime);
-
-    /**
-     * Calculates the sum of this vector with the given vector.
-     *
-     * Note: this does not modify this vector.
-     *
-     * @param v The vector to add.
-     * @return The vector sum.
-     */
-    const Vector3 operator+(const Vector3& v) const
-    {
-        Vector3 result(*this);
-        result.add(v);
-        return result;
-    }
-
-    /**
-     * Adds the given vector to this vector.
-     *
-     * @param v The vector to add.
-     * @return This vector, after the addition occurs.
-     */
-    Vector3& operator+=(const Vector3& v)
-    {
-        add(v);
-        return *this;
-    }
-
-    /**
-     * Calculates the difference of this vector with the given vector.
-     *
-     * Note: this does not modify this vector.
-     *
-     * @param v The vector to subtract.
-     * @return The vector difference.
-     */
-    const Vector3 operator-(const Vector3& v) const
-    {
-        Vector3 result(*this);
-        result.subtract(v);
-        return result;
-    }
-
-    /**
-     * Subtracts the given vector from this vector.
-     *
-     * @param v The vector to subtract.
-     * @return This vector, after the subtraction occurs.
-     */
-    Vector3& operator-=(const Vector3& v)
-    {
-        subtract(v);
-        return *this;
-    }
-
-    /**
-     * Calculates the negation of this vector.
-     *
-     * Note: this does not modify this vector.
-     *
-     * @return The negation of this vector.
-     */
-    const Vector3 operator-() const
-    {
-        Vector3 result(*this);
-        result.negate();
-        return result;
-    }
-
-    /**
-     * Calculates the scalar product of this vector with the given value.
-     *
-     * Note: this does not modify this vector.
-     *
-     * @param x The value to scale by.
-     * @return The scaled vector.
-     */
-    const Vector3 operator*(float x) const
-    {
-        Vector3 result(*this);
-        result.scale(x);
-        return result;
-    }
-
-    /**
-     * Scales this vector by the given value.
-     *
-     * @param x The value to scale by.
-     * @return This vector, after the scale occurs.
-     */
-    Vector3& operator*=(float x)
-    {
-        scale(x);
-        return *this;
-    }
-
-    /**
-     * Returns the components of this vector divided by the given constant
-     *
-     * Note: this does not modify this vector.
-     *
-     * @param x the constant to divide this vector with
-     * @return a smaller vector
-     */
-    const Vector3 operator/(const float x) const
-    {
-        return Vector3(this->x / x, this->y / x, this->z / x);
-    }
+    // Note: Operators +, +=, -, -=, unary-, *, *=, /, ==, != are inherited from VectorBase
+    using VectorBase::operator+;
+    using VectorBase::operator+=;
+    using VectorBase::operator-;
+    using VectorBase::operator-=;
+    using VectorBase::operator*;
+    using VectorBase::operator*=;
+    using VectorBase::operator/;
+    using VectorBase::operator==;
+    using VectorBase::operator!=;
 
     /**
      * Determines if this vector is less than the given vector.
@@ -494,38 +296,8 @@ class Vector3
         }
         return x < v.x;
     }
-
-    /**
-     * Determines if this vector is equal to the given vector.
-     *
-     * @param v The vector to compare against.
-     *
-     * @return True if this vector is equal to the given vector, false otherwise.
-     */
-    bool operator==(const Vector3& v) const { return x == v.x && y == v.y && z == v.z; }
-
-    /**
-     * Determines if this vector is not equal to the given vector.
-     *
-     * @param v The vector to compare against.
-     *
-     * @return True if this vector is not equal to the given vector, false otherwise.
-     */
-    bool operator!=(const Vector3& v) const { return x != v.x || y != v.y || z != v.z; }
 };
 
-/**
- * Calculates the scalar product of the given vector with the given value.
- *
- * @param x The value to scale by.
- * @param v The vector to scale.
- * @return The scaled vector.
- */
-inline const Vector3 operator*(float x, const Vector3& v)
-{
-    Vector3 result(v);
-    result.scale(x);
-    return result;
-}
+// Note: operator*(float, Vector3) is provided by VectorBase template
 
 } // namespace tractor

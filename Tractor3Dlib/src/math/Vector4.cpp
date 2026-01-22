@@ -99,15 +99,6 @@ float Vector4::angle(const Vector4& v1, const Vector4& v2)
 }
 
 //-----------------------------------------------------------------------------
-void Vector4::add(const Vector4& v)
-{
-    x += v.x;
-    y += v.y;
-    z += v.z;
-    w += v.w;
-}
-
-//-----------------------------------------------------------------------------
 void Vector4::add(const Vector4& v1, const Vector4& v2, Vector4* dst)
 {
     assert(dst);
@@ -141,81 +132,6 @@ void Vector4::clamp(const Vector4& v, const Vector4& min, const Vector4& max, Ve
     dst->y = std::clamp(v.y, min.y, max.y);
     dst->z = std::clamp(v.z, min.z, max.z);
     dst->w = std::clamp(v.w, min.w, max.w);
-}
-
-//-----------------------------------------------------------------------------
-float Vector4::distance(const Vector4& v) const
-{
-    float dx = v.x - x;
-    float dy = v.y - y;
-    float dz = v.z - z;
-    float dw = v.w - w;
-
-    return sqrt(dx * dx + dy * dy + dz * dz + dw * dw);
-}
-
-//-----------------------------------------------------------------------------
-float Vector4::distanceSquared(const Vector4& v) const
-{
-    float dx = v.x - x;
-    float dy = v.y - y;
-    float dz = v.z - z;
-    float dw = v.w - w;
-
-    return (dx * dx + dy * dy + dz * dz + dw * dw);
-}
-
-//-----------------------------------------------------------------------------
-void Vector4::negate()
-{
-    x = -x;
-    y = -y;
-    z = -z;
-    w = -w;
-}
-
-//-----------------------------------------------------------------------------
-Vector4& Vector4::normalize()
-{
-    normalize(this);
-    return *this;
-}
-
-//-----------------------------------------------------------------------------
-void Vector4::normalize(Vector4* dst) const
-{
-    assert(dst);
-
-    if (dst != this)
-    {
-        dst->x = x;
-        dst->y = y;
-        dst->z = z;
-        dst->w = w;
-    }
-
-    float n = x * x + y * y + z * z + w * w;
-    // Already normalized.
-    if (n == 1.0f) return;
-
-    n = sqrt(n);
-    // Too close to zero.
-    if (n < MATH_TOLERANCE) return;
-
-    n = 1.0f / n;
-    dst->x *= n;
-    dst->y *= n;
-    dst->z *= n;
-    dst->w *= n;
-}
-
-//-----------------------------------------------------------------------------
-void Vector4::scale(float scalar)
-{
-    x *= scalar;
-    y *= scalar;
-    z *= scalar;
-    w *= scalar;
 }
 
 //-----------------------------------------------------------------------------
@@ -254,15 +170,6 @@ void Vector4::set(const Vector4& p1, const Vector4& p2)
     y = p2.y - p1.y;
     z = p2.z - p1.z;
     w = p2.w - p1.w;
-}
-
-//-----------------------------------------------------------------------------
-void Vector4::subtract(const Vector4& v)
-{
-    x -= v.x;
-    y -= v.y;
-    z -= v.z;
-    w -= v.w;
 }
 
 //-----------------------------------------------------------------------------

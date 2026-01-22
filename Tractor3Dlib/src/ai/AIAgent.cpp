@@ -21,15 +21,9 @@ namespace tractor
 {
 
 //----------------------------------------------------------------------------
-AIAgent::AIAgent()
+AIAgent::AIAgent(FactoryKey /*key*/)
 {
     _stateMachine = std::make_unique<AIStateMachine>(this);
-}
-
-//----------------------------------------------------------------------------
-std::shared_ptr<AIAgent> AIAgent::create()
-{
-    return std::shared_ptr<AIAgent>(new AIAgent());
 }
 
 //----------------------------------------------------------------------------

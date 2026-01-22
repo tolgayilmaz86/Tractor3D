@@ -97,6 +97,9 @@
     <Filter Include="include\utils">
       <UniqueIdentifier>{3757325f-ef77-4c47-a8e7-37e44d2e28c0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\core">
+      <UniqueIdentifier>{8e8821fb-8bcf-42c2-a0a3-5466274694c5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\colored.frag">
@@ -487,8 +490,12 @@
     <ClCompile Include="src\framework\FileStream.cpp">
       <Filter>src\framework</Filter>
     </ClCompile>
-    <ClCompile Include="src\graphics\BlendMode.cpp" />
-    <ClCompile Include="src\scene\PropertyUtils.cpp" />
+    <ClCompile Include="src\graphics\BlendMode.cpp">
+      <Filter>src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\PropertyUtils.cpp">
+      <Filter>src\scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ai\AIAgent.h">
@@ -842,13 +849,29 @@
     <ClInclude Include="include\framework\FileStream.h">
       <Filter>include\framework</Filter>
     </ClInclude>
-    <ClInclude Include="include\utils\RefRelease.h" />
-    <ClInclude Include="include\utils\SafeDelete.h" />
-    <ClInclude Include="include\graphics\BlendMode.h" />
-    <ClInclude Include="include\scene\PropertyUtils.h" />
-    <ClInclude Include="include\graphics\IParticleEmission.h" />
-    <ClInclude Include="include\graphics\IParticlePhysics.h" />
-    <ClInclude Include="include\graphics\IParticleAppearance.h" />
-    <ClInclude Include="include\graphics\IParticleSprite.h" />
+    <ClInclude Include="include\core\Cloneable.h">
+      <Filter>include\core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\core\Factory.h">
+      <Filter>include\core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graphics\IParticleAppearance.h">
+      <Filter>include\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graphics\IParticleEmission.h">
+      <Filter>include\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graphics\IParticlePhysics.h">
+      <Filter>include\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graphics\IParticleSprite.h">
+      <Filter>include\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graphics\BlendMode.h">
+      <Filter>include\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\scene\PropertyUtils.h">
+      <Filter>include\scene</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

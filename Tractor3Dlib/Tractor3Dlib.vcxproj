@@ -169,6 +169,8 @@
     <ClInclude Include="include\audio\AudioController.h" />
     <ClInclude Include="include\audio\AudioListener.h" />
     <ClInclude Include="include\audio\AudioSource.h" />
+    <ClInclude Include="include\core\Cloneable.h" />
+    <ClInclude Include="include\core\Factory.h" />
     <ClInclude Include="include\framework\FileStream.h" />
     <ClInclude Include="include\framework\FileSystem.h" />
     <ClInclude Include="include\framework\Game.h" />
@@ -275,8 +277,6 @@
     <ClInclude Include="include\utils\DebugNew.h" />
     <ClInclude Include="include\utils\Logger.h" />
     <ClInclude Include="include\utils\Profiler.h" />
-    <ClInclude Include="include\utils\RefRelease.h" />
-    <ClInclude Include="include\utils\SafeDelete.h" />
     <ClInclude Include="include\utils\StringUtil.h" />
     <ClInclude Include="include\utils\TimeListener.h" />
   </ItemGroup>

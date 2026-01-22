@@ -27,7 +27,7 @@ AIStateMachine::AIStateMachine(AIAgent* agent) : _agent(agent)
 {
     assert(agent);
     if (!AIState::_empty)
-        AIState::_empty = std::make_shared<AIState>("");
+        AIState::_empty = AIState::create("");
     _currentState = AIState::_empty;
 }
 

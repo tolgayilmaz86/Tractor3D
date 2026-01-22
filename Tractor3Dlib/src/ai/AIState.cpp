@@ -22,13 +22,10 @@
 namespace tractor
 {
 
-std::shared_ptr<AIState> AIState::_empty = nullptr;
+AIStatePtr AIState::_empty = nullptr;
 
 //----------------------------------------------------------------------------
-AIState::AIState(const std::string& id) : _id(id), _listener(nullptr) {}
-
-//----------------------------------------------------------------------------
-std::shared_ptr<AIState> AIState::create(const std::string& id) { return std::make_shared<AIState>(id); }
+AIState::AIState(FactoryKey /*key*/, const std::string& id) : _id(id), _listener(nullptr) {}
 
 //----------------------------------------------------------------------------
 void AIState::setListener(Listener* listener) { _listener = listener; }

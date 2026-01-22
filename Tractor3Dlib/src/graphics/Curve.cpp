@@ -102,13 +102,7 @@ namespace tractor
 {
 
 //----------------------------------------------------------------------------
-std::shared_ptr<Curve> Curve::create(unsigned int pointCount, unsigned int componentCount)
-{
-    return std::shared_ptr<Curve>(new Curve(pointCount, componentCount));
-}
-
-//----------------------------------------------------------------------------
-Curve::Curve(unsigned int pointCount, unsigned int componentCount)
+Curve::Curve(FactoryKey /*key*/, unsigned int pointCount, unsigned int componentCount)
     : _pointCount(pointCount), _componentCount(componentCount),
       _componentSize(sizeof(float) * componentCount), _quaternionOffset(nullptr), _points(nullptr)
 {

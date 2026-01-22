@@ -17,6 +17,7 @@
 
 #include "ai/AIMessage.h"
 #include "ai/AIStateMachine.h"
+#include "core/Factory.h"
 
 namespace tractor
 {
@@ -38,7 +39,7 @@ using AIAgentWeakPtr = std::weak_ptr<AIAgent>;
  * such as state machines. By default, an AIAgent has an empty state
  * machine.
  */
-class AIAgent
+class AIAgent : public CreatableWithKey<AIAgent>
 {
     friend class Node;
     friend class AIState;
@@ -74,17 +75,20 @@ class AIAgent
     };
 
     /**
-     * Creates a new AIAgent.
+     * Constructor - requires FactoryKey, use AIAgent::create() instead.
      *
-     * @return A new AIAgent.
+     * @param key Factory key (only obtainable via create())
      * @script{create}
      */
-    static AIAgentPtr create();
+    explicit AIAgent(FactoryKey key);
 
     /**
      * Destructor.
      */
     virtual ~AIAgent() = default;
+
+    // Note: create() is inherited from CreatableWithKey<AIAgent>
+    // Usage: auto agent = AIAgent::create();
 
     /**
      * Returns the identifier for the AIAgent.
@@ -142,11 +146,6 @@ class AIAgent
     void setListener(Listener* listener) noexcept { _listener = listener; }
 
   private:
-    /**
-     * Constructor.
-     */
-    AIAgent();
-
     /**
      * Hidden copy constructor.
      */

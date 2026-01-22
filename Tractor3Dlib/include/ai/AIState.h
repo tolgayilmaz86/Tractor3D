@@ -16,11 +16,20 @@
 #include <memory>
 #include <string>
 
+#include "core/Factory.h"
+
 namespace tractor
 {
 
 class AIAgent;
 class AIStateMachine;
+class AIState;
+
+/** Shared pointer type for AIState. */
+using AIStatePtr = std::shared_ptr<AIState>;
+
+/** Weak pointer type for AIState. */
+using AIStateWeakPtr = std::weak_ptr<AIState>;
 
 /**
  * Defines a single state in an AIStateMachine.
@@ -29,7 +38,7 @@ class AIStateMachine;
  * state machine. Events can be programmed or scripted when the
  * state is entered, exited and each frame/tick in its update event.
  */
-class AIState
+class AIState : public StandaloneCreatableWithKey<AIState>
 {
     friend class AIStateMachine;
 
@@ -74,25 +83,21 @@ class AIState
     };
 
     /**
-     * Creates a new AISTate.
+     * Constructor - requires FactoryKey, use AIState::create() instead.
      *
+     * @param key Factory key (only obtainable via create())
      * @param id The ID of the new AIState.
-     *
-     * @return The new AIState.
      * @script{create}
      */
-    static std::shared_ptr<AIState> create(const std::string& id);
-
-    /**
-     * Constructs a new AIState.
-     * Note: Use create() factory method for public construction.
-     */
-    explicit AIState(const std::string& id);
+    AIState(FactoryKey key, const std::string& id);
 
     /**
      * Destructor.
      */
     ~AIState() = default;
+
+    // Note: create() is inherited from StandaloneCreatableWithKey<AIState>
+    // Usage: auto state = AIState::create("myStateId");
 
     /**
      * Returns the ID of this state.
@@ -109,7 +114,6 @@ class AIState
     void setListener(Listener* listener);
 
   private:
-
     /**
      * Hidden copy constructor.
      */
@@ -139,6 +143,7 @@ class AIState
     Listener* _listener;
 
     // The default/empty state.
-    static std::shared_ptr<AIState> _empty;
+    static AIStatePtr _empty;
 };
+
 } // namespace tractor

@@ -16,8 +16,18 @@
 #include <memory>
 #include <string>
 
+#include "core/Factory.h"
+
 namespace tractor
 {
+
+class Curve;
+
+/** Shared pointer type for Curve. */
+using CurvePtr = std::shared_ptr<Curve>;
+
+/** Weak pointer type for Curve. */
+using CurveWeakPtr = std::weak_ptr<Curve>;
 
 /**
  * Defines an n-dimensional curve.
@@ -25,7 +35,7 @@ namespace tractor
  * This class uses std::shared_ptr for memory management. Use Curve::create()
  * to instantiate new curves.
  */
-class Curve
+class Curve : public StandaloneCreatableWithKey<Curve>
 {
     friend class AnimationTarget;
     friend class Animation;
@@ -65,242 +75,68 @@ class Curve
          * value equal to 0.
          */
         FLAT,
-
-        /**
-         * Hermite Interpolation.
-         *
-         * Requires that two tangents for each segment.
-         */
         HERMITE,
-
-        /**
-         * Linear Interpolation.
-         */
         LINEAR,
-
-        /**
-         * Smooth Interpolation.
-         *
-         * A form of Hermite interpolation that generates tangents for each segment based on the
-         * points prior to and after the segment.
-         */
         SMOOTH,
-
-        /**
-         * Discrete Interpolation.
-         */
         STEP,
-
-        /**
-         * Quadratic-In Interpolation.
-         */
         QUADRATIC_IN,
-
-        /**
-         * Quadratic-Out Interpolation.
-         */
         QUADRATIC_OUT,
-
-        /**
-         * Quadratic-In-Out Interpolation.
-         */
         QUADRATIC_IN_OUT,
-
-        /**
-         * Quadratic-Out-In Interpolation.
-         */
         QUADRATIC_OUT_IN,
-
-        /**
-         * Cubic-In Interpolation.
-         */
         CUBIC_IN,
-
-        /**
-         * Cubic-Out Interpolation.
-         */
         CUBIC_OUT,
-
-        /**
-         * Cubic-In-Out Interpolation.
-         */
         CUBIC_IN_OUT,
-
-        /**
-         * Cubic-Out-In Interpolation.
-         */
         CUBIC_OUT_IN,
-
-        /**
-         * Quartic-In Interpolation.
-         */
         QUARTIC_IN,
-
-        /**
-         * Quartic-Out Interpolation.
-         */
         QUARTIC_OUT,
-
-        /**
-         * Quartic-In-Out Interpolation.
-         */
         QUARTIC_IN_OUT,
-
-        /**
-         * Quartic-Out-In Interpolation.
-         */
         QUARTIC_OUT_IN,
-
-        /**
-         * Quintic-In Interpolation.
-         */
         QUINTIC_IN,
-
-        /**
-         * Quintic-Out Interpolation.
-         */
         QUINTIC_OUT,
-
-        /**
-         * Quintic-In-Out Interpolation.
-         */
         QUINTIC_IN_OUT,
-
-        /**
-         * Quintic-Out-In Interpolation.
-         */
         QUINTIC_OUT_IN,
-
-        /**
-         * Sine-In Interpolation.
-         */
         SINE_IN,
-
-        /**
-         * Sine-Out Interpolation.
-         */
         SINE_OUT,
-
-        /**
-         * Sine-In-Out Interpolation.
-         */
         SINE_IN_OUT,
-
-        /**
-         * Sine-Out-In Interpolation.
-         */
         SINE_OUT_IN,
-
-        /**
-         * Exponential-In Interpolation.
-         */
         EXPONENTIAL_IN,
-
-        /**
-         * Exponential-Out Interpolation.
-         */
         EXPONENTIAL_OUT,
-
-        /**
-         * Exponential-In-Out Interpolation.
-         */
         EXPONENTIAL_IN_OUT,
-
-        /**
-         * Exponential-Out-In Interpolation.
-         */
         EXPONENTIAL_OUT_IN,
-
-        /**
-         * Circular-In Interpolation.
-         */
         CIRCULAR_IN,
-
-        /**
-         * Circular-Out Interpolation.
-         */
         CIRCULAR_OUT,
-
-        /**
-         * Circular-In-Out Interpolation.
-         */
         CIRCULAR_IN_OUT,
-
-        /**
-         * Circular-Out-In Interpolation.
-         */
         CIRCULAR_OUT_IN,
-
-        /**
-         * Elastic-In Interpolation.
-         */
         ELASTIC_IN,
-
-        /**
-         * Elastic-Out Interpolation.
-         */
         ELASTIC_OUT,
-
-        /**
-         * Elastic-In-Out Interpolation.
-         */
         ELASTIC_IN_OUT,
-
-        /**
-         * Elastic-Out-In Interpolation.
-         */
         ELASTIC_OUT_IN,
-
-        /**
-         * Overshoot-In Interpolation.
-         */
         OVERSHOOT_IN,
-
-        /**
-         * Overshoot-Out Interpolation.
-         */
         OVERSHOOT_OUT,
-
-        /**
-         * Overshoot-In-Out Interpolation.
-         */
         OVERSHOOT_IN_OUT,
-
-        /**
-         * Overshoot-Out-In Interpolation.
-         */
         OVERSHOOT_OUT_IN,
-
-        /**
-         * Bounce-In Interpolation.
-         */
         BOUNCE_IN,
-
-        /**
-         * Bounce-Out Interpolation.
-         */
         BOUNCE_OUT,
-
-        /**
-         * Bounce-In-Out Interpolation.
-         */
         BOUNCE_IN_OUT,
-
-        /**
-         * Bounce-Out-In Interpolation.
-         */
         BOUNCE_OUT_IN
     };
 
     /**
-     * Creates a new curve.
+     * Constructor - requires FactoryKey, use Curve::create() instead.
      *
+     * @param key Factory key (only obtainable via create())
      * @param pointCount The number of points in the curve.
      * @param componentCount The number of float component values per key value.
-     * @return A shared_ptr to the newly created Curve.
-     * @script{create}
      */
-    static std::shared_ptr<Curve> create(unsigned int pointCount, unsigned int componentCount);
+    Curve(FactoryKey key, unsigned int pointCount, unsigned int componentCount);
+
+    /**
+     * Destructor.
+     */
+    ~Curve();
+
+    // Note: create() is inherited from StandaloneCreatableWithKey<Curve>
+    // Usage: auto curve = Curve::create(pointCount, componentCount);
 
     /**
      * Gets the number of points in the curve.
@@ -474,26 +310,6 @@ class Curve
          */
         Point& operator=(const Point&) = delete;
     };
-
-public:
-    /**
-     * Destructor.
-     */
-    ~Curve();
-
-private:
-    /**
-     * Constructor.
-     */
-    Curve();
-
-    /**
-     * Constructs a new curve and the specified parameters.
-     *
-     * @param pointCount The number of points in the curve.
-     * @param componentCount The number of float component values per key value.
-     */
-    Curve(unsigned int pointCount, unsigned int componentCount);
 
     /**
      * Copy constructor (deleted).

@@ -40,7 +40,7 @@ using FormWeakPtr = std::weak_ptr<Form>;
  *
  * This can also be attached on a scene Node to support 3D forms.
  */
-class Form : public Drawable, public Container
+class Form final : public Drawable, public Container
 {
     friend class Platform;
     friend class Game;
@@ -49,6 +49,11 @@ class Form : public Drawable, public Container
     friend class Container;
 
   public:
+    /**
+     * Returns the type of this drawable.
+     */
+    Type getType() const noexcept override { return Type::FORM; }
+
     /**
      * Creates a form from a .form properties file.
      *

@@ -99,7 +99,7 @@ using TerrainWeakPtr = std::weak_ptr<Terrain>;
  * approaches. In practice, the skirts are often not noticeable at all unless the LOD variation
  * is very large and the terrain is excessively hilly on the edge of a LOD transition.
  */
-class Terrain : public Drawable, public Transform::Listener
+class Terrain final : public Drawable, public Transform::Listener
 {
     friend class Node;
     friend class PhysicsController;
@@ -108,6 +108,11 @@ class Terrain : public Drawable, public Transform::Listener
     friend class TerrainAutoBindingResolver;
 
   public:
+    /**
+     * Returns the type of this drawable.
+     */
+    Type getType() const noexcept override { return Type::TERRAIN; }
+
     /**
      * Terrain flags.
      */

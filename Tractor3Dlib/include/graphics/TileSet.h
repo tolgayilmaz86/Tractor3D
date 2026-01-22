@@ -48,11 +48,16 @@ using TileSetWeakPtr = std::weak_ptr<TileSet>;
  *
  * The tile set does not support rotation or scaling.
  */
-class TileSet : public Drawable
+class TileSet final : public Drawable
 {
     friend class Node;
 
   public:
+    /**
+     * Returns the type of this drawable.
+     */
+    Type getType() const noexcept override { return Type::TILESET; }
+
     /**
      * Creates a tile set.
      *

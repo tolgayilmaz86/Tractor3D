@@ -821,25 +821,35 @@ const BoundingSphere& Node::getBoundingSphere() const
         // TODO: Incorporate bounds from entities other than mesh (i.e. particleemitters,
         // audiosource, etc)
         bool empty = true;
-        Terrain* terrain = dynamic_cast<Terrain*>(_drawable);
-        if (terrain)
+        Model* model = nullptr;
+        
+        if (_drawable)
         {
-            _bounds.set(terrain->getBoundingBox());
-            empty = false;
-        }
-        Model* model = dynamic_cast<Model*>(_drawable);
-        if (model && model->getMesh())
-        {
-            if (empty)
+            switch (_drawable->getType())
             {
-                _bounds.set(model->getMesh()->getBoundingSphere());
-                empty = false;
-            }
-            else
-            {
-                _bounds.merge(model->getMesh()->getBoundingSphere());
+                case Drawable::Type::TERRAIN:
+                {
+                    Terrain* terrain = static_cast<Terrain*>(_drawable);
+                    _bounds.set(terrain->getBoundingBox());
+                    empty = false;
+                    break;
+                }
+                case Drawable::Type::MODEL:
+                {
+                    model = static_cast<Model*>(_drawable);
+                    if (model->getMesh())
+                    {
+                        _bounds.set(model->getMesh()->getBoundingSphere());
+                        empty = false;
+                    }
+                    break;
+                }
+                default:
+                    // Other drawable types don't contribute to bounds yet
+                    break;
             }
         }
+        
         if (_light)
         {
             switch (_light->getLightType())

@@ -170,7 +170,7 @@ using ParticleEmitterWeakPtr = std::weak_ptr<ParticleEmitter>;
  * be set before rendering the particle system and then will be reset to their original
  * values.  Accepts the same symbolic constants as glBlendFunc().
  */
-class ParticleEmitter : public Drawable,
+class ParticleEmitter final : public Drawable,
                         public IParticleEmission,
                         public IParticlePhysics,
                         public IParticleAppearance,
@@ -179,6 +179,11 @@ class ParticleEmitter : public Drawable,
     friend class Node;
 
   public:
+    /**
+     * Returns the type of this drawable.
+     */
+    Type getType() const noexcept override { return Type::PARTICLE_EMITTER; }
+
     /**
      * Type alias for backward compatibility.
      * @deprecated Use tractor::BlendMode enum class directly instead.

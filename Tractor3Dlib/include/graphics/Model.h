@@ -39,7 +39,7 @@ using ModelWeakPtr = std::weak_ptr<Model>;
  * A model has a mesh that can be drawn with the specified materials for
  * each of the mesh parts within it.
  */
-class Model : public Drawable
+class Model final : public Drawable
 {
     friend class Node;
     friend class Scene;
@@ -47,6 +47,11 @@ class Model : public Drawable
     friend class Bundle;
 
   public:
+    /**
+     * Returns the type of this drawable.
+     */
+    Type getType() const noexcept override { return Type::MODEL; }
+
     /**
      * Creates a new Model and returns ownership via shared_ptr.
      * @script{create}

@@ -39,11 +39,16 @@ using TextWeakPtr = std::weak_ptr<Text>;
  *
  * Text can be attached to a node.
  */
-class Text : public Drawable, public AnimationTarget
+class Text final : public Drawable, public AnimationTarget
 {
     friend class Node;
 
   public:
+    /**
+     * Returns the type of this drawable.
+     */
+    Type getType() const noexcept override { return Type::TEXT; }
+
     /**
      * Opacity property. Data=opacity
      */

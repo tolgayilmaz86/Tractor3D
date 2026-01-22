@@ -40,6 +40,21 @@ class Drawable
 
   public:
     /**
+     * Enumeration of drawable types for fast type identification.
+     * Use getType() instead of dynamic_cast for better performance.
+     */
+    enum class Type
+    {
+        MODEL,
+        SPRITE,
+        PARTICLE_EMITTER,
+        TERRAIN,
+        TILESET,
+        TEXT,
+        FORM
+    };
+
+    /**
      * Constructor.
      */
     Drawable() = default;
@@ -48,6 +63,14 @@ class Drawable
      * Destructor.
      */
     virtual ~Drawable() = default;
+
+    /**
+     * Returns the type of this drawable.
+     * Use this instead of dynamic_cast for type checking.
+     *
+     * @return The drawable type.
+     */
+    virtual Type getType() const noexcept = 0;
 
     /**
      * Draws the object.

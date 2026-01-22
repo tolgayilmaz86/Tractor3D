@@ -48,11 +48,16 @@ using SpriteWeakPtr = std::weak_ptr<Sprite>;
  * Sprites can be animated using the animation system.
  * Sprites can have physics applied to them via their node binding.
  */
-class Sprite : public Drawable, public AnimationTarget
+class Sprite final : public Drawable, public AnimationTarget
 {
     friend class Node;
 
   public:
+    /**
+     * Returns the type of this drawable.
+     */
+    Type getType() const noexcept override { return Type::SPRITE; }
+
     /**
      * Opacity property. Data=opacity
      */

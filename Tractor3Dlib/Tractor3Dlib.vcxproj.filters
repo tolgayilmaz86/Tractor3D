@@ -873,6 +873,11 @@
     <ClInclude Include="include\scene\PropertyUtils.h">
       <Filter>include\scene</Filter>
     </ClInclude>
-    <ClInclude Include="include\math\VectorBase.h" />
+    <ClInclude Include="include\utils\VariantUtils.h">
+      <Filter>include\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\math\VectorBase.h">
+      <Filter>include\math</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

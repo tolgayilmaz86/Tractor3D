@@ -280,6 +280,7 @@
     <ClInclude Include="include\utils\Profiler.h" />
     <ClInclude Include="include\utils\StringUtil.h" />
     <ClInclude Include="include\utils\TimeListener.h" />
+    <ClInclude Include="include\utils\VariantUtils.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1032BA4B-57EB-4348-9E03-29DD63E80E4A}</ProjectGuid>

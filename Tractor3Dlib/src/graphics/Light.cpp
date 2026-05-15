@@ -16,6 +16,7 @@
 #include "graphics/Light.h"
 
 #include "scene/Node.h"
+#include "utils/VariantUtils.h"
 
 namespace tractor
 {
@@ -156,38 +157,17 @@ LightPtr Light::create(Properties* properties)
 //----------------------------------------------------------------------------
 const Vector3& Light::getColor() const
 {
-    switch (_type)
-    {
-        case DIRECTIONAL:
-            return std::get<Directional>(_lightData).color;
-        case POINT:
-            return std::get<Point>(_lightData).color;
-        case SPOT:
-            return std::get<Spot>(_lightData).color;
-        default:
-            GP_ERROR("Unsupported light type (%d).", _type);
-            return Vector3::zero();
-    }
+    return std::visit([](const auto& data) -> const Vector3& {
+        return data.color;
+    }, _lightData);
 }
 
 //----------------------------------------------------------------------------
 void Light::setColor(const Vector3& color)
 {
-    switch (_type)
-    {
-        case DIRECTIONAL:
-            std::get<Directional>(_lightData).color = color;
-            break;
-        case POINT:
-            std::get<Point>(_lightData).color = color;
-            break;
-        case SPOT:
-            std::get<Spot>(_lightData).color = color;
-            break;
-        default:
-            GP_ERROR("Unsupported light type (%d).", _type);
-            break;
-    }
+    std::visit([&color](auto& data) {
+        data.color = color;
+    }, _lightData);
 }
 
 //----------------------------------------------------------------------------
@@ -198,16 +178,14 @@ float Light::getRange() const
 {
     assert(_type != DIRECTIONAL);
 
-    switch (_type)
-    {
-        case POINT:
-            return std::get<Point>(_lightData).range;
-        case SPOT:
-            return std::get<Spot>(_lightData).range;
-        default:
-            GP_ERROR("Unsupported light type (%d).", _type);
+    return std::visit(overloaded{
+        [](const Directional&) -> float {
+            GP_ERROR("Directional lights don't have range.");
             return 0.0f;
-    }
+        },
+        [](const Point& p) { return p.range; },
+        [](const Spot& s) { return s.range; }
+    }, _lightData);
 }
 
 //----------------------------------------------------------------------------
@@ -215,26 +193,19 @@ void Light::setRange(float range)
 {
     assert(_type != DIRECTIONAL);
 
-    switch (_type)
-    {
-        case POINT:
-        {
-            auto& point = std::get<Point>(_lightData);
-            point.range = range;
-            point.rangeInverse = 1.0f / range;
-            break;
+    std::visit(overloaded{
+        [](Directional&) {
+            GP_ERROR("Directional lights don't have range.");
+        },
+        [range](Point& p) {
+            p.range = range;
+            p.rangeInverse = 1.0f / range;
+        },
+        [range](Spot& s) {
+            s.range = range;
+            s.rangeInverse = 1.0f / range;
         }
-        case SPOT:
-        {
-            auto& spot = std::get<Spot>(_lightData);
-            spot.range = range;
-            spot.rangeInverse = 1.0f / range;
-            break;
-        }
-        default:
-            GP_ERROR("Unsupported light type (%d).", _type);
-            break;
-    }
+    }, _lightData);
 
     if (_node) _node->setBoundsDirty();
 }
@@ -244,16 +215,14 @@ float Light::getRangeInverse() const
 {
     assert(_type != DIRECTIONAL);
 
-    switch (_type)
-    {
-        case POINT:
-            return std::get<Point>(_lightData).rangeInverse;
-        case SPOT:
-            return std::get<Spot>(_lightData).rangeInverse;
-        default:
-            GP_ERROR("Unsupported light type (%d).", _type);
+    return std::visit(overloaded{
+        [](const Directional&) -> float {
+            GP_ERROR("Directional lights don't have range.");
             return 0.0f;
-    }
+        },
+        [](const Point& p) { return p.rangeInverse; },
+        [](const Spot& s) { return s.rangeInverse; }
+    }, _lightData);
 }
 
 //----------------------------------------------------------------------------

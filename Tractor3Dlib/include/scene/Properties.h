@@ -15,20 +15,70 @@
 
 #include "pch.h"
 
+#include <variant>
+
 #include "framework/Stream.h"
 #include "math/Matrix.h"
 #include "math/Vector2.h"
+#include "utils/VariantUtils.h"
 
 namespace tractor
 {
+
+/**
+ * Type-safe variant for property values.
+ * Supports all property types with automatic type deduction.
+ */
+using PropertyValue = std::variant<
+    std::monostate,  // NONE/uninitialized
+    std::string,     // STRING
+    double,          // NUMBER (covers int, float, long, double)
+    Vector2,         // VECTOR2
+    Vector3,         // VECTOR3
+    Vector4,         // VECTOR4
+    Matrix           // MATRIX
+>;
+
 /**
  * Internal structure containing a single property.
+ * Stores both raw string value and optional cached typed value.
  */
 struct Property
 {
     std::string name;
-    std::string value;
-    Property(const std::string& name, const std::string& value) : name(name), value(value) {}
+    std::string value;                                  // Original string value
+    mutable PropertyValue cachedValue{ std::monostate{} }; // Lazily cached typed value
+
+    Property(const std::string& name, const std::string& value) 
+        : name(name), value(value) {}
+    
+    /**
+     * Check if the cached value is of a specific type.
+     */
+    template<typename T>
+    bool holdsType() const { return std::holds_alternative<T>(cachedValue); }
+    
+    /**
+     * Get the cached value if it's the correct type.
+     */
+    template<typename T>
+    const T* getIf() const { return std::get_if<T>(&cachedValue); }
+    
+    /**
+     * Cache a typed value.
+     */
+    template<typename T>
+    void cache(T&& val) const { cachedValue = std::forward<T>(val); }
+    
+    /**
+     * Clear the cached value.
+     */
+    void clearCache() const { cachedValue = std::monostate{}; }
+    
+    /**
+     * Check if a cached value exists.
+     */
+    bool hasCachedValue() const { return !std::holds_alternative<std::monostate>(cachedValue); }
 };
 
 /**
@@ -476,6 +526,20 @@ class Properties
     void resolveInheritance(const std::string& id = EMPTY_STRING);
 
     Property* findVariableInHierarchy(const std::string& name);
+    
+    /**
+     * Find a property by name.
+     * @param name The property name to find.
+     * @return Pointer to the property, or nullptr if not found.
+     */
+    const Property* findProperty(const std::string& name) const;
+    
+    /**
+     * Find a property by name (mutable version for caching).
+     * @param name The property name to find.
+     * @return Pointer to the property, or nullptr if not found.
+     */
+    Property* findProperty(const std::string& name);
 
     std::string _namespace{};
     std::string _id{};

@@ -913,20 +913,18 @@ bool Properties::setString(const std::string& name, const std::string& value)
         // If there's no current property, return false
         if (_propertiesItr == _properties.end()) return false;
 
-        // Update the current property
+        // Update the current property and clear cache
         _propertiesItr->value = value;
+        _propertiesItr->clearCache();
 
         return true;
     }
 
     // Check if the property already exists and update it
-    auto it = std::find_if(_properties.begin(),
-                           _properties.end(),
-                           [&name](const Property& prop) { return prop.name == name; });
-
-    if (it != _properties.end())
+    if (Property* prop = findProperty(name))
     {
-        it->value = value;
+        prop->value = value;
+        prop->clearCache();  // Clear cached typed value since string changed
         return true;
     }
 
@@ -934,6 +932,24 @@ bool Properties::setString(const std::string& name, const std::string& value)
     _properties.emplace_back(name, value);
 
     return true;
+}
+
+//-----------------------------------------------------------------------------
+const Property* Properties::findProperty(const std::string& name) const
+{
+    auto it = std::find_if(_properties.begin(),
+                           _properties.end(),
+                           [&name](const Property& prop) { return prop.name == name; });
+    return it != _properties.end() ? &(*it) : nullptr;
+}
+
+//-----------------------------------------------------------------------------
+Property* Properties::findProperty(const std::string& name)
+{
+    auto it = std::find_if(_properties.begin(),
+                           _properties.end(),
+                           [&name](const Property& prop) { return prop.name == name; });
+    return it != _properties.end() ? &(*it) : nullptr;
 }
 
 //-----------------------------------------------------------------------------
@@ -946,51 +962,57 @@ bool Properties::getBool(const std::string& name, bool defaultValue) const
 //-----------------------------------------------------------------------------
 int Properties::getInt(const std::string& name) const
 {
+    // Use getString to properly resolve variable references like ${fontSize}
     const std::string& valueString = getString(name);
+    if (valueString.empty())
+        return 0;
 
     try
     {
-        if (!valueString.empty()) return std::stoi(valueString);
+        return static_cast<int>(std::stod(valueString));
     }
     catch (const std::exception&)
     {
         GP_ERROR("Error attempting to parse property '%s' as an integer: invalid argument.",
                  name.c_str());
+        return 0;
     }
-
-    return 0;
 }
 
 //-----------------------------------------------------------------------------
 float Properties::getFloat(const std::string& name) const
 {
+    // Use getString to properly resolve variable references
     const std::string& valueString = getString(name);
+    if (valueString.empty())
+        return 0.0f;
+
     try
     {
-        return std::stof(valueString);
+        return static_cast<float>(std::stod(valueString));
     }
     catch (const std::exception&)
     {
         return 0.0f;
     }
-
-    return 0.0f;
 }
 
 //-----------------------------------------------------------------------------
 long Properties::getLong(const std::string& name) const
 {
+    // Use getString to properly resolve variable references
     const std::string& valueString = getString(name);
+    if (valueString.empty())
+        return 0L;
+
     try
     {
-        return std::stol(valueString);
+        return static_cast<long>(std::stod(valueString));
     }
     catch (const std::exception&)
     {
         return 0L;
     }
-
-    return 0L;
 }
 
 //-----------------------------------------------------------------------------
@@ -998,39 +1020,38 @@ bool Properties::getMatrix(const std::string& name, Matrix* out) const
 {
     assert(out);
 
-    const std::string& valueString = getString(name);
-    if (!valueString.empty())
+    // Check for cached value first
+    if (const Property* prop = findProperty(name))
     {
-        float m[16];
-        int scanned;
-        scanned = sscanf(valueString.c_str(),
-                         "%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",
-                         &m[0],
-                         &m[1],
-                         &m[2],
-                         &m[3],
-                         &m[4],
-                         &m[5],
-                         &m[6],
-                         &m[7],
-                         &m[8],
-                         &m[9],
-                         &m[10],
-                         &m[11],
-                         &m[12],
-                         &m[13],
-                         &m[14],
-                         &m[15]);
-
-        if (scanned != 16)
+        if (const Matrix* cached = prop->getIf<Matrix>())
         {
-            GP_ERROR("Error attempting to parse property '%s' as a matrix.", name);
-            out->setIdentity();
-            return false;
+            *out = *cached;
+            return true;
         }
+        
+        // Parse and cache
+        if (!prop->value.empty())
+        {
+            float m[16];
+            int scanned = sscanf(prop->value.c_str(),
+                             "%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",
+                             &m[0], &m[1], &m[2], &m[3],
+                             &m[4], &m[5], &m[6], &m[7],
+                             &m[8], &m[9], &m[10], &m[11],
+                             &m[12], &m[13], &m[14], &m[15]);
 
-        out->set(m);
-        return true;
+            if (scanned != 16)
+            {
+                GP_ERROR("Error attempting to parse property '%s' as a matrix.", name.c_str());
+                out->setIdentity();
+                return false;
+            }
+
+            Matrix mat(m);
+            prop->cache(mat);
+            *out = mat;
+            return true;
+        }
     }
 
     out->setIdentity();
@@ -1040,19 +1061,85 @@ bool Properties::getMatrix(const std::string& name, Matrix* out) const
 //-----------------------------------------------------------------------------
 bool Properties::getVector2(const std::string& name, Vector2* out) const
 {
-    return parseVector2(getString(name), out);
+    assert(out);
+    
+    // Check for cached value first
+    if (const Property* prop = findProperty(name))
+    {
+        if (const Vector2* cached = prop->getIf<Vector2>())
+        {
+            *out = *cached;
+            return true;
+        }
+        
+        // Parse and cache
+        Vector2 vec;
+        if (parseVector2(prop->value, &vec))
+        {
+            prop->cache(vec);
+            *out = vec;
+            return true;
+        }
+    }
+    
+    out->set(0.0f, 0.0f);
+    return false;
 }
 
 //-----------------------------------------------------------------------------
 bool Properties::getVector3(const std::string& name, Vector3* out) const
 {
-    return parseVector3(getString(name), out);
+    assert(out);
+    
+    // Check for cached value first
+    if (const Property* prop = findProperty(name))
+    {
+        if (const Vector3* cached = prop->getIf<Vector3>())
+        {
+            *out = *cached;
+            return true;
+        }
+        
+        // Parse and cache
+        Vector3 vec;
+        if (parseVector3(prop->value, &vec))
+        {
+            prop->cache(vec);
+            *out = vec;
+            return true;
+        }
+    }
+    
+    out->set(0.0f, 0.0f, 0.0f);
+    return false;
 }
 
 //-----------------------------------------------------------------------------
 bool Properties::getVector4(const std::string& name, Vector4* out) const
 {
-    return parseVector4(getString(name), out);
+    assert(out);
+    
+    // Check for cached value first
+    if (const Property* prop = findProperty(name))
+    {
+        if (const Vector4* cached = prop->getIf<Vector4>())
+        {
+            *out = *cached;
+            return true;
+        }
+        
+        // Parse and cache
+        Vector4 vec;
+        if (parseVector4(prop->value, &vec))
+        {
+            prop->cache(vec);
+            *out = vec;
+            return true;
+        }
+    }
+    
+    out->set(0.0f, 0.0f, 0.0f, 0.0f);
+    return false;
 }
 
 //-----------------------------------------------------------------------------
